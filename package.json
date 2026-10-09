@@ -2,7 +2,7 @@
   "name": "mp3-frame-counter",
   "version": "0.0.0",
   "private": true,
-  "description": "Repository foundation for a future TypeScript MP3 assessment",
+  "description": "MP3 physical-frame counter with independent acceptance and verified delivery",
   "type": "module",
   "engines": {
     "node": "24.20.0",
@@ -21,10 +21,15 @@
     "verify:github": "node scripts/verify-github.mjs",
     "artifact:foundation": "node scripts/package-foundation.mjs",
     "check:phase": "node scripts/run-ci-phase.mjs",
-    "test:acceptance:harness": "npm --prefix tests/acceptance run check"
+    "test:acceptance:harness": "npm --prefix tests/acceptance run check",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:unit": "node --test tests/unit/*.test.ts"
   },
   "devDependencies": {
+    "@types/node": "24.19.2",
     "prettier": "3.9.9",
+    "typescript": "7.0.2",
     "yaml": "2.9.1"
   }
 }
