@@ -1,0 +1,27 @@
+{
+  "reason": "User-requested removal of local filesystem identity; no validator was rerun to produce these copies.",
+  "source_revision": "ede4b9eec0b97a5b7e8d1341378ef0be44f84feb",
+  "redactions": [
+    {
+      "file": "agents/outputs/control-plane-validation.json",
+      "field": "/project_root",
+      "replacement": ".",
+      "original_sha256": "0af42a576bf144736a1fe905529e4f1ecef6cfbd8392b5e9703992ef1794dc1f",
+      "sanitized_sha256": "22d7f52367257a1e74b2f5c69ca3236ef334cef3aa7c398b5982a6ad6a69cf1a"
+    },
+    {
+      "file": "agents/outputs/foundation-validation.json",
+      "field": "/project_root",
+      "replacement": ".",
+      "original_sha256": "41341460b491b26f2d1dcb1bbbf2bc506b5321d3fa14979b0cda044a492bb664",
+      "sanitized_sha256": "e406ca0d8ce07e0f69033518dd293c5f22fbd9eac0dd0f88b244e44695d46441"
+    },
+    {
+      "file": "agents/outputs/router-provider-blocker.json",
+      "field": "/project_root",
+      "replacement": ".",
+      "original_sha256": "ca86f6e521686b8e9074dd8cba744c2f712e0434e199372d7e3237af6144e614",
+      "sanitized_sha256": "ee756934a70a0ef7fb2fde691edafec7b06870004c79a421a31dc17b717449c4"
+    }
+  ]
+}

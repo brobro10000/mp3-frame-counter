@@ -29,6 +29,9 @@ assessment. Requirements capture and sample organization do not authorize applic
 - Use npm tooling; no application framework or application test framework is selected.
 - Run npm ci and npm run validate; report actual results and validate the current PR revision.
 - Never commit secrets, MP3 inputs, local caches or private orchestrator implementation files.
+- Keep tracked paths repository-relative; discover checkout roots and tool locations at runtime. Do not commit
+  personal home directories, local tool-install paths, editor state or raw machine-specific validation output.
+  Run `npm run check:portability`; document any privacy redaction without changing historical results or their hashes.
 - Keep the supplied local sample at `docs/requirements/samples/assessment-sample.mp3`, ignored by Git.
   Preserve its bytes and the checksum recorded in `docs/requirements/samples/README.md`.
 - Use existing authentication; never print credentials or add administration credentials to CI.
@@ -46,7 +49,9 @@ assessment. Requirements capture and sample organization do not authorize applic
   versions, keep requirement IDs stable, and report source ambiguities instead of silently inventing behavior.
 - Treat `agents/specs/mvp.md` and `agents/specs/system.md` as the original foundation-phase contracts, not the complete
   application specification. Their generated plans and outputs remain historical; current requirements and the review
-  amendment above supersede conflicting historical scope/policy statements. Do not rewrite retained validation evidence.
+  amendment above supersede conflicting historical scope/policy statements. Do not rewrite historical validation
+  outcomes. Explicitly authorized privacy redactions must identify changed fields and retain original/sanitized
+  checksums, with no claim that redacted copies are verbatim outputs or freshly validated evidence.
 - Treat `agents/architecture/`, if generated later, as generated views; do not hand-edit them or silently replace
   approved architecture decisions.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.

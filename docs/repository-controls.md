@@ -56,6 +56,11 @@ a separate explicit instruction.
 
 Run from the checkout with GitHub CLI authenticated as `brobro10000`; never print or save credentials:
 
+The commands below describe this repository. The reusable audit discovers its repository and current branch from the
+checkout, or accepts `--repo OWNER/REPO --pr NUMBER`. It reads desired controls from the two versioned JSON files and
+verifies the configured review actor against the actual personal repository owner. See [portability](portability.md)
+before adapting the configuration for a fork.
+
 ```sh
 npm run verify:github
 gh api repos/brobro10000/mp3-frame-counter/rulesets/24803567

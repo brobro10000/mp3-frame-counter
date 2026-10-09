@@ -24,9 +24,11 @@ npm run validate
 ```
 
 `npm run validate` checks formatting of tracked files, workflow syntax with checksum-pinned actionlint 1.7.12,
-repository policy, and real terminal-gate negative tests. First use downloads the official actionlint archive; macOS
-arm64 and Linux x64 are supported. Git and `tar` must be available. External shellcheck and pyflakes are disabled to
-keep the local and CI toolchains identical; actionlint's own workflow validation remains enabled.
+repository policy, machine-specific path leaks, terminal-gate behavior and offline tooling tests. First use downloads
+the official actionlint archive; macOS and Linux on x64 and arm64 are supported. Git and `tar` must be available.
+External shellcheck and pyflakes are disabled to keep the local and CI toolchains identical; actionlint's own workflow
+validation remains enabled. Normal validation needs no personal configuration, GitHub login, private plugin or MP3. See
+[portability and reuse](docs/portability.md) for fresh-clone prerequisites and configuration boundaries.
 
 Stage newly created files before running formatting checks. `npm run format` formats tracked files. Historical
 orchestrator artifacts under `agents/` are retained as snapshots; `AGENTS.md` records the current policy amendment. Both
@@ -35,8 +37,10 @@ Application typechecking, parser tests, endpoint integration tests and productio
 
 `npm run verify:github` uses your existing authenticated GitHub CLI for read-only checks of this phase's current PR and
 repository controls. It fails if required protections, the bound CI integration, current-revision success or the owner's
-PR-only review override are missing. It requires administrative read access as `brobro10000`; it is not a CI step and
-does not modify settings. After merge, its phase-specific expectation of an open unapproved PR no longer applies.
+PR-only review override are missing. It resolves the repository and branch from the checkout, with optional
+`--repo OWNER/REPO --pr NUMBER` overrides. Run it as the repository's owner with administrative read access; it is not a
+CI step and does not modify settings. Forks must explicitly adapt the versioned ruleset configuration. After merge, its
+phase-specific expectation of an open unapproved PR no longer applies.
 
 ## Validation and delivery
 

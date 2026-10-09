@@ -76,6 +76,8 @@ assert.equal(upload.with["include-hidden-files"], true);
 // Ensure local validation and CI use the same exact tooling and integrity-checked npm dependency graph.
 const pkg = JSON.parse(read("package.json"));
 const lock = JSON.parse(read("package-lock.json"));
+assert.equal(pkg.scripts["check:portability"], "node scripts/check-portability.mjs");
+assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:portability"));
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");
@@ -120,7 +122,13 @@ assert.equal(reviewRules.name, "main-review-approval");
 assert.equal(reviewRules.target, "branch");
 assert.equal(reviewRules.enforcement, "active");
 assert.deepEqual(reviewRules.conditions, rules.conditions);
-assert.deepEqual(reviewRules.bypass_actors, [{ actor_id: 82611798, actor_type: "User", bypass_mode: "pull_request" }]);
+assert.equal(reviewRules.bypass_actors.length, 1, "Exactly one owner review exception is permitted");
+const [reviewActor] = reviewRules.bypass_actors;
+assert.equal(reviewActor.actor_type, "User");
+assert.equal(reviewActor.bypass_mode, "pull_request");
+assert(Number.isSafeInteger(reviewActor.actor_id) && reviewActor.actor_id > 0);
+assert.deepEqual(Object.keys(reviewActor).sort(), ["actor_id", "actor_type", "bypass_mode"]);
+// The authenticated read-only audit checks this configured ID against the actual repository owner's ID.
 assert.deepEqual(
   reviewRules.rules.map((rule) => rule.type),
   ["pull_request"],

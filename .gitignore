@@ -5,6 +5,8 @@ node_modules/
 .mvp-orchestrator/
 .codex/
 .DS_Store
+.idea/
+.vscode/
 __pycache__/
 *.pyc
 *.mp3

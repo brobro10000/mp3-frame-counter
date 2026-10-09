@@ -14,8 +14,10 @@
     "format:check": "node scripts/format.mjs --check",
     "lint:workflows": "node scripts/actionlint.mjs",
     "check:policy": "node scripts/policy.mjs",
+    "check:portability": "node scripts/check-portability.mjs",
     "test:gate": "node --test scripts/ci-gate.test.mjs",
-    "validate": "npm run format:check && npm run lint:workflows && npm run check:policy && npm run test:gate",
+    "test:tooling": "node --test scripts/github-context.test.mjs scripts/portability.test.mjs",
+    "validate": "npm run format:check && npm run lint:workflows && npm run check:policy && npm run check:portability && npm run test:gate && npm run test:tooling",
     "verify:github": "node scripts/verify-github.mjs",
     "artifact:foundation": "node scripts/package-foundation.mjs"
   },

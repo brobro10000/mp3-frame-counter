@@ -220,7 +220,7 @@
   },
   "errors": [],
   "operation": "check",
-  "project_root": "/Users/hamzah/mp3-counter/mp3-frame-counter",
+  "project_root": ".",
   "release_version": "0.1.0",
   "schema_version": 1,
   "status": "validated"

@@ -2,28 +2,43 @@
  * Audit GitHub's live repository controls and the current foundation PR using read-only requests.
  *
  * Run `npm run verify:github` from the repository root with Git and an authenticated GitHub CLI on PATH.
- * The account needs access to repository settings; local HEAD must match the pushed PR revision with passing CI.
+ * GitHub CLI supplies the repository context; the checked-out branch selects its open PR. Override these with
+ * `npm run verify:github -- --repo OWNER/REPO --pr NUMBER`; --pr also supports a detached checkout.
+ * Run as the personal repository owner with administrative read access; local HEAD must match the PR's passing CI.
+ * Both desired rulesets supply the protected branch. Their configured review exception must name the actual owner;
+ * explicitly adapt that versioned configuration before auditing a fork. This script never grants an exception.
  * Compare both effective rulesets with their versioned JSON, then verify check provenance and the owner's override.
  * Success prints a JSON snapshot; any unmet assertion exits nonzero. No settings, reviews or merges are changed.
- * This audit intentionally expects an open, unapproved foundation PR and no main delivery run; reassess after merge.
+ * This audit expects an open, unapproved owner-authored PR and no protected-branch delivery run; reassess after merge.
  */
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import {
+  assertOwnerOverride,
+  getProtectedBranch,
+  parseAuditOptions,
+  parseRepository,
+  selectPullRequestPath,
+} from "./github-context.mjs";
 
 // Read-only administrative audit. Never apply settings from a PR-controlled workflow.
-const repository = "brobro10000/mp3-frame-counter";
+const options = parseAuditOptions(process.argv.slice(2));
+const repository =
+  options.repository ??
+  JSON.parse(execFileSync("gh", ["repo", "view", "--json", "nameWithOwner"], { encoding: "utf8" })).nameWithOwner;
+const { owner, name } = parseRepository(repository);
 const api = (path) => JSON.parse(execFileSync("gh", ["api", path], { encoding: "utf8" }));
 const expected = JSON.parse(readFileSync("docs/main-ruleset.json", "utf8"));
 const expectedReviews = JSON.parse(readFileSync("docs/review-ruleset.json", "utf8"));
+const protectedBranch = getProtectedBranch(expected, expectedReviews);
 const viewer = api("user");
-assert.equal(viewer.login, "brobro10000", "Run this audit as the account receiving the review override");
-assert.equal(viewer.id, 82611798);
 const metadata = api(`repos/${repository}`);
-assert.equal(metadata.full_name, repository);
+assert.equal(metadata.full_name.toLowerCase(), repository.toLowerCase());
+assertOwnerOverride(metadata, viewer, expectedReviews);
 assert.equal(metadata.private, true);
-assert.equal(metadata.default_branch, "main");
+assert.equal(metadata.default_branch, protectedBranch);
 assert.equal(metadata.permissions.admin, true, "Administrative read access is needed to audit all protections");
 for (const [key, value] of Object.entries({
   allow_squash_merge: true,
@@ -33,7 +48,7 @@ for (const [key, value] of Object.entries({
   delete_branch_on_merge: true,
 }))
   assert.equal(metadata[key], value, key);
-// Read effective main-branch rules as well as the ruleset definition, so configured but inactive rules cannot pass.
+// Read effective branch rules as well as the ruleset definition, so configured but inactive rules cannot pass.
 const summaries = api(`repos/${repository}/rulesets?includes_parents=true&per_page=100`);
 const matches = summaries.filter((rule) => rule.name === expected.name && rule.enforcement === "active");
 assert.equal(matches.length, 1, "Expected one active foundation ruleset");
@@ -55,11 +70,11 @@ assert.deepEqual(
   reviewRuleset.rules.map((rule) => rule.type),
   ["pull_request"],
 );
-const effective = api(`repos/${repository}/rules/branches/main`);
+const effective = api(`repos/${repository}/rules/branches/${encodeURIComponent(protectedBranch)}`);
 assert.deepEqual(
   [...new Set(effective.map((rule) => rule.ruleset_id))].sort((a, b) => a - b),
   [ruleset.id, reviewRuleset.id].sort((a, b) => a - b),
-  "An additional main ruleset could prevent the intended owner override",
+  "An additional protected-branch ruleset could prevent the intended owner override",
 );
 // Classic protection also combines with rulesets; reject an unseen approval gate in this bounded foundation.
 const classicProtection = JSON.parse(
@@ -69,7 +84,11 @@ const classicProtection = JSON.parse(
       "api",
       "graphql",
       "-f",
-      'query=query { repository(owner: "brobro10000", name: "mp3-frame-counter") { branchProtectionRules { totalCount } } }',
+      "query=query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { branchProtectionRules { totalCount } } }",
+      "-f",
+      `owner=${owner}`,
+      "-f",
+      `name=${name}`,
     ],
     { encoding: "utf8" },
   ),
@@ -97,11 +116,21 @@ const token = api(`repos/${repository}/actions/permissions/workflow`);
 assert.deepEqual(token, { default_workflow_permissions: "read", can_approve_pull_request_reviews: false });
 // Bind the audit to this checkout and the actual GitHub PR author, rather than Git commit author metadata.
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-const prs = api(`repos/${repository}/pulls?state=open&head=brobro10000:codex/phase-01-repository-foundation&base=main`);
-assert.equal(prs.length, 1);
-const pr = api(`repos/${repository}/pulls/${prs[0].number}`);
+const branch =
+  options.prNumber === undefined
+    ? execFileSync("git", ["branch", "--show-current"], { encoding: "utf8" }).trim()
+    : undefined;
+const selected = api(selectPullRequestPath({ repository, branch, protectedBranch, prNumber: options.prNumber }));
+let pr = selected;
+if (options.prNumber === undefined) {
+  assert.equal(selected.length, 1, "Expected exactly one open PR for the checkout branch; supply --pr NUMBER");
+  pr = api(`repos/${repository}/pulls/${selected[0].number}`);
+}
+assert.equal(pr.state, "open", "Foundation audit requires an open PR");
+assert.equal(pr.base.ref, protectedBranch, "PR must target the configured protected branch");
+assert.equal(pr.base.repo.full_name, metadata.full_name, "PR must belong to the selected repository");
 assert.equal(pr.head.sha, head, "PR must match the current local revision");
-assert.equal(pr.user.login, "brobro10000");
+assert.equal(pr.user.id, metadata.owner.id, "Foundation PR must be authored by the repository owner");
 assert.equal(pr.merged, false);
 assert.equal(pr.auto_merge, null);
 const review = JSON.parse(
@@ -129,15 +158,20 @@ assert.equal(jobs.find((job) => job.name === "control-plane")?.conclusion, "succ
 assert.equal(jobs.find((job) => job.name === "validate-foundation")?.conclusion, "success");
 assert.equal(jobs.find((job) => job.name === "deliver-foundation")?.conclusion, "skipped");
 // Keep "delivery configured" distinct from "delivery executed" while the foundation PR remains unmerged.
-const mainRuns = api(
-  `repos/${repository}/actions/workflows/ci.yml/runs?event=push&branch=main&per_page=100`,
+const protectedBranchRuns = api(
+  `repos/${repository}/actions/workflows/ci.yml/runs?event=push&branch=${encodeURIComponent(protectedBranch)}&per_page=100`,
 ).workflow_runs;
-assert.equal(mainRuns.length, 0, "Foundation delivery status must be reassessed after a main push");
+assert.equal(
+  protectedBranchRuns.length,
+  0,
+  "Foundation delivery status must be reassessed after a protected-branch push",
+);
 console.log(
   JSON.stringify(
     {
       status: "validated",
       repository,
+      protectedBranch,
       pr: pr.html_url,
       head,
       ruleset: ruleset.id,
@@ -149,7 +183,7 @@ console.log(
       run: run.html_url,
       reviewDecision: review.reviewDecision,
       mergeStateStatus: review.mergeStateStatus,
-      delivery: "configured; not executed on main",
+      delivery: `configured; not executed on ${protectedBranch}`,
     },
     null,
     2,
