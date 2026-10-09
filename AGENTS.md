@@ -1,5 +1,12 @@
 # mp3-frame-counter operating contract
 
+## Current review-policy amendment
+
+The owner's explicit request on 2026-10-09 authorizes a PR-only approval override for `brobro10000` alone.
+`docs/repository-controls.md` and its two ruleset files supersede the original no-bypass review policy retained in
+the historical `agents/` planning and evidence artifacts. Core CI, PR, conversation and branch rules have no bypass.
+Agents must not exercise the owner's override, merge, approve or enable auto-merge without a new explicit instruction.
+
 ## Verified intent
 
 Prepare only the repository foundation for a future TypeScript MP3 assessment.
@@ -15,7 +22,7 @@ Prepare only the repository foundation for a future TypeScript MP3 assessment.
 ## Constraints
 
 - Implement only phase-01-repository-foundation; do not start future application phases.
-- Do not merge, enable auto-merge, approve, bypass reviews or weaken repository controls.
+- Configure only the authorized owner review override; do not merge, approve, enable auto-merge or bypass core controls.
 - Use npm tooling; no application framework or application test framework is selected.
 - Run npm ci and npm run validate; report actual results and validate the current PR revision.
 - Never commit secrets, MP3 inputs, local caches or private orchestrator implementation files.

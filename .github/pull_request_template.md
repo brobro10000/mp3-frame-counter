@@ -18,4 +18,6 @@ Identify files needing deeper review, especially workflows, dependencies, permis
 
 Describe changes to CI, token permissions, required checks, review rules or delivery triggers.
 
-Independent eligible approval is required. Do not merge, approve automatically, enable auto-merge or add bypasses.
+Independent approval is required unless `brobro10000` explicitly uses the configured PR-only review override. CI,
+resolved conversations and branch protections still apply. Agents must not merge, approve or enable auto-merge without a
+separate explicit instruction.

@@ -3,7 +3,7 @@
  *
  * Run `npm run verify:github` from the repository root with Git and an authenticated GitHub CLI on PATH.
  * The account needs access to repository settings; local HEAD must match the pushed PR revision with passing CI.
- * Compare effective rules against docs/main-ruleset.json, then verify check provenance and the review blocker.
+ * Compare both effective rulesets with their versioned JSON, then verify check provenance and the owner's override.
  * Success prints a JSON snapshot; any unmet assertion exits nonzero. No settings, reviews or merges are changed.
  * This audit intentionally expects an open, unapproved foundation PR and no main delivery run; reassess after merge.
  */
@@ -16,10 +16,15 @@ import { readFileSync } from "node:fs";
 const repository = "brobro10000/mp3-frame-counter";
 const api = (path) => JSON.parse(execFileSync("gh", ["api", path], { encoding: "utf8" }));
 const expected = JSON.parse(readFileSync("docs/main-ruleset.json", "utf8"));
+const expectedReviews = JSON.parse(readFileSync("docs/review-ruleset.json", "utf8"));
+const viewer = api("user");
+assert.equal(viewer.login, "brobro10000", "Run this audit as the account receiving the review override");
+assert.equal(viewer.id, 82611798);
 const metadata = api(`repos/${repository}`);
 assert.equal(metadata.full_name, repository);
 assert.equal(metadata.private, true);
 assert.equal(metadata.default_branch, "main");
+assert.equal(metadata.permissions.admin, true, "Administrative read access is needed to audit all protections");
 for (const [key, value] of Object.entries({
   allow_squash_merge: true,
   allow_merge_commit: false,
@@ -36,13 +41,52 @@ const ruleset = api(`repos/${repository}/rulesets/${matches[0].id}`);
 assert.deepEqual(ruleset.bypass_actors, []);
 assert.equal(ruleset.current_user_can_bypass, "never");
 assert.deepEqual(ruleset.conditions, expected.conditions);
+// The exception names one user and applies only to the separate approval ruleset during PR merges.
+const reviewMatches = summaries.filter((rule) => rule.name === expectedReviews.name && rule.enforcement === "active");
+assert.equal(reviewMatches.length, 1, "Expected one active review-only ruleset");
+const reviewRuleset = api(`repos/${repository}/rulesets/${reviewMatches[0].id}`);
+assert.deepEqual(reviewRuleset.bypass_actors, [
+  { actor_id: viewer.id, actor_type: "User", bypass_mode: "pull_request" },
+]);
+assert.deepEqual(reviewRuleset.bypass_actors, expectedReviews.bypass_actors);
+assert.equal(reviewRuleset.current_user_can_bypass, "pull_requests_only");
+assert.deepEqual(reviewRuleset.conditions, expectedReviews.conditions);
+assert.deepEqual(
+  reviewRuleset.rules.map((rule) => rule.type),
+  ["pull_request"],
+);
 const effective = api(`repos/${repository}/rules/branches/main`);
+assert.deepEqual(
+  [...new Set(effective.map((rule) => rule.ruleset_id))].sort((a, b) => a - b),
+  [ruleset.id, reviewRuleset.id].sort((a, b) => a - b),
+  "An additional main ruleset could prevent the intended owner override",
+);
+// Classic protection also combines with rulesets; reject an unseen approval gate in this bounded foundation.
+const classicProtection = JSON.parse(
+  execFileSync(
+    "gh",
+    [
+      "api",
+      "graphql",
+      "-f",
+      'query=query { repository(owner: "brobro10000", name: "mp3-frame-counter") { branchProtectionRules { totalCount } } }',
+    ],
+    { encoding: "utf8" },
+  ),
+);
+assert.equal(classicProtection.data.repository.branchProtectionRules.totalCount, 0);
 assert(!effective.some((rule) => rule.type === "update"), "Blanket update restriction is not the intended policy");
 const expectedStatus = expected.rules.find((rule) => rule.type === "required_status_checks");
 assert(expectedStatus, "CI source has not yet been observed and bound");
 for (const desired of expected.rules) {
   const live = effective.find((rule) => rule.type === desired.type && rule.ruleset_id === ruleset.id);
   assert(live, `Missing effective ${desired.type}`);
+  for (const [key, value] of Object.entries(desired.parameters ?? {}))
+    assert.deepEqual(live.parameters[key], value, key);
+}
+for (const desired of expectedReviews.rules) {
+  const live = effective.find((rule) => rule.type === desired.type && rule.ruleset_id === reviewRuleset.id);
+  assert(live, `Missing effective review rule: ${desired.type}`);
   for (const [key, value] of Object.entries(desired.parameters ?? {}))
     assert.deepEqual(live.parameters[key], value, key);
 }
@@ -97,6 +141,8 @@ console.log(
       pr: pr.html_url,
       head,
       ruleset: ruleset.id,
+      reviewRuleset: reviewRuleset.id,
+      reviewOverride: { login: viewer.login, mode: reviewRuleset.current_user_can_bypass },
       check: required.context,
       integration: gate.app.slug,
       integration_id: gate.app.id,

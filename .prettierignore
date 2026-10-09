@@ -1,4 +1,4 @@
-# The installed orchestrator validates these canonical bytes. Do not reformat them.
+# Preserve historical orchestrator artifacts and the operating contract's existing formatting.
 AGENTS.md
 agents/
 node_modules/

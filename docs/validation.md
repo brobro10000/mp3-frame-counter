@@ -1,5 +1,10 @@
 # Foundation validation evidence
 
+This document records the original foundation validation snapshot. The owner's 2026-10-09 review-policy amendment
+supersedes its original no-bypass configuration: see [current repository controls](repository-controls.md). The retained
+orchestrator results were not regenerated for that amendment or the script documentation changes. Current CI and
+read-only verification results are recorded on [PR 1](https://github.com/brobro10000/mp3-frame-counter/pull/1).
+
 The installed MVP Orchestrator **1.3.0** was used from its existing cache without upgrading or editing its source. The
 custom route contains definition, system, bootstrap, bounded plan, prompt, execution and validation, with exactly one
 implementation phase. It does not invoke readiness or a shipping operation. Explicit Git/GitHub operations stop at an
@@ -52,15 +57,15 @@ Discovery CI succeeded for `0b1d959b66f5cbe4e51a559ed138e00e26146146`:
 `control-plane` check and `github-actions` integration ID 15368. Later revisions must pass their own runs; consult
 [PR 1](https://github.com/brobro10000/mp3-frame-counter/pull/1) and rerun the current-head verifier.
 
-Configured and read back: private repository, `main`, one active ruleset, one independent approval, stale dismissal,
-latest-push approval, resolved conversations, strict CI, no bypasses, no force pushes or deletion, linear history,
-squash-only merge, branch deletion after merge, disabled auto-merge, read-only Actions and disabled Actions approvals.
-No plan or credential blocker was observed. No destructive probe, merge or approval was attempted.
+Originally configured and read back: private repository, `main`, one active ruleset, one independent approval, stale
+dismissal, latest-push approval, resolved conversations, strict CI, no bypasses, no force pushes or deletion, linear
+history, squash-only merge, branch deletion after merge, disabled auto-merge, read-only Actions and disabled Actions
+approvals. No plan or credential blocker was observed. No destructive probe, merge or approval was attempted.
 
 Delivery is configured and statically validated; its packaging was inspected locally. Delivery has **not executed on
 main**. There is no application typecheck, parser test, endpoint integration test, production build or deployment.
 
-The remaining human prerequisite is an independent eligible reviewer. `brobro10000` authored and pushed the PR and
-cannot approve it; no other collaborator was present at setup. No invitation or code-owner gate was added. Review the
-workflow, permissions, dependencies and rules; arrange an eligible reviewer separately and leave this PR open for
-review.
+At setup, the remaining human prerequisite was an independent eligible reviewer: `brobro10000` authored and pushed the
+PR and cannot approve it. No other collaborator was present, and no invitation or code-owner gate was added. The later
+owner-authorized exception now permits an explicit PR-only review override while preserving core controls. The PR
+remains open; configuration of that exception does not approve or merge it.

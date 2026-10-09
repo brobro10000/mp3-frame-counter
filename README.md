@@ -23,15 +23,15 @@ repository policy, and real terminal-gate negative tests. First use downloads th
 arm64 and Linux x64 are supported. Git and `tar` must be available. External shellcheck and pyflakes are disabled to
 keep the local and CI toolchains identical; actionlint's own workflow validation remains enabled.
 
-Stage newly created files before running formatting checks. `npm run format` formats tracked files. The canonical
-orchestrator artifacts under `agents/` and `AGENTS.md` retain their validator-required bytes and are excluded from
-Prettier; CI still parses their JSON, YAML and frontmatter. Application typechecking, parser tests, endpoint integration
-tests and production builds are **not implemented**.
+Stage newly created files before running formatting checks. `npm run format` formats tracked files. Historical
+orchestrator artifacts under `agents/` are retained as snapshots; `AGENTS.md` records the current policy amendment. Both
+are excluded from Prettier to preserve their existing formatting; CI still parses artifact JSON, YAML and frontmatter.
+Application typechecking, parser tests, endpoint integration tests and production builds are **not implemented**.
 
 `npm run verify:github` uses your existing authenticated GitHub CLI for read-only checks of this phase's current PR and
-repository controls. It fails if required protections, the bound CI integration, current-revision success or the
-expected independent-review blocker are missing. It requires administrative read access; it is not a CI step and does
-not modify settings. After merge, its phase-specific expectation of an open blocked PR no longer applies.
+repository controls. It fails if required protections, the bound CI integration, current-revision success or the owner's
+PR-only review override are missing. It requires administrative read access as `brobro10000`; it is not a CI step and
+does not modify settings. After merge, its phase-specific expectation of an open unapproved PR no longer applies.
 
 ## Validation and delivery
 
@@ -60,6 +60,10 @@ upload or deploy anything.
 See [the phase plan and decisions](docs/foundation-plan.md), [merge controls](docs/repository-controls.md), and
 [tool sources](docs/toolchain.md). Review changes to workflows, dependencies, permissions and merge rules carefully. The
 foundation PR must not be merged or automatically approved by an agent.
+
+The owner authorized a review-policy exception: `brobro10000` alone can explicitly override approval requirements when
+merging a PR to `main`. GitHub still prohibits approving one's own PR. CI, conversation resolution and branch
+protections remain enforced by a separate ruleset with no bypass actors. See the merge-controls document for usage.
 
 The supplied MP3 remains outside this project and must not be committed. Normal local validation and GitHub CI do not
 need the private MVP orchestrator plugin. Its version **1.3.0** generated and validated the bounded planning artifacts;

@@ -2,7 +2,7 @@
  * Check that tracked foundation files preserve the intended CI, tooling and repository-control policy.
  *
  * Run `npm run check:policy` from the repository root after `npm ci`, using the pinned Node/npm versions.
- * Assertions inspect workflow structure, gate dependencies, delivery restrictions, dependency pins and ruleset JSON.
+ * Assertions inspect workflow structure, gate dependencies, delivery restrictions, dependency pins and both rulesets.
  * A mismatch exits nonzero; this script reads local files and tool versions without changing repository settings.
  * It validates the declared policy, while verify-github.mjs separately audits enforcement on GitHub.
  */
@@ -105,7 +105,27 @@ for (const type of ["deletion", "non_fast_forward", "required_linear_history", "
     `Missing ${type}`,
   );
 }
-const reviews = rules.rules.find((rule) => rule.type === "pull_request").parameters;
+// Keep the PR, conversation and CI requirements outside the owner's review-only exception.
+const corePullRequest = rules.rules.find((rule) => rule.type === "pull_request").parameters;
+assert.equal(corePullRequest.required_approving_review_count, 0);
+assert.equal(corePullRequest.require_last_push_approval, false);
+assert.equal(corePullRequest.dismiss_stale_reviews_on_push, false);
+assert.equal(corePullRequest.require_extra_approval_for_unattributed_changes, false);
+assert.equal(corePullRequest.require_code_owner_review, false);
+assert.deepEqual(corePullRequest.required_reviewers, []);
+assert.equal(corePullRequest.required_review_thread_resolution, true);
+assert.deepEqual(corePullRequest.allowed_merge_methods, ["squash"]);
+const reviewRules = JSON.parse(read("docs/review-ruleset.json"));
+assert.equal(reviewRules.name, "main-review-approval");
+assert.equal(reviewRules.target, "branch");
+assert.equal(reviewRules.enforcement, "active");
+assert.deepEqual(reviewRules.conditions, rules.conditions);
+assert.deepEqual(reviewRules.bypass_actors, [{ actor_id: 82611798, actor_type: "User", bypass_mode: "pull_request" }]);
+assert.deepEqual(
+  reviewRules.rules.map((rule) => rule.type),
+  ["pull_request"],
+);
+const reviews = reviewRules.rules[0].parameters;
 assert.equal(reviews.required_approving_review_count, 1);
 for (const key of [
   "dismiss_stale_reviews_on_push",
@@ -115,6 +135,8 @@ for (const key of [
   assert.equal(reviews[key], true);
 }
 assert.equal(reviews.require_code_owner_review, false);
+assert.deepEqual(reviews.required_reviewers, []);
+assert.equal(reviews.require_extra_approval_for_unattributed_changes, true);
 assert.deepEqual(reviews.allowed_merge_methods, ["squash"]);
 const statusRule = rules.rules.find((rule) => rule.type === "required_status_checks");
 assert(statusRule, "The required gate must be bound to its observed integration");
@@ -122,7 +144,7 @@ assert.equal(statusRule.parameters.strict_required_status_checks_policy, true);
 assert.equal(statusRule.parameters.required_status_checks.length, 1);
 assert.equal(statusRule.parameters.required_status_checks[0].context, "control-plane");
 assert(Number.isInteger(statusRule.parameters.required_status_checks[0].integration_id));
-// Canonical orchestrator artifacts are excluded from Prettier; still reject malformed JSON/YAML in CI.
+// Historical orchestrator artifacts are excluded from Prettier; still reject malformed JSON/YAML in CI.
 for (const file of files.filter((file) => file.startsWith("agents/"))) {
   if (file.endsWith(".json")) JSON.parse(read(file));
   if (file.endsWith(".yaml")) parse(read(file));

@@ -1,5 +1,10 @@
 # Foundation evidence and orchestration limitation
 
+These are historical outputs from the original foundation snapshot. The owner's 2026-10-09 review-policy amendment
+is recorded in `AGENTS.md` and `docs/repository-controls.md`; it supersedes the no-bypass review policy in these
+snapshots. Script documentation and the amendment changed hashed inputs. These outputs were not regenerated and
+do not certify those later revisions; use current CI and the read-only GitHub verifier for current evidence.
+
 Installed MVP Orchestrator version: **1.3.0**. Its specialist phase gate and project validator passed with the
 documented Node/npm toolchain and existing GitHub authentication. The specialist recorded the one foundation phase
 as complete. This means the foundation implementation and open PR were validated; approval, merge, main delivery
@@ -23,10 +28,9 @@ configured environment; it was not falsely recorded as a completed router task.
 | `router-provider-blocker.json` | Actual blocked output under the router's stripped environment. |
 | `orchestration.md` | Installed router's rendered blocked state. |
 
-These records are snapshots, not authorization or a substitute for current checks. The final evidence-only commit
-must have its own successful CI run and current-head GitHub verification; those links are recorded in the PR body
-and handoff. The evidence files are outside the phase's hashed implementation paths, so retaining them does not
-change the implementation observation.
+These records are snapshots, not authorization or a substitute for current checks. Every later commit needs its own
+successful CI run and current-head GitHub verification; those links are recorded in the PR body and handoff.
+Retaining these historical outputs does not imply that later changes match their hashed implementation paths.
 
 The installed orchestration skill says: "Stop on malformed or unsafe input, an unknown or unavailable capability,
 plan/state/result disagreement, failed or blocked direct validation, unresolved dependencies, secret-like content,
