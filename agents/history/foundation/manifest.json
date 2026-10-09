@@ -1,0 +1,78 @@
+{
+  "source_revision": "143498aae11ad2e874d1c1afa43897d6e6352794",
+  "purpose": "Exact foundation planning snapshot before the authorized V1 planning refresh; historical results remain in agents/outputs.",
+  "files": [
+    {
+      "source_path": "AGENTS.md",
+      "archive_path": "agents/history/foundation/AGENTS.md",
+      "sha256": "918b9682ff6d8d1fdbc5eeae6d571f37a93a36c4271e8f7bac6722da5c1986ba",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/specs/mvp.md",
+      "archive_path": "agents/history/foundation/agents/specs/mvp.md",
+      "sha256": "12f5417c794aa27246eb93ee36d481bc54943d8d28b74c2681ebfa4db4c4ca37",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/specs/system.md",
+      "archive_path": "agents/history/foundation/agents/specs/system.md",
+      "sha256": "486c6ce6ed75368f47568d30fd25cbbab672a5a39a57e48af4492aacab0c18f6",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/invariants/registry.yaml",
+      "archive_path": "agents/history/foundation/agents/invariants/registry.yaml",
+      "sha256": "adb212a4baaf09585cfbda6dad3fcf90788a27683eafe340d87d049720cea261",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/validation/validation-map.yaml",
+      "archive_path": "agents/history/foundation/agents/validation/validation-map.yaml",
+      "sha256": "bb8bb8abfd0e943c17028357e925a9740c8e08bdf5685f18a5531d43979632fc",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/context/bootstrap.json",
+      "archive_path": "agents/history/foundation/agents/context/bootstrap.json",
+      "sha256": "9eecae7279f2c25eacfe691e01badf31c2c6bc39111070a65fa86a6dd702861d",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/context/planning.json",
+      "archive_path": "agents/history/foundation/agents/context/planning.json",
+      "sha256": "23d751111378dd1ce28e94c778d1d5952118a43dfb3d30e14b7233282b7b3bcd",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/context/generated-project.json",
+      "archive_path": "agents/history/foundation/agents/context/generated-project.json",
+      "sha256": "9b045778b4b027eeb124591d0488b1f1934ecbbf354e7f0f3eb76fdededbee2a",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/context/mvp-execution-state.yaml",
+      "archive_path": "agents/history/foundation/agents/context/mvp-execution-state.yaml",
+      "sha256": "403602816669b83267a72a2a5274aee735e8d5d37377d26ccb69a81489e330d1",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/context/phase-01-delta.json",
+      "archive_path": "agents/history/foundation/agents/context/phase-01-delta.json",
+      "sha256": "575009dd8e355e385201aa06480536e96c1b20af180e53a2eec05cf4dea0258e",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/execution/mvp-plan.yaml",
+      "archive_path": "agents/history/foundation/agents/execution/mvp-plan.yaml",
+      "sha256": "f457a8a6d523330a7abb399f3a592293f4f109a8d7072ec6dfdaf189ebc15f0c",
+      "mode": "0o644"
+    },
+    {
+      "source_path": "agents/prompts/expanded/phase-01-repository-foundation.md",
+      "archive_path": "agents/history/foundation/agents/prompts/expanded/phase-01-repository-foundation.md",
+      "sha256": "acbba3cc65b34c38fd8d9c73988079257039feed18db20cc0543b451552124d7",
+      "mode": "0o644"
+    }
+  ]
+}

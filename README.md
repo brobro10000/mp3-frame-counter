@@ -1,24 +1,28 @@
 # MP3 frame counter
 
-Private TypeScript assessment repository, currently at the repository-foundation phase. There is no running API, MP3
-parser, application test suite or production build.
+Private TypeScript assessment repository. PR #1's foundation is merged at `143498a`; the unified V1 planning documents
+are ready for human review. There is no working parser, API, browser app, acceptance suite or managed deployment yet.
 
-The future assessment will accept an MP3 at `POST /file-upload`, parse MPEG Version 1 Audio Layer 3 frames without an
-MP3 frame-parsing package, and return `{ "frameCount": <number> }`. Implementation, application framework and
-test-framework selection require a separately approved phase.
+V1 will accept raw MP3 bytes at `POST /file-upload`, count physical MPEG Version 1 Audio Layer 3 frames in our own pure
+TypeScript parser, and return exactly `{ "frameCount": <positive integer> }`. A static HTML/NGINX frontend and native
+Node HTTP API run in separate images, with an inclusive 20 MiB limit and no retained uploads. Independent executable
+Playwright acceptance must be reviewed before product code. A managed candidate, explicit production approval and
+verified release/recovery cycle are required for the first functional MVP.
 
-The [central requirements reference](docs/requirements/README.md) preserves the original assessment HTML and provides
-[formal requirements with stable IDs](docs/requirements/assessment.md), acceptance evidence and open decisions. Use
-those IDs to cross-reference future plans, code, tests and PRs. See the
-[sample record](docs/requirements/samples/README.md) for the local MP3's location and checksum.
+Start with the [MVP requirements](docs/mvp.md), [architecture and five diagrams](docs/architecture/v1.md),
+[acceptance contract](docs/testing/acceptance-contract.md), [provider evaluation](docs/architecture/deployment.md),
+[decisions/risks](docs/architecture/decisions.md) and [five-phase plan](docs/phases/README.md). The
+[central source register](docs/requirements/README.md) preserves the assessment, release amendment and supplied briefs.
+Cite stable APP IDs and actual tested revisions in future plans, code, tests and PRs.
 
-The [first application MVP release process](docs/requirements/release-process.md) also requires a deployment target,
-automatic versioning, tags/releases, deployment verification and rehearsed recovery before that MVP is complete. These
-are documented requirements; their implementation belongs to the separately authorized application phase.
+The next proposed phase is [P1: verify/adapt the merged foundation](docs/phases/01-foundation.md), **not authorized by
+this planning run**. P2 independently authors the test baseline; P3 implements the parser; P4 integrates the local app;
+P5 handles managed deployment. Each needs its own authorization and reviewable handoff. The conditional hosting proposal
+is Render frontend web service plus private API, with ingress-fit, account and budget gates still open.
 
-## Working commands
+## Existing foundation commands
 
-Use Node.js **24.20.0 LTS** and npm **11.19.0**. If using nvm:
+Use the repository-pinned Node.js **24.20.0** and npm **11.19.0**. For a future authorized fresh setup with nvm:
 
 ```sh
 nvm install
@@ -27,60 +31,45 @@ npm ci
 npm run validate
 ```
 
-`npm run validate` checks formatting of tracked files, workflow syntax with checksum-pinned actionlint 1.7.12,
-repository policy, machine-specific path leaks, terminal-gate behavior and offline tooling tests. First use downloads
-the official actionlint archive; macOS and Linux on x64 and arm64 are supported. Git and `tar` must be available.
-External shellcheck and pyflakes are disabled to keep the local and CI toolchains identical; actionlint's own workflow
-validation remains enabled. Normal validation needs no personal configuration, GitHub login, private plugin or MP3. See
-[portability and reuse](docs/portability.md) for fresh-clone prerequisites and configuration boundaries.
+These commands cover foundation tooling only. No dependency installation ran in the unified planning pass. Validation
+checks tracked-file formatting, checksum-pinned actionlint 1.7.12, repository policy, portability and 22 gate/tooling
+tests. First actionlint use can download its official archive; Git and tar are prerequisites. Normal foundation checks
+need no GitHub login, private sample or private plugin. See [portable setup](docs/portability.md).
 
-Stage newly created files before running formatting checks. `npm run format` formats tracked files. Historical
-orchestrator artifacts under `agents/` are retained as snapshots; `AGENTS.md` records the current policy amendment. Both
-are excluded from Prettier to preserve their existing formatting; CI still parses artifact JSON, YAML and frontmatter.
-Application typechecking, parser tests, endpoint integration tests and production builds are **not implemented**.
+Stage exact new/moved files before index-based checks. `npm run format` formats tracked files; AGENTS/agents and
+original source captures retain their existing formatter exclusions. JSON/YAML/frontmatter under agents is still parsed
+by policy. App typecheck/parser/E2E/build checks are not implemented. Future Make and deployment targets are described
+only in the [runbook](docs/deployment/runbook.md); do not treat them as working commands.
 
-`npm run verify:github` uses your existing authenticated GitHub CLI for read-only checks of this phase's current PR and
-repository controls. It fails if required protections, the bound CI integration, current-revision success or the owner's
-PR-only review override are missing. It resolves the repository and branch from the checkout, with optional
-`--repo OWNER/REPO --pr NUMBER` overrides. Run it as the repository's owner with administrative read access; it is not a
-CI step and does not modify settings. Forks must explicitly adapt the versioned ruleset configuration. After merge, its
-phase-specific expectation of an open unapproved PR no longer applies.
+`npm run verify:github` is read-only but still assumes an open foundation PR. P1 must update this obsolete assumption
+before using it as fresh evidence. It resolves repository context from Git, with explicit repo/PR overrides available;
+run under an appropriately authorized account. No audit is a reason to change controls implicitly.
 
-## Validation and delivery
+## Existing CI and delivery
 
-Pull requests targeting `main` and pushes to `main` run the same validation. The stable terminal `control-plane` job
-checks every mandatory dependency and fails on failure, cancellation, skipping or missing results. It has no matrix or
-path filter. A PR's delivery job is always skipped.
+PRs into main and main pushes validate the foundation. The stable `control-plane` terminal job fails on missing, failed,
+cancelled or skipped mandatory dependencies. Main success creates a tracked-source archive with commit identity and
+checksums, retained seven days. This is a foundation archive, not a deployed service. The first merged-main run for
+`143498a` succeeded in [run 37975629467](https://github.com/brobro10000/mp3-frame-counter/actions/runs/37975629467).
 
-After successful validation on a push to protected `main`, delivery creates a tracked-source archive named for the exact
-commit, plus `COMMIT_SHA` and `SHA256SUMS`, retained in GitHub Actions for **7 days**. This is a foundation source
-archive, not a deployable service. The workflow is configured; delivery has not executed on `main` because the
-foundation PR must remain open. Deployment and versioned releases are required in the first application MVP under
-`APP-REL-001` through `APP-REL-006`. Its provider and artifact format remain open; public package publishing is not
-required.
+For a future local inspection of the committed checkout, `npm run artifact:foundation` packages HEAD into ignored
+`.artifacts/`; it excludes private MP3 input, caches and untracked files. It does not include uncommitted planning work.
+Deployment/versioning/tag/release/recovery automation remains pending under
+[APP-REL-001–006](docs/requirements/release-process.md). P5 must demonstrate actual release and recovery evidence.
 
-For a local packaging inspection of the committed checkout:
+## Controls, history and review
 
-```sh
-npm run artifact:foundation
-cd .artifacts
-shasum -a 256 -c SHA256SUMS
-```
+The [merge controls](docs/repository-controls.md) preserve the user's owner-only PR review override. GitHub does not
+allow authors to approve their own PRs; the owner may explicitly override the review rules when merging. The separate
+core ruleset continues to require the PR, resolved conversations, CI and branch protections with no bypass. Agents must
+never approve, merge or exercise the exception without an explicit instruction. Production approval is separate.
 
-This packages `HEAD`, excluding untracked files, `.git`, dependencies, caches and forbidden tracked inputs. It does not
-upload or deploy anything.
+The installed MVP Orchestrator 1.3.0 was inspected through its supported planning route. Its approved-form generated
+contracts cannot truthfully represent this unreviewed proposal. They await reviewed inputs as explained in
+[agents/README.md](agents/README.md). Exact foundation and superseded V1-draft contracts remain archived; old outputs
+are historical, not current readiness. Root AGENTS is an authored planning entrypoint. See
+[actual planning validation and limitations](docs/validation/v1-planning.md).
 
-## Review and boundaries
-
-See [the phase plan and decisions](docs/foundation-plan.md), [merge controls](docs/repository-controls.md), and
-[tool sources](docs/toolchain.md). Review changes to workflows, dependencies, permissions and merge rules carefully. The
-foundation PR must not be merged or automatically approved by an agent.
-
-The owner authorized a review-policy exception: `brobro10000` alone can explicitly override approval requirements when
-merging a PR to `main`. GitHub still prohibits approving one's own PR. CI, conversation resolution and branch
-protections remain enforced by a separate ruleset with no bypass actors. See the merge-controls document for usage.
-
-The supplied MP3 is now `docs/requirements/samples/assessment-sample.mp3`, beside the requirements. It remains ignored
-by Git and must not be committed. Normal local validation and GitHub CI do not need the private MVP orchestrator plugin.
-Its version **1.3.0** generated and validated the bounded planning artifacts; the artifacts' `0.1.0` fields describe
-their legacy schema contract, not the installed plugin version.
+The ignored private sample is `docs/requirements/samples/assessment-sample.mp3`; a clone contains only its
+[identity record](docs/requirements/samples/README.md). Its MediaInfo count is still unobserved. Future CI must use
+permitted self-contained fixtures, and ordinary users must be able to run the app without Codex or the private plugin.

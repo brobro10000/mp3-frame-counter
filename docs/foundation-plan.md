@@ -1,7 +1,10 @@
 # Foundation phase and decisions
 
-Only `phase-01-repository-foundation` is authorized. Its branch is `codex/phase-01-repository-foundation`, based on
-`main`, with one open PR as the stopping point.
+Historical plan: PR #1 is now merged at `143498a`, and its first main delivery succeeded. This document preserves the
+original foundation boundary; use [the V1 phase entrypoint](phases/README.md) for current planning authority.
+
+At the time, only `phase-01-repository-foundation` was authorized. Its branch was
+`codex/phase-01-repository-foundation`, based on `main`, with one open PR as the stopping point.
 
 The sequence below records the original setup. The owner's 2026-10-09 amendment now permits only `brobro10000` to
 override approval requirements during PR merges. The current two-ruleset policy is documented in
