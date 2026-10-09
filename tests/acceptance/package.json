@@ -1,0 +1,22 @@
+{
+  "name": "mp3-frame-counter-acceptance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Independent external acceptance contract r3; no application imports",
+  "engines": {
+    "node": "24.20.0",
+    "npm": "11.19.0"
+  },
+  "packageManager": "npm@11.19.0",
+  "scripts": {
+    "check": "tsc --noEmit && node scripts/check-fixtures.ts && node scripts/negative-controls.ts && playwright test --list",
+    "e2e": "node scripts/run-e2e.ts",
+    "browser:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@types/node": "24.19.2",
+    "typescript": "7.0.2"
+  }
+}

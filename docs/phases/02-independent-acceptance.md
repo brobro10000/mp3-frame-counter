@@ -1,6 +1,7 @@
 # P2 — Independent acceptance baseline
 
-Status: proposed future phase, **not authorized by P0**. Trace: APP-V1-002–005,009,010,013; AC-01–12 design; R-01,02,03.
+Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
+follow. Trace: APP-V1-002–005,009,010,013; AC-01–12 design; R-01,02,03.
 
 ## Objective
 

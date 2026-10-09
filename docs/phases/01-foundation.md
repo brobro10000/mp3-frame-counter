@@ -1,6 +1,7 @@
 # P1 — Verify and adapt the foundation
 
-Status: proposed future phase, **not authorized by P0**. Trace: APP-V1-008,010,011,013; R-03,06,09,10.
+Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
+follow. Trace: APP-V1-008,010,011,013; R-03,06,09,10.
 
 ## Objective
 
