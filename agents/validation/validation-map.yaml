@@ -1,0 +1,23 @@
+schema_version: 1
+artifact: validation-map
+producer_plugin: mvp-orchestrator
+producer_version: 0.1.0
+compatibility_baseline: 0.0.0
+status: approved
+validators:
+- id: VAL-FOUNDATION-01
+  command: python3 scripts/validate_phase.py --project-root . --json
+  requirement_ids: &id001
+  - REQ-001
+  - REQ-002
+  invariant_ids: &id002
+  - INV-FOUNDATION-01
+  evidence_paths:
+  - agents/outputs/foundation-validation.json
+tasks:
+- id: TASK-FOUNDATION-01
+  capability: phase.execution
+  requirement_ids: *id001
+  invariant_ids: *id002
+  validator_ids:
+  - VAL-FOUNDATION-01

@@ -1,0 +1,8 @@
+# The installed orchestrator validates these canonical bytes. Do not reformat them.
+AGENTS.md
+agents/
+node_modules/
+.cache/
+.artifacts/
+.mvp-workflow/
+.mvp-orchestrator/

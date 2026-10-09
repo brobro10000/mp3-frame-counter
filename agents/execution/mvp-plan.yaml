@@ -1,0 +1,74 @@
+schema_version: 1
+release_version: 0.1.0
+compatibility_baseline: 0.0.0
+release_objective: Repository foundation only; stop with an open independently reviewable PR.
+source_context: agents/context/planning.json
+phases:
+- id: phase-01-repository-foundation
+  sequence: 1
+  objective: Repository foundation, CI/CD foundation, and enforced pull-request controls.
+  authority: The attached user request authorizes scoped files, repository settings, working branch and PR creation; it prohibits merge and application work.
+  acceptance_criteria:
+  - Local validation and current revision CI succeed with a fail-closed terminal gate.
+  - Read-only GitHub verification confirms effective main protections and missing approval blocks the PR.
+  - Main-only source archive delivery is configured and has not executed before merge.
+  stop_conditions:
+  - Stop with the foundation PR open; do not merge or advance to application work.
+  - Report unavailable protections or reviewer prerequisites without weakening controls.
+  task_ids:
+  - TASK-FOUNDATION-01
+  depends_on: &id001 []
+  parallel_group: null
+  branch: codex/phase-01-repository-foundation
+  prompt_output: agents/prompts/expanded/phase-01-repository-foundation.md
+  owned_paths:
+  - .editorconfig
+  - .github
+  - .gitignore
+  - .npmrc
+  - .nvmrc
+  - .prettierignore
+  - .prettierrc.json
+  - README.md
+  - docs
+  - package-lock.json
+  - package.json
+  - scripts
+  validation_commands:
+  - python3 scripts/validate_phase.py --project-root . --json
+tasks:
+- id: TASK-FOUNDATION-01
+  capability: phase.execution
+  phase_id: phase-01-repository-foundation
+  depends_on: []
+  owner: foundation-maintainer
+  writes:
+  - README.md
+  - .gitignore
+  - .editorconfig
+  - .nvmrc
+  - .npmrc
+  - package.json
+  - package-lock.json
+  - .prettierrc.json
+  - .prettierignore
+  - .github
+  - scripts
+  - docs
+  requirement_ids:
+  - REQ-001
+  - REQ-002
+  invariant_ids:
+  - INV-FOUNDATION-01
+  validator_ids:
+  - VAL-FOUNDATION-01
+  validation_commands:
+  - python3 scripts/validate_phase.py --project-root . --json
+  evidence_paths:
+  - agents/outputs/foundation-validation.json
+pr_stack:
+- phase_id: phase-01-repository-foundation
+  branch: codex/phase-01-repository-foundation
+  base: main
+  requires: *id001
+  title: '[MVP] Repository foundation, CI/CD foundation, and enforced pull-request controls.'

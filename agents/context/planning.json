@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "release_version": "0.1.0",
+  "compatibility_baseline": "0.0.0",
+  "release_objective": "Repository foundation only; stop with an open independently reviewable PR.",
+  "phases": [
+    {
+      "id": "phase-01-repository-foundation",
+      "sequence": 1,
+      "objective": "Repository foundation, CI/CD foundation, and enforced pull-request controls.",
+      "authority": "The attached user request authorizes scoped files, repository settings, working branch and PR creation; it prohibits merge and application work.",
+      "acceptance_criteria": [
+        "Local validation and current revision CI succeed with a fail-closed terminal gate.",
+        "Read-only GitHub verification confirms effective main protections and missing approval blocks the PR.",
+        "Main-only source archive delivery is configured and has not executed before merge."
+      ],
+      "stop_conditions": [
+        "Stop with the foundation PR open; do not merge or advance to application work.",
+        "Report unavailable protections or reviewer prerequisites without weakening controls."
+      ],
+      "task_ids": [
+        "TASK-FOUNDATION-01"
+      ],
+      "depends_on": [],
+      "parallel_group": null
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-FOUNDATION-01",
+      "depends_on": [],
+      "owner": "foundation-maintainer",
+      "writes": [
+        "README.md",
+        ".gitignore",
+        ".editorconfig",
+        ".nvmrc",
+        ".npmrc",
+        "package.json",
+        "package-lock.json",
+        ".prettierrc.json",
+        ".prettierignore",
+        ".github",
+        "scripts",
+        "docs"
+      ]
+    }
+  ]
+}
