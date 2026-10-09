@@ -1,9 +1,16 @@
 # Foundation validation evidence
 
-This document records the original foundation validation snapshot. The owner's 2026-10-09 review-policy amendment
-supersedes its original no-bypass configuration: see [current repository controls](repository-controls.md). The retained
-orchestrator results were not regenerated for that amendment or the script documentation changes. Current CI and
-read-only verification results are recorded on [PR 1](https://github.com/brobro10000/mp3-frame-counter/pull/1).
+For the current V1 planning pass, see [planning validation](validation/v1-planning.md). Exact original contracts are
+preserved in `agents/history/foundation/`; the old V1 draft is separately archived in `agents/history/v1-draft/`.
+Generated unified contracts await review. The historical results below do not establish application readiness or
+validate the new proposal.
+
+This document records the original foundation validation snapshot. Statements below about an open PR or no main delivery
+describe that earlier moment; PR #1 has since merged and delivered its foundation archive. The owner's 2026-10-09
+review-policy amendment supersedes its original no-bypass configuration: see
+[current repository controls](repository-controls.md). The retained orchestrator results were not regenerated for that
+amendment or the script documentation changes. Current CI and read-only verification results are recorded on
+[PR 1](https://github.com/brobro10000/mp3-frame-counter/pull/1).
 
 The installed MVP Orchestrator **1.3.0** was used from its existing cache without upgrading or editing its source. The
 custom route contains definition, system, bootstrap, bounded plan, prompt, execution and validation, with exactly one

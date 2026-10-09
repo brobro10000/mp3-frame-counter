@@ -1,0 +1,245 @@
+schema_version: 1
+release_version: 0.1.0
+compatibility_baseline: 0.0.0
+release_objective: Plan three separately authorized V1 phases for the MP3 application, independent local containers and the required release cycle.
+source_context: agents/context/planning.json
+phases:
+- id: phase-01-v1-foundation-baseline
+  sequence: 1
+  objective: Reuse the merged foundation, establish an independent MediaInfo baseline and review fixed-command phase validation.
+  authority: Planning is authorized now; execute this phase only after its prerequisites and a separate explicit phase instruction.
+  acceptance_criteria:
+  - The merged foundation is reused and the current scoped PR passes meaningful checks without weakening core controls or the owner-only review exception.
+  - The identified sample has actual MediaInfo version, commands, MPEG format and independent count evidence before parser work.
+  - The reviewed bounded adapter runs fixed npm/baseline checks and reports actual failures and tool-environment limitations.
+  stop_conditions:
+  - Stop on missing MediaInfo, absent sample evidence, checksum mismatch, unavailable reviewed executor behavior or failed validation.
+  - End at the scoped PR and evidence report; no parser, application, infrastructure implementation, merge or next phase is authorized.
+  task_ids:
+  - TASK-V1-01
+  depends_on: &id001 []
+  parallel_group: null
+  branch: codex/phase-01-v1-foundation-baseline
+  prompt_output: agents/prompts/expanded/phase-01-v1-foundation-baseline.md
+  owned_paths:
+  - .github/workflows/ci.yml
+  - README.md
+  - agents/outputs/v1-foundation-validation.json
+  - docs/mvp.md
+  - docs/portability.md
+  - docs/repository-controls.md
+  - docs/requirements
+  - docs/validation
+  - package-lock.json
+  - package.json
+  - scripts
+  validation_commands:
+  - python3 scripts/validate_v1_foundation.py --project-root . --json
+- id: phase-02-v1-parser
+  sequence: 2
+  objective: Implement and validate the standalone TypeScript physical frame counter with independent sample reconciliation.
+  authority: Planning is authorized now; execute this phase only after its prerequisites and a separate explicit phase instruction.
+  acceptance_criteria:
+  - The pure TypeScript parser and independent known-count fixtures cover headers, per-frame bitrate/padding, tags, payload sync patterns and strict failure cases.
+  - Typecheck, built-in Node tests and real parser build pass, and MediaInfo differences are explicitly reconciled.
+  - No HTTP, UI or container implementation is included.
+  stop_conditions:
+  - Stop on unresolved sample discrepancies, unsupported required inputs, unapproved compatibility reductions or failed checks.
+  - End at the scoped PR and evidence report; do not implement HTTP, UI, containers, merge or advance phases.
+  task_ids:
+  - TASK-V1-02
+  depends_on: &id002
+  - phase-01-v1-foundation-baseline
+  parallel_group: null
+  branch: codex/phase-02-v1-parser
+  prompt_output: agents/prompts/expanded/phase-02-v1-parser.md
+  owned_paths:
+  - .github/workflows/ci.yml
+  - README.md
+  - agents/outputs/v1-parser-validation.json
+  - docs/mvp.md
+  - docs/requirements
+  - docs/validation
+  - package-lock.json
+  - package.json
+  - scripts
+  - server/src/mp3.ts
+  - tests/fixtures
+  - tests/mp3.test.ts
+  - tsconfig.json
+  validation_commands:
+  - python3 scripts/validate_v1_parser.py --project-root . --json
+- id: phase-03-v1-integration-containers
+  sequence: 3
+  objective: Integrate the native API and static UI, independently package both containers and satisfy the required release cycle.
+  authority: Planning is authorized now; execute this phase only after its prerequisites and a separate explicit phase instruction.
+  acceptance_criteria:
+  - API, accessible UI, exact response/error contracts and actual-byte upload limits pass real integration tests.
+  - Both images build independently and Compose frontend-origin health, above-1-MiB upload, boundary and unavailable-API tests pass.
+  - All Make targets and reproducible instructions work with quoted paths and project-only cleanup.
+  - The release target and policy are resolved before implementation, and all APP-REL-001 through APP-REL-006 have actual authorized deployment, release and recovery evidence before V1 completion.
+  stop_conditions:
+  - Stop on unresolved release target or access, missing evidence, failed checks or a change to fixed architecture.
+  - End implementation at a scoped PR; merge, release publication, deployment and recovery execution require the relevant explicit authorization.
+  - Keep V1 incomplete until application and release criteria are actually verified; no automatic next MVP.
+  task_ids:
+  - TASK-V1-03
+  depends_on: &id003
+  - phase-02-v1-parser
+  parallel_group: null
+  branch: codex/phase-03-v1-integration-containers
+  prompt_output: agents/prompts/expanded/phase-03-v1-integration-containers.md
+  owned_paths:
+  - .dockerignore
+  - .github/workflows/ci.yml
+  - Makefile
+  - README.md
+  - agents/outputs/v1-integration-validation.json
+  - compose.yaml
+  - docs/mvp.md
+  - docs/requirements
+  - docs/validation
+  - frontend
+  - package-lock.json
+  - package.json
+  - scripts
+  - server
+  - tests
+  - tsconfig.json
+  validation_commands:
+  - python3 scripts/validate_v1_integration.py --project-root . --json
+tasks:
+- id: TASK-V1-01
+  capability: phase.execution
+  phase_id: phase-01-v1-foundation-baseline
+  depends_on: []
+  owner: v1-implementer
+  writes:
+  - README.md
+  - package.json
+  - package-lock.json
+  - scripts
+  - .github/workflows/ci.yml
+  - docs/mvp.md
+  - docs/requirements
+  - docs/validation
+  - docs/repository-controls.md
+  - docs/portability.md
+  - agents/outputs/v1-foundation-validation.json
+  requirement_ids:
+  - REQ-109
+  - REQ-110
+  - REQ-111
+  invariant_ids:
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-11
+  validator_ids:
+  - VAL-V1-01
+  validation_commands:
+  - python3 scripts/validate_v1_foundation.py --project-root . --json
+  evidence_paths:
+  - agents/outputs/v1-foundation-validation.json
+- id: TASK-V1-02
+  capability: phase.execution
+  phase_id: phase-02-v1-parser
+  depends_on:
+  - TASK-V1-01
+  owner: v1-implementer
+  writes:
+  - README.md
+  - package.json
+  - package-lock.json
+  - scripts
+  - .github/workflows/ci.yml
+  - docs/mvp.md
+  - docs/requirements
+  - docs/validation
+  - server/src/mp3.ts
+  - tests/mp3.test.ts
+  - tests/fixtures
+  - tsconfig.json
+  - agents/outputs/v1-parser-validation.json
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  validator_ids:
+  - VAL-V1-02
+  validation_commands:
+  - python3 scripts/validate_v1_parser.py --project-root . --json
+  evidence_paths:
+  - agents/outputs/v1-parser-validation.json
+- id: TASK-V1-03
+  capability: phase.execution
+  phase_id: phase-03-v1-integration-containers
+  depends_on:
+  - TASK-V1-02
+  owner: v1-implementer
+  writes:
+  - README.md
+  - package.json
+  - package-lock.json
+  - scripts
+  - .github/workflows/ci.yml
+  - docs/mvp.md
+  - docs/requirements
+  - docs/validation
+  - server
+  - frontend
+  - tests
+  - tsconfig.json
+  - Makefile
+  - compose.yaml
+  - .dockerignore
+  - agents/outputs/v1-integration-validation.json
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-111
+  - REQ-112
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-11
+  - INV-V1-12
+  validator_ids:
+  - VAL-V1-03
+  validation_commands:
+  - python3 scripts/validate_v1_integration.py --project-root . --json
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+pr_stack:
+- phase_id: phase-01-v1-foundation-baseline
+  branch: codex/phase-01-v1-foundation-baseline
+  base: main
+  requires: *id001
+  title: '[MVP] Reuse the merged foundation, establish an independent MediaInfo baseline and review fixed-command phase validation.'
+- phase_id: phase-02-v1-parser
+  branch: codex/phase-02-v1-parser
+  base: main
+  requires: *id002
+  title: '[MVP] Implement and validate the standalone TypeScript physical frame counter with independent sample reconciliation.'
+- phase_id: phase-03-v1-integration-containers
+  branch: codex/phase-03-v1-integration-containers
+  base: main
+  requires: *id003
+  title: '[MVP] Integrate the native API and static UI, independently package both containers and satisfy the required release cycle.'

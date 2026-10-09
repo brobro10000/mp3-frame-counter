@@ -13,6 +13,11 @@ The later [first application MVP release amendment](release-process.md) adds man
 criteria under `APP-REL-001` through `APP-REL-006`. Read both registries when planning or auditing that MVP; those added
 requirements do not change the preserved assessment source.
 
+The [V1 planning contract](../mvp.md) now selects native HTTP, raw-body uploads, a 20 MiB limit, built-in unit tests,
+independent Playwright acceptance and separate containers with managed release. Its
+[decision record](../architecture/decisions.md) maps these choices to the open items below. The original-source
+descriptions remain intact; a resolved design choice is not implementation evidence.
+
 ## Objective and scope
 
 Build a TypeScript API that accepts an MP3 file and returns its correct frame count. The assessment also evaluates

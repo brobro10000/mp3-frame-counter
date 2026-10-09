@@ -1,5 +1,10 @@
 # Foundation evidence and orchestration limitation
 
+This page and its result files describe the original foundation run. V1 planning results are recorded separately in
+`docs/validation/v1-planning.md`; original contract bytes are preserved under `agents/history/foundation/`. The unified
+proposal awaits reviewed metadata inputs and does not invoke the old execution adapter or resolve its environment
+limitation. The prior three-phase draft and its validation summary are archived under `agents/history/v1-draft/`.
+
 ## Privacy redaction
 
 At the user's request, the top-level `/project_root` values in `foundation-validation.json`,

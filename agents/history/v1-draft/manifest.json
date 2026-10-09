@@ -1,0 +1,93 @@
+{
+  "status": "superseded-draft",
+  "captured_on": "2026-10-09",
+  "base_commit": "143498aae11ad2e874d1c1afa43897d6e6352794",
+  "reason": "Unified planning brief replaces prior three-phase draft; this archive grants no execution or approval authority.",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "cae808eb815c6f3ce4691b03e57ce6679ea3764a41c9d6ebb625129f3f9a7d1f",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/specs/mvp.md",
+      "sha256": "197a413feef9ea031b4dcac76fc2b18df97a06719868ea9d9b79f7d716e507f1",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/specs/system.md",
+      "sha256": "edb9982ef1d3098ce2185e035075d0e747680c7259f4154da6dfdcff49dd7b77",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/invariants/registry.yaml",
+      "sha256": "cddd546088c87e2eb2f21832dc927820cdf9a6482bc150420454dccab6ccd8b7",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/validation/validation-map.yaml",
+      "sha256": "775b4797cdceb871ca37627cad5e7d1b3535a50eca6f99eb5f38458a04572483",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/context/bootstrap.json",
+      "sha256": "70dc58c31bb09cb73740820f98294a8927b5335281d12d84271cac9b376f5ed3",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/context/planning.json",
+      "sha256": "c9bac03d87a54c95627bb34fad011b3fbe2f1ae4a281b1b2a9eb0c4164f7ec2e",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/context/generated-project.json",
+      "sha256": "9b045778b4b027eeb124591d0488b1f1934ecbbf354e7f0f3eb76fdededbee2a",
+      "mode": "0o644"
+    },
+    {
+      "path": "agents/execution/mvp-plan.yaml",
+      "sha256": "fa0d7bafe8b5d707dfb66101abf00a127900d9dc51f2cfab3c86661a12fad045",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/mvp.md",
+      "sha256": "9f0663bacea12cb4ff82c78dc7bd5b00729a18388ab13ccd88af846739a47324",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/architecture/v1.md",
+      "sha256": "7c192fe3bb39dad559893a02e1b3dd1ff3323d1a34813b2318b0fed9244b6540",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/architecture/v1-decisions.md",
+      "sha256": "dcc8ac24fcb70991b37bc526b1b1dfefe6f03ac6caf538acafd1c2350598ab1a",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/phases/README.md",
+      "sha256": "6556aec61b682672a3607f7fbcee256218d0275848a1101ad92a5a8036ff4efa",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/phases/01-foundation-and-baseline.md",
+      "sha256": "9c50c6e1afaea09054a594a0bb0ad050dfab0eaa197c3bb69bc05fcef64e5a54",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/phases/02-parser.md",
+      "sha256": "6e85232a19218c49878564458eb88aa66f9fab7c98eeab34c6d1b5e0486fd524",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/phases/03-end-to-end-and-containers.md",
+      "sha256": "a06e1ce3bf3851c940a59727c1044d9fe166fa12b1c70241adbde8c996898a37",
+      "mode": "0o644"
+    },
+    {
+      "path": "docs/validation/v1-planning.md",
+      "sha256": "0a82ddb4cd7f38f1c09d9c3c7e1e65772d7838d17c4209665b2d3d6b50b700c8",
+      "mode": "0o644"
+    }
+  ]
+}

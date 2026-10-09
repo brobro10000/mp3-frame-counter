@@ -4,7 +4,7 @@ Baseline: **2026-10-09**. Source: [SRC-RELEASE-DECISION](sources/release-process
 include a continuous deployment and release cycle in the first MVP process after reviewing the foundation's limits. This
 is a later user amendment, separate from the [original assessment](assessment.md).
 
-Here, **first application MVP** means the first runnable MP3 API increment following repository foundation. Its
+Here, **first application MVP** means the first functional browser/API product following repository foundation. Its
 completion requires the release cycle below as well as its agreed application scope. These requirements must not be
 silently deferred to a subsequent MVP. Capturing them now does not authorize application implementation, a merge,
 provisioning, spending, credentials changes or a deployment.
@@ -12,6 +12,9 @@ provisioning, spending, credentials changes or a deployment.
 The foundation currently validates PRs and main pushes and configures a seven-day source archive. It has no deployable
 application, deployment target, automatic versioning, release publication or rollback implementation. All requirements
 below are **pending**; this document is a process contract, not execution evidence.
+
+The [unified planning proposal](../mvp.md) operationalizes this amendment with independent acceptance, a managed
+candidate and explicit exact-release production approval. See [the planned runbook](../deployment/runbook.md).
 
 ## Required outcomes
 
@@ -54,8 +57,9 @@ assessment acceptance input under `APP-ASSET-001`; CI smoke tests need a reprodu
 
 Resolve these alongside `APP-OPEN-004`, with rationale and affected requirement IDs:
 
-- Hosting provider, target environment, access and cost constraints, plus build/artifact format. A container, separate
-  staging environment or public package publication is not inherently required.
+- Hosting provider, target environment, access and cost constraints, plus build/artifact format. The unified brief now
+  fixes two runtime images, one candidate environment and managed hosting. Public package publication remains
+  unnecessary.
 - Versioning scheme, how changes determine versions, eligible release triggers and any environment approval gate. If
   approval is required, automate the remaining steps after that gate; do not represent this as unattended deployment.
 - Deployment authentication, minimum workflow permissions, environment-variable configuration and secret storage.

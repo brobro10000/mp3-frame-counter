@@ -1,0 +1,172 @@
+schema_version: 1
+producer_plugin: mvp-orchestrator
+producer_version: 0.1.0
+compatibility_baseline: 0.0.0
+status: approved
+artifact: invariant-registry
+invariants:
+- id: INV-V1-01
+  requirement_ids:
+  - REQ-101
+  validator_ids:
+  - VAL-V1-03
+  statement: Accessible static HTML UI with minimal JavaScript, duplicate-submission prevention and safe status
+    messages.
+  owner: v1-implementer
+  scope: APP-V1-001 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-02
+  requirement_ids:
+  - REQ-102
+  validator_ids:
+  - VAL-V1-03
+  statement: TypeScript native node:http API receives raw MP3 bytes at POST /file-upload and returns exact frameCount
+    JSON.
+  owner: v1-implementer
+  scope: APP-V1-002 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-03
+  requirement_ids:
+  - REQ-103
+  validator_ids:
+  - VAL-V1-03
+  statement: Bound each complete upload Buffer at 20971520 bytes using actual received bytes and clean up interrupted
+    requests.
+  owner: v1-implementer
+  scope: APP-V1-003 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-04
+  requirement_ids:
+  - REQ-104
+  validator_ids:
+  - VAL-V1-02
+  statement: Use a pure synchronous TypeScript physical MPEG-1 Layer III frame counter without an external result
+    parser.
+  owner: v1-implementer
+  scope: APP-V1-004 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-parser-validation.json
+  failure_action: blocked
+- id: INV-V1-05
+  requirement_ids:
+  - REQ-105
+  validator_ids:
+  - VAL-V1-02
+  statement: Validate supported ID3 records and count complete physical MPEG frames with an explicit metadata-frame
+    convention.
+  owner: v1-implementer
+  scope: APP-V1-005 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-parser-validation.json
+  failure_action: blocked
+- id: INV-V1-06
+  requirement_ids:
+  - REQ-106
+  validator_ids:
+  - VAL-V1-03
+  statement: Build separate minimal non-root frontend and API images independently using verified pinned base images.
+  owner: v1-implementer
+  scope: APP-V1-006 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-07
+  requirement_ids:
+  - REQ-107
+  validator_ids:
+  - VAL-V1-03
+  statement: Run exactly two default Compose services with frontend-only loopback publication, healthy API dependency
+    and correct proxying.
+  owner: v1-implementer
+  scope: APP-V1-007 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-08
+  requirement_ids:
+  - REQ-108
+  validator_ids:
+  - VAL-V1-03
+  statement: Provide the eight specified thin Make targets and reproducible prerequisites, usage and independent-build
+    instructions.
+  owner: v1-implementer
+  scope: APP-V1-008 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-09
+  requirement_ids:
+  - REQ-109
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-02
+  - VAL-V1-03
+  statement: Use MediaInfo only for independent sample verification before parsing and after standalone and integrated
+    results.
+  owner: v1-implementer
+  scope: APP-V1-009 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-foundation-validation.json
+  - agents/outputs/v1-parser-validation.json
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-10
+  requirement_ids:
+  - REQ-110
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-02
+  - VAL-V1-03
+  statement: Use progressive meaningful checks, built-in Node tests and independent fixtures without requiring the
+    private sample in ordinary CI.
+  owner: v1-implementer
+  scope: APP-V1-010 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-foundation-validation.json
+  - agents/outputs/v1-parser-validation.json
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-11
+  requirement_ids:
+  - REQ-111
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-03
+  statement: Work through three explicitly authorized reviewed phases while retaining the current owner-only review
+    exception and mandatory core protections.
+  owner: v1-implementer
+  scope: APP-V1-011 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-foundation-validation.json
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
+- id: INV-V1-12
+  requirement_ids:
+  - REQ-112
+  validator_ids:
+  - VAL-V1-03
+  statement: Validate merged revisions and deliver both images with the existing required automated version, private
+    release, deployment and recovery cycle.
+  owner: v1-implementer
+  scope: APP-V1-012 and its mapped assessment/release requirements
+  enforcement: The relevant phase must produce actual direct validation and reviewed evidence before acceptance.
+  evidence_paths:
+  - agents/outputs/v1-integration-validation.json
+  failure_action: blocked
