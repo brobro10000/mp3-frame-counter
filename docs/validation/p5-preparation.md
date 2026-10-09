@@ -121,3 +121,8 @@ The reviewer also reconstructed the original identity from Git/source report, re
 `verifyPreparedDirectory`, checked notes/checksums/reservation, and confirmed that the tracked manifest copy is
 byte-identical to the bundle manifest. This was read-only inspection, with no extraction, image loading or provider
 operation.
+
+After this correction, independent review again returned advisory PASS and root's complete `npm run validate` passed all
+64 gate/tooling cases and policy checks. A clean-source `make prepare-release` at
+`359aabae8b0229c330a0d96c349be57b0501507f` successfully reused the unchanged bundle. Its output preserved original
+preparation revision `b99b292` and recorded `359aaba` separately as the verifying revision; no artifact was rewritten.
