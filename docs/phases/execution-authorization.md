@@ -26,5 +26,16 @@ Implementation agents cannot modify the frozen acceptance suite or gate logic. A
 independent author and receives a separately recorded review. Later component ownership is assigned only after these
 dependencies pass.
 
+P3 was independently reviewed and locally validated at `f7ad2f5`. P4 proceeds provisionally against the unchanged local
+P2 baseline; shipping CI still requires its separate protected-main merge. The additional exclusive assignments are:
+
+| Work           | Owner                              | Owned paths                                                          | Validation                                                   |
+| -------------- | ---------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| P3 parser      | Parser implementer                 | Parser/errors modules, parser unit tests, P3 evidence                | Frozen fixture matrix, unit/build, independent review        |
+| P4 native API  | Parser implementer                 | HTTP/entrypoint modules, HTTP unit tests, API evidence               | Actual HTTP and lifecycle tests                              |
+| P4 frontend    | Frontend implementer               | frontend/, frontend evidence                                         | Isolated image build, browser and ingress acceptance         |
+| P4 controller  | Independent foundation/gate author | E2E lifecycle scripts/tests and controller evidence                  | Authentication, lifecycle failure, real frozen suite         |
+| P4 integration | Root                               | API Dockerfile, Compose, Makefile, root tooling and integration docs | Independent clean builds, complete AC-01–12, resource review |
+
 Phase completion and deployment evidence will be recorded separately in `docs/validation/`. This authorization record
 does not itself claim that any implementation phase, release or automated deployment has completed.

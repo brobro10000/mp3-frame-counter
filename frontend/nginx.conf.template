@@ -1,0 +1,96 @@
+# Rendered by entrypoint.sh from validated runtime values; NGINX reads only the resulting /tmp/nginx.conf.
+# One worker and bounded connections fit the local 64 MiB frontend budget; uploads stream to the bounded API.
+worker_processes 1;
+pid /tmp/nginx.pid;
+error_log /dev/stderr warn;
+
+events {
+    worker_connections 128;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    server_tokens off;
+    access_log off;
+    sendfile on;
+    keepalive_timeout 10s;
+    client_body_timeout 30s;
+    client_header_timeout 10s;
+    send_timeout 30s;
+    client_max_body_size 20m;
+    client_body_buffer_size 16k;
+    client_body_temp_path /tmp/client-body;
+    proxy_temp_path /tmp/proxy;
+    fastcgi_temp_path /tmp/fastcgi;
+    uwsgi_temp_path /tmp/uwsgi;
+    scgi_temp_path /tmp/scgi;
+
+    # Use the container's actual resolver, including bracketed IPv6 addresses, and refresh changed API addresses.
+    resolver @@RESOLVERS@@ valid=1s;
+    resolver_timeout 5s;
+
+    server {
+        listen @@PORT@@;
+        root /usr/share/nginx/html;
+        index index.html;
+        add_header Cache-Control "no-store" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer" always;
+        add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+
+        location = /healthz {
+            default_type application/json;
+            error_page 405 =405 @health_method;
+            if ($request_method != GET) {
+                return 405;
+            }
+            return 200 '{"status":"ok"}';
+        }
+        location @health_method {
+            default_type application/json;
+            add_header Allow GET always;
+            return 405 '{"error":"Use GET for this health check."}';
+        }
+
+        location = /file-upload {
+            # A variable defers DNS lookup until each request; startup and health do not depend on the API.
+            set $api_upstream "@@API_UPSTREAM@@";
+            proxy_pass http://$api_upstream;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header Connection "";
+            proxy_request_buffering off;
+            proxy_buffering off;
+            proxy_ignore_headers X-Accel-Buffering;
+            proxy_max_temp_file_size 0;
+            proxy_cache off;
+            proxy_store off;
+            proxy_intercept_errors off;
+            proxy_next_upstream off;
+            proxy_connect_timeout 5s;
+            proxy_send_timeout 5s;
+            proxy_read_timeout 5s;
+            error_page 413 =413 @upload_too_large;
+            error_page 502 =502 @upstream_unavailable;
+            error_page 504 =504 @upstream_timeout;
+        }
+
+        # Local ingress failures get usable JSON; actual API errors pass through without replacement.
+        location @upload_too_large {
+            default_type application/json;
+            return 413 '{"error":"File exceeds the 20 MiB (20971520-byte) limit."}';
+        }
+        location @upstream_unavailable {
+            default_type application/json;
+            return 502 '{"error":"Analysis service is unavailable. Please try again."}';
+        }
+        location @upstream_timeout {
+            default_type application/json;
+            return 504 '{"error":"Analysis service timed out. Please try again."}';
+        }
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}

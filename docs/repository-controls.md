@@ -83,8 +83,9 @@ main rulesets or classic protection that could obstruct that exception. It uses 
 Git reads.
 
 An unapproved PR can still report `REVIEW_REQUIRED` and `BLOCKED` until the owner explicitly chooses the override. Those
-standard statuses do not mean the account-specific exception is unavailable. The read-only audit expects an open
-unapproved foundation PR; reassess that phase-specific expectation after merging.
+standard statuses do not mean the account-specific exception is unavailable. The current read-only audit accepts the
+exact open-PR head or protected-main head and verifies the corresponding successful CI run. It no longer assumes the
+original foundation PR remains open.
 
 Private branch rules require an eligible GitHub plan. Ruleset creation and effective-rule readback succeeded here; there
 was no observed plan or credential restriction. No forced push, branch deletion or merge attempt is used as a test of

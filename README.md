@@ -1,75 +1,94 @@
 # MP3 frame counter
 
-Private TypeScript assessment repository. PR #1's foundation is merged at `143498a`; the unified V1 planning documents
-are ready for human review. There is no working parser, API, browser app, acceptance suite or managed deployment yet.
+Count complete physical MPEG-1 Layer III frames from a browser. The application sends raw bytes to `POST /file-upload`
+and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX frontend and native Node HTTP API run in
+separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
+not decode audio or use a runtime parsing library.
 
-V1 will accept raw MP3 bytes at `POST /file-upload`, count physical MPEG Version 1 Audio Layer 3 frames in our own pure
-TypeScript parser, and return exactly `{ "frameCount": <positive integer> }`. A static HTML/NGINX frontend and native
-Node HTTP API run in separate images, with an inclusive 20 MiB limit and no retained uploads. Independent executable
-Playwright acceptance must be reviewed before product code. A managed candidate, explicit production approval and
-verified release/recovery cycle are required for the first functional MVP.
+The [five-phase implementation](docs/phases/README.md) is authorized. The independent acceptance baseline and parser
+have passed local checks and review; local integration is being verified. Managed deployment is **not yet verified**.
+See [phase evidence](docs/validation/) and [deployment preflight](docs/validation/deployment-preflight.md) for actual
+results and remaining account, budget and release gates. Written configuration is not deployment evidence.
 
-Start with the [MVP requirements](docs/mvp.md), [architecture and five diagrams](docs/architecture/v1.md),
-[acceptance contract](docs/testing/acceptance-contract.md), [provider evaluation](docs/architecture/deployment.md),
-[decisions/risks](docs/architecture/decisions.md) and [five-phase plan](docs/phases/README.md). The
-[central source register](docs/requirements/README.md) preserves the assessment, release amendment and supplied briefs.
-Cite stable APP IDs and actual tested revisions in future plans, code, tests and PRs.
+## Local application
 
-The next proposed phase is [P1: verify/adapt the merged foundation](docs/phases/01-foundation.md), **not authorized by
-this planning run**. P2 independently authors the test baseline; P3 implements the parser; P4 integrates the local app;
-P5 handles managed deployment. Each needs its own authorization and reviewable handoff. The conditional hosting proposal
-is Render frontend web service plus private API, with ingress-fit, account and budget gates still open.
+Install Docker with Compose. Both images build from source without host dependencies or generated output:
 
-## Existing foundation commands
+```sh
+make up
+# Open http://127.0.0.1:8080
+make ps
+make logs
+make down
+```
 
-Use the repository-pinned Node.js **24.20.0** and npm **11.19.0**. For a future authorized fresh setup with nvm:
+Set `FRONTEND_PORT=8081 make up` to choose another loopback port. The API remains private to the Compose network. Only
+this project's containers and network are removed by `make down`. No global Docker cleanup is used. Runtime containers
+have read-only filesystems and small temporary memory-backed mounts; no upload volumes are configured.
+
+Select a file, then choose **Analyze MP3**. The interface prevents duplicate submissions while pending and supports
+retry after a useful error. MPEG-2/2.5, other layers, free-format encoding and unsupported tag layouts are rejected.
+Complete Xing/Info/VBRI-bearing frames count physically; metadata totals and duration estimates do not determine counts.
+Read the [precise acceptance contract](docs/testing/acceptance-contract.md) for supported tags and error behavior.
+
+## Development and verification
+
+Use repository-pinned Node.js **24.20.0** and npm **11.19.0**, plus Git, tar and Docker Compose:
 
 ```sh
 nvm install
 nvm use
 npm ci
-npm run validate
+make check
 ```
 
-These commands cover foundation tooling only. No dependency installation ran in the unified planning pass. Validation
-checks tracked-file formatting, checksum-pinned actionlint 1.7.12, repository policy, portability and 22 gate/tooling
-tests. First actionlint use can download its official archive; Git and tar are prerequisites. Normal foundation checks
-need no GitHub login, private sample or private plugin. See [portable setup](docs/portability.md).
+`make check` runs formatting, workflow lint, policy, portability and tooling checks, then mandatory phase checks:
+independent harness validation, application unit tests, TypeScript build and complete container/browser acceptance.
+`make e2e` repeats the phase controller. It builds an isolated temporary Compose project, binds ephemeral loopback
+ports, runs all frozen acceptance cases in Chromium, exercises controlled API faults and cleans up even after failure.
+It may download pinned npm/browser dependencies and public base images. No private sample, GitHub login, Codex or
+private plugin is required. Do not run the fault suite against production.
 
-Stage exact new/moved files before index-based checks. `npm run format` formats tracked files; AGENTS/agents and
-original source captures retain their existing formatter exclusions. JSON/YAML/frontmatter under agents is still parsed
-by policy. App typecheck/parser/E2E/build checks are not implemented. Future Make and deployment targets are described
-only in the [runbook](docs/deployment/runbook.md); do not treat them as working commands.
+`make e2e-check` validates only the standalone harness, fixtures, negative controls and discovery; it is not an
+application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm run build` provide focused checks.
+`make help` lists commands. Stage exact new files before index-based formatting/policy checks. See
+[portable setup](docs/portability.md).
 
-`npm run verify:github` is read-only but still assumes an open foundation PR. P1 must update this obsolete assumption
-before using it as fresh evidence. It resolves repository context from Git, with explicit repo/PR overrides available;
-run under an appropriately authorized account. No audit is a reason to change controls implicitly.
+Acceptance source is independently authored and frozen by [baseline identity](docs/testing/baseline.json). Product
+implementers may read it but cannot change expected outcomes to pass. The CI controller extracts the recorded Git tree
+outside the application checkout. Shipping CI requires the separate acceptance baseline on the trusted base branch; the
+current local record remains provisional until that merge. Zero tests, skipped cases and failed checks fail closed.
 
-## Existing CI and delivery
+For a small local upload with an independently known count:
 
-PRs into main and main pushes validate the foundation. The stable `control-plane` terminal job fails on missing, failed,
-cancelled or skipped mandatory dependencies. Main success creates a tracked-source archive with commit identity and
-checksums, retained seven days. This is a foundation archive, not a deployed service. The first merged-main run for
-`143498a` succeeded in [run 37975629467](https://github.com/brobro10000/mp3-frame-counter/actions/runs/37975629467).
+```sh
+make smoke FILE="relative/path/to/audio.mp3" EXPECTED=9
+make validate-sample
+```
 
-For a future local inspection of the committed checkout, `npm run artifact:foundation` packages HEAD into ignored
-`.artifacts/`; it excludes private MP3 input, caches and untracked files. It does not include uncommitted planning work.
-Deployment/versioning/tag/release/recovery automation remains pending under
-[APP-REL-001–006](docs/requirements/release-process.md). P5 must demonstrate actual release and recovery evidence.
+The latter requires the ignored supplied sample, verifies its recorded size/hash and compares the public upload to the
+independent **6,090 physical-frame** baseline. MediaInfo reports 6,089 audio frames plus a complete Xing frame; the
+[oracle record](docs/validation/sample-baseline.md) documents the distinction. A clone has permitted self-contained
+fixtures instead of private sample bytes. Neither smoke command substitutes for complete acceptance.
 
-## Controls, history and review
+## Requirements, CI and delivery
 
-The [merge controls](docs/repository-controls.md) preserve the user's owner-only PR review override. GitHub does not
-allow authors to approve their own PRs; the owner may explicitly override the review rules when merging. The separate
-core ruleset continues to require the PR, resolved conversations, CI and branch protections with no bypass. Agents must
-never approve, merge or exercise the exception without an explicit instruction. Production approval is separate.
+Start with [central requirements](docs/requirements/README.md), [MVP](docs/mvp.md),
+[architecture](docs/architecture/v1.md), [acceptance](docs/testing/acceptance-contract.md),
+[decisions](docs/architecture/decisions.md) and [release requirements](docs/requirements/release-process.md).
+Cross-reference stable APP identifiers in future changes. Original source captures and historical agent outputs retain
+their recorded bytes; [active agent metadata](agents/README.md) documents the ordinary CI handoff.
 
-The installed MVP Orchestrator 1.3.0 was inspected through its supported planning route. Its approved-form generated
-contracts cannot truthfully represent this unreviewed proposal. They await reviewed inputs as explained in
-[agents/README.md](agents/README.md). Exact foundation and superseded V1-draft contracts remain archived; old outputs
-are historical, not current readiness. Root AGENTS is an authored planning entrypoint. See
-[actual planning validation and limitations](docs/validation/v1-planning.md).
+PR and main-push CI infer required validation from actual repository contents. The stable `control-plane` job rejects
+missing, skipped, cancelled or failed mandatory dependencies; an earlier phase selector cannot bypass product tests.
+`npm run verify:github` audits live repository controls and exact revision checks read-only. Main success also retains a
+source archive for seven days; this archive is not a deployed service.
 
-The ignored private sample is `docs/requirements/samples/assessment-sample.mp3`; a clone contains only its
-[identity record](docs/requirements/samples/README.md). Its MediaInfo count is still unobserved. Future CI must use
-permitted self-contained fixtures, and ordinary users must be able to run the app without Codex or the private plugin.
+[APP-REL-001–006](docs/requirements/release-process.md) require actual candidate acceptance, exact artifact promotion,
+production smoke, automatic release/version records and observed recovery. The conditional Render path and unresolved
+fit/access gates are recorded in [provider evaluation](docs/architecture/deployment.md) and the
+[release runbook](docs/deployment/runbook.md). Deployment is not complete until those observations exist.
+
+The [owner-only review exception](docs/repository-controls.md) preserves core PR, CI and conversation protections.
+GitHub does not allow authors to approve their own PRs. An agent needs explicit instruction to merge or invoke the owner
+exception; agent review is not human approval. Production approval separately binds the tested release identity.

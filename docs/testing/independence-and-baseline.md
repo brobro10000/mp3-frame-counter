@@ -1,7 +1,9 @@
 # Independent acceptance baseline and change control
 
-Status: proposed P2 process; no package, fixtures, runner or test-only baseline has been implemented or reviewed. Trace:
-APP-V1-009,010,013 and [acceptance contract](acceptance-contract.md).
+Status: P2 package, fixtures, runner and test-only baseline have been implemented and independently reviewed. The
+[freeze record](baseline.json) remains provisional until the separate acceptance PR merges to protected main. See
+[actual P2 evidence](../validation/p2-acceptance.md). Trace: APP-V1-009,010,013 and
+[acceptance contract](acceptance-contract.md). The process below continues to govern changes.
 
 ## Ownership and order
 
@@ -22,9 +24,9 @@ approval. Workflow/test changes deserve explicit human review even when the owne
 
 ## Standalone harness boundary
 
-Future `tests/acceptance/` is one TypeScript Playwright package with its own manifest/lockfile, Chromium only, fixture
-manifest, specs and optional runner Dockerfile. The root application retains its own lockfile; no npm workspaces or
-second repository. Pin verified versions and matching browser image later, without guessing tags/digests now.
+`tests/acceptance/` is one TypeScript Playwright package with its own manifest/lockfile, Chromium, fixture manifest and
+specs. The root application retains its own lockfile; no npm workspaces or second repository. P2 records the actual
+pinned package/browser versions. The host controller runs an extracted suite in a separate temporary directory.
 
 The runner receives external `BASE_URL`, reviewed fixture inputs and nonsecret target identity. No imports or mounts of
 server, parser, frontend or application configuration helpers. No runtime MediaInfo. Its Docker context is only the
