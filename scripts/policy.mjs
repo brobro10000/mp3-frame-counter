@@ -60,6 +60,7 @@ assert.equal(upload?.with?.["retention-days"], 7);
 assert.equal(upload.with["if-no-files-found"], "error");
 assert.equal(upload.with.name, "foundation-${{ github.sha }}");
 assert.equal(upload.with.path, ".artifacts/*");
+assert.equal(upload.with["include-hidden-files"], true);
 const pkg = JSON.parse(read("package.json"));
 const lock = JSON.parse(read("package-lock.json"));
 assert.equal(pkg.private, true);
@@ -101,14 +102,12 @@ for (const key of [
 }
 assert.equal(reviews.require_code_owner_review, false);
 assert.deepEqual(reviews.allowed_merge_methods, ["squash"]);
-// The first discovery run precedes status-check binding. Remote verification rejects an unbound check.
 const statusRule = rules.rules.find((rule) => rule.type === "required_status_checks");
-if (statusRule) {
-  assert.equal(statusRule.parameters.strict_required_status_checks_policy, true);
-  assert.equal(statusRule.parameters.required_status_checks.length, 1);
-  assert.equal(statusRule.parameters.required_status_checks[0].context, "control-plane");
-  assert(Number.isInteger(statusRule.parameters.required_status_checks[0].integration_id));
-}
+assert(statusRule, "The required gate must be bound to its observed integration");
+assert.equal(statusRule.parameters.strict_required_status_checks_policy, true);
+assert.equal(statusRule.parameters.required_status_checks.length, 1);
+assert.equal(statusRule.parameters.required_status_checks[0].context, "control-plane");
+assert(Number.isInteger(statusRule.parameters.required_status_checks[0].integration_id));
 // Canonical orchestrator artifacts are excluded from Prettier; still reject malformed JSON/YAML in CI.
 for (const file of files.filter((file) => file.startsWith("agents/"))) {
   if (file.endsWith(".json")) JSON.parse(read(file));

@@ -67,5 +67,6 @@ jobs:
         with:
           name: foundation-${{ github.sha }}
           path: .artifacts/*
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 7

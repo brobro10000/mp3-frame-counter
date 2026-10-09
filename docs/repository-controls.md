@@ -42,10 +42,14 @@ gh api repos/brobro10000/mp3-frame-counter/actions/permissions/workflow
 gh pr view --repo brobro10000/mp3-frame-counter --json headRefOid,reviewDecision,mergeStateStatus,statusCheckRollup
 ```
 
-Verify the check's integration against actual check-runs for the PR's current head, not a guessed App ID or an older
-green revision. Before the first observed run, the status rule is intentionally absent from the discovery snapshot; the
-final setup must add the observed binding and pass `verify:github` before claiming enforcement is complete. The verifier
-fails if the status rule is absent. It makes only GET requests and local Git reads.
+The first successful run observed `control-plane` from the `github-actions` App, integration ID **15368**, on commit
+`0b1d959b66f5cbe4e51a559ed138e00e26146146` in
+[run 37965805668](https://github.com/brobro10000/mp3-frame-counter/actions/runs/37965805668). That observed identity was
+then added to the active ruleset with strict up-to-date enforcement. The final versioned ruleset includes the binding.
+GitHub's additional default requiring extra approval for unattributed changes was preserved.
+
+Always verify the current head, not that earlier discovery revision. The verifier rejects an absent status rule, wrong
+integration or missing current-revision success. It makes only GET requests and local Git reads.
 
 Private branch rules require an eligible GitHub plan. This repository's ruleset creation and effective-rule readback
 succeeded; there was no observed plan or credential restriction. Do not infer the account's subscription name from that
