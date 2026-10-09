@@ -245,7 +245,7 @@ test("candidate configuration, archive identity, planned suite and stale ordinal
     (value) => (value.sourceConfigurationSha256 = "0".repeat(64)),
     (value) => (value.candidate.configurationSha256 = "0".repeat(64)),
     (value) => (value.candidate.acceptance.skipped = 1),
-    (value) => (value.registryDigests.api = prepared.artifacts.api.localImageId),
+    (value) => (value.registryDigests.api = "api:latest"),
   ]) {
     const changed = structuredClone(evidence);
     mutate(changed);
@@ -265,6 +265,12 @@ test("missing approval or a configuration change after approval cannot match the
 test("a complete synthetic supplied evidence set validates consistency without changing prepared-local status", () => {
   const { prepared, evidence } = promotionFixture();
   assert.equal(validatePromotionEvidence(prepared, evidence), true);
+  // A separately observed published OCI index can have the same digest as the recorded local Docker identity.
+  for (const service of services) evidence.registryDigests[service] = prepared.artifacts[service].localImageId;
+  evidence.candidate.registryDigests = structuredClone(evidence.registryDigests);
+  evidence.approval.releaseBindingSha256 = promotionBinding(prepared, evidence);
+  assert.equal(validatePromotionEvidence(prepared, evidence), true);
+  for (const service of services) assert.equal(prepared.artifacts[service].registryDigest, null);
   assert.equal(prepared.status, "prepared-local");
   assert.equal(prepared.deployable, false);
 });

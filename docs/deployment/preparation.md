@@ -58,9 +58,13 @@ alone does not establish durable production recovery.
 
 ## Identities that must remain distinct
 
-- `localImageId` is the Docker image configuration-object ID observed by the local acceptance controller.
+- `localImageId` is the immutable local Docker identifier observed by the acceptance controller. Do not infer its
+  descriptor type from the hash alone: the current Docker 29 exports use OCI index blob identities, with distinct child
+  image-configuration hashes. This field preserves the observed identity without claiming it is a config-object ID.
 - `archiveSha256` identifies the exported Docker archive bytes. It is checked independently of the image ID.
-- `registryDigest` remains `null` until a future authorized registry operation actually observes its manifest digest.
+- `registryDigest` remains `null` until a future authorized registry operation actually observes its published digest.
+  It may legitimately equal `localImageId` when the same OCI index bytes are published; separate evidence is required,
+  not unequal hash values.
 - `localAcceptanceConfigurationSha256` identifies the specific local Compose test configuration, including its isolated
   names/ports. It is not a cloud configuration hash.
 - The source configuration fingerprint hashes exact Git bytes for Compose, Dockerfiles, build ignore files and the NGINX

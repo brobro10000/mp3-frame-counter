@@ -126,7 +126,7 @@ export function versionForOrdinal(ordinal) {
   return `0.1.${ordinal}`;
 }
 
-/** Verify exact local config-object IDs and platform; registry manifest digests are a separate unknown identity. */
+/** Verify observed local Docker IDs and platform; registry publication still requires separate observed evidence. */
 export function verifyImageInspection(expected, inspected) {
   requireImage(expected);
   assert.equal(inspected?.Id, expected, "Local Docker image does not match the tested image");
@@ -343,11 +343,6 @@ export function validatePromotionEvidence(manifest, evidence) {
   assert.deepEqual(Object.keys(evidence.registryDigests ?? {}).sort(), services);
   for (const service of services) {
     requireImage(evidence.registryDigests[service]);
-    assert.notEqual(
-      evidence.registryDigests[service],
-      manifest.artifacts[service].localImageId,
-      "Local config ID is not registry evidence",
-    );
     assert.equal(
       evidence.archiveSha256?.[service],
       manifest.artifacts[service].archiveSha256,

@@ -96,3 +96,28 @@ is `15fcd28cb4d5f71dbb1b060c42751990d71a9c77af993112b1a6774a4575b60c`.
 The archives remain ignored in `.artifacts/releases/0.1.10/`; only portable identity evidence is tracked. They have no
 registry digests, provider configuration, candidate result or production approval. This is an executed local preparation
 step, not fulfillment of any complete APP-REL outcome. The remaining prerequisites above still apply.
+
+## Independent archive inspection and identity correction
+
+The independent reviewer subsequently opened both actual archives read-only with Python's standard `tarfile`/`json`
+modules. Each `index.json` referenced the exact recorded tested local ID. The referenced blob was an OCI image index,
+not a configuration object. The reviewer recursively verified every reachable index/manifest/config/layer blob against
+its descriptor SHA-256: 14 blobs for API and 18 for frontend, including attestation descriptors. Each archive had one
+Linux AMD64 runtime platform entry, whose configuration confirmed that platform.
+
+| Runtime configuration object | SHA-256                                                            |
+| ---------------------------- | ------------------------------------------------------------------ |
+| API                          | `b34f30e23cb58dd05facd954a6e4dd4c21225d6e8182494f4078469ecd2ebadc` |
+| Frontend                     | `f1252d2c9d26b77ed3f6b28d9bbbd7329641a4164e68ed76789673cb6e5180b3` |
+
+This actual Docker-store behavior invalidated an overly narrow documentation assumption and a future consistency check
+that required registry and local identifiers to differ. The author corrected the definition and removed that inequality;
+an existing focused test now accepts a consistently recorded equal registry digest. Registry publication still requires
+actual observation and remains unknown here. Neither the archives nor their correct observed `localImageId` fields
+changed. Docker engine identity, archive checksum and registry identity describe different observations even when their
+digest strings can match.
+
+The reviewer also reconstructed the original identity from Git/source report, rehashed both archives through
+`verifyPreparedDirectory`, checked notes/checksums/reservation, and confirmed that the tracked manifest copy is
+byte-identical to the bundle manifest. This was read-only inspection, with no extraction, image loading or provider
+operation.
