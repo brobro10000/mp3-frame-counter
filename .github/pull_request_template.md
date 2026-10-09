@@ -2,6 +2,12 @@
 
 Describe the bounded change and what remains deferred.
 
+## Requirements and traceability
+
+List applicable stable IDs from `docs/requirements/assessment.md` and their source sections. Link implementation and
+test evidence, update each affected requirement's status, and record decisions for any resolved open items. For
+foundation-only work, reference its existing phase requirements and explain which application items remain deferred.
+
 ## Validation
 
 List commands, observed results, the tested commit and CI run links.

@@ -7,6 +7,11 @@ The future assessment will accept an MP3 at `POST /file-upload`, parse MPEG Vers
 MP3 frame-parsing package, and return `{ "frameCount": <number> }`. Implementation, application framework and
 test-framework selection require a separately approved phase.
 
+The [central requirements reference](docs/requirements/README.md) preserves the original assessment HTML and provides
+[formal requirements with stable IDs](docs/requirements/assessment.md), acceptance evidence and open decisions. Use
+those IDs to cross-reference future plans, code, tests and PRs. See the
+[sample record](docs/requirements/samples/README.md) for the local MP3's location and checksum.
+
 ## Working commands
 
 Use Node.js **24.20.0 LTS** and npm **11.19.0**. If using nvm:
@@ -65,6 +70,7 @@ The owner authorized a review-policy exception: `brobro10000` alone can explicit
 merging a PR to `main`. GitHub still prohibits approving one's own PR. CI, conversation resolution and branch
 protections remain enforced by a separate ruleset with no bypass actors. See the merge-controls document for usage.
 
-The supplied MP3 remains outside this project and must not be committed. Normal local validation and GitHub CI do not
-need the private MVP orchestrator plugin. Its version **1.3.0** generated and validated the bounded planning artifacts;
-the artifacts' `0.1.0` fields describe their legacy schema contract, not the installed plugin version.
+The supplied MP3 is now `docs/requirements/samples/assessment-sample.mp3`, beside the requirements. It remains ignored
+by Git and must not be committed. Normal local validation and GitHub CI do not need the private MVP orchestrator plugin.
+Its version **1.3.0** generated and validated the bounded planning artifacts; the artifacts' `0.1.0` fields describe
+their legacy schema contract, not the installed plugin version.
