@@ -1,0 +1,127 @@
+{
+  "passed": false,
+  "discovered": 16,
+  "rendered": 12,
+  "chrome": "155.0.8059.39",
+  "results": [
+    {
+      "file": "agents/history/v1-draft/docs/architecture/v1.md",
+      "line": 24,
+      "sourceSha256": "3d7b2487ccd73841fdc18819f5fc1796b4d70c414344e24f17005bcc83d36e9e",
+      "passed": true,
+      "svg": "001-3d7b2487ccd7.svg"
+    },
+    {
+      "file": "agents/history/v1-draft/docs/architecture/v1.md",
+      "line": 59,
+      "sourceSha256": "8303ea569c0eb47d4beb0090d740dfabbf84865496a2e7f405d5544c5bcf89ae",
+      "passed": false,
+      "error": "Parse error on line 26:\n...o or retained upload\n-----------------------^\nExpecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STICK_ARROW_BOTTOM_REVERSE', 'SOLID_ARROW_TOP_REVERSE_DOTTED', 'SOLID_ARROW_BOTTOM_REVERSE_DOTTED', 'STICK_ARROW_TOP_REVERSE_DOTTED', 'STICK_ARROW_BOTTOM_REVERSE_DOTTED', 'BIDIRECTIONAL_SOLID_ARROW', 'DOTTED_ARROW', 'BIDIRECTIONAL_DOTTED_ARROW', 'SOLID_CROSS', 'DOTTED_CROSS', 'SOLID_POINT', 'DOTTED_POINT', got 'NEWLINE'\nParser.parseError (<renderer asset>\nParser.parse (<renderer asset>"
+    },
+    {
+      "file": "agents/history/v1-draft/docs/architecture/v1.md",
+      "line": 98,
+      "sourceSha256": "20f4bb26896f38945c0893f875ed8fe858e3cb11de6f7c388b198162b601720a",
+      "passed": true,
+      "svg": "003-20f4bb26896f.svg"
+    },
+    {
+      "file": "docs/architecture/v1.md",
+      "line": 49,
+      "sourceSha256": "1204d5981019a61e06ef970abc3272d1e615100a9fe7aab2322bcdc3d7dfe326",
+      "passed": true,
+      "svg": "004-1204d5981019.svg"
+    },
+    {
+      "file": "docs/architecture/v1.md",
+      "line": 70,
+      "sourceSha256": "f6df6c233ff711b8bda24143428a1d94064e1e10add73cf72e54e977d226ca08",
+      "passed": true,
+      "svg": "005-f6df6c233ff7.svg"
+    },
+    {
+      "file": "docs/architecture/v1.md",
+      "line": 88,
+      "sourceSha256": "bde0e12aefd2386757bd1f17f0ca0f259bb2083aac915b3936c42919d3ba53e8",
+      "passed": false,
+      "error": "Parse error on line 24:\n...e error; allow retry    Note over Front\n-----------------------^\nExpecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STICK_ARROW_BOTTOM_REVERSE', 'SOLID_ARROW_TOP_REVERSE_DOTTED', 'SOLID_ARROW_BOTTOM_REVERSE_DOTTED', 'STICK_ARROW_TOP_REVERSE_DOTTED', 'STICK_ARROW_BOTTOM_REVERSE_DOTTED', 'BIDIRECTIONAL_SOLID_ARROW', 'DOTTED_ARROW', 'BIDIRECTIONAL_DOTTED_ARROW', 'SOLID_CROSS', 'DOTTED_CROSS', 'SOLID_POINT', 'DOTTED_POINT', got 'NEWLINE'\nParser.parseError (<renderer asset>\nParser.parse (<renderer asset>"
+    },
+    {
+      "file": "docs/architecture/v1.md",
+      "line": 122,
+      "sourceSha256": "acf8739712f7e46b4db6448334c91b2a47ece8047d4e3e5371395469d77b6aee",
+      "passed": true,
+      "svg": "007-acf8739712f7.svg"
+    },
+    {
+      "file": "docs/architecture/v1.md",
+      "line": 140,
+      "sourceSha256": "71406d8c57d8b4dece2b8190cfebc2d93c59feb1fbcd966dae220d248dcf7682",
+      "passed": true,
+      "svg": "008-71406d8c57d8.svg"
+    },
+    {
+      "file": "docs/requirements/sources/unified-planning-brief.md",
+      "line": 305,
+      "sourceSha256": "1c6bb186d3b0dd872532a58742164076193497394f72b7f2bd2465c452a703b1",
+      "passed": true,
+      "svg": "009-1c6bb186d3b0.svg"
+    },
+    {
+      "file": "docs/requirements/sources/unified-planning-brief.md",
+      "line": 323,
+      "sourceSha256": "113073e81649ddad56ea342aec4dc7e0a92c2ef21d0e1ab718351defd80db238",
+      "passed": true,
+      "svg": "010-113073e81649.svg"
+    },
+    {
+      "file": "docs/requirements/sources/unified-planning-brief.md",
+      "line": 339,
+      "sourceSha256": "090f19b9c246f4a74bd5e215929c5048f34e09162bbd9027eda1544e57f847ba",
+      "passed": false,
+      "error": "Parse error on line 25:\n...ction remains usable    Note over API,P\n-----------------------^\nExpecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STICK_ARROW_BOTTOM_REVERSE', 'SOLID_ARROW_TOP_REVERSE_DOTTED', 'SOLID_ARROW_BOTTOM_REVERSE_DOTTED', 'STICK_ARROW_TOP_REVERSE_DOTTED', 'STICK_ARROW_BOTTOM_REVERSE_DOTTED', 'BIDIRECTIONAL_SOLID_ARROW', 'DOTTED_ARROW', 'BIDIRECTIONAL_DOTTED_ARROW', 'SOLID_CROSS', 'DOTTED_CROSS', 'SOLID_POINT', 'DOTTED_POINT', got 'NEWLINE'\nParser.parseError (<renderer asset>\nParser.parse (<renderer asset>"
+    },
+    {
+      "file": "docs/requirements/sources/unified-planning-brief.md",
+      "line": 370,
+      "sourceSha256": "bbcede4c0cb7f26f6ef1c3c49996a7b12c89cb082200ea8c6e1a49f592126c44",
+      "passed": true,
+      "svg": "012-bbcede4c0cb7.svg"
+    },
+    {
+      "file": "docs/requirements/sources/unified-planning-brief.md",
+      "line": 387,
+      "sourceSha256": "9c148b302195cc078daf38451e78da4a6e88a9bbb68d90af5b4d3b6e0438dde4",
+      "passed": true,
+      "svg": "013-9c148b302195.svg"
+    },
+    {
+      "file": "docs/requirements/sources/v1-planning-brief.md",
+      "line": 211,
+      "sourceSha256": "e37c91b4cfc476d85b47c65e4b51ee6f1b0b5e94bd36792934d48d2bf3b25dd7",
+      "passed": true,
+      "svg": "014-e37c91b4cfc4.svg"
+    },
+    {
+      "file": "docs/requirements/sources/v1-planning-brief.md",
+      "line": 237,
+      "sourceSha256": "c2578152d5f930d16e12e54d35ff47fdcebbf33a02e47ce89b82c3f49b84525d",
+      "passed": false,
+      "error": "Parse error on line 25:\n...API; return JSON 413    Note over API,P\n-----------------------^\nExpecting '()', 'SOLID_OPEN_ARROW', 'DOTTED_OPEN_ARROW', 'SOLID_ARROW', 'SOLID_ARROW_TOP', 'SOLID_ARROW_BOTTOM', 'STICK_ARROW_TOP', 'STICK_ARROW_BOTTOM', 'SOLID_ARROW_TOP_DOTTED', 'SOLID_ARROW_BOTTOM_DOTTED', 'STICK_ARROW_TOP_DOTTED', 'STICK_ARROW_BOTTOM_DOTTED', 'SOLID_ARROW_TOP_REVERSE', 'SOLID_ARROW_BOTTOM_REVERSE', 'STICK_ARROW_TOP_REVERSE', 'STICK_ARROW_BOTTOM_REVERSE', 'SOLID_ARROW_TOP_REVERSE_DOTTED', 'SOLID_ARROW_BOTTOM_REVERSE_DOTTED', 'STICK_ARROW_TOP_REVERSE_DOTTED', 'STICK_ARROW_BOTTOM_REVERSE_DOTTED', 'BIDIRECTIONAL_SOLID_ARROW', 'DOTTED_ARROW', 'BIDIRECTIONAL_DOTTED_ARROW', 'SOLID_CROSS', 'DOTTED_CROSS', 'SOLID_POINT', 'DOTTED_POINT', got 'NEWLINE'\nParser.parseError (<renderer asset>\nParser.parse (<renderer asset>"
+    },
+    {
+      "file": "docs/requirements/sources/v1-planning-brief.md",
+      "line": 267,
+      "sourceSha256": "9f8244a8a668c9035cd00c4e4924dbdfab269adda21e7923e1b5570e6e584297",
+      "passed": true,
+      "svg": "016-9f8244a8a668.svg"
+    }
+  ],
+  "sourceRevision": "0e8d4726c331a65d64911e713b814252ae62fcb6",
+  "toolchain": {
+    "mermaid-cli": "12.0.0",
+    "mermaid": "12.1.0",
+    "puppeteer": "25.13.0",
+    "markdown-it": "15.0.2"
+  }
+}

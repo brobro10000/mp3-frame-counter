@@ -1,0 +1,123 @@
+# Planned V1 architecture
+
+All views below describe the target state. No application, Dockerfile, Compose file or Makefile exists yet. Read
+[the MVP contract](../mvp.md) and [decision reconciliation](v1-decisions.md) before implementation.
+
+## Runtime and packaging boundaries
+
+The browser uses one loopback origin. NGINX serves static assets on container port 8080 and forwards `/file-upload` to
+`http://api:3000/file-upload`. The API listens on `0.0.0.0:3000`; its pure parser runs inside the same process.
+MediaInfo is development verification tooling, never in either runtime image or request path.
+
+The frontend Docker build context is restricted to `frontend/`: static files, its Dockerfile, `.dockerignore` and NGINX
+configuration. It uses a verified pinned unprivileged NGINX image, with no Node runtime, npm install or bundler. The API
+uses its own multi-stage Dockerfile with repository-root context for the single lockfile and TypeScript source. The
+build stage installs locked development tools; the non-root runtime includes only required compiled/runtime files, an
+exec-form startup command and graceful termination handling. Exclude UI files, tests, MediaInfo and agent artifacts.
+Both images must build independently from clean contexts, without host `dist/`, dependencies or a running sibling.
+
+Compose defaults to exactly `frontend` and `api`. Publish only `127.0.0.1:8080:8080`, with a documented host-port
+override. API publication requires an explicit later debug option. Real health checks must use commands present in the
+images; frontend startup depends on a healthy API. No privilege, host networking, Docker socket mount or upload volume.
+
+```mermaid
+flowchart LR
+    B["Browser: static HTML and fetch"]
+    subgraph C["Local Docker Compose - planned"]
+        subgraph F["frontend container :8080"]
+            N["Unprivileged NGINX: static files and upload proxy"]
+        end
+        subgraph A["api container :3000 - not host-published"]
+            H["node:http routes"]
+            U["Complete upload Buffer: maximum 20 MiB"]
+            P["Pure synchronous TypeScript frame counter"]
+            H --> U --> P
+        end
+        N -->|"POST /file-upload"| H
+    end
+    B -->|"GET / and POST /file-upload via localhost:8080"| N
+    S["Same local sample, identified by SHA-256"]
+    M["MediaInfo CLI: development only"]
+    E["Documented independent count comparison"]
+    S -.-> B
+    S -.-> M
+    M -.-> E
+    P -.->|"Observed result outside request handling"| E
+```
+
+## Upload and failure behavior
+
+NGINX must match the 20 MiB API limit, disable proxy request-body buffering and explicitly use upstream HTTP/1.1. The
+API still buffers the complete bounded body. Do not cache or persist uploads; use ephemeral tmpfs for required NGINX
+temporary/body paths. Preserve API JSON and statuses. Proxy-generated 413 and upstream unavailable/timeout responses
+must also be small JSON errors, with codes/messages documented in Phase 3.
+
+Test through the frontend origin, including valid input above 1 MiB, exact/over-limit input and an unavailable API.
+Local HTTP is intentional; TLS, public exposure and stronger resource/concurrency controls are outside this plan.
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser
+    participant Frontend as Frontend NGINX
+    participant API as Node HTTP API
+    participant Parser as In-process parser
+    User->>Browser: Select file and analyze
+    Browser->>Frontend: POST /file-upload with raw bytes
+    Frontend->>API: Forward without full-body proxy buffering
+    API->>API: Enforce actual-byte limit while collecting
+    alt Empty, oversized, or unsupported request
+        API-->>Frontend: Error status and JSON
+    else Complete request within limit
+        API->>Parser: countMp3Frames(buffer)
+        alt Valid supported MP3
+            Parser-->>API: Physical frame count
+            API-->>Frontend: 200 JSON with frameCount
+        else Invalid, truncated, or unsupported MP3
+            Parser-->>API: Typed parse error
+            API-->>Frontend: 400 or 415 JSON error
+        end
+    end
+    Frontend-->>Browser: Preserve status and JSON
+    Browser-->>User: Accessible count or readable error
+    Note over Frontend,API: Proxy-generated 413 and upstream failures also use JSON
+    Note over API,Parser: Aborted bodies are discarded; no MediaInfo or retained upload
+```
+
+## Delivery and release gates
+
+The review path includes either eligible independent approval or the owner's explicit configured review override. Core
+CI/conversation/branch rules remain mandatory. Phase plans and agent reviews never substitute for that decision.
+
+Image archives and Compose/Make instructions are the brief's delivery artifacts. The retained release amendment adds
+version/tag/release automation, a selected authorized target, deployed verification and recovery evidence. The target
+connection and version policy are unresolved prerequisites, not implemented arrows. Private repository releases are
+compatible with the restriction on public publication; no cloud target is selected.
+
+```mermaid
+flowchart TD
+    D["Reviewed MVP and phase documents"] --> I["Implement one explicitly authorized phase"]
+    I --> L["Local validation and evidence"]
+    L --> PR["Scoped pull request"]
+    PR --> CI["Required GitHub Actions checks"]
+    PR --> R["Eligible approval or explicit owner review override"]
+    CI --> G["Protected merge gate: core controls always apply"]
+    R --> G
+    G --> MAIN["Human-authorized merge to main"]
+    MAIN --> V["Validate actual merged revision"]
+    V --> PHASE{"Phase 3 functionality present?"}
+    PHASE -->|"No"| STOP["Evidence and review before next phase"]
+    PHASE -->|"Yes"| BUILD["Build independent API and frontend images"]
+    BUILD --> A["Commit-addressed image archives, checksums and instructions"]
+    A --> C{"Release target and policy resolved and authorized?"}
+    C -->|"No"| PENDING["Release criteria remain pending; V1 incomplete"]
+    C -->|"Yes"| DEP["Automated candidate version and deployment of exact artifacts"]
+    DEP --> H{"Deployed health and upload checks pass?"}
+    H -->|"No"| REC["Report failure and follow recovery procedure"]
+    H -->|"Yes"| REL["Publish version tag and private release with provenance"]
+    REL --> RB["Controlled recovery rehearsal and verification evidence"]
+    RB --> DONE["Audit all application and release criteria"]
+```
+
+These authored views accompany schema-v1 system contracts. They are not generated architecture outputs or proof that the
+runtime works. See [planning validation](../validation/v1-planning.md) for actual syntax/render checks.

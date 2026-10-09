@@ -27,7 +27,9 @@ jobs:
           node-version-file: .nvmrc
           package-manager-cache: false
       - run: npm ci
-      - run: npm run validate
+      - run: npm run mermaid:install
+      # Match upstream Mermaid CLI CI: Ubuntu's Chrome AppArmor profile permits Chrome's own sandbox to operate.
+      - run: aa-exec --profile=chrome npm run validate
 
   # This job always runs. Its trusted-base/content checks choose mandatory work without a PR phase selector.
   validate-product:

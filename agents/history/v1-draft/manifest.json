@@ -57,7 +57,8 @@
     {
       "path": "docs/architecture/v1.md",
       "sha256": "7c192fe3bb39dad559893a02e1b3dd1ff3323d1a34813b2318b0fed9244b6540",
-      "mode": "0o644"
+      "mode": "0o644",
+      "captured_path": "docs/architecture/v1.original.txt"
     },
     {
       "path": "docs/architecture/v1-decisions.md",

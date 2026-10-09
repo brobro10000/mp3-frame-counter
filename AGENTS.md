@@ -45,4 +45,7 @@ Implement and verify the MP3 browser application and automated managed release i
   views or substitute an active technology decision during phase work.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.
+- Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.
+- Mermaid account widgets and GitHub diagram-sync checks are not parser evidence; see docs/validation/mermaid.md.
+- Preserve registered original captures; rendering derivatives must link their originals and record any storage mapping.
 - Preserve unrelated repository content and obtain explicit authority before destructive or external side effects.

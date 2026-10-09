@@ -40,20 +40,26 @@ Use repository-pinned Node.js **24.20.0** and npm **11.19.0**, plus Git, tar and
 nvm install
 nvm use
 npm ci
+npm run mermaid:install
 make check
 ```
 
-`make check` runs formatting, workflow lint, policy, portability and tooling checks, then mandatory phase checks:
-independent harness validation, application unit tests, TypeScript build and complete container/browser acceptance.
-`make e2e` repeats the phase controller. It builds an isolated temporary Compose project, binds ephemeral loopback
-ports, runs all frozen acceptance cases in Chromium, exercises controlled API faults and cleans up even after failure.
-It may download pinned npm/browser dependencies and public base images. No private sample, GitHub login, Codex or
-private plugin is required. Do not run the fault suite against production.
+`make check` runs formatting, workflow lint, policy, portability, Mermaid rendering and tooling checks, then mandatory
+phase checks: independent harness validation, application unit tests, TypeScript build and complete container/browser
+acceptance. `make e2e` repeats the phase controller. It builds an isolated temporary Compose project, binds ephemeral
+loopback ports, runs all frozen acceptance cases in Chromium, exercises controlled API faults and cleans up even after
+failure. It may download pinned npm/browser dependencies and public base images. No private sample, GitHub login, Codex
+or private plugin is required. Do not run the fault suite against production.
 
 `make e2e-check` validates only the standalone harness, fixtures, negative controls and discovery; it is not an
 application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm run build` provide focused checks.
 `make help` lists commands. Stage exact new files before index-based formatting/policy checks. See
 [portable setup](docs/portability.md).
+
+`npm run check:mermaid` renders all tracked Mermaid diagrams and reports their source locations. The explicit
+`mermaid:install` command downloads the lockfile-selected Chrome for development validation; `npm ci` itself leaves
+install scripts disabled. Browser files and rendered SVGs are ignored and do not enter application runtime images. See
+[Mermaid validation](docs/validation/mermaid.md) for setup, results and the separate GitHub diagram-sync boundary.
 
 Acceptance source is independently authored and frozen by [baseline identity](docs/testing/baseline.json). Product
 implementers may read it but cannot change expected outcomes to pass. The CI controller extracts the recorded Git tree

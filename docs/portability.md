@@ -10,23 +10,28 @@ application correctness.
 Install the Node.js and npm versions pinned in `.nvmrc` and `package.json`, plus Git and `tar`. macOS and Linux on x64
 and arm64 are supported by the pinned actionlint wrapper. Native Windows validation is not supported; use a supported
 Linux environment such as WSL. Internet access to the npm registry and GitHub releases is needed for the first
-dependency installation and actionlint download.
+dependency installation and actionlint download. Mermaid validation also needs the Chrome build selected by pinned
+Puppeteer and its supported platform/system libraries; see [toolchain setup](toolchain.md#mermaid-rendering-tools).
 
 From the checkout root:
 
 ```sh
 npm ci
+npm run mermaid:install
 npm run validate
 npm run artifact:foundation
 ```
 
 Ordinary validation requires no GitHub CLI login, private MVP plugin, personal shell configuration, preexisting cache or
 sample MP3. The sample is intentionally local and ignored. Generated caches and source artifacts stay beneath the
-checkout. Version pins are shared reproducibility requirements, not references to a local runtime installation.
+checkout. The explicit Mermaid browser installer uses Puppeteer's standard cache; no cache or host-specific path is
+committed. Version pins are shared reproducibility requirements, not references to a local runtime installation.
 
-`npm run validate` includes the tracked-content portability guard, terminal-gate tests and offline tooling tests. The
-portability tests create a temporary Git checkout in a path containing spaces and verify that local-path leaks fail
-without echoing the private contents. This is a targeted path check, not a comprehensive secret scanner.
+`npm run validate` includes the tracked-content portability guard, terminal-gate tests, tooling tests and real Mermaid
+rendering. Ubuntu hosts with AppArmor user-namespace restrictions use the existing Chrome profile as described in the
+toolchain guide. The portability tests create a temporary Git checkout in a path containing spaces and verify that
+local-path leaks fail without echoing the private contents. This is a targeted path check, not a comprehensive secret
+scanner.
 
 ## Reusing the repository controls
 

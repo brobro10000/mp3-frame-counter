@@ -47,7 +47,7 @@ const validation = jobs["validate-foundation"];
 assert.equal(validation.if, undefined);
 assert.deepEqual(
   validation.steps.filter((step) => step.run).map((step) => step.run),
-  ["npm ci", "npm run validate"],
+  ["npm ci", "npm run mermaid:install", "aa-exec --profile=chrome npm run validate"],
 );
 const product = jobs["validate-product"];
 assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
@@ -90,6 +90,10 @@ const pkg = JSON.parse(read("package.json"));
 const lock = JSON.parse(read("package-lock.json"));
 assert.equal(pkg.scripts["check:portability"], "node scripts/check-portability.mjs");
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:portability"));
+assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
+assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
+assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");
@@ -98,7 +102,15 @@ assert.equal(execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), pk
 assert.deepEqual(lock.packages[""].devDependencies, pkg.devDependencies);
 assert.equal(pkg.dependencies, undefined);
 assert.equal(pkg.workspaces, undefined, "Use one root package plus the isolated acceptance exception");
-const allowedDevelopmentTools = new Set(["prettier", "yaml", "typescript", "@types/node"]);
+const allowedDevelopmentTools = new Set([
+  "prettier",
+  "yaml",
+  "typescript",
+  "@types/node",
+  "@mermaid-js/mermaid-cli",
+  "puppeteer",
+  "markdown-it",
+]);
 assert(
   Object.keys(pkg.devDependencies).every((name) => allowedDevelopmentTools.has(name)),
   "Unreviewed development tool",

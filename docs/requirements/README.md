@@ -14,19 +14,19 @@ its verified local evidence separately from those release requirements.
 
 ## Contents
 
-| Reference                                                                  | Purpose                                                                                    |
-| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| [assessment.md](assessment.md)                                             | Stable requirement IDs, source references, acceptance evidence, status and open decisions. |
-| [release-process.md](release-process.md)                                   | Required deployment, versioning, releases and recovery for the first application MVP.      |
-| [V1 MVP contract](../mvp.md)                                               | APP-V1 requirement IDs, exact application choices and the phased delivery boundary.        |
-| [Unified decisions](../architecture/decisions.md)                          | Source precedence, requirement mappings and remaining decisions.                           |
-| [sources/assessment.html](sources/assessment.html)                         | Original supplied assessment HTML fragment, preserved byte for byte.                       |
-| [sources/foundation-request.txt](sources/foundation-request.txt)           | Original user request defining the bounded foundation phase.                               |
-| [sources/release-process-request.txt](sources/release-process-request.txt) | User conversation excerpt establishing the first application MVP release amendment.        |
-| [sources/v1-planning-brief.md](sources/v1-planning-brief.md)               | Supplied planning brief, preserved byte for byte; apply the reconciliation record.         |
-| [sources/unified-planning-brief.md](sources/unified-planning-brief.md)     | Latest supplied consolidated planning brief; apply explicit user-confirmed reconciliation. |
-| [samples/README.md](samples/README.md)                                     | Sample identity, local path, integrity checks and expected-result status.                  |
-| [repository controls](../repository-controls.md)                           | Current GitHub policy, including the later owner-authorized review exception.              |
+| Reference                                                                                  | Purpose                                                                                    |
+| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| [assessment.md](assessment.md)                                                             | Stable requirement IDs, source references, acceptance evidence, status and open decisions. |
+| [release-process.md](release-process.md)                                                   | Required deployment, versioning, releases and recovery for the first application MVP.      |
+| [V1 MVP contract](../mvp.md)                                                               | APP-V1 requirement IDs, exact application choices and the phased delivery boundary.        |
+| [Unified decisions](../architecture/decisions.md)                                          | Source precedence, requirement mappings and remaining decisions.                           |
+| [sources/assessment.html](sources/assessment.html)                                         | Original supplied assessment HTML fragment, preserved byte for byte.                       |
+| [sources/foundation-request.txt](sources/foundation-request.txt)                           | Original user request defining the bounded foundation phase.                               |
+| [sources/release-process-request.txt](sources/release-process-request.txt)                 | User conversation excerpt establishing the first application MVP release amendment.        |
+| [sources/v1-planning-brief.original.txt](sources/v1-planning-brief.original.txt)           | Supplied planning brief, preserved byte for byte; apply the reconciliation record.         |
+| [sources/unified-planning-brief.original.txt](sources/unified-planning-brief.original.txt) | Latest supplied consolidated planning brief; apply explicit user-confirmed reconciliation. |
+| [samples/README.md](samples/README.md)                                                     | Sample identity, local path, integrity checks and expected-result status.                  |
+| [repository controls](../repository-controls.md)                                           | Current GitHub policy, including the later owner-authorized review exception.              |
 
 The local sample is `samples/assessment-sample.mp3`. It is ignored by Git and excluded from source artifacts, so a fresh
 clone will contain its metadata but not the MP3 bytes.
@@ -36,13 +36,13 @@ clone will contain its metadata but not the MP3 bytes.
 The supplied source documents were archived here on **2026-10-09**. This is the intake date, not a claim about when the
 candidate originally received the assessment. Preserve source bytes; do not reformat the HTML or replace originals.
 
-| Source ID            | File                                  | Scope                                                                                                                     |
-| -------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| SRC-ASSESSMENT       | `sources/assessment.html`             | Original application contract, evaluation criteria, guidance, submission expectations and time target.                    |
-| SRC-FOUNDATION       | `sources/foundation-request.txt`      | Earlier authorized foundation work, implementation boundaries and initial repository policy.                              |
-| SRC-RELEASE-DECISION | `sources/release-process-request.txt` | Later user instruction on 2026-10-09 requiring the release cycle in the first application MVP.                            |
-| SRC-V1-BRIEF         | `sources/v1-planning-brief.md`        | Supplied V1 brief, captured on 2026-10-09; the user explicitly authorized planning and document creation.                 |
-| SRC-UNIFIED-BRIEF    | `sources/unified-planning-brief.md`   | Latest planning requirements, captured 2026-10-09; user confirmed preserving merged foundation and owner review override. |
+| Source ID            | File                                          | Scope                                                                                                                     |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| SRC-ASSESSMENT       | `sources/assessment.html`                     | Original application contract, evaluation criteria, guidance, submission expectations and time target.                    |
+| SRC-FOUNDATION       | `sources/foundation-request.txt`              | Earlier authorized foundation work, implementation boundaries and initial repository policy.                              |
+| SRC-RELEASE-DECISION | `sources/release-process-request.txt`         | Later user instruction on 2026-10-09 requiring the release cycle in the first application MVP.                            |
+| SRC-V1-BRIEF         | `sources/v1-planning-brief.original.txt`      | Supplied V1 brief, captured on 2026-10-09; the user explicitly authorized planning and document creation.                 |
+| SRC-UNIFIED-BRIEF    | `sources/unified-planning-brief.original.txt` | Latest planning requirements, captured 2026-10-09; user confirmed preserving merged foundation and owner review override. |
 
 SHA-256 checksums:
 
@@ -50,9 +50,15 @@ SHA-256 checksums:
 4a9df0982d20fdae6c561ee44f21a46f1ae20d11190940625ccf6543d0ed9a66  sources/assessment.html
 e5e73a562bc008a383a2ed024b259c9fb71dbb28d43dac06f778ed5fa18617c2  sources/foundation-request.txt
 2e8d9b87727c6662ad3675b1097edcaae512eb5629226ca2718c4277a3839cad  sources/release-process-request.txt
-4bcb5110ef0065ffab4aa2c5487809dc227a27f45e4a44cdbe47d3f6b36ccb28  sources/v1-planning-brief.md
-3e4960537de8eb5295e26d5af23b81e8270ab9ddf4e65d51e0b87f2eea111470  sources/unified-planning-brief.md
+4bcb5110ef0065ffab4aa2c5487809dc227a27f45e4a44cdbe47d3f6b36ccb28  sources/v1-planning-brief.original.txt
+3e4960537de8eb5295e26d5af23b81e8270ab9ddf4e65d51e0b87f2eea111470  sources/unified-planning-brief.original.txt
 ```
+
+The [V1 Markdown view](sources/v1-planning-brief.md) and [unified Markdown view](sources/unified-planning-brief.md) are
+labeled rendering derivatives. On 2026-10-09, the owner requested repair of all Mermaid diagrams. Their sequence-text
+semicolons were escaped without changing requirements; the adjacent `.original.txt` captures above preserve the original
+bytes and checksums. Existing Markdown links remain usable. See [Mermaid validation](../validation/mermaid.md) for the
+repair and validation evidence.
 
 The release-process excerpt was recorded on the same date. Its normalized requirements are a later user amendment, not
 content from the assessment HTML. They require execution evidence before the first application MVP is complete.

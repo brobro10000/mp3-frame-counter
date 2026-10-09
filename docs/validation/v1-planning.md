@@ -75,6 +75,9 @@ No local mmdc is available. Independent syntax validation and visual rendering i
 dependency/browser installation was performed to obtain them. Review source/previews and verify with an available
 inspectable renderer later. Source consistency is reviewed separately from a renderer pass.
 
+A later owner-requested repair added real renderer validation and corrected sequence syntax. See
+[Mermaid validation and repair](mermaid.md) for current evidence; the preceding account remains the original P0 record.
+
 ## Remaining gates
 
 The acceptance contract still needs explicit edge-policy and independent oracle review before P2 freeze. MediaInfo's
