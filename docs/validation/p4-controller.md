@@ -103,3 +103,12 @@ subsequent complete run; the earlier failure remains retained.
 The author did not build or run the changing product, alter acceptance expectations, edit root package/Compose/workflow
 files, stage changes or commit. The next gate is independent review followed by the real unfiltered local suite after
 all product files are ready. A successful controller unit test is not an application acceptance result.
+
+## Subsequent integrated result
+
+After independent controller review and the separately reviewed frontend correction, root executed the unchanged full
+suite at clean `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`: **60/60 passed**, zero failures/skips and successful scoped
+cleanup. See [integration evidence](p4-integration.md) and the
+[exact sanitized result](artifacts/p4-local-acceptance.json). This later local observation resolves the pending
+integration check above without replacing its historical failed run. It does not establish protected-main baseline
+publication or managed release.

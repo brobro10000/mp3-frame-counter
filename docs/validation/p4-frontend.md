@@ -197,3 +197,11 @@ c2204f9abbd52383c6acbeeee8fdd47ef0abff427bfafbe0b3c1129b00ebb860  frontend/READM
 
 Independent repair review and full-suite validation remain controller-owned. These focused results do not claim full P4
 acceptance, human approval, merge, managed release or provider-network behavior.
+
+## Subsequent integrated result
+
+Independent repair review returned PASS, then the full frozen suite at clean `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`
+passed **60/60 cases**, including stopped/paused upstream failures and recovery, with no skipped cases and successful
+cleanup. See [integration evidence](p4-integration.md) and the
+[exact sanitized result](artifacts/p4-local-acceptance.json). The source hashes above remain unchanged. This establishes
+local integration after the recorded repair; provider behavior and release remain unverified.

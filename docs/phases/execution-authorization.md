@@ -39,3 +39,9 @@ P2 baseline; shipping CI still requires its separate protected-main merge. The a
 
 Phase completion and deployment evidence will be recorded separately in `docs/validation/`. This authorization record
 does not itself claim that any implementation phase, release or automated deployment has completed.
+
+The subsequent [execution status](../validation/execution-status.md) records the clean P4 result at `2adf71b`: 60/60
+external cases and 75 unit cases passed. Local P5 preparation is assigned to the independent foundation/gate author
+(`scripts/release-manifest.mjs`, `scripts/prepare-release.mjs`, their focused tests and preparation evidence); root owns
+command wiring and central status. A separate reviewer checks release identity and failure handling before execution.
+Provider actions, successful release publication and recovery remain distinct unexecuted work.

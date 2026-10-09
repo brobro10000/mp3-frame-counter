@@ -17,6 +17,7 @@ Implement and verify the MP3 browser application and automated managed release i
 
 - Owner authorized execution of P1 through P5 and required shell/UI actions on 2026-10-09; read docs/phases/execution-authorization.md.
 - Read docs/requirements/README.md, docs/mvp.md, docs/architecture/decisions.md and docs/phases/README.md before work.
+- Read docs/validation/execution-status.md for observed outcomes; local P4 pass does not establish managed release.
 - The planning baseline is merged at 0c9f538; preserve original foundation and source/archive bytes.
 - Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
 - Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
@@ -26,6 +27,7 @@ Implement and verify the MP3 browser application and automated managed release i
 - No retained uploads, runtime parser library, database, object storage, accounts, frameworks or speculative infrastructure.
 - Use one root application npm lockfile and one standalone acceptance lockfile; no workspaces.
 - Keep APP-REL-001 through APP-REL-006 required for first MVP; automated deployment and recovery require actual evidence.
+- Local release preparation archives exact tested images only; never treat its provisional version or manifest as deployed.
 - Verify account, provider fit, charges, artifacts and production checks before declaring the release complete.
 - Preserve core no-bypass GitHub controls and owner-only review exception; no fabricated approvals or silent control changes.
 - Do not merge, exercise an owner review override or enable auto-merge without explicit instruction; production approval binds the tested release identity.

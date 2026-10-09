@@ -26,3 +26,7 @@ passed or fabricate a human approval.
 Provider account and budget questions may remain pending through unrelated local work; they must be resolved before the
 corresponding P5 cloud action. Each phase document retains its original planned exit criteria; its P0-only authorization
 and mandatory pause wording is superseded by the later execution instruction.
+
+The [execution status](../validation/execution-status.md) now records reviewed P1/P2 handoffs and passing local P3/P4
+results, including the complete 60-case acceptance run at clean `2adf71b`. Separate baseline publication and managed
+release remain outstanding. Phase authorization and local acceptance do not mark P5 or the complete MVP finished.

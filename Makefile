@@ -1,12 +1,13 @@
 # Portable local entry points. Requires the pinned Node/npm and Docker with Compose; errors stop their target.
 # up/build affect only this Compose project; down removes only its containers/network, never global Docker data.
-.PHONY: help check build up down logs ps e2e e2e-check smoke validate-sample
+.PHONY: help check build up down logs ps e2e e2e-check smoke validate-sample prepare-release
 
 help:
 	@echo "Use pinned Node/npm and Docker Compose. All runtime commands below are local."
 	@echo "make check | build | up | down | logs | ps | e2e | e2e-check"
 	@echo "make smoke FILE=path EXPECTED=count [BASE_URL=http://127.0.0.1:8080]"
 	@echo "make validate-sample [BASE_URL=http://127.0.0.1:8080]"
+	@echo "make prepare-release (archive the tested local images; no deployment or publication)"
 
 check:
 	npm ci
@@ -44,3 +45,7 @@ smoke:
 
 validate-sample:
 	SAMPLE_BASELINE=1 node scripts/smoke-local.mjs
+
+# Requires a clean checkout, full Git history and the passed report's exact local images; writes ignored archives.
+prepare-release:
+	node scripts/prepare-release.mjs

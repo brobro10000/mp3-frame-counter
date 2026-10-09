@@ -1,8 +1,9 @@
-# Planned release and recovery runbook
+# Release and recovery runbook
 
-Status: **proposal only**, supporting APP-REL-001–006 and APP-V1-012,014,015. No command or provider action here ran in
-P0. Deployment scripts/workflows/resources do not yet exist. The [provider evaluation](../architecture/deployment.md)
-and [acceptance baseline](../testing/independence-and-baseline.md) are prerequisites, not proof of readiness.
+Status: **local application verified; managed release pending**, supporting APP-REL-001–006 and APP-V1-012,014,015. The
+[P4 evidence](../validation/p4-integration.md) records actual local execution. Provider deployment, promotion and
+recovery commands/workflows do not yet exist. The [provider evaluation](../architecture/deployment.md) and
+[acceptance baseline](../testing/independence-and-baseline.md) are prerequisites, not proof of release readiness.
 
 ## Setup and release gates
 
@@ -23,11 +24,12 @@ owner approval and an owner-invoked trusted release operation bound to RELEASE_I
 not equivalent to an enforced independent reviewer. Scope credentials accordingly and report the limitation. The PR
 review override does not authorize production promotion, agent merging or automatic approval.
 
-Select and document a versioning policy before release implementation: eligible changes, initial version, increment
-rules, tag naming and retry semantics. Automatically derive versions and release notes from reviewed changes. The
-current foundation package version is not an application release decision. Reserve identity deterministically, but
-publish successful tags/private repository releases only after deployed verification; keep failed candidates explicitly
-failed and never overwrite an existing version with different bytes. Public package publication is unnecessary.
+The local preparation policy uses preview versions `0.1.<first-parent ordinal of the tested source commit>` and requires
+complete Git history. The protected linear-main equivalent advances only for an eligible, validated application release;
+gaps for non-release commits are allowed. A branch preview is provisional and cannot be published as a successful
+release. Reserve identity deterministically and reject reuse with different bytes. Publish a `v<version>` tag and
+private repository release only after deployed verification. The root package's tooling version is not the application
+release identity. Public package publication is unnecessary.
 
 ## Compact release manifest
 
@@ -97,23 +99,28 @@ publicly exposed, and leave it explicitly unreleased. Do not name this a success
 recovery rehearsal in an authorized candidate environment must precede first-MVP completion, with observed before/after
 identities and checks. A written runbook alone does not satisfy APP-REL-006.
 
-## Future Make interface
+## Local and future Make interface
 
-These targets are requirements for later implementation, **not working commands today**. Make delegates to versioned
-npm/Compose/test/provider commands, documents prerequisites, quotes paths and propagates nonzero exits. It never
-installs host tools implicitly and is not a security boundary.
+The local targets through `validate-sample` are implemented and exercised in P4. The cloud targets remain requirements
+for P5 and are **not working commands today**. Make delegates to versioned npm/Compose/test/provider commands, documents
+prerequisites, quotes paths and propagates nonzero exits. It never installs host tools implicitly and is not a security
+boundary.
 
-| Target                                        | Planned contract                                                                                        |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| make help                                     | List commands, prerequisites and environment boundaries.                                                |
-| make up                                       | Build/start both local app containers, await health with timeout, print loopback URL; never deploy.     |
-| make down                                     | Remove only this Compose project's resources; no global prune.                                          |
-| make logs / make ps                           | Inspect the two local services.                                                                         |
-| make check                                    | Real phase-appropriate formatting, lint, type, unit and build checks.                                   |
-| make e2e-check                                | Harness/fixture/negative-control checks, never application acceptance.                                  |
-| make e2e BASE_URL=...                         | Trusted black-box suite against an explicitly validated local/candidate target.                         |
-| make smoke FILE="..."                         | Public frontend upload with reviewed fixture expectation; production only under explicit release scope. |
-| make validate-sample FILE="..."               | Collect independent MediaInfo evidence and reconcile with app when it exists.                           |
-| make deploy-candidate / make verify-candidate | Explicit provider/environment/release identity, readiness and full candidate suite.                     |
-| make promote RELEASE_ID=...                   | Only exact tested and approved pair/configuration; no ambiguous latest.                                 |
-| make rollback RELEASE_ID=...                  | Explicit prior-good pair/environment, approved recovery and verification.                               |
+`make prepare-release` is also implemented locally. It verifies a passed clean-source report and exports its exact
+retained images without rebuilding, with deterministic preview version, manifest and archive checksums. It never deploys
+or publishes; see the [preparation guide](preparation.md) and [execution evidence](../validation/p5-preparation.md).
+
+| Target                                        | Planned contract                                                                                     |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| make help                                     | List commands, prerequisites and environment boundaries.                                             |
+| make up                                       | Build/start both local app containers, await health with timeout, print loopback URL; never deploy.  |
+| make down                                     | Remove only this Compose project's resources; no global prune.                                       |
+| make logs / make ps                           | Inspect the two local services.                                                                      |
+| make check                                    | Real phase-appropriate formatting, lint, type, unit and build checks.                                |
+| make e2e-check                                | Harness/fixture/negative-control checks, never application acceptance.                               |
+| make e2e                                      | Build an isolated local pair and run the complete frozen suite with owned fault control and cleanup. |
+| make smoke FILE="..." EXPECTED=...            | Loopback frontend upload with an independently known count; cannot target production.                |
+| make validate-sample                          | Verify the ignored sample identity and local upload against the recorded independent count of 6,090. |
+| make deploy-candidate / make verify-candidate | Explicit provider/environment/release identity, readiness and full candidate suite.                  |
+| make promote RELEASE_ID=...                   | Only exact tested and approved pair/configuration; no ambiguous latest.                              |
+| make rollback RELEASE_ID=...                  | Explicit prior-good pair/environment, approved recovery and verification.                            |

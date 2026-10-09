@@ -7,38 +7,46 @@ means deployed or human-approved code. See [source precedence](../requirements/R
 
 ## Reconciliation and decision register
 
-| ID     | Status                    | Decision / rationale                                                                                                                                                                                                | Source and affected work                               |
-| ------ | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| DEC-01 | Observed + user-confirmed | The repository exists and PR #1 merged at 143498a. The brief's claim that nothing earlier executed is false here. Preserve foundation and adapt it; no new bootstrap exception.                                     | Git inspection; user's confirmation to reconcile; P1   |
-| DEC-02 | User-confirmed            | Preserve owner-only PR review override and separate core no-bypass ruleset. GitHub does not allow self-approval. No agent approval, merge or override without an explicit instruction.                              | User confirmation; repository-controls.md; APP-V1-011  |
-| DEC-03 | Documented scope          | Unified brief supersedes no-cloud and manual-browser-only decisions. V1 now requires managed candidate deployment and independent executable browser/HTTP acceptance.                                               | SRC-UNIFIED-BRIEF §§2,5–7; APP-V1-012–015              |
-| DEC-04 | Documented scope          | P1–P5 replace the old three-phase draft; P2 reviewed test-only baseline precedes parser/API/UI/runtime containers. Existing foundation is not product code.                                                         | Unified §§6,10; APP-V1-011,013                         |
-| DEC-05 | Documented scope          | Preserve native HTTP, pure TypeScript whole-buffer parsing, exact 20 MiB, static frontend and independent images. Separate acceptance lockfile is expressly permitted.                                              | Unified §§2–4,6; APP-V1-001–010                        |
-| DEC-06 | Documented scope          | Preserve APP-REL-001–006 and supplement them with exact-release production approval, managed candidate E2E and compatible-pair recovery.                                                                            | Release amendment + unified §7; APP-V1-012,015         |
-| DEC-07 | Blocked metadata          | Do not label proposed unified system/test decisions approved to fit schema-v1. Archive prior draft and remove active generated execution authority until reviewed required inputs exist.                            | Unified §12; installed MVP rubric; agents/README.md    |
-| DEC-08 | Proposed, freeze gate     | HTTP health/body/header/method/error precedence and tag/free-format details are explicitly proposed in the acceptance contract. Review edge policies and sample compatibility before P2 freeze.                     | acceptance-contract.md; APP-V1-002–005                 |
-| DEC-09 | Documented rejection      | Current Vercel container Functions inherit a 4.5 MB payload limit; Supabase hosted function topology requires a runtime/image departure. Neither fits unchanged V1.                                                 | Dated provider comparison; APP-V1-014                  |
-| DEC-10 | Conditional proposal      | Render frontend web service + private API per environment is preferred for further fit review. Ingress semantics, account/region/permissions and budget are unverified.                                             | deployment.md; P5 pre-implementation/provisioning gate |
-| DEC-11 | Proposed, review gate     | Use trusted independent baseline, fail-closed stable CI gate and distinct reviewed baseline amendments. No phase downgrade to skip mandatory E2E from P4 onward.                                                    | independence-and-baseline.md; P1/P2/P4                 |
-| DEC-12 | Proposed, approval gate   | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release. | runbook.md; P5                                         |
+| ID     | Status                       | Decision / rationale                                                                                                                                                                                                                        | Source and affected work                                  |
+| ------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| DEC-01 | Observed + user-confirmed    | The repository exists and PR #1 merged at 143498a. The brief's claim that nothing earlier executed is false here. Preserve foundation and adapt it; no new bootstrap exception.                                                             | Git inspection; user's confirmation to reconcile; P1      |
+| DEC-02 | User-confirmed               | Preserve owner-only PR review override and separate core no-bypass ruleset. GitHub does not allow self-approval. No agent approval, merge or override without an explicit instruction.                                                      | User confirmation; repository-controls.md; APP-V1-011     |
+| DEC-03 | Documented scope             | Unified brief supersedes no-cloud and manual-browser-only decisions. V1 now requires managed candidate deployment and independent executable browser/HTTP acceptance.                                                                       | SRC-UNIFIED-BRIEF §§2,5–7; APP-V1-012–015                 |
+| DEC-04 | Documented scope             | P1–P5 replace the old three-phase draft; P2 reviewed test-only baseline precedes parser/API/UI/runtime containers. Existing foundation is not product code.                                                                                 | Unified §§6,10; APP-V1-011,013                            |
+| DEC-05 | Documented scope             | Preserve native HTTP, pure TypeScript whole-buffer parsing, exact 20 MiB, static frontend and independent images. Separate acceptance lockfile is expressly permitted.                                                                      | Unified §§2–4,6; APP-V1-001–010                           |
+| DEC-06 | Documented scope             | Preserve APP-REL-001–006 and supplement them with exact-release production approval, managed candidate E2E and compatible-pair recovery.                                                                                                    | Release amendment + unified §7; APP-V1-012,015            |
+| DEC-07 | Observed metadata validation | Fresh schema-v1 specifications and control-plane metadata were generated from the authorized scope and validated. Metadata approval describes implementation authority and reviewed contracts, not phase completion or production approval. | agents/README.md; active metadata; P1 ordinary-CI handoff |
+| DEC-08 | Reviewed local freeze        | Independent acceptance author and reviewers resolved r3 HTTP/error/tag/free-format policy and sample compatibility before product code. The recorded executable suite is frozen locally; protected-main publication remains pending.        | acceptance-contract.md; p2-acceptance.md; APP-V1-002–005  |
+| DEC-09 | Documented rejection         | Current Vercel container Functions inherit a 4.5 MB payload limit; Supabase hosted function topology requires a runtime/image departure. Neither fits unchanged V1.                                                                         | Dated provider comparison; APP-V1-014                     |
+| DEC-10 | Conditional proposal         | Render frontend web service + private API per environment is preferred for further fit review. Ingress semantics, account/region/permissions and budget are unverified.                                                                     | deployment.md; P5 pre-implementation/provisioning gate    |
+| DEC-11 | Implemented and reviewed     | Trusted-baseline and fail-closed CI controls are implemented and independently reviewed. P4 ran the full unchanged local suite; shipping CI still requires the separately merged test-only baseline on its trusted base.                    | independence-and-baseline.md; P1/P2/P4 evidence           |
+| DEC-12 | Proposed, approval gate      | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release.                         | runbook.md; P5                                            |
 
 Source captures stay byte-for-byte immutable. Prior foundation evidence remains in `agents/history/foundation/` and
 `agents/outputs/`. The old V1 draft is checksummed in `agents/history/v1-draft/`; its approved-form fields and
 validation results do not apply to this proposal. No schema-v2 architecture migration or alternate execution-state
-machine is introduced. `docs/mvp.md` is the current human-readable scope reference; generated metadata awaits review.
+machine is introduced. `docs/mvp.md` is the current human-readable scope reference. Fresh generated metadata was
+validated; [agents/README.md](../../agents/README.md) records the explicit ordinary-CI execution handoff and why no
+plugin phase-completion result is claimed.
 
-## Decisions required before executable baseline freeze
+## Decisions resolved before the local executable baseline freeze
 
-The acceptance author and reviewer must resolve DEC-08 with the owner: exact health/Allow/header behavior; unsupported
-layout and malformed-input classification; isolated-fault precedence; explicit ID3 forms, reserved MPEG header policy
-and permitted parameter changes; sample format compatibility and MediaInfo physical-frame convention; licensed fixtures
-with three distinct counts and a valid exact-limit recipe. Confirm bounded harness timeouts and what controlled fault
-operations the local/candidate controller can perform. No guessed count, runtime image pin or approved reviewer
-identity.
+The independent acceptance author and reviewers resolved DEC-08 under the owner's implementation instruction: exact
+health/Allow/header behavior; unsupported-layout and malformed-input classification; isolated-fault precedence; explicit
+ID3 forms, reserved MPEG header policy and permitted parameter changes; sample compatibility and physical-frame
+convention; permitted fixtures with three distinct counts and a valid exact-limit recipe. The
+[P2 record](../validation/p2-acceptance.md) and [oracle](../validation/sample-baseline.md) preserve the observations and
+advisory agent review. No human approval is implied. The suite identity is recorded in
+[baseline.json](../testing/baseline.json); its protected-main publication is still pending.
+
+The reviewed local controller owns bounded isolated stop/start/pause/resume operations, and the
+[P4 integration record](../validation/p4-integration.md) records 60 of 60 unchanged acceptance cases passing at clean
+revision `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`. Managed candidate fault access remains unverified.
 
 Provider fit/access/budget is a separate P5 gate and does not block independent requirements, foundation or local work.
-Resource budgets must be selected and measured before P4 acceptance; deployment budgets and production approval cannot
-be inferred from the user's acceptance of a planning revision.
+Local resource/admission/timeout budgets were selected and measured before P4 completion; see its integration record.
+Managed-host verification remains required. Deployment budgets and production approval cannot be inferred from the
+user's acceptance of a planning revision.
 
 ## Compact risk register
 
@@ -60,8 +68,10 @@ be inferred from the user's acceptance of a planning revision.
 
 The owner has authorized P1–P5 and unattended advancement after each dependency is validated and independently reviewed.
 This supersedes the earlier P0-only and per-phase permission wording. Agent review does not become human approval.
-DEC-07 is being resolved through fresh schema-v1 inputs and installed direct validators; no archived execution plan is
-reused. DEC-08 is resolved by the independent acceptance author and reviewer before test freeze.
+DEC-07 was resolved through fresh schema-v1 inputs and installed direct validators; no archived execution plan was
+reused. DEC-08 was resolved by independent acceptance authorship/review before the local freeze. P1/P2 exact-head CI
+passed and P3/P4 were reviewed and locally validated. Separate merges, final trusted-main baseline binding and the
+managed release remain outstanding.
 
 The phase scope remains narrow even though all phases are authorized:
 

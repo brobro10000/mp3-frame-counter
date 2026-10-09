@@ -3,6 +3,11 @@
 Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
 follow. Trace: APP-V1-012,014,015,016; APP-REL-001–006; R-04,06,07,08,11.
 
+Current evidence: [local P4 integration passed](../validation/p4-integration.md);
+[provider-independent release preparation](../deployment/preparation.md) is available. P5 is incomplete: no managed
+candidate, production release or recovery has been observed. See the
+[execution status](../validation/execution-status.md) for unresolved prerequisites and the next steps.
+
 ## Objective
 
 Implement the approved provider path and exercise candidate verification, exact-release approval, promotion/smoke and

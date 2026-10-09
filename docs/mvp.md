@@ -17,9 +17,10 @@ review exception remain intact by the user's explicit confirmation.
 
 ## Traceable requirements
 
-All rows are required for V1, with implementation/evidence **pending**. IDs retain their original subject; amended
-choices and added requirements are explicit. AC references are proposed external observations, not existing tests.
-Original assessment and release IDs continue to apply.
+All rows remain required for V1. IDs retain their original subject; amended choices and added requirements are explicit.
+AC references identify the independently frozen external acceptance contract. Planned evidence below describes the
+required boundary; the separate status table records actual observations. Original assessment and release IDs continue
+to apply.
 
 | ID         | V1 requirement                                                                                                                                                                                                     | Assessment/release trace                  | Planned evidence / phase                                       |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- | -------------------------------------------------------------- |
@@ -40,6 +41,24 @@ Original assessment and release IDs continue to apply.
 | APP-V1-015 | Promote an exact verified compatible artifact pair after explicit production approval; bind configuration, smoke and prior-good recovery/first-release abort.                                                      | APP-REL-002–006; unified brief §7         | Release manifest and actual verification/rehearsal; P5         |
 | APP-V1-016 | Retain simple replaceable transport/parser/frontend/deployment boundaries; add infrastructure only for approved measured needs.                                                                                    | APP-EVAL-005; unified brief §5            | Architecture/source review and evolution trigger record; P3–P5 |
 
+## Current evidence and completion status
+
+Observed locally on 2026-10-09 at clean application revision `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`: **75 unit tests
+and 60 of 60 unchanged external acceptance cases passed**, with zero skips and successful cleanup. See the
+[P4 narrative and exact report](validation/p4-integration.md). Local verification is distinct from protected-main
+publication, managed candidate verification and successful release.
+
+| Requirements       | Current status and evidence                                                                                                                                                        | Remaining boundary                                                                                                          |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| APP-V1-001–003     | Locally verified through the real frontend/API, including exact-limit and failure/recovery behavior; [P4](validation/p4-integration.md).                                           | Repeat the required observations on the managed candidate and verify host limits.                                           |
+| APP-V1-004,005,009 | Independent oracle/format policy and parser verified locally; [P2](validation/p2-acceptance.md), [sample oracle](validation/sample-baseline.md) and [P3](validation/p3-parser.md). | Preserve the frozen policy and provenance during later release validation.                                                  |
+| APP-V1-006,007     | Independent non-root images and exact two-service local operation verified; [P4](validation/p4-integration.md).                                                                    | Published immutable digests and managed configuration are not established.                                                  |
+| APP-V1-008         | Working local Make/setup/test interface and script documentation; [README](../README.md).                                                                                          | Provider operations and reproducible managed handoff remain incomplete.                                                     |
+| APP-V1-010,013     | Independent test-only baseline precedes product code; unit/build/full local E2E and reviewed fail-closed controls exist; [baseline record](testing/independence-and-baseline.md).  | The provisional baseline needs its separate protected-main merge and actual-main SHA binding before shipping CI can pass.   |
+| APP-V1-011         | P1/P2 reviewable handoffs and exact-head CI passed; P3/P4 independently reviewed local results exist; [phase sequence](phases/README.md).                                          | Required merges and P5 remain incomplete; agent review is not human approval.                                               |
+| APP-V1-012,014,015 | Pending managed release; [preflight](validation/deployment-preflight.md) records actual access/fit limits.                                                                         | All APP-REL-001–006, candidate acceptance, exact production approval, deployed smoke and observed recovery remain required. |
+| APP-V1-016         | Parser, transport and frontend boundaries reviewed locally; [P3](validation/p3-parser.md) and [P4](validation/p4-integration.md).                                                  | Managed release boundary and measured hosting choices remain incomplete.                                                    |
+
 ## Fixed boundaries and limits
 
 No retained uploads, database, object storage, user accounts, history, background jobs, player, drag-and-drop or
@@ -49,13 +68,14 @@ dependencies initially. The acceptance harness has its own development dependenc
 workspaces.
 
 The complete bounded Buffer and synchronous parser simplify reasoning but constrain concurrent throughput and event-loop
-latency. A per-file cap does not cap aggregate memory. P4 must choose and measure memory, admission and timeout budgets;
-P5 must verify them on the chosen host. There is no fabricated throughput promise.
+latency. A per-file cap does not cap aggregate memory. P4 selected and measured memory, admission and timeout budgets;
+the [integration record](validation/p4-integration.md) states their values and observational limits. P5 must verify them
+on the chosen host. There is no fabricated throughput promise.
 
 Raw-body upload is our convention, not an assessment-mandated multipart format. Free-format bitrate and unsupported tag
-layouts are proposed first-pass limitations, not exclusions granted by the assessment. Review residual assessment risk
-before freezing P2 expectations. The assessment receipt date remains unknown; do not infer its five-day target from this
-planning date.
+layouts are reviewed r3 first-pass limitations, not exclusions granted by the assessment. P2 recorded the format policy,
+sample compatibility and independent review before the local baseline freeze; its evidence does not claim universal MP3
+support. The assessment receipt date remains unknown; do not infer its five-day target from this planning date.
 
 ## Completion boundary
 
@@ -66,4 +86,5 @@ passing tests alone do not authorize an owner review override or establish produ
 Completion requires applicable AC-01–12 locally and on an identified nonproduction candidate, the source/configuration
 checks black-box tests cannot prove, reconciled supplied-sample evidence, independent image builds, all APP-REL-001–006
 evidence and a reproducible handoff. CI success, human review, merge, candidate verification, production approval and
-deployed success are distinct states. No current row is verified by this document.
+deployed success are distinct states. The status table links actual local evidence; this document alone establishes no
+test result, human approval or deployed success.

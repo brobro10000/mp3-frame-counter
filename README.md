@@ -5,10 +5,11 @@ and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX front
 separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
 not decode audio or use a runtime parsing library.
 
-The [five-phase implementation](docs/phases/README.md) is authorized. The independent acceptance baseline and parser
-have passed local checks and review; local integration is being verified. Managed deployment is **not yet verified**.
-See [phase evidence](docs/validation/) and [deployment preflight](docs/validation/deployment-preflight.md) for actual
-results and remaining account, budget and release gates. Written configuration is not deployment evidence.
+The [five-phase implementation](docs/phases/README.md) is authorized. The integrated local application passed all **60
+independent acceptance cases** and **75 parser/API unit tests**. See the
+[tested revision and evidence](docs/validation/p4-integration.md). Managed deployment is **not complete**; acceptance
+publication on protected main, provider setup and release verification remain outstanding. The
+[execution status](docs/validation/execution-status.md) records each boundary and the remaining actions.
 
 ## Local application
 
@@ -88,6 +89,11 @@ source archive for seven days; this archive is not a deployed service.
 production smoke, automatic release/version records and observed recovery. The conditional Render path and unresolved
 fit/access gates are recorded in [provider evaluation](docs/architecture/deployment.md) and the
 [release runbook](docs/deployment/runbook.md). Deployment is not complete until those observations exist.
+
+After a complete clean-source acceptance run, `make prepare-release` verifies and archives the **exact tested local
+images** into ignored `.artifacts/releases/`, with checksums, a provisional version, manifest and notes. It requires a
+clean committed checkout, full Git history and the retained images; it does not rebuild, publish or deploy. See
+[release preparation](docs/deployment/preparation.md) for inputs, retry behavior and the remaining remote gates.
 
 The [owner-only review exception](docs/repository-controls.md) preserves core PR, CI and conversation protections.
 GitHub does not allow authors to approve their own PRs. An agent needs explicit instruction to merge or invoke the owner

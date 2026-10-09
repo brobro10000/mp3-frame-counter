@@ -8,6 +8,10 @@ The assessment and planning baseline are captured. The owner subsequently author
 [execution record](../phases/execution-authorization.md) and phase evidence for current status. Requirement capture
 alone never establishes implementation or deployment completion.
 
+For the current result, use the [execution status](../validation/execution-status.md): the local application has passed
+the complete independent suite; protected-main publication and managed release remain outstanding. Each registry links
+its verified local evidence separately from those release requirements.
+
 ## Contents
 
 | Reference                                                                  | Purpose                                                                                    |
