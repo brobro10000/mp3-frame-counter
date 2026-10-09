@@ -40,9 +40,14 @@ assessment. Requirements capture and sample organization do not authorize applic
 
 ## Authority and workflow
 
-- Read `docs/requirements/README.md` and `docs/requirements/assessment.md` before planning future work.
+- Read `docs/requirements/README.md`, `docs/requirements/assessment.md` and
+  `docs/requirements/release-process.md` before planning future work.
   The assessment registry is the normalized application contract; its preserved source and explicit later user
   decisions resolve transcription errors or amendments. Do not turn open decisions or optional tips into mandates.
+- Include `APP-REL-001` through `APP-REL-006` in the first application MVP's definition, system specification, phase plan
+  and completion audit. Deployment, automatic versioning, tags/releases, deployed checks and rehearsed recovery are
+  required for that MVP, not optional later work. Follow the process and evidence gates in `release-process.md`.
+  Keep criteria pending until actual execution evidence exists; recording this scope does not authorize deployment.
 - Cite applicable stable requirement IDs and source sections in plans, tasks, tests and PR descriptions. Link
   implementation and test evidence back to those IDs; mark items verified only from actual results for a named revision.
 - Preserve source files under `docs/requirements/sources/` byte for byte. Record provenance and supersession for new

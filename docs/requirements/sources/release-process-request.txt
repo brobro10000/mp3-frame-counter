@@ -1,0 +1,13 @@
+Source: user conversation on 2026-10-09.
+Record type: excerpt of the two user messages establishing this amendment.
+
+User question:
+is there a continuous release cycle implemented on deploy?
+
+Intervening assistant response (contextual summary, not a verbatim transcript):
+The foundation configures PR and main validation plus a seven-day source archive. It does not implement an application
+deployment target, automatic versioning, release tagging/publication or rollback. These were described as later work.
+The foundation PR is still open, so its main delivery has not executed.
+
+User instruction after the repository's current release limitations were explained:
+ensure its codified as part of hte first mvp process to include these

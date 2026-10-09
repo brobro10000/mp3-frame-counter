@@ -32,6 +32,10 @@ ruleset was created before publishing any implementation work. There are no addi
 - Preserve historical orchestrator-generated artifacts. Schema-v1 artifacts are sufficient; no architecture migration,
   advanced receipts, automation, plugin upgrade or private implementation vendoring is needed.
 
+The delivery limitation above applies to this foundation phase. The later user amendment requires the
+[deployment and release cycle](requirements/release-process.md), `APP-REL-001` through `APP-REL-006`, in the first
+application MVP. Plan and verify those criteria in that MVP; this foundation plan does not implement or satisfy them.
+
 ## Acceptance and evidence boundaries
 
 Local `npm ci` and `npm run validate` must succeed. `npm run verify:github` must observe the current PR revision,

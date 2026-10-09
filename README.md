@@ -12,6 +12,10 @@ The [central requirements reference](docs/requirements/README.md) preserves the 
 those IDs to cross-reference future plans, code, tests and PRs. See the
 [sample record](docs/requirements/samples/README.md) for the local MP3's location and checksum.
 
+The [first application MVP release process](docs/requirements/release-process.md) also requires a deployment target,
+automatic versioning, tags/releases, deployment verification and rehearsed recovery before that MVP is complete. These
+are documented requirements; their implementation belongs to the separately authorized application phase.
+
 ## Working commands
 
 Use Node.js **24.20.0 LTS** and npm **11.19.0**. If using nvm:
@@ -51,7 +55,9 @@ path filter. A PR's delivery job is always skipped.
 After successful validation on a push to protected `main`, delivery creates a tracked-source archive named for the exact
 commit, plus `COMMIT_SHA` and `SHA256SUMS`, retained in GitHub Actions for **7 days**. This is a foundation source
 archive, not a deployable service. The workflow is configured; delivery has not executed on `main` because the
-foundation PR must remain open. Container packaging, deployment, releases and package publishing are deferred.
+foundation PR must remain open. Deployment and versioned releases are required in the first application MVP under
+`APP-REL-001` through `APP-REL-006`. Its provider and artifact format remain open; public package publishing is not
+required.
 
 For a local packaging inspection of the committed checkout:
 

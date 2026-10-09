@@ -9,6 +9,10 @@ This registry distinguishes explicit **must** requirements from **evaluation cri
 **optional guidance** and a **time target**. Acceptance evidence describes how to verify the source requirement; it does
 not select a framework, upload encoding or unprovided limits. No application behavior is implemented yet.
 
+The later [first application MVP release amendment](release-process.md) adds mandatory deployment and release-process
+criteria under `APP-REL-001` through `APP-REL-006`. Read both registries when planning or auditing that MVP; those added
+requirements do not change the preserved assessment source.
+
 ## Objective and scope
 
 Build a TypeScript API that accepts an MP3 file and returns its correct frame count. The assessment also evaluates
@@ -88,6 +92,9 @@ affected IDs. They are not prerequisites for preserving this requirements baseli
 | APP-OPEN-005 | Independently verified sample frame count and the reference method used to establish it.                                                                                                                              | APP-REQ-003, APP-REQ-006, APP-ASSET-001             |
 | APP-OPEN-006 | Actual assessment receipt date and the corresponding five-day target date.                                                                                                                                            | APP-TIME-001                                        |
 | APP-OPEN-007 | Parser treatment of metadata, trailing data and incomplete/corrupt frames, and the fixture cases needed to verify those choices. The source does not prescribe a parser architecture or individual metadata variants. | APP-REQ-003, APP-REQ-004, APP-EVAL-005              |
+
+Deployment is required by `APP-REL-001` through `APP-REL-006`; `APP-OPEN-004` leaves the hosting choice open, not
+whether the first application MVP includes deployment.
 
 ## Updating evidence
 
