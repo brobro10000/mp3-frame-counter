@@ -1,0 +1,386 @@
+schema_version: 1
+release_version: 0.1.0
+compatibility_baseline: 0.0.0
+release_objective: Complete the five authorized dependency-ordered MP3 MVP phases with independent acceptance and actual managed release evidence.
+source_context: agents/context/planning.json
+phases:
+- id: phase-01-foundation
+  sequence: 1
+  objective: Verify and adapt merged foundation for fail-closed acceptance-first development.
+  authority: Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.
+  acceptance_criteria:
+  - Pinned foundation checks and live repository controls verified.
+  - Mandatory phase-aware checks and trusted-baseline ownership reviewed.
+  stop_conditions:
+  - Block P1 on failed foundation validation or unverified repository controls; P2 oracle and P5 cloud access are not P1 prerequisites.
+  - Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval.
+  task_ids:
+  - TASK-V1-01
+  depends_on: &id001 []
+  parallel_group: null
+  branch: codex/phase-01-foundation
+  prompt_output: agents/prompts/expanded/phase-01-foundation.md
+  owned_paths:
+  - .github
+  - agents/outputs/p1-validation.json
+  - docs/validation/p1-foundation.md
+  - package-lock.json
+  - package.json
+  - scripts
+  validation_commands:
+  - npm run validate
+- id: phase-02-independent-acceptance
+  sequence: 2
+  objective: Establish independent known-count fixtures and reviewed executable acceptance before product code.
+  authority: Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.
+  acceptance_criteria:
+  - MediaInfo and independent structure reconcile the private sample physical count.
+  - Harness negative controls, fixture hashes and independent review establish a recorded test-only baseline.
+  stop_conditions:
+  - Block P2 on unresolved independent counts, invalid fixtures, failed harness controls or missing baseline review.
+  - Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval.
+  task_ids:
+  - TASK-V1-02
+  depends_on: &id002
+  - phase-01-foundation
+  parallel_group: null
+  branch: codex/phase-02-independent-acceptance
+  prompt_output: agents/prompts/expanded/phase-02-independent-acceptance.md
+  owned_paths:
+  - agents/outputs/p2-validation.json
+  - docs/testing
+  - docs/validation/p2-acceptance.md
+  - docs/validation/sample-baseline.md
+  - tests/acceptance
+  validation_commands:
+  - npm run test:acceptance:harness
+- id: phase-03-parser
+  sequence: 3
+  objective: Implement the pure TypeScript physical frame counter against the frozen independent baseline.
+  authority: Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.
+  acceptance_criteria:
+  - Independent expected counts and rejection cases pass unit tests.
+  - Sample count agrees with the independently reconciled physical expectation; baseline unchanged.
+  stop_conditions:
+  - Block P3 on baseline drift, unresolved parser count differences, failed build or unit tests.
+  - Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval.
+  task_ids:
+  - TASK-V1-03
+  depends_on: &id003
+  - phase-02-independent-acceptance
+  parallel_group: null
+  branch: codex/phase-03-parser
+  prompt_output: agents/prompts/expanded/phase-03-parser.md
+  owned_paths:
+  - agents/outputs/p3-validation.json
+  - docs/validation/p3-parser.md
+  - package-lock.json
+  - package.json
+  - server/src
+  - tests/unit
+  - tsconfig.json
+  validation_commands:
+  - npm run test:unit
+- id: phase-04-local-product
+  sequence: 4
+  objective: Integrate native HTTP, static UI and independently built runtime images with local external acceptance.
+  authority: Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.
+  acceptance_criteria:
+  - Both images build independently and meet non-root resource and content boundaries.
+  - All applicable AC-01 through AC-12 pass through local frontend including exact20MiB, chunked rejection and recovery.
+  stop_conditions:
+  - Block P4 on baseline drift, missing image/resource evidence or any failing mandatory local acceptance case.
+  - Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval.
+  task_ids:
+  - TASK-V1-04
+  - TASK-V1-06
+  depends_on: &id004
+  - phase-03-parser
+  parallel_group: null
+  branch: codex/phase-04-local-product
+  prompt_output: agents/prompts/expanded/phase-04-local-product.md
+  owned_paths:
+  - .dockerignore
+  - .github
+  - Makefile
+  - README.md
+  - agents/outputs/p4-validation.json
+  - compose.yaml
+  - docs/validation/p4-integration.md
+  - frontend
+  - package-lock.json
+  - package.json
+  - scripts
+  - server
+  - tests/unit
+  - tsconfig.json
+  validation_commands:
+  - npm run test:e2e
+- id: phase-05-managed-release
+  sequence: 5
+  objective: Implement and verify automated managed candidate, production release and recovery.
+  authority: Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.
+  acceptance_criteria:
+  - Account, provider fit, budget, environment and supported scoped access established before external operations.
+  - Exact image pair passes candidate acceptance, approved production verification and automatic version/private release publication.
+  - Recovery or first-release abort is actually rehearsed and evidence retained.
+  stop_conditions:
+  - Block P5 on missing account, fit, budget, authorization, exact identities, candidate/production verification, version publication or recovery evidence.
+  - Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval.
+  task_ids:
+  - TASK-V1-05
+  depends_on: &id005
+  - phase-04-local-product
+  parallel_group: null
+  branch: codex/phase-05-managed-release
+  prompt_output: agents/prompts/expanded/phase-05-managed-release.md
+  owned_paths:
+  - .github
+  - Makefile
+  - README.md
+  - agents/outputs/p5-validation.json
+  - deploy
+  - docs/deployment
+  - docs/validation/p5-deployment.md
+  - scripts
+  validation_commands:
+  - make verify-release
+tasks:
+- id: TASK-V1-01
+  capability: phase.execution
+  phase_id: phase-01-foundation
+  depends_on: []
+  owner: foundation-reviewer
+  writes:
+  - scripts
+  - .github
+  - package.json
+  - package-lock.json
+  - docs/validation/p1-foundation.md
+  - agents/outputs/p1-validation.json
+  requirement_ids:
+  - REQ-108
+  - REQ-110
+  - REQ-111
+  - REQ-113
+  invariant_ids:
+  - INV-V1-08
+  - INV-V1-10
+  - INV-V1-11
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-01
+  validation_commands:
+  - npm run validate
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+- id: TASK-V1-02
+  capability: phase.execution
+  phase_id: phase-02-independent-acceptance
+  depends_on:
+  - TASK-V1-01
+  owner: acceptance-author
+  writes:
+  - tests/acceptance
+  - docs/testing
+  - docs/validation/p2-acceptance.md
+  - docs/validation/sample-baseline.md
+  - agents/outputs/p2-validation.json
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-02
+  validation_commands:
+  - npm run test:acceptance:harness
+  evidence_paths:
+  - agents/outputs/p2-validation.json
+- id: TASK-V1-03
+  capability: phase.execution
+  phase_id: phase-03-parser
+  depends_on:
+  - TASK-V1-02
+  owner: parser-implementer
+  writes:
+  - server/src
+  - tests/unit
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - docs/validation/p3-parser.md
+  - agents/outputs/p3-validation.json
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-116
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-16
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-03
+  validation_commands:
+  - npm run test:unit
+  evidence_paths:
+  - agents/outputs/p3-validation.json
+- id: TASK-V1-04
+  capability: phase.execution
+  phase_id: phase-04-local-product
+  depends_on:
+  - TASK-V1-03
+  owner: integration-implementer
+  writes:
+  - server
+  - frontend
+  - tests/unit
+  - compose.yaml
+  - Makefile
+  - .dockerignore
+  - package.json
+  - package-lock.json
+  - tsconfig.json
+  - README.md
+  - docs/validation/p4-integration.md
+  - agents/outputs/p4-validation.json
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  - INV-V1-16
+  validator_ids:
+  - VAL-V1-04
+  validation_commands:
+  - npm run test:e2e
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+- id: TASK-V1-05
+  capability: phase.execution
+  phase_id: phase-05-managed-release
+  depends_on:
+  - TASK-V1-04
+  - TASK-V1-06
+  owner: release-operator
+  writes:
+  - deploy
+  - scripts
+  - .github
+  - Makefile
+  - README.md
+  - docs/deployment
+  - docs/validation/p5-deployment.md
+  - agents/outputs/p5-validation.json
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-112
+  - REQ-113
+  - REQ-114
+  - REQ-115
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-12
+  - INV-V1-13
+  - INV-V1-14
+  - INV-V1-15
+  - INV-V1-16
+  validator_ids:
+  - VAL-V1-05
+  validation_commands:
+  - make verify-release
+  evidence_paths:
+  - agents/outputs/p5-validation.json
+- id: TASK-V1-06
+  capability: phase.execution
+  phase_id: phase-04-local-product
+  depends_on:
+  - TASK-V1-03
+  owner: independent-gate-reviewer
+  writes:
+  - scripts
+  - .github
+  requirement_ids:
+  - REQ-108
+  - REQ-110
+  - REQ-113
+  invariant_ids:
+  - INV-V1-08
+  - INV-V1-10
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-04
+  validation_commands:
+  - npm run test:e2e
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+pr_stack:
+- phase_id: phase-01-foundation
+  branch: codex/phase-01-foundation
+  base: main
+  requires: *id001
+  title: '[MVP] Verify and adapt merged foundation for fail-closed acceptance-first development.'
+- phase_id: phase-02-independent-acceptance
+  branch: codex/phase-02-independent-acceptance
+  base: main
+  requires: *id002
+  title: '[MVP] Establish independent known-count fixtures and reviewed executable acceptance before product code.'
+- phase_id: phase-03-parser
+  branch: codex/phase-03-parser
+  base: main
+  requires: *id003
+  title: '[MVP] Implement the pure TypeScript physical frame counter against the frozen independent baseline.'
+- phase_id: phase-04-local-product
+  branch: codex/phase-04-local-product
+  base: main
+  requires: *id004
+  title: '[MVP] Integrate native HTTP, static UI and independently built runtime images with local external acceptance.'
+- phase_id: phase-05-managed-release
+  branch: codex/phase-05-managed-release
+  base: main
+  requires: *id005
+  title: '[MVP] Implement and verify automated managed candidate, production release and recovery.'

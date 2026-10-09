@@ -1,29 +1,29 @@
-# Orchestrator planning boundary
+# Active orchestrator and ordinary CI boundary
 
-The current human-readable proposal starts at [docs/mvp.md](../docs/mvp.md) and
-[the five-phase plan](../docs/phases/README.md). No active generated MVP/system specification or execution plan is
-installed for this proposal. Nothing under `history/` authorizes work.
+The owner authorized P1–P5 execution after planning PR #2 merged. Read
+[the execution instruction](../docs/phases/execution-authorization.md) and [phase sequence](../docs/phases/README.md).
+Fresh schema-v1 specifications, invariant/validation mappings, bootstrap context and five-phase plan now occupy their
+contract-defined active paths. Nothing under `history/` authorizes current work.
 
-The installed MVP Orchestrator is **1.3.0**, inspected without upgrade or modification. Its legacy schema-v1 MVP rubric
-requires `status: approved`. The unified brief expressly requires human review and forbids promoting proposed decisions
-into verified facts. The new contract still needs the reviews recorded in
-[decisions](../docs/architecture/decisions.md). Full specification/bootstrap/phase-plan regeneration is therefore
-**blocked pending those reviewed inputs**, while the human-readable planning task can finish.
+Installed MVP Orchestrator **1.3.0** validated the MVP, system invariants and traceability, generated bootstrap, phase
+ownership and complete control-plane structure. Schema-v1 `status: approved` represents the owner's implementation
+instruction and reviewed contract, never a claim that acceptance, deployment or production approval has happened.
+Original archives and historical output JSON remain unchanged. No schema-v2 migration or private plugin source is added.
 
-The previous draft's approved-form metadata and its three-phase execution plan were preserved byte for byte in
-[history/v1-draft](history/v1-draft/README.md), then removed from active contract-defined paths. The prior generated
-project marker was also archived; root `AGENTS.md` is now an authored planning instruction, not a freshly validated
-bootstrap output. Exact merged foundation contracts remain in [history/foundation](history/foundation/README.md).
-Historical result JSONs in `outputs/` are not current evidence for the unified proposal.
+## Execution handoff
 
-After human review, regenerate supported artifacts in their normal `agents/specs/`, `agents/context/`,
-`agents/invariants/`, `agents/validation/` and `agents/execution/` locations through installed planning capabilities.
-Validate actual direct results before recording completion. Do not modify schema rules or reuse prior successful
-receipts for changed inputs. No schema-v2 migration, model routing, containment or reusable receipt system is proposed.
+The installed phase executor only accepts direct Python validators with a 60-second outer timeout. Application npm,
+Playwright, image builds and managed deployment use the repository's ordinary committed commands and CI. This is an
+explicit execution handoff: do not pretend the plugin executed these commands, generate a fake completed execution
+state, replay old outputs, weaken its allowlist or shorten real E2E into a false pass.
 
-The installed `execute-mvp-phase/scripts/validate_phase_gate.py` allows direct Python commands and runs declared
-validation with a **60-second subprocess timeout**. The separate router replay also restricts the environment. Native
-npm/Playwright E2E is not a
-compatible direct command. P1 should review a normal CI handoff; a separately reviewed small Python adapter may later
-verify genuine completed evidence and propagate failure. It must not force long E2E into 60 seconds, skip tests, weaken
-an allowlist or invent an observation. No adapter is written in P0. Application checks remain independently runnable.
+`agents/execution/mvp-plan.yaml` records dependencies, requirements, independent owners and declared checks. Real phase
+outcomes are recorded in `docs/validation/` and actual CI runs. Metadata validation is distinct from phase completion.
+The current metadata is a pre-execution control-plane snapshot; no completed-phase plugin claim has been recorded.
+
+P2 must establish independently authored fixtures and an executable suite before product code. Under squash-only
+merges, the production freeze must identify the separately merged acceptance-only commit on `main`; a feature-branch
+commit that will disappear after squash is insufficient. Product implementers cannot edit the frozen baseline or gate.
+
+Normal development, CI and application use require neither Codex nor this private plugin. Keep raw plugin output with
+machine-local roots in ignored `.mvp-workflow/`; retain only portable, truthful evidence summaries in the repository.

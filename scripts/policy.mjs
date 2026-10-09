@@ -1,5 +1,5 @@
 /**
- * Check that tracked foundation files preserve the intended CI, tooling and repository-control policy.
+ * Check that repository files preserve CI, dependency, baseline and repository-control policy across MVP phases.
  *
  * Run `npm run check:policy` from the repository root after `npm ci`, using the pinned Node/npm versions.
  * Assertions inspect workflow structure, gate dependencies, delivery restrictions, dependency pins and both rulesets.
@@ -12,15 +12,19 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 import { mandatoryJobs } from "./ci-gate.mjs";
+import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
 
 const read = (path) => readFileSync(path, "utf8");
 const workflow = parse(read(".github/workflows/ci.yml"));
-// Keep private inputs, generated caches and future application work outside the tracked foundation scope.
+// Keep private inputs and generated caches out of source control; reviewed acceptance fixtures have their own scope.
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const forbidden =
   /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key)$/i;
-assert(!files.some((file) => forbidden.test(file)), "Private inputs or caches must never be tracked");
-assert(!files.some((file) => /^(src|app|test|tests)\//.test(file)), "Application implementation is outside this phase");
+assert(
+  !files.some((file) => forbidden.test(file) && !/^tests\/acceptance\/fixtures\/[a-z0-9_.-]+\.mp3$/.test(file)),
+  "Private inputs or caches must never be tracked",
+);
+const phase = detectPhase(files);
 assert.deepEqual(
   files.filter((file) => /^\.github\/workflows\//.test(file)),
   [".github/workflows/ci.yml"],
@@ -45,14 +49,22 @@ assert.deepEqual(
   validation.steps.filter((step) => step.run).map((step) => step.run),
   ["npm ci", "npm run validate"],
 );
+const product = jobs["validate-product"];
+assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
+assert.deepEqual(
+  product.steps.filter((step) => step.run).map((step) => step.run),
+  ["npm ci", "node scripts/run-ci-phase.mjs"],
+);
+assert.equal(product.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
+assert.equal(product.env?.CI_BASE_REF, "${{ github.event.pull_request.base.sha || github.event.before }}");
 const delivery = jobs["deliver-foundation"];
 assert.deepEqual(delivery.needs, ["control-plane"]);
 assert.equal(delivery.if, "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}");
 assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
 // Enforce a bounded, read-only hosted workflow without mutable Action references or failure suppression.
-for (const job of Object.values(jobs)) {
+for (const [name, job] of Object.entries(jobs)) {
   assert.equal(job["runs-on"], "ubuntu-24.04");
-  assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= 10);
+  assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= (name === "validate-product" ? 30 : 10));
   assert.equal(job.permissions, undefined);
   assert.equal(job["continue-on-error"], undefined);
   assert.equal(job.strategy, undefined);
@@ -85,7 +97,21 @@ assert.equal(pkg.packageManager, `npm@${pkg.engines.npm}`);
 assert.equal(execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), pkg.engines.npm);
 assert.deepEqual(lock.packages[""].devDependencies, pkg.devDependencies);
 assert.equal(pkg.dependencies, undefined);
-assert.deepEqual(Object.keys(pkg.devDependencies).sort(), ["prettier", "yaml"]);
+assert.equal(pkg.workspaces, undefined, "Use one root package plus the isolated acceptance exception");
+const allowedDevelopmentTools = new Set(["prettier", "yaml", "typescript", "@types/node"]);
+assert(
+  Object.keys(pkg.devDependencies).every((name) => allowedDevelopmentTools.has(name)),
+  "Unreviewed development tool",
+);
+assert(pkg.devDependencies.prettier && pkg.devDependencies.yaml);
+for (const script of requiredRootScripts(phase)) assert(pkg.scripts[script], `Missing mandatory ${script}`);
+if (phase !== "foundation") {
+  assert(files.includes("tests/acceptance/package.json"), "Acceptance requires its standalone package");
+  assert(files.includes("tests/acceptance/package-lock.json"), "Acceptance requires its own pinned lockfile");
+}
+if (["parser", "integration"].includes(phase)) {
+  assert(files.includes("docs/testing/baseline.json"), "Freeze the independent suite before product code");
+}
 for (const version of Object.values(pkg.devDependencies)) assert(/^\d+\.\d+\.\d+$/.test(version));
 assert.equal(lock.lockfileVersion, 3);
 for (const [path, dependency] of Object.entries(lock.packages)) {

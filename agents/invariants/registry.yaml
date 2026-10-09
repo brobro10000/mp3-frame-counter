@@ -1,0 +1,275 @@
+schema_version: 1
+producer_plugin: mvp-orchestrator
+producer_version: 0.1.0
+compatibility_baseline: 0.0.0
+status: approved
+artifact: invariant-registry
+invariants:
+- id: INV-V1-01
+  requirement_ids:
+  - REQ-101
+  validator_ids:
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-001: Static HTML/minimal JavaScript: labeled file input, exact Analyze MP3 action, accessible pending/result/error,
+    safe text, no duplicate pending submission and retry after any outcome.'
+  owner: phase-owner
+  scope: APP-V1-001
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-02
+  requirement_ids:
+  - REQ-102
+  validator_ids:
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-002: TypeScript API with native node:http; raw POST /file-upload accepts audio/mpeg and application/octet-stream,
+    returns exactly a positive integer frameCount in JSON.'
+  owner: phase-owner
+  scope: APP-V1-002
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-03
+  requirement_ids:
+  - REQ-103
+  validator_ids:
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-003: Inclusive 20,971,520-byte limit enforced on actual received bytes; bounded whole-buffer collection,
+    abort/oversize cleanup and usable errors.'
+  owner: phase-owner
+  scope: APP-V1-003
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-04
+  requirement_ids:
+  - REQ-104
+  validator_ids:
+  - VAL-V1-02
+  - VAL-V1-03
+  statement: 'APP-V1-004: Pure synchronous TypeScript parser walks complete MPEG-1 Layer III frames, using each header''s
+    bitrate/sample rate/padding; no npm/external parser, duration estimate or sync scanning through payload/corruption.'
+  owner: phase-owner
+  scope: APP-V1-004
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p2-validation.json
+  - agents/outputs/p3-validation.json
+  failure_action: blocked
+- id: INV-V1-05
+  requirement_ids:
+  - REQ-105
+  validator_ids:
+  - VAL-V1-02
+  - VAL-V1-03
+  statement: 'APP-V1-005: Count complete metadata-bearing MPEG frames; exclude supported separate ID3 records; explicitly
+    document supported tag forms and first-pass limitations.'
+  owner: phase-owner
+  scope: APP-V1-005
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p2-validation.json
+  - agents/outputs/p3-validation.json
+  failure_action: blocked
+- id: INV-V1-06
+  requirement_ids:
+  - REQ-106
+  validator_ids:
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-006: Independently buildable non-root frontend NGINX and API Node LTS images, pinned verified bases
+    and minimal contents.'
+  owner: phase-owner
+  scope: APP-V1-006
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-07
+  requirement_ids:
+  - REQ-107
+  validator_ids:
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-007: Exactly two default Compose application services; frontend loopback origin only, private API,
+    per-service health, bounded startup, aligned proxy and API behavior.'
+  owner: phase-owner
+  scope: APP-V1-007
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-08
+  requirement_ids:
+  - REQ-108
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-008: Thin Make commands and clear setup/test instructions; ordinary users need no private plugin.
+    Each script documents its purpose and operation.'
+  owner: phase-owner
+  scope: APP-V1-008
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-09
+  requirement_ids:
+  - REQ-109
+  validator_ids:
+  - VAL-V1-02
+  - VAL-V1-03
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-009: MediaInfo evidence establishes/reconciles independent physical-frame expectations; private assessment
+    bytes remain untracked and are not a CI dependency.'
+  owner: acceptance-author
+  scope: APP-V1-009
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p2-validation.json
+  - agents/outputs/p3-validation.json
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-10
+  requirement_ids:
+  - REQ-110
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-02
+  - VAL-V1-03
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-010: Built-in Node unit tests and real fail-closed CI, with separate locked Playwright acceptance
+    package as an explicit dependency-boundary exception.'
+  owner: phase-owner
+  scope: APP-V1-010
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+  - agents/outputs/p2-validation.json
+  - agents/outputs/p3-validation.json
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-11
+  requirement_ids:
+  - REQ-111
+  validator_ids:
+  - VAL-V1-01
+  statement: 'APP-V1-011: Execute P1 through P5 in dependency order under the owner''s 2026-10-09 unattended instruction,
+    preserving independent review, evidence and repository core protections.'
+  owner: phase-owner
+  scope: APP-V1-011
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+  failure_action: blocked
+- id: INV-V1-12
+  requirement_ids:
+  - REQ-112
+  validator_ids:
+  - VAL-V1-05
+  statement: 'APP-V1-012: Amended from local delivery to managed release; retain all six first-MVP release requirements,
+    including automatic versions, tags/private releases and recovery.'
+  owner: phase-owner
+  scope: APP-V1-012
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-13
+  requirement_ids:
+  - REQ-113
+  validator_ids:
+  - VAL-V1-01
+  - VAL-V1-02
+  - VAL-V1-03
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-013: Independently authored, reviewed executable black-box baseline precedes product code; implementer
+    cannot weaken baseline or gate logic.'
+  owner: acceptance-author
+  scope: APP-V1-013
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+  - agents/outputs/p2-validation.json
+  - agents/outputs/p3-validation.json
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-14
+  requirement_ids:
+  - REQ-114
+  validator_ids:
+  - VAL-V1-05
+  statement: 'APP-V1-014: Preserve the 20 MiB contract through managed TLS ingress, frontend and private API; approve
+    provider, access and budget before cloud setup.'
+  owner: phase-owner
+  scope: APP-V1-014
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-15
+  requirement_ids:
+  - REQ-115
+  validator_ids:
+  - VAL-V1-05
+  statement: 'APP-V1-015: Promote an exact verified compatible artifact pair after explicit production approval; bind
+    configuration, smoke and prior-good recovery/first-release abort.'
+  owner: phase-owner
+  scope: APP-V1-015
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p5-validation.json
+  failure_action: blocked
+- id: INV-V1-16
+  requirement_ids:
+  - REQ-116
+  validator_ids:
+  - VAL-V1-03
+  - VAL-V1-04
+  - VAL-V1-05
+  statement: 'APP-V1-016: Retain simple replaceable transport/parser/frontend/deployment boundaries; add infrastructure
+    only for approved measured needs.'
+  owner: phase-owner
+  scope: APP-V1-016
+  enforcement: Independent checks and review must establish actual evidence before completion; absent or failed mandatory
+    checks block.
+  evidence_paths:
+  - agents/outputs/p3-validation.json
+  - agents/outputs/p4-validation.json
+  - agents/outputs/p5-validation.json
+  failure_action: blocked

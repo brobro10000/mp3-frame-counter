@@ -1,0 +1,232 @@
+schema_version: 1
+producer_plugin: mvp-orchestrator
+producer_version: 0.1.0
+compatibility_baseline: 0.0.0
+status: approved
+artifact: validation-map
+validators:
+- id: VAL-V1-01
+  command: npm run validate
+  requirement_ids:
+  - REQ-108
+  - REQ-110
+  - REQ-111
+  - REQ-113
+  invariant_ids:
+  - INV-V1-08
+  - INV-V1-10
+  - INV-V1-11
+  - INV-V1-13
+  evidence_paths:
+  - agents/outputs/p1-validation.json
+- id: VAL-V1-02
+  command: npm run test:acceptance:harness
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  evidence_paths:
+  - agents/outputs/p2-validation.json
+- id: VAL-V1-03
+  command: npm run test:unit
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-116
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-16
+  - INV-V1-13
+  evidence_paths:
+  - agents/outputs/p3-validation.json
+- id: VAL-V1-04
+  command: npm run test:e2e
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  - INV-V1-16
+  evidence_paths:
+  - agents/outputs/p4-validation.json
+- id: VAL-V1-05
+  command: make verify-release
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-112
+  - REQ-113
+  - REQ-114
+  - REQ-115
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-12
+  - INV-V1-13
+  - INV-V1-14
+  - INV-V1-15
+  - INV-V1-16
+  evidence_paths:
+  - agents/outputs/p5-validation.json
+tasks:
+- id: TASK-V1-01
+  capability: phase.execution
+  requirement_ids:
+  - REQ-108
+  - REQ-110
+  - REQ-111
+  - REQ-113
+  invariant_ids:
+  - INV-V1-08
+  - INV-V1-10
+  - INV-V1-11
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-01
+- id: TASK-V1-02
+  capability: phase.execution
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-02
+- id: TASK-V1-03
+  capability: phase.execution
+  requirement_ids:
+  - REQ-104
+  - REQ-105
+  - REQ-109
+  - REQ-110
+  - REQ-116
+  - REQ-113
+  invariant_ids:
+  - INV-V1-04
+  - INV-V1-05
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-16
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-03
+- id: TASK-V1-04
+  capability: phase.execution
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-113
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-13
+  - INV-V1-16
+  validator_ids:
+  - VAL-V1-04
+- id: TASK-V1-05
+  capability: phase.execution
+  requirement_ids:
+  - REQ-101
+  - REQ-102
+  - REQ-103
+  - REQ-106
+  - REQ-107
+  - REQ-108
+  - REQ-109
+  - REQ-110
+  - REQ-112
+  - REQ-113
+  - REQ-114
+  - REQ-115
+  - REQ-116
+  invariant_ids:
+  - INV-V1-01
+  - INV-V1-02
+  - INV-V1-03
+  - INV-V1-06
+  - INV-V1-07
+  - INV-V1-08
+  - INV-V1-09
+  - INV-V1-10
+  - INV-V1-12
+  - INV-V1-13
+  - INV-V1-14
+  - INV-V1-15
+  - INV-V1-16
+  validator_ids:
+  - VAL-V1-05
+- id: TASK-V1-06
+  capability: phase.execution
+  requirement_ids:
+  - REQ-108
+  - REQ-110
+  - REQ-113
+  invariant_ids:
+  - INV-V1-08
+  - INV-V1-10
+  - INV-V1-13
+  validator_ids:
+  - VAL-V1-04

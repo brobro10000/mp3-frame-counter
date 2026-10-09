@@ -1,4 +1,4 @@
-name: Foundation CI
+name: MVP CI
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: foundation-${{ github.event.pull_request.number || github.ref }}
+  group: mvp-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -29,10 +29,29 @@ jobs:
       - run: npm ci
       - run: npm run validate
 
+  # This job always runs. Its trusted-base/content checks choose mandatory work without a PR phase selector.
+  validate-product:
+    name: validate-product
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - run: node scripts/run-ci-phase.mjs
+
   control-plane:
     name: control-plane
     if: ${{ always() }}
-    needs: [validate-foundation]
+    needs: [validate-foundation, validate-product]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:

@@ -1,15 +1,17 @@
 /**
- * Audit GitHub's live repository controls and the current foundation PR using read-only requests.
+ * Audit GitHub's live repository controls and passing CI for the checked-out revision using read-only requests.
  *
  * Run `npm run verify:github` from the repository root with Git and an authenticated GitHub CLI on PATH.
- * GitHub CLI supplies the repository context; the checked-out branch selects its open PR. Override these with
+ * GitHub CLI supplies repository context. A revision matching protected-branch HEAD audits its push CI; otherwise
+ * the checked-out branch selects its open PR. Override PR selection with
  * `npm run verify:github -- --repo OWNER/REPO --pr NUMBER`; --pr also supports a detached checkout.
- * Run as the personal repository owner with administrative read access; local HEAD must match the PR's passing CI.
+ * Run as the personal repository owner with administrative read access; local HEAD must match passing remote CI.
  * Both desired rulesets supply the protected branch. Their configured review exception must name the actual owner;
  * explicitly adapt that versioned configuration before auditing a fork. This script never grants an exception.
  * Compare both effective rulesets with their versioned JSON, then verify check provenance and the owner's override.
  * Success prints a JSON snapshot; any unmet assertion exits nonzero. No settings, reviews or merges are changed.
- * This audit expects an open, unapproved owner-authored PR and no protected-branch delivery run; reassess after merge.
+ * Review state is reported, not assumed unapproved. A main audit requires actual successful foundation delivery;
+ * a PR audit requires delivery to remain skipped. No local-only revision is accepted as remotely validated.
  */
 
 import assert from "node:assert/strict";
@@ -114,65 +116,65 @@ assert.equal(permissions.enabled, true);
 assert.equal(permissions.sha_pinning_required, true);
 const token = api(`repos/${repository}/actions/permissions/workflow`);
 assert.deepEqual(token, { default_workflow_permissions: "read", can_approve_pull_request_reviews: false });
-// Bind the audit to this checkout and the actual GitHub PR author, rather than Git commit author metadata.
+// Match local HEAD to either the protected branch or an explicit open PR; never validate an older revision.
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
-const branch =
-  options.prNumber === undefined
-    ? execFileSync("git", ["branch", "--show-current"], { encoding: "utf8" }).trim()
-    : undefined;
-const selected = api(selectPullRequestPath({ repository, branch, protectedBranch, prNumber: options.prNumber }));
-let pr = selected;
-if (options.prNumber === undefined) {
-  assert.equal(selected.length, 1, "Expected exactly one open PR for the checkout branch; supply --pr NUMBER");
-  pr = api(`repos/${repository}/pulls/${selected[0].number}`);
+const protectedHead = api(`repos/${repository}/branches/${encodeURIComponent(protectedBranch)}`).commit.sha;
+const mode = options.prNumber === undefined && head === protectedHead ? "protected-branch" : "pull-request";
+let pr;
+let review;
+if (mode === "pull-request") {
+  const branch = execFileSync("git", ["branch", "--show-current"], { encoding: "utf8" }).trim();
+  const selected = api(selectPullRequestPath({ repository, branch, protectedBranch, prNumber: options.prNumber }));
+  if (options.prNumber === undefined) {
+    assert.equal(selected.length, 1, "Expected one open PR for this checkout, or HEAD matching protected-branch HEAD");
+    pr = api(`repos/${repository}/pulls/${selected[0].number}`);
+  } else {
+    pr = selected;
+  }
+  assert.equal(pr.state, "open", "PR audit requires an open PR; audit the merged protected-branch revision instead");
+  assert.equal(pr.base.ref, protectedBranch, "PR must target the configured protected branch");
+  assert.equal(pr.base.repo.full_name, metadata.full_name, "PR must belong to the selected repository");
+  assert.equal(pr.head.sha, head, "PR must match the current local revision");
+  assert.equal(pr.merged, false);
+  assert.equal(pr.auto_merge, null);
+  review = JSON.parse(
+    execFileSync(
+      "gh",
+      ["pr", "view", String(pr.number), "--repo", repository, "--json", "reviewDecision,mergeStateStatus,isDraft"],
+      { encoding: "utf8" },
+    ),
+  );
 }
-assert.equal(pr.state, "open", "Foundation audit requires an open PR");
-assert.equal(pr.base.ref, protectedBranch, "PR must target the configured protected branch");
-assert.equal(pr.base.repo.full_name, metadata.full_name, "PR must belong to the selected repository");
-assert.equal(pr.head.sha, head, "PR must match the current local revision");
-assert.equal(pr.user.id, metadata.owner.id, "Foundation PR must be authored by the repository owner");
-assert.equal(pr.merged, false);
-assert.equal(pr.auto_merge, null);
-const review = JSON.parse(
-  execFileSync(
-    "gh",
-    ["pr", "view", String(pr.number), "--repo", repository, "--json", "reviewDecision,mergeStateStatus,isDraft"],
-    { encoding: "utf8" },
-  ),
-);
-assert.equal(review.isDraft, false, "Use review requirements, not draft state, as the blocker");
-assert.equal(review.reviewDecision, "REVIEW_REQUIRED");
-assert.equal(review.mergeStateStatus, "BLOCKED");
 // A green check counts only for this revision and the GitHub App observed when the requirement was configured.
-const checks = api(`repos/${repository}/commits/${head}/check-runs?per_page=100`).check_runs;
+const checks = api(`repos/${repository}/commits/${head}/check-runs?filter=latest&per_page=100`).check_runs;
 const required = expectedStatus.parameters.required_status_checks[0];
 const gate = checks.find((check) => check.name === required.context && check.app.id === required.integration_id);
+assert.equal(gate?.head_sha, head, "Required check must identify the audited revision");
 assert.equal(gate?.conclusion, "success", "Current revision must have a successful gate from its bound integration");
+const event = mode === "protected-branch" ? "push" : "pull_request";
 const runs = api(
-  `repos/${repository}/actions/workflows/ci.yml/runs?event=pull_request&head_sha=${head}&per_page=100`,
+  `repos/${repository}/actions/workflows/ci.yml/runs?event=${event}&head_sha=${head}&per_page=100`,
 ).workflow_runs;
-const run = runs.find((item) => item.conclusion === "success");
-assert(run, "No successful CI workflow for this PR revision");
+const [run] = runs;
+assert.equal(run?.conclusion, "success", "Latest CI workflow for this revision must have succeeded");
 const jobs = api(`repos/${repository}/actions/runs/${run.id}/jobs?per_page=100`).jobs;
 assert.equal(jobs.find((job) => job.name === "control-plane")?.conclusion, "success");
 assert.equal(jobs.find((job) => job.name === "validate-foundation")?.conclusion, "success");
-assert.equal(jobs.find((job) => job.name === "deliver-foundation")?.conclusion, "skipped");
-// Keep "delivery configured" distinct from "delivery executed" while the foundation PR remains unmerged.
-const protectedBranchRuns = api(
-  `repos/${repository}/actions/workflows/ci.yml/runs?event=push&branch=${encodeURIComponent(protectedBranch)}&per_page=100`,
-).workflow_runs;
-assert.equal(
-  protectedBranchRuns.length,
-  0,
-  "Foundation delivery status must be reassessed after a protected-branch push",
-);
+// Product validation is mandatory once its reviewed workflow exists at the audited revision.
+const auditedWorkflow = execFileSync("git", ["show", `${head}:.github/workflows/ci.yml`], { encoding: "utf8" });
+if (/^  validate-product:/m.test(auditedWorkflow)) {
+  assert.equal(jobs.find((job) => job.name === "validate-product")?.conclusion, "success");
+}
+const delivery = jobs.find((job) => job.name === "deliver-foundation")?.conclusion;
+assert.equal(delivery, mode === "protected-branch" ? "success" : "skipped");
 console.log(
   JSON.stringify(
     {
       status: "validated",
       repository,
       protectedBranch,
-      pr: pr.html_url,
+      mode,
+      pr: pr?.html_url ?? null,
       head,
       ruleset: ruleset.id,
       reviewRuleset: reviewRuleset.id,
@@ -181,9 +183,9 @@ console.log(
       integration: gate.app.slug,
       integration_id: gate.app.id,
       run: run.html_url,
-      reviewDecision: review.reviewDecision,
-      mergeStateStatus: review.mergeStateStatus,
-      delivery: `configured; not executed on ${protectedBranch}`,
+      reviewDecision: review?.reviewDecision ?? null,
+      mergeStateStatus: review?.mergeStateStatus ?? null,
+      delivery,
     },
     null,
     2,

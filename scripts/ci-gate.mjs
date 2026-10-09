@@ -7,7 +7,7 @@
  */
 
 // Keep this list aligned with the workflow's gate dependencies; policy.mjs checks that relationship.
-export const mandatoryJobs = ["validate-foundation"];
+export const mandatoryJobs = ["validate-foundation", "validate-product"];
 
 /**
  * Require an exact dependency set and an explicit "success" result for each job.

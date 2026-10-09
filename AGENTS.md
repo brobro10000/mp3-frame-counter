@@ -1,46 +1,46 @@
-# MP3 frame counter operating contract
+# mp3-frame-counter operating contract
 
-## Current authority
+## Verified intent
 
-- Current authorization is P0 planning documents and read-only research only. Stop for human review after this task.
-- Read `docs/requirements/README.md`, `docs/mvp.md`, `docs/architecture/decisions.md` and `docs/phases/README.md` first.
-- The unified brief supersedes the earlier three-phase, no-cloud and manual-browser-only draft. Plans remain proposed.
-- PR #1 is merged at `143498a`; preserve that foundation. Do not recreate the repository or invent test-first history.
-- Each P1–P5 phase needs separate authorization and ends at a reviewable PR/evidence handoff. Never advance implicitly.
-- There is no active generated execution plan. Superseded contracts are archived under `agents/history/`.
-- Read `agents/README.md` before using the installed orchestrator. Do not execute archived plans or fabricate approvals.
+Implement and verify the MP3 browser application and automated managed release in five ordered phases.
 
-## Requirements and roles
+## Primary users
 
-- Cross-reference stable APP requirement IDs, AC-01–AC-12 and actual tested revisions in future work.
-- Read the selected phase document and its role in `docs/agents/`: acceptance-author, implementer, reviewer or release-
-  operator.
-- P2 must establish an independently authored, reviewed test-only baseline before parser, API, UI or runtime images.
-- Implementers may read the baseline but cannot alter its tests, fixtures, counts, thresholds or gate logic to pass.
-- Proposed test contracts and Markdown roles do not prove executable tests, enforced access or independent human review.
-- Preserve TypeScript/native node:http, raw uploads, the inclusive 20,971,520-byte bound and pure physical-frame
-  counting.
-- Preserve separate static NGINX/frontend and Node/API images, one browser origin and no retained uploads or runtime
-  parser dependency.
-- Use one application npm lockfile plus the expressly allowed standalone acceptance package/lockfile; no workspace
-  platform.
-- Keep APP-REL-001–006 in the first functional MVP, including versions/releases, candidate tests and verified recovery.
-- Managed hosting must pass provider-fit, account, budget and exact-release approval gates before the relevant external
-  actions.
+- Assessment owner using and evaluating the application
 
-## Repository and evidence discipline
+## Desired outcomes
 
-- Preserve the owner-only review override in `docs/repository-controls.md`; the separate core ruleset has no bypass.
-- GitHub self-approval is not available. Never approve, merge, exercise an override or enable auto-merge without
-  explicit instruction.
-- Production approval is separate from PR review and binds the tested release pair and configuration.
-- Keep tracked paths portable. Never commit secrets, host output, MP3 inputs, caches or private plugin implementation.
-- Preserve original source captures and historical evidence byte for byte. The ignored sample is not a CI prerequisite.
-- Document every future script's purpose, inputs, usage, side effects and failure behavior. Quote paths and propagate
-  failure.
-- Distinguish observed, documented, proposed and blocked evidence. Do not present foundation checks as application
-  acceptance.
-- During P0 use existing nonmutating checks only: no dependency installs, application/tests/adapters/configuration or
-  service changes.
-- Normal application operation must not require Codex or the private orchestrator.
-- Wrap prose/comments at approximately 120 characters; preserve meaningful machine and generated formatting.
+- Accurate physical MPEG-1 Layer III frame counts and useful accessible errors.
+- Independent acceptance, reproducible local containers and verified automated managed delivery.
+
+## Constraints
+
+- Owner authorized execution of P1 through P5 and required shell/UI actions on 2026-10-09; read docs/phases/execution-authorization.md.
+- Read docs/requirements/README.md, docs/mvp.md, docs/architecture/decisions.md and docs/phases/README.md before work.
+- The planning baseline is merged at 0c9f538; preserve original foundation and source/archive bytes.
+- Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
+- Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
+- P2 executable baseline and independent review precede product code; implementers cannot modify frozen tests or gates.
+- Use native node:http, raw uploads, inclusive 20971520 actual-byte limit and pure synchronous physical-frame counting.
+- Use separate non-root NGINX frontend and Node API images, one browser origin and configurable private upstream.
+- No retained uploads, runtime parser library, database, object storage, accounts, frameworks or speculative infrastructure.
+- Use one root application npm lockfile and one standalone acceptance lockfile; no workspaces.
+- Keep APP-REL-001 through APP-REL-006 required for first MVP; automated deployment and recovery require actual evidence.
+- Verify account, provider fit, charges, artifacts and production checks before declaring the release complete.
+- Preserve core no-bypass GitHub controls and owner-only review exception; no fabricated approvals or silent control changes.
+- Do not merge, exercise an owner review override or enable auto-merge without explicit instruction; production approval binds the tested release identity.
+- Keep tracked paths portable; never commit secrets, personal system details, MP3 inputs, caches or private plugin implementation.
+- Preserve the ignored sample identity; ordinary CI cannot require private sample bytes or local MediaInfo.
+- Document every script purpose, inputs, usage, side effects and failure behavior; quote paths and propagate errors.
+- Normal development and application use must not require private plugins or Codex.
+- Wrap prose/comments at approximately 120 characters; preserve meaningful generated and machine formatting.
+
+## Authority and workflow
+
+- Treat `agents/specs/mvp.md` as the authority for product scope and acceptance behavior.
+- Treat `agents/specs/system.md` as the authority for system boundaries, immutable architecture decisions,
+  invariants, failure behavior, and validation. Treat `agents/architecture/` as generated views; never edit those
+  views or substitute an active technology decision during phase work.
+- Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
+- Run deterministic validation for the affected boundary and report commands actually executed.
+- Preserve unrelated repository content and obtain explicit authority before destructive or external side effects.
