@@ -47,10 +47,12 @@ artifact, not a production freeze. Any local product validation using that provi
 that it awaits the protected-main freeze. Squashing a combined baseline/product PR would remove the original test-only
 commit from main ancestry and must fail the unchanged ancestor check.
 
-The verifier requires the frozen commit to be an ancestor and contain acceptance files without product source. Every
-current suite path and byte must match the frozen tree. Its fixture manifest is
-`tests/acceptance/fixtures/manifest.json`. Preserve this strict verification for main CI; do not replace an unavailable
-ancestor with an arbitrary branch, tag or fetch-only reference.
+The verifier requires the frozen commit to be an ancestor of HEAD and contain acceptance files without product source.
+When a trusted base SHA is supplied, the frozen commit must already be its ancestor too. This rejects a feature-only
+baseline before a product PR can pass CI and later fail after a squash merge. Local checks that omit the base SHA may
+verify a provisional baseline but do not establish a protected-main production freeze. Every current suite path and byte
+must match the frozen tree. Its fixture manifest is `tests/acceptance/fixtures/manifest.json`. Preserve this strict
+verification for main CI; do not replace an unavailable ancestor with an arbitrary branch, tag or fetch-only reference.
 
 For product validation, the controller extracts only the frozen suite into a temporary directory outside the product
 checkout and installs its locked package independently. It passes `TRUSTED_ACCEPTANCE_ROOT` to the root E2E lifecycle
@@ -75,6 +77,9 @@ Using the repository-pinned Node 24.20.0 and npm 11.19.0:
   phase selection/downgrade checks and baseline verification against disposable real Git repositories.
 - Baseline negative tests rejected changed fixture metadata, extra tests, mismatched tree/manifest identities,
   post-product initial baselines and altered trusted-base freeze records.
+- After ancestry hardening, all six focused baseline tests passed. A real temporary Git regression rejected a local
+  baseline contained in product HEAD but absent from the trusted base, accepted it after the trusted base included it,
+  and kept the local provisional-check distinction explicit.
 - `node scripts/policy.mjs`, `node scripts/actionlint.mjs` and `node scripts/run-ci-phase.mjs` passed at foundation
   scope.
 - Targeted Prettier formatting passed for the changed scripts and workflow.

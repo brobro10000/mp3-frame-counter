@@ -6,7 +6,9 @@
  * freeze record cannot be replaced by a product change. The current suite must match every frozen byte and path.
  * Squash-only merges require a separate test-only P2 PR to merge first; freeze its actual merged main commit SHA
  * before shipping product work. A feature-branch test-only commit is a provisional review artifact, not a production
- * freeze: a combined squash would remove that commit from main ancestry. Never weaken the ancestor check for this.
+ * freeze: a combined squash would remove that commit from main ancestry. With baseRef supplied, the baseline must
+ * already be an ancestor of that trusted base as well as HEAD. Omitting baseRef permits provisional local checks
+ * only; it does not establish a protected-main production freeze. Never weaken either ancestor check for this.
  * This module is read-only, prints no credentials and throws on missing, malformed, changed or unverifiable evidence.
  * The caller may then extract the verified commit into an isolated temporary checkout for npm ci and execution.
  */
@@ -47,6 +49,12 @@ export function verifyBaseline(root, baseRef) {
   assert(/^[a-f0-9]{40}$/.test(baseline.suiteTree), "Record the reviewed suite tree");
   assert(/^[a-f0-9]{64}$/.test(baseline.manifestSha256), "Record the fixture manifest SHA-256");
   git(root, ["merge-base", "--is-ancestor", baseline.suiteCommit, "HEAD"]);
+  if (baseRef) {
+    assert.doesNotThrow(
+      () => git(root, ["merge-base", "--is-ancestor", baseline.suiteCommit, baseRef]),
+      "Acceptance baseline must already be an ancestor of the trusted base; merge the test-only P2 PR first",
+    );
+  }
   const baselineFiles = repositoryFiles(root, baseline.suiteCommit);
   assert.equal(detectPhase(baselineFiles), "acceptance", "Acceptance baseline must precede product implementation");
   assert.equal(git(root, ["rev-parse", `${baseline.suiteCommit}:${suitePath}`]).trim(), baseline.suiteTree);

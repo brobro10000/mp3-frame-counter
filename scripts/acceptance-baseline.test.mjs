@@ -36,6 +36,8 @@ function fixture(t, withProduct = false) {
     ]);
     return git(root, ["rev-parse", "HEAD"]).trim();
   };
+  put("README.md", "Synthetic foundation before acceptance.\n");
+  const foundationCommit = commit();
   put("tests/acceptance/package.json", '{"private":true}\n');
   put(manifestPath, '{"fixture":"independent synthetic fixture"}\n');
   if (withProduct) put("server/src/parser.ts", "export const product = true;\n");
@@ -51,7 +53,7 @@ function fixture(t, withProduct = false) {
   };
   const freeze = () => put(baselinePath, `${JSON.stringify(record, null, 2)}\n`);
   freeze();
-  return { root, record, put, commit, freeze };
+  return { root, record, put, commit, freeze, foundationCommit };
 }
 
 test("an independently committed acceptance suite passes exact-byte verification", (t) => {
@@ -60,6 +62,15 @@ test("an independently committed acceptance suite passes exact-byte verification
   put("server/src/parser.ts", "export const product = true;\n");
   commit();
   assert.deepEqual(verifyBaseline(root, base), record);
+});
+
+test("a feature-only baseline fails trusted-base CI even when product HEAD contains it", (t) => {
+  const { root, record, commit, put, foundationCommit } = fixture(t);
+  put("server/src/parser.ts", "export const product = true;\n");
+  commit();
+  assert.deepEqual(verifyBaseline(root), record, "Local provisional checks can use the reviewed local ancestor");
+  assert.throws(() => verifyBaseline(root, foundationCommit), /already be an ancestor of the trusted base/);
+  assert.deepEqual(verifyBaseline(root, record.suiteCommit), record, "A separately landed suite is a trusted ancestor");
 });
 
 test("changed expected counts or extra acceptance files fail the frozen identity", (t) => {
