@@ -1,0 +1,227 @@
+{
+  "command": "validate-phase-gate",
+  "data": {
+    "outputs": [
+      {
+        "mode": "0644",
+        "path": ".editorconfig",
+        "sha256": "d3f1f301004f81585c0a0afc5c7d9ce7a864f11d6b2335b1bb10f66753e7c160",
+        "size": 193,
+        "type": "file"
+      },
+      {
+        "entries": [
+          {
+            "mode": "0644",
+            "path": ".github/dependabot.yml",
+            "sha256": "650f0564bcb0fe07277fe91762bcbff97423f9523530d2dd4b276e99afb576b3",
+            "size": 257,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": ".github/pull_request_template.md",
+            "sha256": "d9b7ef3fcb8b4b66688e197e8941b2d72bfd04d0b908a26000755584239ead8d",
+            "size": 652,
+            "type": "file"
+          },
+          {
+            "mode": "0755",
+            "path": ".github/workflows",
+            "type": "directory"
+          },
+          {
+            "mode": "0644",
+            "path": ".github/workflows/ci.yml",
+            "sha256": "e11027f0c1a816fe717bc5b71a350366a33fa3f9aa2203cba74970c177149472",
+            "size": 2201,
+            "type": "file"
+          }
+        ],
+        "mode": "0755",
+        "path": ".github",
+        "type": "directory"
+      },
+      {
+        "mode": "0644",
+        "path": ".gitignore",
+        "sha256": "174082f1fe8b2b2a4207b9ecb836095ee7cdc59ca81b9e94d5b402c3c7c40bbc",
+        "size": 141,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": ".npmrc",
+        "sha256": "2114d436e923579b7bd7472ccc3b72c42e9ce21ff20aff663315e7d5a9060e40",
+        "size": 55,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": ".nvmrc",
+        "sha256": "5b9d0e73029969ae9000117cb877f17bb9841c1279bfe8024e294acfcf017800",
+        "size": 8,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": ".prettierignore",
+        "sha256": "5c1c237c4db361e9d91ed4e9a2183afa8868afbbb688fc5caef6f1b902531ca8",
+        "size": 170,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": ".prettierrc.json",
+        "sha256": "c6a573f18a5f3edf9bffdcd101fb86c87cd7240e44a2376597a7ed9a7eb9b7c0",
+        "size": 75,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": "README.md",
+        "sha256": "8101430130106806bba10affedee4aee9f10059503486bba31bcd55cc8314bdb",
+        "size": 3667,
+        "type": "file"
+      },
+      {
+        "entries": [
+          {
+            "mode": "0644",
+            "path": "docs/foundation-plan.md",
+            "sha256": "92396780c80dc9c0b4badf554c4f9b85af0d9806e248838ad4c62e53cb4e8b58",
+            "size": 3396,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "docs/main-ruleset.json",
+            "sha256": "1ca1aa99b99d18e4eeb8c8347f8c0f4ac25905702847e13f4c8b50a3137c9fa8",
+            "size": 1148,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "docs/repository-controls.md",
+            "sha256": "c5e2d7e4f96aab9c207d612a9a26b8c2c33525129c48b362dfd947364efd6093",
+            "size": 4310,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "docs/toolchain.md",
+            "sha256": "41f918fde97a3104071f5dcdeb1a55656d77e46d514d9a9b7faa922b25435398",
+            "size": 3436,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "docs/validation.md",
+            "sha256": "876f99917ee4cbf6861f8638eb0d64933095137566ab2fe3165b96b121b997a4",
+            "size": 5496,
+            "type": "file"
+          }
+        ],
+        "mode": "0755",
+        "path": "docs",
+        "type": "directory"
+      },
+      {
+        "mode": "0644",
+        "path": "package-lock.json",
+        "sha256": "031d721270e25a25a49389fea37856c2bff438be6a9d4dfc3983660d616ae446",
+        "size": 1348,
+        "type": "file"
+      },
+      {
+        "mode": "0644",
+        "path": "package.json",
+        "sha256": "3bdfcdac24fddfc2c7f7770f4fd7189757b12d7495fdce9f6f9f4eba2961f578",
+        "size": 860,
+        "type": "file"
+      },
+      {
+        "entries": [
+          {
+            "mode": "0644",
+            "path": "scripts/actionlint.mjs",
+            "sha256": "e07666f2ce4756c134a330511ed873c5558974da8c1f68977f616e2ba882e22e",
+            "size": 1895,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/ci-gate.mjs",
+            "sha256": "4dec475a668a78502c3e188af4ebd2b791b83e9e60a5474dc0556b4ccc5d7007",
+            "size": 774,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/ci-gate.test.mjs",
+            "sha256": "5869bd9c27c5529abe12b7fafd6549361bb157e5778b458ba5eb64cf5f5ce937",
+            "size": 1319,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/format.mjs",
+            "sha256": "96e5b6de4d15470b668fd0b5a3596de5231f24f6e4ba1e349a28cbe817b654c3",
+            "size": 750,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/package-foundation.mjs",
+            "sha256": "c58f115afa222f07a2b982f631d923aa6fc2a5ba5acdc25b2421942576546662",
+            "size": 1265,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/policy.mjs",
+            "sha256": "d0e83170902134fddea8c5ffe42ca14d8d0098490d2df2dd62ec01bf5b78d121",
+            "size": 6535,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/validate_phase.py",
+            "sha256": "353e6aa0f299cfda51fa1e85a9bf748b120b64b5e176e861de5580d5fc0264a6",
+            "size": 934,
+            "type": "file"
+          },
+          {
+            "mode": "0644",
+            "path": "scripts/verify-github.mjs",
+            "sha256": "316a0c7d163ebe783cbbb50bf3a7c1665d83bff98b0e74249e5cbb710d4c1801",
+            "size": 4958,
+            "type": "file"
+          }
+        ],
+        "mode": "0755",
+        "path": "scripts",
+        "type": "directory"
+      }
+    ],
+    "phase_id": "phase-01-repository-foundation",
+    "prompt_sha256": "acbba3cc65b34c38fd8d9c73988079257039feed18db20cc0543b451552124d7",
+    "release_version": "0.1.0",
+    "report_sha256": "18f6cca5d6457d2511a6b5de638101db7be027d2482eaa0b11edd473fe4a5076",
+    "schema_version": 1,
+    "status": "validated",
+    "validation_results": [
+      {
+        "command": "python3 scripts/validate_phase.py --project-root . --json",
+        "exit_code": 0,
+        "stdout_sha256": "ab9708e3045dfae1c7fcb2082376f25ce0d8f4569475a2eb33944d90bbed881f"
+      }
+    ]
+  },
+  "errors": [],
+  "operation": "check",
+  "project_root": ".",
+  "release_version": "0.1.0",
+  "schema_version": 1,
+  "status": "validated"
+}

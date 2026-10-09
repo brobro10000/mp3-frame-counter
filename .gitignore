@@ -1,0 +1,17 @@
+node_modules/
+.cache/
+.artifacts/
+.mvp-workflow/
+.mvp-orchestrator/
+.codex/
+.DS_Store
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+*.mp3
+.env
+.env.*
+*.pem
+*.key
+*.log

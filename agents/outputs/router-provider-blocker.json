@@ -1,0 +1,1 @@
+{"command":"validate-phase-gate","data":{},"errors":["validation command failed: python3 scripts/validate_phase.py --project-root . --json"],"operation":"check","project_root":".","release_version":"0.1.0","schema_version":1,"status":"blocked"}

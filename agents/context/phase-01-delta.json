@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "phase_id": "phase-01-repository-foundation",
+  "verified_facts": [
+    {
+      "statement": "The user authorized foundation-only implementation and an open PR.",
+      "source": "user-confirmed:attached-request"
+    },
+    {
+      "statement": "GitHub accepted an active main ruleset with no bypass actors before implementation publication.",
+      "source": "github:brobro10000/mp3-frame-counter/rules/24803567"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-01",
+      "summary": "Use npm for tooling and a single terminal control-plane CI gate; defer application frameworks."
+    }
+  ],
+  "changed_paths": [
+    "README.md",
+    ".gitignore",
+    ".editorconfig",
+    ".nvmrc",
+    ".npmrc",
+    "package.json",
+    "package-lock.json",
+    ".prettierrc.json",
+    ".prettierignore",
+    ".github",
+    "scripts",
+    "docs"
+  ],
+  "validation_notes": [
+    "Local checks do not prove GitHub enforcement; separately inspect current remote state.",
+    "The bounded phase ends before merge, so main delivery execution remains pending."
+  ]
+}

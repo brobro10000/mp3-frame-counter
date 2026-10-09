@@ -1,0 +1,304 @@
+Use the installed codex-mvp-orchestrator plugin to execute one bounded phase:
+“Repository foundation, CI/CD foundation, and enforced pull-request controls.”
+
+This is not permission to build the application or complete the assessment.
+Work incrementally, show validation evidence, and stop with an open foundation PR.
+
+## 1. Project context and authorized scope
+
+We are preparing a TypeScript technical assessment for an MP3 analysis API.
+
+Future application requirements:
+- POST /file-upload accepts an MP3 upload.
+- Support MPEG Version 1 Audio Layer 3.
+- Parse the file ourselves to count MPEG audio frames.
+- Do not use a package that parses MP3 frame data.
+- Return JSON: { "frameCount": <number> }.
+- Include appropriate tests, error handling, and running instructions.
+
+NONE of that application behavior should be implemented in this phase.
+
+Target repository:
+- Owner: brobro10000
+- Name: mp3-frame-counter
+- Visibility: private
+- Default branch: main
+- Working branch: codex/phase-01-repository-foundation
+
+The objective is a small, reproducible repository foundation where GitHub—not
+merely agent instructions—enforces the pull-request merge requirements.
+
+Authorized actions:
+- Create this private repository if it does not exist.
+- Create foundation files and the scoped working branch.
+- Configure repository-specific settings, Actions, and branch rules.
+- Push the working branch and open a foundation PR.
+
+Not authorized:
+- Merge a PR or enable auto-merge on a PR.
+- Approve a PR using my account.
+- Add bypass permissions.
+- Invite collaborators or create bot/service accounts.
+- Change organization-wide or account-wide settings.
+- Purchase a plan, change repository visibility, or configure paid hosting.
+- Modify the codex-mvp-orchestrator source repository.
+- Implement the HTTP endpoint, parser, frontend, database, or cloud deployment.
+
+## 2. Preflight and orchestrator use
+
+Inspect the working directory, Git state, remotes, available tools, and
+authenticated GitHub identity before making changes.
+
+Use a dedicated project directory. Do not initialize this application inside the
+orchestrator repository or overwrite unrelated files.
+
+Check:
+- Whether the target repository already exists.
+- Whether the authenticated identity can create/configure this repository.
+- Whether GitHub Actions and private-repository protection are supported.
+- Which orchestrator version and skills are actually installed.
+
+Use $orchestrate-mvp-workflow and the relevant installed specialist skills for
+brief definition, project bootstrap, bounded planning, execution, and validation.
+Read their actual contracts before invoking them. Do not invent skill names,
+commands, validators, manifests, or successful results.
+
+Use the installed version without silently upgrading it. Record the version used.
+If the plugin is missing, report the prerequisite and stop orchestrator execution
+rather than impersonating its output.
+
+Do not invoke an end-to-end shipping operation that would merge or enable
+auto-merge. If a shipping skill cannot stop at PR creation, publish the scoped
+branch/PR using the supported explicit Git/GitHub operations and clearly report
+that the shipping workflow has not completed.
+
+If the repository already exists:
+- Inspect its contents, settings, rules, workflows, and open PRs.
+- Resume only if it clearly belongs to this project.
+- Preserve existing stronger controls.
+- Stop before repurposing an unrelated repository.
+
+Never print tokens or ask me to paste credentials into files or chat.
+Use the existing authenticated environment and normal permission prompts.
+
+## 3. Establish the review and merge policy
+
+Desired policy for main:
+
+- Changes must go through a pull request.
+- At least one eligible, independent approving review is required.
+- Dismiss stale approvals when reviewable code changes are pushed.
+- Require approval of the most recent reviewable push by someone other than
+  the person who pushed it.
+- Require all review conversations to be resolved.
+- Require the designated CI gate to pass.
+- Require the branch to be up to date with main before merging.
+- Block force pushes and deletion of main.
+- Use squash merging and a linear history.
+- Delete merged working branches automatically.
+- No owner, administrator, app, or automation bypass entries.
+- No automated approval workflows.
+
+Prefer one active branch ruleset targeting main. Use equivalent classic branch
+protection only if necessary and only when it preserves these guarantees,
+including enforcement for administrators.
+
+Do not turn on a blanket update restriction that also prevents legitimate
+PR merges. Do not add a bypass to compensate for an incorrectly configured rule.
+
+Approval identity is a real prerequisite:
+- Inspect the authenticated PR-creating identity.
+- Do not confuse Git commit author metadata with GitHub PR authorship.
+- If the PR is opened under brobro10000, explain that brobro10000 cannot approve it.
+- Changing Git author names or email addresses is not a solution.
+- Do not assume a bot-authored PR is approvable by me without checking GitHub's
+  actual eligibility rules and the most recent pusher.
+- Agent review documents or an “APPROVE” string are not human GitHub approval.
+
+If no eligible reviewer is available, keep the approval requirement intact,
+complete safe foundation work, and leave the PR blocked pending a reviewer.
+
+Add CODEOWNERS for sensitive repository-control files only with verified owners
+and a workable review arrangement. Do not enable an additional code-owner gate
+that silently makes the intended reviewer ineligible. Report any deferred
+code-owner enforcement separately; the one-review requirement remains mandatory.
+
+If the GitHub plan or credentials cannot enforce the required protections,
+report the exact limitation. Do not call the repository protected, make it public,
+reduce the approval count, or substitute a local hook.
+
+## 4. Bootstrap in a safe order
+
+For a genuinely empty repository, a single minimal documentation-only initial
+commit on main is permitted to establish the branch. Record its SHA and explicitly
+identify it as the initial bootstrap exception.
+
+Do not put application code or the full foundation implementation directly on main.
+
+After that initial commit:
+1. Activate PR/review/no-bypass protection before publishing implementation work.
+2. Create codex/phase-01-repository-foundation.
+3. Add the foundation files and workflows on that branch.
+4. Open the foundation PR.
+5. Observe the real CI check name and producing GitHub App.
+6. Require that exact check and bind it to the observed integration where supported.
+7. Read back the effective rules and verify the resulting PR is blocked until its
+   requirements are satisfied.
+
+Do not guess check names or GitHub App IDs.
+Do not register a nonexistent check and report the setup as verified.
+Do not merge anything during this run.
+
+## 5. Create only the necessary foundation files
+
+Keep this proportional to a small assessment. No monorepo framework, Terraform
+stack, elaborate release system, or custom CI platform.
+
+Include:
+- README.md explaining the assessment scope, foundation status, and commands that
+  actually work today. Do not imply the API already exists.
+- AGENTS.md defining phase boundaries, validation expectations, secret handling,
+  and the prohibition on bypassing reviews or implementing future phases.
+- A brief phase plan and repository/CI decision record.
+- .gitignore and .editorconfig.
+- Minimal package metadata, a committed lockfile, and a pinned supported Node.js
+  LTS runtime for repository tooling.
+- Formatting configuration.
+- .github/pull_request_template.md.
+- .github/workflows/ci.yml.
+- A minimal trusted-main artifact-delivery workflow or job.
+- Dependabot configuration for the dependencies and Actions actually used.
+- A versioned description of the intended repository protection settings,
+  including a safe read-only verification procedure.
+
+Use npm for the initial tooling unless the existing project already has an
+approved package manager.
+
+Verify supported tool versions from official sources and pin the selected versions.
+Do not select the application HTTP framework or application test framework yet.
+
+The PR template should request:
+- Scope and non-goals.
+- Validation commands and observed results.
+- Risks or limitations.
+- Files needing deeper human review.
+- Any changes to CI, permissions, or merge controls.
+
+Flag workflows, permissions, rules, and dependency changes for human review.
+
+Do not commit the supplied MP3, secrets, local agent caches, or private orchestrator
+implementation files. The application and normal CI must not require access to
+the private orchestrator repository.
+
+## 6. Implement meaningful CI for this phase
+
+Run CI on pull requests targeting main and on pushes to main.
+
+For now, validate what actually exists:
+- Reproducible installation from the lockfile.
+- Formatting of tracked configuration and documentation.
+- GitHub Actions workflow syntax, including actionlint or an equivalent
+  maintained validator.
+- Small, useful repository-policy checks where static validation is insufficient.
+
+Avoid application placeholder code, dummy tests, echo-only build jobs, and
+“pass with no tests” settings.
+
+Application typechecking, parser tests, endpoint integration tests, and production
+build verification belong in a later approved phase. Document them as not yet
+implemented rather than manufacturing green results.
+
+Provide one stable terminal required job, preferably named control-plane if that
+fits the installed orchestrator's actual contracts.
+
+The terminal gate must:
+- Run after all mandatory validation jobs, even when an upstream job fails.
+- Explicitly require success from every mandatory dependency.
+- Fail on failed, cancelled, unexpectedly skipped, or missing results.
+- Never silently pass because a dependency was skipped.
+- Have a unique, stable name and no matrix expansion.
+
+Do not path-filter the required workflow so that documentation-only PRs leave it
+pending. Avoid continue-on-error, “|| true”, or other failure suppression.
+
+Use the same validation commands locally and in CI.
+
+Security defaults:
+- GitHub-hosted runners.
+- Read-only GITHUB_TOKEN permissions for PR validation.
+- Disable Actions' permission to create and approve PRs.
+- No repository-administration credential in CI.
+- No deployment secrets in PR jobs.
+- Do not use pull_request_target to execute PR-controlled code.
+- Pin external Actions to verified full commit SHAs, with version comments.
+- Do not interpolate untrusted PR titles or bodies directly into shell commands.
+- Disable persisted checkout credentials when unnecessary.
+- Set sensible timeouts and cancel superseded PR-validation runs.
+
+Repository settings are applied through the authorized administrative setup,
+not automatically by a PR-controlled workflow holding an admin token.
+
+## 7. Establish delivery without inventing a deployable application
+
+For this phase, delivery means a validated, commit-addressed foundation artifact,
+NOT a running application or a cloud deployment.
+
+After a push to protected main:
+- Run the same required validation.
+- Only after success, produce a source/configuration archive from that exact commit.
+- Include the commit SHA and an artifact checksum.
+- Upload it as a GitHub Actions artifact with a short, documented retention period.
+- Exclude .git, credentials, node_modules, caches, and untracked files.
+
+Prefer a job in the same trusted-main workflow, or a small reusable workflow,
+rather than a complicated cross-workflow trigger chain.
+
+PR runs must not execute the delivery job.
+Do not create public releases, publish packages, push container images, provision
+hosting, or add cloud credentials.
+
+Document container packaging and deployment as later work.
+Do not describe a source archive as a deployable MP3 service.
+
+Because this run must stop before merging the foundation PR, distinguish
+“delivery workflow configured and validated” from “delivery executed on main.”
+Do not claim the latter without an observed successful run.
+
+## 8. Verify, report, and stop
+
+Validate locally, then inspect actual GitHub state.
+
+Verify and report:
+- Correct repository identity, visibility, and default branch.
+- Active effective protection for main.
+- Required review count, stale-review behavior, latest-push approval, and empty
+  bypass configuration.
+- Force-push/deletion restrictions and merge method settings.
+- Exact required check name and observed source integration.
+- Successful CI results for the current PR revision, not an earlier commit.
+- Whether missing approval actually blocks the PR.
+- Actions permissions and delivery-trigger restrictions.
+
+Test the terminal CI gate's handling of failure/cancellation/skipping with
+non-destructive negative tests. Distinguish local test evidence from live GitHub
+enforcement evidence.
+
+Do not force-push, delete main, or attempt an unapproved merge to test protection.
+Do not describe an unperformed destructive test as having passed.
+
+Acknowledge that repository administrators retain the ability to edit repository
+settings; no-bypass protection is not an immutable barrier against its owner.
+
+Finish with:
+1. Repository URL and foundation PR URL.
+2. Created/changed files and their purpose.
+3. Effective merge controls, with configured versus verified status.
+4. Commands executed and observed results.
+5. CI run URLs and associated commit SHAs.
+6. Delivery status: configured, executed, or blocked.
+7. Outstanding prerequisites, including reviewer eligibility or plan restrictions.
+8. The exact human action needed next.
+
+Stop here.
+Do not merge, enable auto-merge, approve the PR, start the parser, or advance to
+the next application phase.

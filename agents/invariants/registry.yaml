@@ -1,0 +1,20 @@
+schema_version: 1
+artifact: invariant-registry
+producer_plugin: mvp-orchestrator
+producer_version: 0.1.0
+compatibility_baseline: 0.0.0
+status: approved
+invariants:
+- id: INV-FOUNDATION-01
+  requirement_ids:
+  - REQ-001
+  - REQ-002
+  validator_ids:
+  - VAL-FOUNDATION-01
+  statement: Foundation checks and effective remote controls must validate before the bounded phase closes.
+  owner: foundation-maintainer
+  scope: Repository foundation and main branch settings
+  enforcement: Direct local validation and read-only GitHub verification
+  evidence_paths:
+  - agents/outputs/foundation-validation.json
+  failure_action: blocked

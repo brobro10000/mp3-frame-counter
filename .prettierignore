@@ -1,0 +1,10 @@
+# Preserve historical orchestrator artifacts and the operating contract's existing formatting.
+AGENTS.md
+agents/
+# User-supplied source captures retain their original bytes and recorded checksums.
+docs/requirements/sources/
+node_modules/
+.cache/
+.artifacts/
+.mvp-workflow/
+.mvp-orchestrator/

@@ -1,0 +1,14 @@
+{
+  "status": "validated",
+  "repository": "brobro10000/mp3-frame-counter",
+  "pr": "https://github.com/brobro10000/mp3-frame-counter/pull/1",
+  "head": "cb4b4b6bb55884bb09e598c03cedbb22ff24971e",
+  "ruleset": 24803567,
+  "check": "control-plane",
+  "integration": "github-actions",
+  "integration_id": 15368,
+  "run": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/37966075114",
+  "reviewDecision": "REVIEW_REQUIRED",
+  "mergeStateStatus": "BLOCKED",
+  "delivery": "configured; not executed on main"
+}

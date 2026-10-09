@@ -1,0 +1,8 @@
+schema_version: 1
+release_version: 0.1.0
+current_phase: null
+completed_phases:
+- phase-01-repository-foundation
+state: complete
+blockers: []
+last_phase_report_sha256: 18f6cca5d6457d2511a6b5de638101db7be027d2482eaa0b11edd473fe4a5076
