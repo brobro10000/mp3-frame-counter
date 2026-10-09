@@ -1,3 +1,13 @@
+/**
+ * Audit GitHub's live repository controls and the current foundation PR using read-only requests.
+ *
+ * Run `npm run verify:github` from the repository root with Git and an authenticated GitHub CLI on PATH.
+ * The account needs access to repository settings; local HEAD must match the pushed PR revision with passing CI.
+ * Compare effective rules against docs/main-ruleset.json, then verify check provenance and the review blocker.
+ * Success prints a JSON snapshot; any unmet assertion exits nonzero. No settings, reviews or merges are changed.
+ * This audit intentionally expects an open, unapproved foundation PR and no main delivery run; reassess after merge.
+ */
+
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -18,6 +28,7 @@ for (const [key, value] of Object.entries({
   delete_branch_on_merge: true,
 }))
   assert.equal(metadata[key], value, key);
+// Read effective main-branch rules as well as the ruleset definition, so configured but inactive rules cannot pass.
 const summaries = api(`repos/${repository}/rulesets?includes_parents=true&per_page=100`);
 const matches = summaries.filter((rule) => rule.name === expected.name && rule.enforcement === "active");
 assert.equal(matches.length, 1, "Expected one active foundation ruleset");
@@ -40,6 +51,7 @@ assert.equal(permissions.enabled, true);
 assert.equal(permissions.sha_pinning_required, true);
 const token = api(`repos/${repository}/actions/permissions/workflow`);
 assert.deepEqual(token, { default_workflow_permissions: "read", can_approve_pull_request_reviews: false });
+// Bind the audit to this checkout and the actual GitHub PR author, rather than Git commit author metadata.
 const head = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 const prs = api(`repos/${repository}/pulls?state=open&head=brobro10000:codex/phase-01-repository-foundation&base=main`);
 assert.equal(prs.length, 1);
@@ -58,6 +70,7 @@ const review = JSON.parse(
 assert.equal(review.isDraft, false, "Use review requirements, not draft state, as the blocker");
 assert.equal(review.reviewDecision, "REVIEW_REQUIRED");
 assert.equal(review.mergeStateStatus, "BLOCKED");
+// A green check counts only for this revision and the GitHub App observed when the requirement was configured.
 const checks = api(`repos/${repository}/commits/${head}/check-runs?per_page=100`).check_runs;
 const required = expectedStatus.parameters.required_status_checks[0];
 const gate = checks.find((check) => check.name === required.context && check.app.id === required.integration_id);
@@ -71,6 +84,7 @@ const jobs = api(`repos/${repository}/actions/runs/${run.id}/jobs?per_page=100`)
 assert.equal(jobs.find((job) => job.name === "control-plane")?.conclusion, "success");
 assert.equal(jobs.find((job) => job.name === "validate-foundation")?.conclusion, "success");
 assert.equal(jobs.find((job) => job.name === "deliver-foundation")?.conclusion, "skipped");
+// Keep "delivery configured" distinct from "delivery executed" while the foundation PR remains unmerged.
 const mainRuns = api(
   `repos/${repository}/actions/workflows/ci.yml/runs?event=push&branch=main&per_page=100`,
 ).workflow_runs;

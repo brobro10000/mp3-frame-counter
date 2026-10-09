@@ -1,3 +1,12 @@
+/**
+ * Check that tracked foundation files preserve the intended CI, tooling and repository-control policy.
+ *
+ * Run `npm run check:policy` from the repository root after `npm ci`, using the pinned Node/npm versions.
+ * Assertions inspect workflow structure, gate dependencies, delivery restrictions, dependency pins and ruleset JSON.
+ * A mismatch exits nonzero; this script reads local files and tool versions without changing repository settings.
+ * It validates the declared policy, while verify-github.mjs separately audits enforcement on GitHub.
+ */
+
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -6,6 +15,7 @@ import { mandatoryJobs } from "./ci-gate.mjs";
 
 const read = (path) => readFileSync(path, "utf8");
 const workflow = parse(read(".github/workflows/ci.yml"));
+// Keep private inputs, generated caches and future application work outside the tracked foundation scope.
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const forbidden =
   /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key)$/i;
@@ -18,6 +28,7 @@ assert.deepEqual(
 assert.deepEqual(workflow.on, { pull_request: { branches: ["main"] }, push: { branches: ["main"] } });
 assert.deepEqual(workflow.permissions, { contents: "read" });
 assert.equal(workflow.concurrency["cancel-in-progress"], "${{ github.event_name == 'pull_request' }}");
+// The terminal gate must cover every mandatory job and still run when an upstream dependency fails or skips.
 const jobs = workflow.jobs;
 assert.deepEqual(Object.keys(jobs).sort(), ["control-plane", "deliver-foundation", ...mandatoryJobs].sort());
 const gate = jobs["control-plane"];
@@ -38,6 +49,7 @@ const delivery = jobs["deliver-foundation"];
 assert.deepEqual(delivery.needs, ["control-plane"]);
 assert.equal(delivery.if, "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}");
 assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
+// Enforce a bounded, read-only hosted workflow without mutable Action references or failure suppression.
 for (const job of Object.values(jobs)) {
   assert.equal(job["runs-on"], "ubuntu-24.04");
   assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= 10);
@@ -61,6 +73,7 @@ assert.equal(upload.with["if-no-files-found"], "error");
 assert.equal(upload.with.name, "foundation-${{ github.sha }}");
 assert.equal(upload.with.path, ".artifacts/*");
 assert.equal(upload.with["include-hidden-files"], true);
+// Ensure local validation and CI use the same exact tooling and integrity-checked npm dependency graph.
 const pkg = JSON.parse(read("package.json"));
 const lock = JSON.parse(read("package-lock.json"));
 assert.equal(pkg.private, true);
@@ -80,6 +93,7 @@ for (const [path, dependency] of Object.entries(lock.packages)) {
 }
 const dependabot = parse(read(".github/dependabot.yml"));
 assert.deepEqual(dependabot.updates.map((item) => item["package-ecosystem"]).sort(), ["github-actions", "npm"]);
+// Validate the versioned administrative intent without treating this file as proof of active remote protection.
 const rules = JSON.parse(read("docs/main-ruleset.json"));
 assert.equal(rules.enforcement, "active");
 assert.deepEqual(rules.bypass_actors, []);
