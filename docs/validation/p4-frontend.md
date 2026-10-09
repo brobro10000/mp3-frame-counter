@@ -126,3 +126,74 @@ cfe257294dfadd0fcefb66b34c737eff3d35be42170730a764c660baef85f9e4  frontend/index
 b0a3c984a236c2f6b8c54f7d5a825874512fa9b1d357a9cfe1a45f77befc9203  frontend/nginx.conf.template
 ce81922b009767165e3dc401e4b9c176d5be5c44da860e7cf61ed643986efd0b  frontend/styles.css
 ```
+
+## AC-12 timeout classification and active-shutdown correction
+
+The controller's full run at clean revision `ff0d770d2474fa8a1493a93caaddb4aaaa4dbb16` passed 59 of 60 cases and failed
+the stopped-API case: the proxy returned 504 where r3 requires 502. The original failed result remains
+`.artifacts/mp3-e2e-70341-a97366c44d10.json`. That failure is not replaced by the narrower checks below; the controller
+must rerun the complete unchanged suite against the repair.
+
+The [NGINX upstream variable reference](https://nginx.org/en/docs/http/ngx_http_upstream_module.html#variables)
+describes connection timing. Inspection of the
+[exact 1.30.5 source](https://github.com/nginx/nginx/blob/release-1.30.5/src/http/ngx_http_upstream.c) showed that
+timing starts unset, formats as `-`, and is populated at the request-send stage; both connection and response timeouts
+enter the generic 504 path. A timed-out attempt to establish a connection therefore needed distinct local error
+handling.
+
+Before editing the template, an isolated real API/frontend pair using the failed run's exact images reproduced the
+failure. Temporary diagnostic headers in that disposable frontend exposed actual NGINX values. A stopped API produced
+504 after 5.022 seconds with `$upstream_connect_time` equal to `-`; a paused API produced 504 after 5.017 seconds with
+connection timing `0.000`. Real warmup/recovery uploads returned the independent tone fixture's exact count of 9. The
+diagnostics were not added to product source, image configuration or permanent logging.
+
+The minimal repair maps absent connection timing to a local unavailable-service 502 inside the existing timeout handler.
+Established-connection timeouts still return 504. The
+[named error handler](https://nginx.org/en/docs/http/ngx_http_core_module.html#error_page) now chooses its response
+code. No successful response is fabricated; upstream retry remains disabled, and `proxy_intercept_errors off` continues
+to preserve actual API responses. No API, fixture, assertion, controller or frozen contract was changed.
+
+At the controller's additional request, `worker_shutdown_timeout 5s` now bounds graceful active-client draining before
+the seven-second container stop deadline. Its main-context behavior was checked against the
+[official directive documentation](https://nginx.org/en/docs/ngx_core_module.html#worker_shutdown_timeout) and the
+actual pinned NGINX image. This does not change the thirty-second request-body inactivity policy during normal service.
+
+The final repair was built independently with:
+
+```sh
+docker --config .mvp-workflow/execution/docker-public build --platform linux/amd64 -t mp3-frontend:connect-timeout-repair frontend
+```
+
+An earlier repair build had captured its context before the extra shutdown change arrived. A source/image hash check
+correctly rejected that stale template before fault testing; its temporary resources were removed. Rebuilding the final
+source succeeded. The tested image is `sha256:a39e1b86831bc206e93f0352edd03f6365647417dd6dff43e0d71a7bb1011b18`
+(`linux/amd64`), and its baked template hash exactly matched the working source.
+
+Focused real fault checks ran in the unique isolated pair `mp3-repair-probe-6b0e7e4153`, with read-only root
+filesystems, tmpfs, dropped capabilities and the assigned memory/PID limits. The API image remained the failed run's
+unchanged `sha256:79bcf5f19430d3d514e20711bd8550e76245c241d1d06d45f2b1ed2265c34b38`.
+
+| Actual observation                    | Internal upstream status / connection timing | Public result                                           |
+| ------------------------------------- | -------------------------------------------- | ------------------------------------------------------- |
+| API stopped, first cycle              | `504` / `-`                                  | 502 readable JSON, 5.012 seconds                        |
+| API stopped, second cycle             | `504` / `-`                                  | 502 readable JSON, 5.009 seconds                        |
+| API stopped, third cycle              | `504` / `-`                                  | 502 readable JSON, 5.008 seconds                        |
+| API paused                            | `504` / `0.000`                              | 504 readable JSON, 5.010 seconds                        |
+| Every restart/resume                  | `200` / numeric timing                       | Real fixture upload returned exactly `{"frameCount":9}` |
+| SIGQUIT with incomplete upload active | 128 bytes sent, 1 MiB declared               | Exit 0 in 5.200 seconds; no OOM or partial-success 200  |
+
+The incomplete-upload socket stayed open with no premature response before shutdown. Both timing paths retained their
+intended error messages. All focused assertions and NGINX configuration checks passed. Each probe restored its paused
+API in `finally`, removed only its captured container IDs/network, and subsequent scoped listings confirmed no probe
+containers or networks remained. The default application and other projects were untouched.
+
+Only the following frontend source hashes changed in this correction; the initial handoff hashes above remain historical
+evidence rather than being overwritten:
+
+```text
+5787920ca621504bbe416741a5c73212cf4e04d14d348004df654317b1a52d67  frontend/nginx.conf.template
+c2204f9abbd52383c6acbeeee8fdd47ef0abff427bfafbe0b3c1129b00ebb860  frontend/README.md
+```
+
+Independent repair review and full-suite validation remain controller-owned. These focused results do not claim full P4
+acceptance, human approval, merge, managed release or provider-network behavior.

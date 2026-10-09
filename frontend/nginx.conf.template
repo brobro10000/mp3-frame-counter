@@ -1,6 +1,8 @@
 # Rendered by entrypoint.sh from validated runtime values; NGINX reads only the resulting /tmp/nginx.conf.
 # One worker and bounded connections fit the local 64 MiB frontend budget; uploads stream to the bounded API.
 worker_processes 1;
+# Bound active-client draining before the container's seven-second termination deadline.
+worker_shutdown_timeout 5s;
 pid /tmp/nginx.pid;
 error_log /dev/stderr warn;
 
@@ -29,6 +31,14 @@ http {
     # Use the container's actual resolver, including bracketed IPv6 addresses, and refresh changed API addresses.
     resolver @@RESOLVERS@@ valid=1s;
     resolver_timeout 5s;
+
+    # With retries disabled, absent connection timing means the single upstream connection was never established.
+    # NGINX also reports connect timeouts as 504; keep these unavailable-service failures distinct from read timeouts.
+    map $upstream_connect_time $upstream_not_connected {
+        default 0;
+        "" 1;
+        "-" 1;
+    }
 
     server {
         listen @@PORT@@;
@@ -73,7 +83,7 @@ http {
             proxy_read_timeout 5s;
             error_page 413 =413 @upload_too_large;
             error_page 502 =502 @upstream_unavailable;
-            error_page 504 =504 @upstream_timeout;
+            error_page 504 = @upstream_timeout;
         }
 
         # Local ingress failures get usable JSON; actual API errors pass through without replacement.
@@ -87,6 +97,9 @@ http {
         }
         location @upstream_timeout {
             default_type application/json;
+            if ($upstream_not_connected) {
+                return 502 '{"error":"Analysis service is unavailable. Please try again."}';
+            }
             return 504 '{"error":"Analysis service timed out. Please try again."}';
         }
         location / {

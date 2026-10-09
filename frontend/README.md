@@ -30,8 +30,11 @@ the API enforce the inclusive 20 MiB actual-body limit. No filename, upload or r
 The upload location preserves methods, bytes, query strings and API statuses/JSON. It disables request/response
 buffering, upstream retry, caching and storage; HTTP/1.1 upstream forwarding keeps chunked uploads streaming. Local
 ingress 413/502/504 failures receive JSON errors. Access logging is disabled, and error logs never include upload
-bodies. NGINX uses one worker, 128 connections, ten-second keepalive and a thirty-second request-body inactivity
-timeout. These are bounded local settings, not throughput guarantees or a total upload-duration deadline.
+bodies. An upstream connection that cannot be established is unavailable (502), including a connection timeout; a
+timeout after connection establishment remains 504. NGINX connection timing distinguishes these without a retry. NGINX
+uses one worker, 128 connections, ten-second keepalive and a thirty-second request-body inactivity timeout. Graceful
+shutdown allows active clients five seconds to drain before closing connections, within the container's seven-second
+stop deadline. These are bounded local settings, not throughput guarantees or a total upload deadline.
 
 See [acceptance r3](../docs/testing/acceptance-contract.md) and [frontend evidence](../docs/validation/p4-frontend.md).
 No source or configuration review alone establishes full local acceptance, managed ingress compatibility or release
