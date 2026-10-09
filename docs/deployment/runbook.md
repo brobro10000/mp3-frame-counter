@@ -33,12 +33,14 @@ release identity. Public package publication is unnecessary.
 
 ## Compact release manifest
 
-Retain one JSON/CI artifact per release, not a database. Future fields: unique release/version ID, source SHA, suite
-baseline SHA, fixture manifest hash, frontend/API immutable digests, provider service/deployment IDs, build platform,
-environment and nonsecret configuration revision/hash, approved production differences, candidate URL/verification run,
-production approval actor/time/reference bound to that identity, production run/smoke, prior known-good manifest and
-outcome/recovery evidence. Unknown values stay unknown and block the corresponding gate. No secret values or hashes of
-low-entropy secrets. Source SHA alone does not identify tested binaries.
+Retain one JSON/CI artifact per release, not a database. The [local manifest](preparation.md) now binds tested source,
+suite, local configuration, image IDs and exported archive checksums; provider and approval fields remain unknown. The
+complete managed record still requires: unique release/version ID, source SHA, suite baseline SHA, fixture manifest
+hash, frontend/API immutable digests, provider service/deployment IDs, build platform, environment and nonsecret
+configuration revision/hash, approved production differences, candidate URL/verification run, production approval
+actor/time/reference bound to that identity, production run/smoke, prior known-good manifest and outcome/recovery
+evidence. Unknown values stay unknown and block the corresponding gate. No secret values or hashes of low-entropy
+secrets. Source SHA alone does not identify tested binaries.
 
 Keep current and previous known-good artifacts and enough evidence for the approved recovery window. Registry retention
 must preserve the exact digests required for repulls; do not assume the provider stores old images. Candidate cleanup

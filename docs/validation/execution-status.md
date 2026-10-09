@@ -10,12 +10,13 @@ local evidence from the outstanding protected-main, provider and release gates.
 | P2 independent acceptance | Reviewed test-only suite preceded product source: 46 fixtures, 60 cases, independent oracle; exact-head CI passed for [PR #4](https://github.com/brobro10000/mp3-frame-counter/pull/4), source `28c2a9c`. | Separate test-only merge and binding to its actual protected-main squash SHA.                                                                              |
 | P3 parser                 | Pure parser independently reviewed, 56 unit cases and source/compiled private sample comparison passed.                                                                                                   | Provisional local baseline remains distinct from shipping approval.                                                                                        |
 | P4 local integration      | Clean `2adf71b447bfee9b78e9bdfc2b29566af894d0fe` passed 75 unit cases, all 60 external cases and cleanup; two AMD64 images, resource/lifecycle checks and browser/sample checks passed.                   | Revalidate the actual integrated main revision after baseline publication. Managed observations are still required.                                        |
-| P5 managed release        | Deployment preflight completed; local release preparation is being implemented.                                                                                                                           | Actual provider setup, deployment workflow, candidate acceptance, production approval/promotion/smoke, release publication and recovery have not occurred. |
+| P5 managed release        | Deployment preflight and reviewed local preparation executed: exact tested images exported as provisional 0.1.10; checksums and unchanged retry passed.                                                   | Actual provider setup, deployment workflow, candidate acceptance, production approval/promotion/smoke, release publication and recovery have not occurred. |
 
 Detailed evidence: [P1](p1-foundation.md), [P2](p2-acceptance.md), [sample oracle](sample-baseline.md),
 [P3](p3-parser.md), [P4 integration](p4-integration.md), [exact P4 result](artifacts/p4-local-acceptance.json) and
-[deployment preflight](deployment-preflight.md). Historical handoffs record what was known when authored; this status
-and subsequent evidence appendices identify later outcomes without erasing failed observations.
+[P5 local preparation](p5-preparation.md), plus [deployment preflight](deployment-preflight.md). Historical handoffs
+record what was known when authored; this status and subsequent evidence appendices identify later outcomes without
+erasing failed observations.
 
 ## Verified local boundary
 

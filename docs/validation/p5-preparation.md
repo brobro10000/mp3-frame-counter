@@ -62,3 +62,37 @@ deployed smoke, successful version/tag/release publication and actual recovery r
 
 Provider-independent preparation preserves useful tested bytes while these prerequisites are pending. It does not
 satisfy or defer them, and cannot be reported as a working automated deployment cycle.
+
+## Root execution after independent review
+
+Independent reviewer `release_preparation_review` found a path-safety issue before export: a symlink could redirect the
+artifact parent into a tracked directory. The author repaired all artifact/report parent components and added a
+disposable regression confirming rejection before creating anything in the redirected target. The reviewer then returned
+advisory PASS for this local-only scope. Fifteen focused tests and syntax checks passed. Root's full `npm run validate`
+passed formatting, actionlint, policy, portability and **64 gate/tooling tests**.
+
+Root committed the reviewed tooling as `b99b292c55b5fc114911829a896d309c8c1900f6`, confirmed a clean checkout and ran:
+
+```sh
+npm run prepare:release -- --report .artifacts/mp3-e2e-88959-29ea5b218537.json
+make prepare-release
+# From .artifacts/releases/0.1.10/:
+shasum -a 256 -c SHA256SUMS
+```
+
+All commands exited zero. The first run returned `prepared-local`, `reused: false`, `deployable: false`; the Make retry
+returned the same identity with `reused: true`. Both independent archive checksum checks returned `OK`. No rebuild,
+retag, push, image load, provider operation, Git tag or hosted release occurred.
+
+The [exact portable manifest](artifacts/p5-local-preparation.json) preserves tested product source `2adf71b` separately
+from preparation source `b99b292`. Its provisional version is **0.1.10**, platform `linux/amd64`, and reservation hash
+is `15fcd28cb4d5f71dbb1b060c42751990d71a9c77af993112b1a6774a4575b60c`.
+
+| Archive  | Bytes      | SHA-256                                                            |
+| -------- | ---------- | ------------------------------------------------------------------ |
+| API      | 58,523,648 | `b8b28e87a292a6d11a0c431760d01197f54cc0b424463b79577a7c2410e5dc88` |
+| Frontend | 25,592,320 | `65be146fd4532a4efbe3ea0da07d957dd2cc86cc22509d799d8876dead033b11` |
+
+The archives remain ignored in `.artifacts/releases/0.1.10/`; only portable identity evidence is tracked. They have no
+registry digests, provider configuration, candidate result or production approval. This is an executed local preparation
+step, not fulfillment of any complete APP-REL outcome. The remaining prerequisites above still apply.
