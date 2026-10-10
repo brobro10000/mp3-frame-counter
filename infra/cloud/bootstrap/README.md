@@ -3,13 +3,16 @@
 This configuration creates a dedicated billed project, five enabled APIs and a **USD 100/month all-service alert
 budget** through Terraform. A separate declarative reconciler owns a **USD 75/month Cloud Run spend cap**, shared by
 future stage and production in that project. It provisions no application services, public endpoints, registry, workload
-federation, storage, credentials or deployment workflow. No live plan or apply has been performed.
+federation, storage, credentials or deployment workflow. The dedicated project and cost controls were applied and read
+back on 2026-10-10; see the
+[live verification record](../../../docs/validation/cloud-cost-bootstrap.md#live-bootstrap-and-readback--2026-10-10).
 
 The owner's [execution amendment](../../../docs/phases/roadmap-execution-authorization.md) authorizes the monthly cost
 boundary and IaC direction. Obtain current companion approval and merge this bounded bootstrap before a live apply. This
 cost prerequisite follows PLAN-01 independently of GATE-01; it does not alter acceptance policy. Human approval remains
 mandatory for every production application deployment. PLAN-01's completed review/merge/publication is recorded in the
-[roadmap execution record](../../../docs/validation/roadmap-execution.md); this bootstrap has not been applied.
+[roadmap execution record](../../../docs/validation/roadmap-execution.md). PR #9 subsequently merged and published
+v0.1.9 before the live verification recorded below.
 
 ## What the controls establish
 
@@ -81,9 +84,9 @@ account keys or permanent credentials to make bootstrap work.
 
 ## Reviewed execution sequence
 
-The following commands describe the later operator workflow; they were not executed against Google while drafting. Run
-within the reviewed bootstrap directory using a private operator session. Set `umask 077` before producing private
-files. Keep the directory on protected local storage. The checked-in `.gitignore` is a backup control, not encryption.
+The following commands describe the reproducible operator workflow. The initial run is recorded separately. Run within
+the reviewed bootstrap directory using a private operator session. Set `umask 077` before producing private files. Keep
+the directory on protected local storage. The checked-in `.gitignore` is a backup control, not encryption.
 
 1. Supply required variables through a private `bootstrap.tfvars`; leave credentials out. Confirm USD currency and
    billing readiness independently. Do not paste private inputs into PRs or review logs.
@@ -148,8 +151,11 @@ substitute. When abandoning management is truly intended, review that operation 
 
 Validation results are recorded in the [bootstrap record](../../../docs/validation/cloud-cost-bootstrap.md).
 Deterministic tests prove local decision behavior, not current account permission, real API acceptance, cap enforcement
-timing or the final invoice. No live plan or apply is claimed by these source checks. The integrated tooling command
-includes cap tests. Foundation CI adds pinned Terraform 1.13.3 setup, `terraform fmt -check`,
+timing or the final invoice. Live observations are recorded separately from these source checks. The integrated tooling
+command includes cap tests. Foundation CI adds pinned Terraform 1.13.3 setup, `terraform fmt -check`,
 `terraform init -backend=false -input=false -lockfile=readonly` and `terraform validate`, with no cloud credentials,
-plan or apply. These workflow checks are implemented for the bootstrap PR; their integrated CI run remains pending in
-this record.
+plan or apply. PR #9 main CI passed these checks and published v0.1.9. The later live drift check exposed an API
+default-field normalization: its response omits `ownershipScope`, so explicit `ALL_USERS` caused a repeated no-op plan.
+The optional field is now omitted; Google defines unspecified ownership as equivalent to `ALL_USERS`. A refreshed live
+plan then returned exit 0 with no changes, without applying another cloud mutation.
+[Ownership semantics](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets#OwnershipScope).

@@ -95,3 +95,53 @@ reviewed critical boundaries. That reviewer performed no local tests or cloud ac
 above is the implementer's/coordinator's evidence. This audit does not replace exact-head companion review of the
 integrated PR or real provider verification. Cost-control readiness remains a prerequisite to paid runtime work, and
 production application deployment remains a separate human decision.
+
+## Live bootstrap and readback — 2026-10-10
+
+The earlier source-authoring observations above remain historical. Live observations below were performed by the
+owner-authorized coordinator/operator, not independently by the companion. The
+[sanitized observation record](artifacts/cloud-cost-readback.json) binds the inspected configuration, retained raw
+record hashes, budget fields and before/after drift results. It captures the relevant primary-source default and pinned
+provider schema/readback behavior; it is an operator record, not a provider-signed attestation.
+[PR #9](https://github.com/brobro10000/mp3-frame-counter/pull/9) merged as owner `brobro10000` at
+`a21108cf2982eb973fa9b4502007084bbd450d08`, after the Docker companion `brobro1000` reviewed all 19 changed paths at
+`ad24d73a9f6bc3d0292a93770ab808b3d08bfc61` and
+[published automated approval](https://github.com/brobro10000/mp3-frame-counter/pull/9#pullrequestreview-5478099567).
+Companion run `20261010T070926-861e47fb` reported no findings; this is automated review, not human approval.
+
+[Main CI 38033869422](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38033869422), attempt 1, passed all
+mandatory jobs and publication. [v0.1.9](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.9) targets
+that merge, is not a draft and has ten assets. Release archives were not downloaded or independently rehashed in this
+task.
+
+The owner-authorized operator verified active USD billing, an existing primary payment method and the owner's billing
+administrator role before applying. The role is eligible for default alert emails; no actual threshold notification has
+been triggered or received as part of this verification. An initial Python HTTPS read failed local certificate
+verification; the successful repeat used the system curl trust store. TLS validation was never disabled.
+
+The private saved Terraform plan contained exactly one dedicated project, five API resources and one alert budget, all
+creates and no application resources. Its SHA-256 was
+`d0b2aa0e4baa063be9583f7dea62a60986e2a8ae26a8bfc9e49ae16ba829b9e3`. Apply used that exact saved plan and succeeded. The
+project/API/budget tree was identical to the reviewed PR head. Credentials were passed in process memory; private
+inputs, state, plans, resource identities and raw observations remain ignored with restricted local file permissions.
+
+Direct API readback verified active billing on the intended project/account and a USD 100 gross monthly budget scoped to
+all services in that project, with five expected threshold rules and default email recipients enabled. The cap
+reconciler first returned `missing` without mutation, then performed one explicitly authorized creation and independent
+readback returning `ready`. Its exact resource identity was saved privately. A subsequent read-only check returned
+`ready` for USD 75, the same project, Cloud Run service scope, `CONFIGURED` state and completed reconciliation. No cap
+patch, lift, increase, deletion or second creation occurred.
+
+The first post-apply Terraform drift check returned exit 2: Google omitted the default `ownershipScope` field, while
+provider 8.6.0 repeatedly planned to set the explicit `ALL_USERS` value. The narrowly scoped correction omits that
+optional field. Google's documented unspecified scope has the same access semantics as `ALL_USERS`; IAM still applies.
+Terraform formatting and schema validation passed. A fresh authenticated read-only plan with that correction returned
+exit 0, **no changes**, without applying another cloud mutation.
+[API ownership defaults](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets#OwnershipScope),
+[pinned provider schema/readback](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/services/billingbudgets/resource_billing_budget.go).
+
+The operator observed setup and point-in-time readiness; the companion has no independent live access. These checks do
+not establish enforcement timing, future notification delivery or a guaranteed USD 100 invoice ceiling. No registry,
+storage backend, workload federation, application service, stage or production deployment exists from this bootstrap.
+Production application deployment remains a separate human gate. Retain the controls and their private state while later
+reviewed IaC adds only the necessary application infrastructure.

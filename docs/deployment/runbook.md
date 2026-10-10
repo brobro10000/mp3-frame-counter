@@ -1,10 +1,11 @@
 # Release and recovery runbook
 
-**Current execution update, 2026-10-10:** [PR #8 completed PLAN-01](../validation/roadmap-execution.md), and v0.1.8 is
-published. The owner authorized [continued roadmap execution](../phases/roadmap-execution-authorization.md), IaC,
-billing setup and automatic stage delivery. Every production application deployment/promotion still requires human
-approval of its exact candidate. Software releases continue independently of deployment; no stage or production
-deployment is currently established.
+**Current execution update, 2026-10-10:** [PR #8 completed PLAN-01](../validation/roadmap-execution.md); PR #9
+subsequently merged and published v0.1.9. The dedicated project and monthly cost controls have passed live readback. The
+owner authorized [continued roadmap execution](../phases/roadmap-execution-authorization.md), IaC, billing setup and
+automatic stage delivery. Every production application deployment/promotion still requires human approval of its exact
+candidate. Software releases continue independently of deployment; no stage or production deployment is currently
+established.
 
 ## Dedicated project and cost-control prerequisite
 
@@ -15,18 +16,19 @@ all-service alert budget, then a separately owned USD 75 monthly Cloud Run spend
 creation must precede its scoped budget. Initial Terraform state remains ignored and private on the operator machine
 until a reviewed backend migration after live cost-control verification.
 
-The implementation is authored and locally checked; it has not been applied. Review and merge the bootstrap PR, then
-review the private live plan, apply only project/API/cost controls and read back the cap's exact resource, scope,
-amount, `CONFIGURED` output state and completed reconciliation. Missing, lifted, enforced, ambiguous or unready cap
-state blocks runtime setup. Never automatically raise, lift or delete the cap. See
+The initial reviewed apply created seven Terraform resources. The separate cap was created once and verified again using
+its recorded identity: USD 75, one project, Cloud Run only, `CONFIGURED` and no pending reconciliation. The USD 100
+all-service monthly alert budget and active billing association were independently read back. Before each later runtime
+setup/deployment, repeat the exact-identity cap check; these observations are point-in-time evidence. Missing, lifted,
+enforced, ambiguous or unready cap state blocks runtime setup. Never automatically raise, lift or delete the cap. See
 [bootstrap validation](../validation/cloud-cost-bootstrap.md) for source-check coverage and remaining prerequisites.
 
-The USD 100 alert budget uses default billing IAM emails; verify owner delivery. The USD 75 cap additionally requires
-project-owner notifications. Preserve USD 25 headroom for registry, logs, state and enforcement delay, but do not
-represent this as a strict invoice ceiling: reporting lag, in-flight charges and ancillary services can exceed it.
-Ordinary Terraform destruction is intentionally blocked; teardown requires a separate reviewed operation preserving cost
-controls until remaining paid resources are accounted for. No release workflow receives bootstrap cost-admin
-permissions.
+The USD 100 alert budget uses default billing IAM emails; the owner's recipient-eligible billing role was verified, but
+actual threshold-email delivery has not been observed. The USD 75 cap additionally requires project-owner notifications.
+Preserve USD 25 headroom for registry, logs, state and enforcement delay, but do not represent this as a strict invoice
+ceiling: reporting lag, in-flight charges and ancillary services can exceed it. Ordinary Terraform destruction is
+intentionally blocked; teardown requires a separate reviewed operation preserving cost controls until remaining paid
+resources are accounted for. No release workflow receives bootstrap cost-admin permissions.
 
 ## Roadmap deployment direction
 
