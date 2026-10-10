@@ -1,5 +1,11 @@
 # Independent acceptance baseline and change control
 
+**Binding completion, 2026-10-10:** PR #16 merged at `5645b0501ca403750a2d894d6a492afa4b42185b`; main run `38048679076`
+published v0.2.16 with authenticated approval evidence. The registry now binds transport-v1 as the single pending
+successor. r3 remains required for intervening governance work; the next product change activates transport-v1
+persistently. Read the [binding completion](../validation/transport-binding.md#protected-main-binding-publication).
+Proposal/empty-registry statements below retain their historical milestone context.
+
 **Transport binding proposal, 2026-10-10:** the independently authored transport-v1 candidate is merged and published in
 v0.2.15. This change records its actual candidate commit and independent approval in the transition registry; binding
 review/merge/publication remain pending. r3 still gates unchanged behavior. See the

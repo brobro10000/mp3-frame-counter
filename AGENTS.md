@@ -62,7 +62,8 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Keep exactly three detailed next PR cards; later work stays provisional. GATE-01 precedes successor suites,
   VER-01 precedes release-line activation, and compatible tooling precedes live extended-queue syntax.
 - Preserve immutable r3 genesis evidence. GATE-01 introduced verified dormant admission; review its guide in
-  docs/testing/acceptance-transition.md. An empty registry does not authorize successor tests or product changes.
+  docs/testing/acceptance-transition.md. PR #16 binds transport-v1 as the single pending successor; r3 remains required
+  for governance-only RUNTIME-POLICY, then the next product change must pass the bound successor.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.
 - Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.

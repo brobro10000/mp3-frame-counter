@@ -5,11 +5,12 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **TR-LIFECYCLE and TRANSPORT-CONTRACT merged; v0.2.15 publication verified**. The
-[transport evidence](../validation/transport-binding.md) records PR #14 and #15, their actual reviewed source
-identities, required r3 results and the separate 67-case candidate diagnostic. This change proposes the binding of
-transport-v1; its review/merge/publication remain pending. r3 remains required until the next product-affecting change
-activates the bound successor. The next cards are **TRANSPORT-BIND, RUNTIME-POLICY and FASTIFY**.
+Status: **TRANSPORT-BIND merged; v0.2.16 publication verified**. The
+[transport evidence](../validation/transport-binding.md#protected-main-binding-publication) records PR #14–16, their
+actual reviewed source identities, required r3 results, separate 67-case candidate diagnostic and actual binding.
+transport-v1 is the single pending successor. r3 remains required for governance-only RUNTIME-POLICY; the next product
+change activates transport-v1 persistently. The next cards are **RUNTIME-POLICY, FASTIFY and DOCS-CONTRACT**.
+Independent runtime-policy expectations are being established before its helper implementation.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -75,6 +76,18 @@ before implementation; neither this roadmap nor the binding changes executable p
 
 Graceful admitted-response completion remains operationally unresolved. The candidate proves bounded unfinished-upload
 closure and normal exit, and preserves a required fresh shutdown source/configuration review for the migration.
+
+### Actual binding amendment — 2026-10-10
+
+TRANSPORT-BIND merged as `5645b0501ca403750a2d894d6a492afa4b42185b`; main run `38048679076` published v0.2.16. The
+[completion record](../validation/transport-binding.md#protected-main-binding-publication) verifies actual binding-only
+admission, unchanged required r3, pending transport-v1 and no activation. The earlier instruction to bind the candidate
+is complete. RUNTIME-POLICY precedes Fastify; the documentation/CSP candidate may begin only after the migrated
+application has activated and passed transport-v1 on protected main.
+
+Later prerequisites remain provisional: selected documentation-tool permission before adding renderer dependencies;
+closed IaC path classes before cloud configuration changes; and a reviewed delivery-policy extension before automatic
+stage jobs or human-triggered production operations. They do not expand the current runtime-policy scope.
 
 ## Original planning assessment and evidence boundary
 
@@ -460,9 +473,10 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances actual transport binding, a separate narrow
-dependency-policy migration and Fastify implementation. GATE-01 and VER-01 publication/retries are verified; each later
-successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances RUNTIME-POLICY, Fastify implementation and independent
+docs/CSP candidate authoring. The transport binding is complete. GATE-01 and VER-01 publication/retries are verified;
+each later successor still requires independent authoring, actual merge binding and corresponding implementation
+evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

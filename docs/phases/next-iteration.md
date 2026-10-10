@@ -1,13 +1,14 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** PLAN-01, COST-BOOTSTRAP, GATE-01, VER-01, LINE-02, TR-LIFECYCLE and TRANSPORT-CONTRACT
-are merged. Protected-main run `38047498564` published **v0.2.15** from `6c28382d71a014351311e63154ef1c8916b8a229`. The
-[transport record](../validation/transport-binding.md) separates published r3 acceptance from the independently authored
-67-case candidate diagnostic. This change proposes the actual transport-v1 binding; its review, merge and publication
-remain pending. r3 still gates unchanged application behavior.
+**Execution status, 2026-10-10:** TRANSPORT-BIND merged as `5645b0501ca403750a2d894d6a492afa4b42185b`. Protected-main
+run `38048679076` published **v0.2.16**, with r3 still required and transport-v1 registered as the single pending
+successor. The [transport record](../validation/transport-binding.md#protected-main-binding-publication) records actual
+binding, approval, main acceptance and publication, separately from the 67-case candidate diagnostic.
 
-The three active cards are **TRANSPORT-BIND → RUNTIME-POLICY → FASTIFY**. A separate dependency-policy change is needed
-because current policy forbids all runtime dependencies and admission rejects mixed governance/product changes. The
+The three active cards are **RUNTIME-POLICY → FASTIFY → DOCS-CONTRACT**. RUNTIME-POLICY has independently corrected
+test-first expectations and a locally passing implementation; required CI, companion review, merge and publication are
+pending. A separate dependency-policy change is needed because current policy forbids all runtime dependencies and
+admission rejects mixed governance/product changes. The
 [version record](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) preserves verified line
 allocation; the [cost evidence](../validation/cloud-cost-bootstrap.md) preserves the dedicated project's USD 75 Run cap
 and USD 100 all-service alert budget. No application is deployed. Production application deployment/promotion requires
@@ -18,7 +19,9 @@ in the [acceptance](../agents/acceptance-author.md), [implementation](../agents/
 [review](../agents/reviewer.md) and [release](../agents/release-operator.md) instructions. The retired lifecycle and
 candidate cards remain in the
 [exact pre-binding document](https://github.com/brobro10000/mp3-frame-counter/blob/6c28382d71a014351311e63154ef1c8916b8a229/docs/phases/next-iteration.md);
-this window does not rewrite their dated execution evidence.
+the completed binding card remains in the
+[exact binding document](https://github.com/brobro10000/mp3-frame-counter/blob/5645b0501ca403750a2d894d6a492afa4b42185b/docs/phases/next-iteration.md).
+This window does not rewrite their dated execution evidence.
 
 Trace: APP-V1-009,010,011,013 for independent acceptance and delivery; APP-V1-012,015 and APP-REL-001–006 for exact
 image releases. APP-V1-014 and hosted APP-V1-015 remain future work. Roadmap gate IDs are planning decisions, not
@@ -46,74 +49,7 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — TRANSPORT-BIND: Bind the actual independently reviewed successor
-
-**Outcome:** register the merged transport-v1 candidate as the single pending successor. r3 still gates unchanged
-application behavior; the next product-affecting change must pass transport-v1. Binding ships neither Fastify nor
-documentation routes. Trace APP-V1-009,010,013 and APP-REL-001–006; added TC-01–07 remain later compatibility decisions.
-
-**Prerequisites:** TR-LIFECYCLE's verified capability, publication and explicit unresolved-drain disposition; the final
-TRANSPORT-CONTRACT candidate-only protected-main squash, independent exact-head approval, required main CI and release.
-Verify candidate discovery, oracle/negative controls and its separately labeled complete product diagnostic without
-substituting them for r3 required acceptance. Refresh trusted main and establish that this is the only pending
-candidate. The current candidate describes 67 identities; use the actual reviewed merged inventory and evidence, not a
-prediction.
-
-### Ownership, writable paths and immutable boundaries
-
-Root coordinates Git and appends one record to `docs/testing/acceptance-transitions.json`. Independent acceptance/gate
-review owns the identity audit; the companion independently reviews the exact final PR head. Narrow
-evidence/current-state updates may use `docs/testing/acceptance-transition.md`, `docs/roadmap/README.md`,
-`docs/phases/next-iteration.md` and `docs/validation/transport-binding.md`. Reuse an equivalent validation record if one
-exists at execution time.
-
-All `tests/acceptance/**`, `docs/testing/contracts/transport-v1.md`, genesis and prior registry records are immutable.
-Product, root dependencies/lock, controller, gate/release scripts, workflows, version policy and infrastructure are
-read-only. The trusted classifier already permits a registry-plus-documentation binding; no classifier change belongs
-here. This record cannot waive a failed candidate, alter its oracle or introduce another pending successor.
-
-### Independent checks before recording the binding
-
-1. Resolve the actual merged candidate commit and its single protected-main parent. Independently inspect the parent
-   diff: only the admitted suite and unique contract may have changed. Preserve original r3 suite objects and genesis.
-2. Derive suite tree, fixture-manifest SHA-256, contract SHA-256 and revision from that committed candidate. Confirm the
-   complete candidate squash tree equals the independently reviewed feature-head tree; suite tree is a different object.
-3. Obtain real repository/PR/review IDs, reviewer, reviewed head and reviewed tree. Trusted preflight must authenticate
-   the same-repository merge and the reviewer's current decisive approval for that head. Reject self-review, stale or
-   superseded approval, dismissed reviews, incomplete history and invented observations.
-4. Prepare the append-only record against these independently checked values. Verify actual resolver output selects
-   binding admission, required predecessor r3, the intended pending successor and no activation commit. Preserve the
-   original source/base/context and authenticated observations; source-equals-base is not an admission shortcut.
-5. Preserve the lifecycle distinction in binding evidence: TC-07 verifies bounded unfinished-upload closure and normal
-   same-generation exit. Graceful completion of an admitted response after a stopping boundary remains unresolved; the
-   migration still requires fresh independent shutdown source/configuration review and operational disposition.
-
-### Validation, review and failure signals
-
-Run focused existing resolver/admission/review-consumer tests, relevant policy/format checks and mandatory CI with
-unchanged required r3. Candidate controls remain separate evidence. Independently review every recorded identity and
-verify preflight, isolated extraction, preparation and publication agree about the required versus pending suite. Local
-selection is diagnostic only and cannot fabricate authenticated admission or the independent preflight digest.
-
-Mismatch, mixed scope, a second pending candidate, unavailable reviewed objects, stale approval, missing mandatory
-evidence or consumers that disagree blocks merge. A discovered gate defect or merged-candidate correction requires a
-separate reviewed repair; do not alter the candidate or widen gate policy inside this binding.
-
-Require clean exact-head companion approval, then merge as the owner under the existing controls. Observe protected-main
-admission, r3 acceptance, exact source/image evidence and normal v0.2.x software publication. Record the actual binding
-commit and release; neither PR checks nor the candidate diagnostic establishes main publication.
-
-### Rollback, release effect and stop
-
-Discard an unmerged proposal if needed. Once merged, the registry is append-only: there is no implicit cancellation,
-replacement or removal to evade the successor. Preserve all history; an unusable pending binding needs separately
-reviewed recovery policy. No deployment is implied by its ordinary v0.2.x release.
-
-**Done and stop:** actual binding, independent approval, mandatory main checks and release are verified. Demonstrate
-that the next product change requires transport-v1. Proceed only to the separate governance-only RUNTIME-POLICY card; do
-not introduce Fastify, alter the bound suite or begin docs/CSP/hosted work in this PR.
-
-## PR card 2 — RUNTIME-POLICY: Admit one explicitly pinned framework dependency
+## PR card 1 — RUNTIME-POLICY: Admit one explicitly pinned framework dependency
 
 **Outcome:** replace the blanket prohibition on root runtime dependencies with the frozen narrow Fastify policy, without
 installing or declaring Fastify. Current dependency-free product behavior and r3 required acceptance remain unchanged,
@@ -189,7 +125,7 @@ repair forward or coordinate a reviewed compatible product recovery, without rew
 actual main checks and ordinary v0.2.x release are verified. Stop before runtime installation or transport edits in this
 PR. Hand off to FASTIFY with the exact trusted base and bound transport identities.
 
-## PR card 3 — FASTIFY: Migrate transport under the bound compatibility contract
+## PR card 2 — FASTIFY: Migrate transport under the bound compatibility contract
 
 **Outcome:** Fastify owns upload parsing/route execution while preserving the reviewed raw HTTP and browser contracts,
 resource bounds, pure parser and two-image topology. A wrapper that merely forwards the unchanged native handler does
@@ -276,11 +212,139 @@ Preserve failed evidence and repair forward if a simple compatible revert is una
 transport-v1 contract and published as v0.2.x with exact image evidence. Record any remaining operational proof limits.
 No hosted deployment or semantic v1.0.0 is claimed. Stop before the separate docs/CSP successor and runtime docs routes.
 
+## PR card 3 — DOCS-CONTRACT: Independently define the documentation successor
+
+**Outcome:** one candidate-only `docs-v1` contract and complete independent acceptance extension for `/docs/`, the
+served OpenAPI specification, meaningful renderer interaction and effective CSP. Existing transport acceptance stays
+required. Candidate authoring does not serve documentation, install production tooling or activate this successor.
+
+**Owner:** independent acceptance author, separate from the Fastify/docs product implementer. The coordinator owns
+scope, exact-source evidence and Git/companion operations; an independent security reviewer owns DOCS-01 disposition.
+Give the author requirements, immutable contracts, independent fixtures and third-party renderer research, not product
+implementation, application helpers or a product-derived oracle.
+
+### Prerequisites and sequencing
+
+- Verified protected-main Fastify publication after TRANSPORT-BIND and RUNTIME-POLICY, including actual activation of
+  transport-v1, all 67 required external cases and the exact tested source/image pair. Do not start on a local/PR pass.
+- Fresh trusted main, no other pending candidate/binding, unchanged genesis and transport contracts, and reviewed
+  shutdown source/configuration disposition. Graceful admitted-response drain remains unresolved unless separately
+  proved.
+- Read the adopted roadmap, assessment/V1 requirements, transport-v1, acceptance-author/reviewer roles, transition guide
+  and the preserved lifecycle disposition. Renderer/CSP research is a starting hypothesis, not implementation evidence.
+- Resolve DOCS-01 through the isolated experiments below before freezing renderer/CSP expectations. No candidate
+  contract may assume undocumented nonce behavior or represent a research version as empirically verified.
+
+### Owned paths and read-only boundary
+
+Tracked changes are limited to `tests/acceptance/**` and the new unique `docs/testing/contracts/docs-v1.md`. Own only
+the necessary independent spec/fixtures, additive browser cases, exact inventory, shared predicates, falsification
+controls, standalone runner/report integration and contract documentation. Preserve every prior 67 case identity and
+assertion, existing fixture bytes/entries/counts/recipes, transport OpenAPI fixture and historical contract. Manifest
+revision and appended inventory entries identify the new candidate; do not rewrite prior expectations.
+
+Root package/dependencies/lock, product code, API routes, UI, Docker/NGINX configuration, CI/workflows, policy/release
+scripts, infrastructure, registry/genesis and previous contracts are read-only. No root build command, renderer asset,
+served specification or production dependency is added. Prefer existing standalone test tooling; justify any necessary
+test-only dependency independently and keep its exact pin/lock confined to the acceptance package. No product imports,
+private audio, credentials, Docker socket or arbitrary remote test target.
+
+### DOCS-01: Isolated feasibility before expectations are frozen
+
+Use a disposable, task-owned nonproduct scratch directory and an independently constructed small OpenAPI 3.0.3 fixture.
+Record pins, acquisition provenance, tool/browser versions, commands, failures and cleanup. Any approved third-party
+acquisition is separate from later network-denied generation and same-origin-only rendering. A prototype is neither
+product implementation nor a claimed acceptance pass. Keep scratch dependencies/artifacts out of tracked root files.
+
+1. **E1 — Artifact identity:** establish the exact stable renderer/template/CLI arrangement and embedded renderer
+   version; inventory/hash generated scripts, styles, fonts, specification and initialization. A CLI's version is not
+   its renderer identity. Prefer local assets, external initialization and system fonts; do not select floating
+   channels.
+2. **E2 — Effective CSP:** exercise initial rendering, a real client interaction and narrow viewport under a strict
+   baseline. Inspect dynamic style elements, attributes/CSSOM behavior and violations. Prove fixed hashes or supported
+   per-response nonce propagation before choosing either; a static nonce is prohibited. If a narrow docs-scoped style
+   exception is necessary, record the exact directive, scope and consequence for independent security and
+   owner-authorized design review. A successful prototype never preapproves that exception. No global relaxation,
+   blanket unsafe-inline/ unsafe-eval, `bypassCSP` or ignored violations. Keep DOCS-01 open if the design lacks an
+   authorized disposition.
+3. **E3 — Offline operation:** deny generation network after acquisition and use a fresh browser cache. Resolve only
+   approved local references; reject foreign/protocol-relative/data references and unsafe local traversal. Observe zero
+   foreign asset/telemetry attempts during load, interaction and page hiding, including requests blocked before sending.
+4. **E4 — Sensitivity:** run the missing-renderer, incompatible-CSP, foreign-attempt and wrong-spec controls below
+   through the same proposed predicates, with positive counterparts. Preserve the actual intended failure reasons.
+5. **E5 — Policy ownership:** freeze a documented API/NGINX response-policy ownership model using isolated header
+   fixtures, including intersecting policies, redirects, assets and error paths. Product configuration is not inspected
+   or changed by the author. Real two-container header inheritance remains a mandatory later implementation
+   verification.
+
+Any infeasible renderer/CSP arrangement returns to this named design gate before test expectations are committed. It
+does not justify relaxing the existing upload page or dropping a failing proposed assertion.
+
+### Independent acceptance and controls
+
+Define additive requirements separately from assessment obligations. Preserve raw `POST /file-upload`, both accepted
+media types, inclusive 20,971,520 actual bytes, exact positive-integer `{ frameCount }`, error/HEAD/health contracts,
+all original fixture oracles and lifecycle limits. Require OpenAPI 3.0.3 semantics, local references and matching served
+`GET /docs/openapi.yaml`; YAML transport/Content-Type and `/docs` redirect behavior must be explicit contract decisions.
+
+At the same public origin, require meaningful rendered endpoint/request/response schema text at `GET /docs/` plus an
+observable real search or schema-expansion state change. HTTP 200, SSR text, a successful click or URL fragment alone
+cannot satisfy interaction. Compare the served specification semantically with the independently reviewed schema,
+including media types, closed response shape, statuses/headers, byte-limit notes and HEAD's absent response body.
+
+Install violation/page-error instrumentation before page scripts; use a fresh context with service workers blocked.
+Observe complete effective headers/meta policies and relevant CSP/page failures. Guard network before transmission,
+including redirects, while leaving allowed same-origin responses real. Require zero foreign attempts even if blocked by
+the guard/CSP. Check `/` separately against its preserved policy, plus docs redirects/assets/missing routes; the docs
+policy must not weaken upload-page protection. Never retain sensitive headers, uploaded bytes or private inputs.
+
+Actual negative controls must remove/abort the renderer while keeping decorative text, impose incompatible CSP, inject a
+foreign script/font/reference attempt, and mutate the served schema. The same assertions used for real docs must reject
+each for its intended reason; positives must pass. If hashes/nonces are selected, add mismatched-hash/nonce controls and
+the independently defined per-response nonce freshness check. Do not equate a blocked foreign load with compliance.
+
+Preserve exact complete inventories, no filters/only/skips/retries/expected failures, fresh attributed reports, bounded
+timeouts and finally cleanup. Discovery and control reports remain distinct from application execution. Any unavailable
+browser/control capability under the existing candidate CI interface leaves DOCS-HARNESS open, not permission to modify
+CI/root tooling here, silently skip controls or declare an unreachable docs route a useful behavioral red.
+
+### Validation, review and failure signals
+
+Run standalone type/spec/fixture checks, actual browser predicate controls and complete exact discovery with pinned
+tools. Compare all previous identities/fixtures against trusted Git objects. Keep malformed, missing, duplicate,
+skipped, retried and stale-attribution report controls. Use existing candidate interfaces and the complete 67-case
+required transport suite for normal CI; future docs failures stay separate candidate evidence and cannot satisfy a gate.
+
+Report exact source/base/suite tree/manifest/contract/inventory hashes, discovered count, executed case identities,
+control outcomes, versions and limits. Local prototype or candidate execution is not CI admission or hosted acceptance.
+Independent acceptance/security review must assess DOCS-01 and falsification sensitivity; the companion reviews the
+exact complete PR head. Resolve findings and obtain fresh required checks/review before an authorized owner merge.
+
+Mixed paths, changed prior oracles, unresolved CSP exception/nonce assumptions, unavailable mandatory control execution,
+foreign attempts, decorative-only rendering, incomplete reports or stale approvals block this candidate. Do not change
+the oracle or relax controls to make product output pass. Retain failed evidence and its actual attribution.
+
+### Rollback, release effect and stop
+
+An unmerged candidate can be corrected or withdrawn within its scope. After protected-main admission, retain historical
+suite/contract objects; do not delete or mutate the pending candidate or immutable registry to undo it. Any cancellation
+or correction requires a separately reviewed supported transition, not an implicit revert workaround.
+
+A clean authorized merge may publish the next allocator-selected v0.2.x artifact release with transport-v1 still
+required. Verify actual main admission, candidate identity, 67-case acceptance and publication; do not predict a
+version, future squash SHA or approval ID. No docs deployment or production authority is implied.
+
+**Done and stop:** reviewed candidate contract/harness and DOCS-01 disposition, verified actual candidate merge and
+publication, preserved transport acceptance and recorded limits. Stop before the later separate actual binding, selected
+docs-tool policy allowance, product build/assets/routes/CSP activation or hosted work. Those remain provisional
+successors; none is an additional detailed card or implementation authorized by this drafting task.
+
 ## Provisional work after the three-card window
 
-Later packages remain outcomes and decision gates: independent docs/CSP contract and binding; offline Redoc and scoped
-CSP; hosted profiles/trusted launcher; exact-image registry handoff; reconciliation/backfill with retained original
-admission authority; account/cost/access gates; stage acceptance; production candidate and recovery; human production
-authorization; production smoke and v1.0.0 finalization. Tooling compatibility still precedes extended queue syntax.
-Stage automation and production human intervention retain their existing authority boundaries. No later package is an
-extra detailed card here, and none becomes an assessment-submission prerequisite.
+Later packages remain outcomes and decision gates: actual docs/CSP binding; selected documentation-tool policy; offline
+Redoc and scoped CSP; closed IaC path policy and delivery-policy prerequisites; hosted profiles/trusted launcher;
+exact-image registry handoff; reconciliation/backfill with retained original admission authority; account/cost/access
+gates; stage acceptance; production candidate and recovery; human production authorization; production smoke and v1.0.0
+finalization. Tooling compatibility still precedes extended queue syntax. Stage automation and production human
+intervention retain their existing authority boundaries. No later package is an extra detailed card here, and none
+becomes an assessment-submission prerequisite.
