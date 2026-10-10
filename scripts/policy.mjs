@@ -14,6 +14,12 @@ import { parse } from "yaml";
 import { mandatoryJobs } from "./ci-gate.mjs";
 import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
 import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
+import { requireReleasePolicyCheckout } from "./release-manifest.mjs";
+
+// Validate the actual source and working policy before inspecting unrelated repository files.
+const githubSource = process.env.GITHUB_ACTIONS === "true" ? process.env.GITHUB_SHA : undefined;
+if (process.env.GITHUB_ACTIONS === "true") assert(githubSource, "Missing GITHUB_SHA release source revision");
+requireReleasePolicyCheckout(process.cwd(), githubSource);
 
 const read = (path) => readFileSync(path, "utf8");
 const workflow = parse(read(".github/workflows/ci.yml"));
