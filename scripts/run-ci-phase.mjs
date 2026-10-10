@@ -9,6 +9,8 @@
  * pre-product genesis or admitted successor, extracts it outside the product tree and runs its locked `check`.
  * A pending candidate runs separate discovery/oracle/negative controls and writes candidate-only evidence; it cannot
  * satisfy required product acceptance. Post-policy CI uses the trusted preflight record/digest; local runs claim no CI.
+ * Each selected product-phase extraction prepares its pinned browser after npm ci and before check, sharing one
+ * 360-second deadline. Sanitized attempted setup evidence is written even on failure; readiness is not acceptance.
  * Parser work additionally runs root test:unit and build; integration additionally runs root test:e2e with the
  * verified TRUSTED_ACCEPTANCE_ROOT. That lifecycle command must start the real app and run the suite's e2e script.
  * The runner removes its temporary suite checkout and propagates missing tools, invalid records and command failures.
@@ -20,12 +22,15 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { performance } from "node:perf_hooks";
 import { git, repositoryFiles, suitePath } from "./acceptance-baseline.mjs";
+import { prepareAcceptanceBrowser } from "./acceptance-browser-setup.mjs";
 import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import { requireMonotonicPhase, requiredRootScripts } from "./phase-policy.mjs";
 
 const root = process.cwd();
 const temporary = [];
+let preparation;
 
 /** Execute a real command, inheriting visible logs but preserving a nonzero exit and a bounded wait. */
 function run(command, args, cwd = root, env = process.env, options = {}) {
@@ -33,6 +38,51 @@ function run(command, args, cwd = root, env = process.env, options = {}) {
   if (result.error) throw result.error;
   assert.equal(result.status, 0, `${command} ${args.join(" ")} failed (status ${result.status})`);
   return result;
+}
+
+/**
+ * Prepare one already-selected extraction using original validated authority and the shared deadline. Forward signals
+ * only while async preparation is active, then remove listeners. Persist its exact attempted identity/result before
+ * propagating any failure; pre-setup npm errors never call this helper or invent readiness evidence.
+ */
+async function prepareSelected(suiteRoot, baseline, role) {
+  preparation.deadline ??= performance.now() + 360000;
+  const controller = new AbortController();
+  const interrupt = () => controller.abort();
+  process.on("SIGINT", interrupt);
+  process.on("SIGTERM", interrupt);
+  let result;
+  try {
+    result = await prepareAcceptanceBrowser({
+      suiteRoot,
+      ci: preparation.ci,
+      environment: process.env,
+      deadline: preparation.deadline,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    result = error.setupResult;
+    throw error;
+  } finally {
+    process.removeListener("SIGINT", interrupt);
+    process.removeListener("SIGTERM", interrupt);
+    if (result) {
+      const entry = {
+        role,
+        suiteCommit: baseline.suiteCommit,
+        suiteTree: baseline.suiteTree,
+        manifestSha256: baseline.manifestSha256,
+        result,
+      };
+      preparation.evidence.entries.push(entry);
+      mkdirSync(join(root, ".artifacts"), { recursive: true });
+      writeFileSync(
+        join(root, ".artifacts/acceptance-browser-setup.json"),
+        `${JSON.stringify(preparation.evidence, null, 2)}\n`,
+      );
+      console.log(`Acceptance browser preparation: ${JSON.stringify(entry)}`);
+    }
+  }
 }
 
 try {
@@ -47,8 +97,21 @@ try {
     assert(typeof pkg.scripts?.[script] === "string" && pkg.scripts[script].trim(), `Missing mandatory ${script}`);
   }
   let acceptanceRoot = join(root, suitePath);
+  let requiredBaseline;
   if (["parser", "integration"].includes(phase)) {
     const selection = runtimeAcceptance(root, process.env);
+    requiredBaseline = selection.baseline;
+    preparation = {
+      ci: process.env.CI === "true",
+      deadline: null,
+      evidence: {
+        schemaVersion: 1,
+        kind: "acceptance-browser-preparation",
+        productAcceptance: false,
+        sourceRevision: git(root, ["--no-replace-objects", "rev-parse", "HEAD"]).trim(),
+        entries: [],
+      },
+    };
     const extract = (baseline) => {
       const directory = mkdtempSync(join(tmpdir(), "mp3-acceptance-"));
       temporary.push(directory);
@@ -84,6 +147,7 @@ try {
       };
       try {
         run("npm", ["ci"], candidateRoot);
+        await prepareSelected(candidateRoot, candidate, selection.resolution.candidate ? "candidate" : "pending");
         run("npm", ["run", "check"], candidateRoot);
         evidence.status = "passed";
       } finally {
@@ -94,6 +158,7 @@ try {
   }
   if (phase !== "foundation") {
     run("npm", ["ci"], acceptanceRoot);
+    if (requiredBaseline) await prepareSelected(acceptanceRoot, requiredBaseline, "required");
     run("npm", ["run", "check"], acceptanceRoot);
   }
   const env = { ...process.env, TRUSTED_ACCEPTANCE_ROOT: acceptanceRoot };
