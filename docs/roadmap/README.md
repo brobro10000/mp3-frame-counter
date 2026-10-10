@@ -5,10 +5,11 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **planning adopted for documentation, 2026-10-10; implementation and hosting remain pending**. The owner
-authorized persistence of this roadmap and its PLAN-01 documentation only. Stop before GATE-01 implementation, commits,
-pushes, PR creation, publication or deployment. The planning-mode restriction in the earlier response is superseded by
-this documentation-authoring instruction; it is not a restriction on future authorized editing.
+Status: **PLAN-01 merged; v0.1.8 published; cost-bootstrap source under review; hosting remains pending**. The
+[dated execution record](../validation/roadmap-execution.md) records PR #8, its exact companion approval, owner merge
+and successful main publication. The original documentation-only scope and v0.1.7 assessment below remain dated history.
+The active window contains COST-BOOTSTRAP, GATE-01 and VER-01; no dedicated cloud project or live cost controls have
+been created by these source changes.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
 reserves **v1.0.0 for the first verified production deployment**. It is a human-readable planning amendment, not an
@@ -19,12 +20,26 @@ remain in the existing [acceptance](../agents/acceptance-author.md), [implementa
 [review](../agents/reviewer.md) and [release/deployment](../agents/release-operator.md) roles. Start from
 [central requirements](../requirements/README.md) and the [historical V1 closure](../validation/v1-closure.md).
 
-## Current state and evidence boundary
+## Execution update — 2026-10-10
 
-Refreshed on **2026-10-10**. Protected main is `92807357b6eb74f2915b9b05701889fd70d292c0`. The inspected local HEAD was
-`b0766d0d3fb6bbc68204a4277b2f2f662ba3ca3f`; both have tree `75ca67424947dadd83108fc733e3110ba2a98e10`. The checkout was
-clean before PLAN-01 authoring. No application tests were rerun to construct this plan; CI observations below refer to
-existing runs.
+PLAN-01 merged as `533ddca81153b189d9f53cfc7cc81f24b9421231` after exact-head automated companion approval. Main
+[run 38031562926](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38031562926) passed all required jobs
+and publication; [v0.1.8](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.8) has ten assets. Their
+bytes were not independently downloaded or rehashed for this update. See the
+[execution record](../validation/roadmap-execution.md) for exact head, review and timestamps.
+
+The [cost bootstrap](../../infra/cloud/bootstrap/README.md) now provides dedicated-project/API/budget Terraform and a
+separate fixed USD 75 Run-cap reconciler. It is authored source, not applied infrastructure. Its
+[validation record](../validation/cloud-cost-bootstrap.md) distinguishes reviewed local checks from pending integrated
+CI. GATE-01 and VER-01 remain prerequisites for their respective future changes. The original assessment snapshot is
+preserved below; planning/publication progress does not change its acceptance or submission evidence.
+
+## Original planning assessment and evidence boundary
+
+At the original planning inspection on **2026-10-10**, protected main was `92807357b6eb74f2915b9b05701889fd70d292c0`.
+The inspected local HEAD was `b0766d0d3fb6bbc68204a4277b2f2f662ba3ca3f`; both have tree
+`75ca67424947dadd83108fc733e3110ba2a98e10`. The checkout was clean before PLAN-01 authoring. No application tests were
+rerun to construct this plan; CI observations below refer to existing runs.
 
 | Area                  | Status                           | Evidence and implication                                                                                                                                                                     |
 | --------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -156,6 +171,12 @@ automatically. Use no keep-alive traffic and retain live/prior-good/candidate ar
 [Cloud Run pricing](https://cloud.google.com/run/pricing),
 [spend-cap limits](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps).
 
+COST-BOOTSTRAP implements that prerequisite in [bounded IaC](../../infra/cloud/bootstrap/README.md), separately from the
+application and acceptance migration. Terraform owns the dedicated project, APIs and USD 100 alert budget; the fixed USD
+75 cap uses a narrowly scoped REST reconciler while pinned provider 8.6.0 lacks native cap support. Initial state stays
+private/local until a reviewed backend migration. These declarations have not been applied; verify the actual cap
+identity, scope, amount and readiness before adding billable application resources.
+
 Retain the [historical paid Render proposal](../architecture/deployment.md) as an alternative. Vercel Functions'
 documented 4.5 MB limit fails the unchanged upload path. A future Vercel frontend needs separately verified routing to
 an external API; do not reduce uploads or insert a function-sized proxy. Supabase adds no necessary V1 component.
@@ -169,7 +190,7 @@ work-package IDs survive version/date changes. Only the [next three cards](../ph
 
 | Envelope            | Work and required exit                                                                                                                                                                                                         |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Remaining v0.1.x    | PLAN-01 documentation, GATE-01 admission and VER-01 allocator migration. Preserve product behavior and artifact releases.                                                                                                      |
+| Remaining v0.1.x    | PLAN-01 is merged. COST-BOOTSTRAP follows its cost/access branch; GATE-01 admission and VER-01 allocator migration retain their ordering. Preserve product behavior and artifact releases.                                     |
 | v0.2.x              | Approved line activation; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
 | v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                          |
 | v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                         |
@@ -180,14 +201,16 @@ work-package IDs survive version/date changes. Only the [next three cards](../ph
 
 Mandatory edges:
 
-1. PLAN-01 → GATE-01 → independent successor-suite PR → actual merged binding → corresponding implementation.
-2. VER-01 → separate line activation → first actual v0.2.x publication.
-3. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
-4. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
-5. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
-6. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
+1. PLAN-01 → COST-BOOTSTRAP review/merge → reviewed private project/API/budget apply → verified live cap → billable
+   application resources. This cost branch is independent of GATE-01 and introduces no application deployment.
+2. PLAN-01 → GATE-01 → independent successor-suite PR → actual merged binding → corresponding implementation.
+3. VER-01 → separate line activation → first actual v0.2.x publication.
+4. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
+5. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
+6. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
+7. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
    application deployment; approved exposure follows actual production identity checks.
-7. Production identity and smoke → v1.0.0 finalization.
+8. Production identity and smoke → v1.0.0 finalization.
 
 Canonical planned diagram: [dependency order](diagrams/dependencies.mmd). These new planning diagrams are excluded from
 automatic source-sync by the existing `.mermaidignore`; that does not exempt them from rendering validation. The three
@@ -338,18 +361,18 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 
 ## Decision gates and responsibility
 
-| Gate          | Default and current boundary                                                                                                | Owner / blocked work                                    |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| POLICY-01     | Roadmap adopted for PLAN-01 documentation; later implementation authority remains separate.                                 | Owner + coordinator; implementation cards.              |
-| GATE-REVIEW   | Single pending successor, trusted preflight, exact reviewed binding and persistent applicability. Review not yet performed. | Independent gate reviewer + owner; GATE-01.             |
-| VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                       | Release reviewer + owner; VER-01 and line changes.      |
-| DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                   | Acceptance author + security reviewer; docs activation. |
-| QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                | Release/tooling owner; QUEUE-WORKFLOW only.             |
-| COST-01       | Billing activation authorized; USD 75 Run cap and USD 100 project budget must be verified before billable app resources.    | Owner + deployment operator; paid resources/hosting.    |
-| ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                     | Owner + deployment operator; setup/exposure.            |
-| HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                 | Acceptance author + deployment operator; stage exit.    |
-| LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.             | Owner; production deployment and exposure.              |
-| SUBMISSION-01 | Preserve v0.1.7 handoff; confirm actual deadline/submission separately.                                                     | Owner; external assessment submission only.             |
+| Gate          | Default and current boundary                                                                                                                        | Owner / blocked work                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.                      | Owner + coordinator; preserve card scope and prerequisites. |
+| GATE-REVIEW   | Single pending successor, trusted preflight, exact reviewed binding and persistent applicability. Review not yet performed.                         | Independent gate reviewer + owner; GATE-01.                 |
+| VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                                               | Release reviewer + owner; VER-01 and line changes.          |
+| DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                                           | Acceptance author + security reviewer; docs activation.     |
+| QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                                        | Release/tooling owner; QUEUE-WORKFLOW only.                 |
+| COST-01       | Billing/IaC authorized; bounded bootstrap source authored, unapplied. Verify USD 75 Run cap and USD 100 alert budget before billable app resources. | Owner + deployment operator; paid resources/hosting.        |
+| ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                                             | Owner + deployment operator; setup/exposure.                |
+| HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                                         | Acceptance author + deployment operator; stage exit.        |
+| LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.                                     | Owner; production deployment and exposure.                  |
+| SUBMISSION-01 | Preserve v0.1.7 handoff; confirm actual deadline/submission separately.                                                                             | Owner; external assessment submission only.                 |
 
 The coordinator owns scope/integration and serialized Git operations; independent acceptance authors own expectations;
 the companion reviews; GitHub controls merge eligibility; the existing publisher owns tags/assets/finalization; the
@@ -372,13 +395,14 @@ manual process limitation; do not label it an enforced independent approval.
 
 ## Requirement traceability and orchestrator boundary
 
-| Work                               | Existing requirement trace                                                                                                         |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| PLAN-01 and bounded progression    | APP-V1-008,011,016; APP-EVAL-007,008; APP-SUB-001–003.                                                                             |
-| GATE-01 and successor suites       | APP-V1-009,010,013; APP-EVAL-001,003,004; release evidence under APP-REL-001–006.                                                  |
-| VER-01 and publication reliability | APP-V1-012,015; APP-REL-001–006, preserving the active release-only amendment.                                                     |
-| Fastify/OpenAPI/Redoc              | APP-V1-001–005,008,016 retained; framework/spec/docs additions are this later roadmap direction, not original assessment mandates. |
-| Hosted profiles and delivery       | Deferred APP-V1-014 and hosted APP-V1-015; hosted portions of APP-REL-001–006 resume only under scoped authority.                  |
+| Work                               | Existing requirement trace                                                                                                                       |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PLAN-01 and bounded progression    | APP-V1-008,011,016; APP-EVAL-007,008; APP-SUB-001–003.                                                                                           |
+| COST-BOOTSTRAP                     | Hosted prerequisites for APP-V1-014,015 and APP-REL-001–006 under the later billing/IaC/monthly-budget amendment; no new assessment requirement. |
+| GATE-01 and successor suites       | APP-V1-009,010,013; APP-EVAL-001,003,004; release evidence under APP-REL-001–006.                                                                |
+| VER-01 and publication reliability | APP-V1-012,015; APP-REL-001–006, preserving the active release-only amendment.                                                                   |
+| Fastify/OpenAPI/Redoc              | APP-V1-001–005,008,016 retained; framework/spec/docs additions are this later roadmap direction, not original assessment mandates.               |
+| Hosted profiles and delivery       | Deferred APP-V1-014 and hosted APP-V1-015; hosted portions of APP-REL-001–006 resume only under scoped authority.                                |
 
 The installed MVP Orchestrator 1.3.0 phase planner supports one validated bounded plan, not a native multi-release
 roadmap. Its existing approved inputs do not describe the target architecture. Preserve generated `agents/**` plans,
@@ -388,10 +412,14 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
-Only human-readable documents and diagram sources are persisted by PLAN-01. The next implementation handoff remains
-GATE-01, after its stated review and authority prerequisites.
+Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
+[active three-card window](../phases/next-iteration.md) advances its independent cost branch while retaining GATE-01
+before successor suites and VER-01 after the shared-reader migration.
 
 ## PLAN-01 local verification — 2026-10-10
+
+This original authoring record is preserved. Its pending GitHub review/merge statements were later resolved by the
+[PR #8 execution record](../validation/roadmap-execution.md); they are not current restrictions on authorized work.
 
 The documentation handoff contains exactly three detailed next PR cards. Using the installed Node 24.20.0 runtime and
 repository tools, all 16 tracked Mermaid diagrams rendered successfully; explicit-file validation also rendered the

@@ -1,0 +1,13 @@
+# Bootstrap state, private identities, plans, credentials and provider cache stay local.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+*.private.json
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

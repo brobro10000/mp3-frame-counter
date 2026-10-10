@@ -1,0 +1,20 @@
+{
+  "displayName": "mp3-cloud-run-monthly-75-cap",
+  "budgetFilter": {
+    "projects": ["projects/PROJECT_NUMBER"],
+    "services": ["services/152E-C115-5142"],
+    "calendarPeriod": "MONTH",
+    "creditTypesTreatment": "EXCLUDE_ALL_CREDITS"
+  },
+  "amount": {
+    "specifiedAmount": { "currencyCode": "USD", "units": "75", "nanos": 0 }
+  },
+  "thresholdRules": [
+    { "thresholdPercent": 0.5, "spendBasis": "CURRENT_SPEND" },
+    { "thresholdPercent": 0.8, "spendBasis": "CURRENT_SPEND" },
+    { "thresholdPercent": 1.0, "spendBasis": "CURRENT_SPEND" }
+  ],
+  "notificationsRule": { "enableProjectLevelRecipients": true },
+  "ownershipScope": "ALL_USERS",
+  "spendCap": { "inputState": "CONFIGURED" }
+}

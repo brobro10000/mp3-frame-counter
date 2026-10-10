@@ -1,5 +1,35 @@
 # Release and recovery runbook
 
+**Current execution update, 2026-10-10:** [PR #8 completed PLAN-01](../validation/roadmap-execution.md), and v0.1.8 is
+published. The owner authorized [continued roadmap execution](../phases/roadmap-execution-authorization.md), IaC,
+billing setup and automatic stage delivery. Every production application deployment/promotion still requires human
+approval of its exact candidate. Software releases continue independently of deployment; no stage or production
+deployment is currently established.
+
+## Dedicated project and cost-control prerequisite
+
+Use the [bounded bootstrap](../../infra/cloud/bootstrap/README.md) and
+[COST-BOOTSTRAP card](../phases/next-iteration.md#pr-card-1--cost-bootstrap-codify-the-dedicated-project-and-monthly-controls)
+before billable application resources. Its source creates one dedicated project, required APIs and a USD 100 monthly
+all-service alert budget, then a separately owned USD 75 monthly Cloud Run spend cap shared by stage/production. Project
+creation must precede its scoped budget. Initial Terraform state remains ignored and private on the operator machine
+until a reviewed backend migration after live cost-control verification.
+
+The implementation is authored and locally checked; it has not been applied. Review and merge the bootstrap PR, then
+review the private live plan, apply only project/API/cost controls and read back the cap's exact resource, scope,
+amount, `CONFIGURED` output state and completed reconciliation. Missing, lifted, enforced, ambiguous or unready cap
+state blocks runtime setup. Never automatically raise, lift or delete the cap. See
+[bootstrap validation](../validation/cloud-cost-bootstrap.md) for source-check coverage and remaining prerequisites.
+
+The USD 100 alert budget uses default billing IAM emails; verify owner delivery. The USD 75 cap additionally requires
+project-owner notifications. Preserve USD 25 headroom for registry, logs, state and enforcement delay, but do not
+represent this as a strict invoice ceiling: reporting lag, in-flight charges and ancillary services can exceed it.
+Ordinary Terraform destruction is intentionally blocked; teardown requires a separate reviewed operation preserving cost
+controls until remaining paid resources are accounted for. No release workflow receives bootstrap cost-admin
+permissions.
+
+## Roadmap deployment direction
+
 **Planning supersession, 2026-10-10:** follow the
 [roadmap's stage-to-production design](../roadmap/README.md#stage-to-production-delivery) for the conditional Cloud Run
 path. It uses one revision containing both images per environment, human approval before production application
@@ -8,9 +38,20 @@ v1.0.0 finalization. The Render-specific ordering below remains historical alter
 pair-switch procedure. Ordinary v0.x artifact publication continues without deployment. No provider commands or
 finalization workflow are implemented by this documentation amendment.
 
-**Future deployment procedure:** the later [release-only amendment](../requirements/release-process.md) defers these
-provider, candidate and production actions. Use the [release-only process](release-only.md) for current GitHub releases.
-Publishing a repository release does not execute this runbook or establish hosted verification.
+The cost-bootstrap foundation checks use pinned Terraform formatting, backend-disabled lockfile-read-only provider
+initialization and validation without credentials, plan or apply. Their integrated CI result is pending. Hosted delivery
+workflows, registry handoff, stage acceptance and production approval/promotion remain later work.
+
+## Historical Render procedure and release-only baseline
+
+The remaining sections preserve the earlier Render-oriented procedure and its original release-only restrictions. Apply
+the current execution amendment and Cloud Run roadmap above where they supersede that history. In particular, current
+GitHub software publication does not wait for deployment, normal reviews use the automated companion, and production
+application deployment always retains the owner's human gate.
+
+**Original future deployment procedure:** the later [release-only amendment](../requirements/release-process.md) defers
+these provider, candidate and production actions. Use the [release-only process](release-only.md) for current GitHub
+releases. Publishing a repository release does not execute this runbook or establish hosted verification.
 
 Status: **local application verified; managed release pending**, supporting APP-REL-001–006 and APP-V1-012,014,015. The
 [P4 evidence](../validation/p4-integration.md) records actual local execution. Provider deployment, promotion and
