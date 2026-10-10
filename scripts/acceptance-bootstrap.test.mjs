@@ -3,7 +3,7 @@
  * Run with pinned Node: node --test scripts/acceptance-bootstrap.test.mjs after the workflow is wired.
  * The actual workflow command runs in disposable Git histories with synthetic credentials and no remote Git.
  * Genuine bootstrap cases use the immutable pre-policy verifier; a separate fake CLI tests extraction isolation only.
- * Child environments omit host credentials, and a test-owned preload rejects Node HTTP and socket operations.
+ * Child environments omit host credentials; an outside-checkout Node wrapper forces a test-only network guard.
  * Failures remain fatal; these fixtures establish local boundary behavior, not authenticated GitHub admission.
  */
 import assert from "node:assert/strict";
@@ -57,13 +57,13 @@ function canonical(value) {
 }
 
 /** Read the actual reviewed command; a missing step must fail a negative case rather than count as rejection. */
-function workflowRun(jobName) {
+function workflowStep(jobName) {
   const workflow = parse(readFileSync(join(project, ".github/workflows/ci.yml"), "utf8"));
   const steps = workflow.jobs[jobName].steps.filter((step) => step.id === "acceptance-preflight");
   assert.equal(steps.length, 1, `${jobName} must define its actual acceptance-preflight command`);
   assert.equal(typeof steps[0].run, "string");
   assert(steps[0].run.length > 0);
-  return steps[0].run;
+  return steps[0];
 }
 
 function fixture(t) {
@@ -72,9 +72,10 @@ function fixture(t) {
   const root = join(directory, "checkout");
   const runner = join(directory, "runner-temp");
   const home = join(directory, "home");
-  for (const path of [root, runner, home]) mkdirSync(path, { recursive: true });
+  const bin = join(directory, "fixture-bin");
+  for (const path of [root, runner, home, bin]) mkdirSync(path, { recursive: true });
   const environment = {
-    PATH: [dirname(process.execPath), "/usr/bin", "/bin", "/usr/sbin", "/sbin"].join(delimiter),
+    PATH: [bin, dirname(process.execPath), "/usr/bin", "/bin", "/usr/sbin", "/sbin"].join(delimiter),
     HOME: home,
     TMPDIR: directory,
     LANG: "C",
@@ -169,22 +170,30 @@ function fixture(t) {
   writeFileSync(
     networkGuard,
     'import http from "node:http";\nimport https from "node:https";\nimport net from "node:net";\n' +
+      'import { fileURLToPath } from "node:url";\n' +
       'const deny = () => { throw new Error("Network is forbidden in shell-boundary fixtures"); };\n' +
       "globalThis.fetch = deny;\nhttp.request = deny;\nhttp.get = deny;\n" +
-      "https.request = deny;\nhttps.get = deny;\nnet.Socket.prototype.connect = deny;\n",
+      "https.request = deny;\nhttps.get = deny;\nnet.Socket.prototype.connect = deny;\n" +
+      'process.env.NODE_OPTIONS = "--import=" + JSON.stringify(fileURLToPath(import.meta.url));\n',
+  );
+  // A CLI import survives intentional empty step.env NODE_OPTIONS. Only this trusted guard reaches child Node processes.
+  const quote = (value) => `'${value.replaceAll("'", "'\\''")}'`;
+  writeFileSync(
+    join(bin, "node"),
+    `#!/bin/sh\nexec ${quote(process.execPath)} --import ${quote(networkGuard)} "$@"\n`,
+    { mode: 0o700 },
   );
   return { root, runner, environment, networkGuard, git, put, json, commit, genesis, product, bootstrap, poisonHead };
 }
 
 function execute(f, jobName, changes = {}, eventChanges = {}) {
-  const run = workflowRun(jobName);
+  const step = workflowStep(jobName);
   const output = join(f.runner, `outputs-${jobName}`);
   const eventPath = join(f.runner, `event-${jobName}.json`);
   writeFileSync(output, "");
   const sourceRevision = f.git("rev-parse", "HEAD");
   const env = {
     ...f.environment,
-    NODE_OPTIONS: `--import=${f.networkGuard}`,
     GITHUB_WORKSPACE: f.root,
     RUNNER_TEMP: f.runner,
     GITHUB_OUTPUT: output,
@@ -198,6 +207,7 @@ function execute(f, jobName, changes = {}, eventChanges = {}) {
     GITHUB_ACTIONS: "true",
     CI: "true",
     GITHUB_SERVER_URL: "https://github.com",
+    GITHUB_API_URL: "https://api.github.com",
     GITHUB_RUN_ID: "42001",
     GITHUB_RUN_ATTEMPT: "1",
     CI_BASE_REF: f.product,
@@ -205,6 +215,8 @@ function execute(f, jobName, changes = {}, eventChanges = {}) {
     ...changes,
   };
   for (const key of Object.keys(env)) if (env[key] === undefined) delete env[key];
+  // Simulate the runner applying actual literal step overrides; missing clears must leave poison visible to startup.
+  for (const [key, value] of Object.entries(step.env ?? {})) if (value === "") env[key] = value;
   const event = {
     repository: { full_name: repository },
     ...(env.GITHUB_EVENT_NAME === "pull_request"
@@ -215,11 +227,11 @@ function execute(f, jobName, changes = {}, eventChanges = {}) {
             head: { sha: f.git("rev-parse", `${sourceRevision}^2`) },
           },
         }
-      : { before: env.CI_BASE_REF, after: env.GITHUB_SHA }),
+      : { ref: "refs/heads/main", before: env.CI_BASE_REF, after: env.GITHUB_SHA }),
     ...eventChanges,
   };
   writeFileSync(eventPath, `${JSON.stringify(event)}\n`);
-  const result = spawnSync("bash", ["--noprofile", "--norc", "-euo", "pipefail", "-c", run], {
+  const result = spawnSync("bash", ["--noprofile", "--norc", "-euo", "pipefail", "-c", step.run], {
     cwd: f.root,
     env,
     encoding: "utf8",
@@ -346,6 +358,17 @@ test("bootstrap governance exemptions cannot conceal product or unclassified exe
   }
 });
 
+test("bootstrap package exemptions reject malformed script containers and nonstring commands", (t) => {
+  for (const scripts of [[], null, "node scripts/not-a-script-object.mjs", { "test:tooling": 7 }]) {
+    const f = fixture(t);
+    f.bootstrap();
+    const pkg = JSON.parse(readFileSync(join(f.root, "package.json"), "utf8"));
+    f.json("package.json", { ...pkg, scripts });
+    f.commit("malformed package script proposal");
+    requireRejected(f);
+  }
+});
+
 test("bootstrap requires a newly introduced closed empty schema-1 registry", (t) => {
   for (const registry of [
     null,
@@ -379,6 +402,8 @@ test("source identity must match the event payload, exact checkout and unmodifie
   requireRejected(f, { GITHUB_SHA: "main" });
   requireRejected(f, {}, { before: "9".repeat(40) });
   requireRejected(f, {}, { after: "9".repeat(40) });
+  requireRejected(f, { GITHUB_API_URL: "https://api.example.invalid" });
+  requireRejected(f, {}, { ref: "refs/heads/unprotected-branch" });
   const pr = fixture(t);
   const proposal = pr.bootstrap();
   const merge = pr.git(
@@ -404,6 +429,30 @@ test("source identity must match the event payload, exact checkout and unmodifie
   );
   f.put("server/src/parser.ts", "// Dirty working-tree product change outside the recorded source.\n");
   requireRejected(f, { GITHUB_SHA: source });
+});
+
+test("actual step environment clears inherited startup loaders before they can execute proposed code", (t) => {
+  const f = fixture(t);
+  f.bootstrap();
+  f.put(
+    "scripts/startup-poison.mjs",
+    'import { writeFileSync } from "node:fs";\n' +
+      'import { join } from "node:path";\n' +
+      'writeFileSync(join(process.env.RUNNER_TEMP, "head-script-ran"), "proposed startup loader executed");\n' +
+      'throw new Error("Proposed Node startup module must not execute");\n',
+  );
+  f.put(
+    "scripts/startup-poison.sh",
+    'printf "%s\\n" "proposed shell startup executed" > "$RUNNER_TEMP/head-script-ran"\nexit 79\n',
+  );
+  f.commit("proposed startup loader files remain untrusted");
+  for (const changes of [
+    { NODE_OPTIONS: `--import=${join(f.root, "scripts/startup-poison.mjs")}` },
+    { BASH_ENV: join(f.root, "scripts/startup-poison.sh") },
+    { ENV: join(f.root, "scripts/startup-poison.sh") },
+  ]) {
+    for (const job of validationJobs) requireBootstrapRecord(f, execute(f, job, changes));
+  }
 });
 
 /** Install fake trusted files only for shell extraction boundaries, never for genuine bootstrap evidence. */

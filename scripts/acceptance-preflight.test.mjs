@@ -31,6 +31,8 @@ test("both validation jobs perform one trusted preflight before any head-owned r
     assert.equal(step.if, undefined, "Admission cannot be skipped through a conditional");
     assert.equal(step["continue-on-error"], undefined);
     assert.equal(job["continue-on-error"], undefined);
+    for (const field of ["NODE_OPTIONS", "BASH_ENV", "ENV"])
+      assert.equal(step.env?.[field], "", `${field} must be cleared before the trusted shell starts`);
     assert.equal(job.steps.find((entry) => entry.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
     assert.equal(
       job.steps.find((entry) => entry.uses?.startsWith("actions/checkout@"))?.with?.["persist-credentials"],
@@ -137,6 +139,22 @@ test("publisher write privilege must not become a workflow-wide default", () => 
   value.permissions = { contents: "write", "pull-requests": "read" };
   assert.throws(() => requirePreflightWorkflow(value));
 });
+
+for (const scope of ["workflow", ...validationJobs]) {
+  for (const [field, value] of [
+    ["NODE_OPTIONS", "--import=./scripts/startup-poison.mjs"],
+    ["BASH_ENV", "./scripts/startup-poison.sh"],
+    ["ENV", "./scripts/startup-poison.sh"],
+    ["PATH", "./scripts:/usr/bin:/bin"],
+  ]) {
+    test(`${scope} refuses inherited ${field} interpreter or executable overrides`, () => {
+      const data = workflow();
+      const target = scope === "workflow" ? data : data.jobs[scope];
+      target.env = { ...target.env, [field]: value };
+      assert.throws(() => requirePreflightWorkflow(data));
+    });
+  }
+}
 
 function apiFixture() {
   const repository = "example/private-mp3";

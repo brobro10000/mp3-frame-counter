@@ -355,6 +355,15 @@ test("legacy three-argument verification retains schema-1 identity, all bytes an
   assert.deepEqual(snapshot(f), before);
   assert.deepEqual(publicationMaterial(retryBundle), material);
   assert.equal(readFileSync(join(f.generated, "publication.json"), "utf8"), material.json);
+
+  const postPolicy = await fixture(t);
+  for (const admission of [null, {}, postPolicy.admission]) {
+    writeJson(join(f.directory, "e2e-result.json"), { ...f.report, acceptanceAdmission: admission });
+    await assert.rejects(
+      verifyReleaseBundle(f.root, f.directory, f.context),
+      "A legacy source cannot silently discard a report's admission claim",
+    );
+  }
 });
 
 test("policy introduction makes missing, malformed and tampered report admissions fatal", async (t) => {
