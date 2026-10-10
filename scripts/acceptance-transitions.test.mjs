@@ -552,3 +552,156 @@ for (const script of ["check:phase", "test:e2e", "preinstall"]) {
     reject(f, source, f.binding);
   });
 }
+
+/** Seed ordinary npm v3 identities before policy introduction; these packages are never installed or executed. */
+function lockedFixture(t, { bind = true } = {}) {
+  const f = fixture(t);
+  const pkg = {
+    name: "synthetic-product",
+    version: "0.0.0",
+    private: true,
+    scripts: { build: "tsc -p tsconfig.json" },
+    dependencies: { "fixture-runtime": "^1.0.0" },
+    devDependencies: { "fixture-build-tool": "^1.0.0" },
+  };
+  const entry = (name, version, dev = false) => ({
+    version,
+    resolved: `https://registry.npmjs.org/${name}/-/${name}-${version}.tgz`,
+    integrity: `sha512-${Buffer.alloc(64, version === "1.0.0" ? 1 : 2).toString("base64")}`,
+    ...(dev ? { dev: true } : {}),
+  });
+  const lock = {
+    name: pkg.name,
+    version: pkg.version,
+    lockfileVersion: 3,
+    requires: true,
+    packages: {
+      "": {
+        name: pkg.name,
+        version: pkg.version,
+        dependencies: structuredClone(pkg.dependencies),
+        devDependencies: structuredClone(pkg.devDependencies),
+      },
+      "node_modules/fixture-runtime": entry("fixture-runtime", "1.0.0"),
+      "node_modules/fixture-build-tool": entry("fixture-build-tool", "1.0.0", true),
+    },
+  };
+  f.json("package.json", pkg);
+  f.json("package-lock.json", lock);
+  f.commit("synthetic locked product dependencies before transition policy");
+  const bootstrapCommit = f.bootstrap();
+  const candidateState = f.candidate();
+  const binding = bind ? f.bind(candidateState) : null;
+  return { ...f, pkg, lock, entry, bootstrapCommit, candidateState, binding };
+}
+
+test("matching root dependency and lock migration activates the bound successor", (t) => {
+  const f = lockedFixture(t);
+  f.pkg.dependencies["fixture-runtime"] = "^2.0.0";
+  f.lock.packages[""].dependencies["fixture-runtime"] = "^2.0.0";
+  f.lock.packages["node_modules/fixture-runtime"] = f.entry("fixture-runtime", "2.0.0");
+  f.json("package.json", f.pkg);
+  f.json("package-lock.json", f.lock);
+  const source = f.commit("runtime dependency migration includes its corresponding lock");
+  const result = f.resolve(source, f.binding);
+  requireIdentity(result.required, f.candidateState.record);
+  assert.equal(result.admission, "implementation");
+  assert.equal(result.activationCommit, source);
+});
+
+for (const [name, dev] of [
+  ["fixture-runtime", false],
+  ["fixture-build-tool", true],
+]) {
+  test(`lock-only resolution change for ${name} activates successor acceptance`, (t) => {
+    const f = lockedFixture(t);
+    f.lock.packages[`node_modules/${name}`] = f.entry(name, "1.0.1", dev);
+    f.json("package-lock.json", f.lock);
+    const source = f.commit(`lock-only resolution change for ${name}`);
+    const result = f.resolve(source, f.binding);
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, source);
+  });
+}
+
+test("lock-only product resolution cannot land between candidate and binding", (t) => {
+  const f = lockedFixture(t, { bind: false });
+  f.lock.packages["node_modules/fixture-runtime"] = f.entry("fixture-runtime", "1.0.1");
+  f.json("package-lock.json", f.lock);
+  const source = f.commit("runtime lock update while independent candidate remains unbound");
+  reject(f, source, f.candidateState.record.suiteCommit);
+});
+
+test("lock-only activation persists through documentation and dependency reverts", (t) => {
+  const f = lockedFixture(t);
+  const original = structuredClone(f.lock);
+  f.lock.packages["node_modules/fixture-runtime"] = f.entry("fixture-runtime", "1.0.1");
+  f.json("package-lock.json", f.lock);
+  const activation = f.commit("activate successor with changed locked package");
+  f.json("package-lock.json", original);
+  f.put("README.md", "Synthetic dependency revert does not revert required acceptance.\n");
+  const source = f.commit("revert locked dependency with documentation");
+  const result = f.resolve(source, activation);
+  requireIdentity(result.required, f.candidateState.record);
+  assert.equal(result.activationCommit, activation);
+});
+
+for (const script of ["check:phase", "preinstall", "unclassified-command"]) {
+  test(`locked product resolution mixed with ${script} governance is rejected`, (t) => {
+    const f = lockedFixture(t);
+    f.lock.packages["node_modules/fixture-runtime"] = f.entry("fixture-runtime", "1.0.1");
+    f.pkg.scripts[script] = "node scripts/replacement-gate.mjs";
+    f.json("package.json", f.pkg);
+    f.json("package-lock.json", f.lock);
+    const source = f.commit(`locked product change mixed with ${script}`);
+    reject(f, source, f.binding);
+  });
+}
+
+for (const kind of ["malformed", "unsupported-version", "missing-packages", "deleted"]) {
+  test(`root lock ${kind} fails closed instead of preserving predecessor acceptance`, (t) => {
+    const f = lockedFixture(t);
+    if (kind === "malformed") f.put("package-lock.json", "{invalid lock\n");
+    else if (kind === "deleted") rmSync(join(f.root, "package-lock.json"));
+    else {
+      if (kind === "unsupported-version") f.lock.lockfileVersion = 2;
+      if (kind === "missing-packages") delete f.lock.packages;
+      f.json("package-lock.json", f.lock);
+    }
+    const source = f.commit(`unusable root lock ${kind}`);
+    reject(f, source, f.binding);
+  });
+}
+
+for (const kind of [
+  "file-resolution",
+  "file-dependency",
+  "link",
+  "outside-node-modules",
+  "path-traversal",
+  "workspace",
+]) {
+  test(`root lock ${kind} install source cannot conceal an unclassified local executable`, (t) => {
+    const f = lockedFixture(t);
+    const item = f.lock.packages["node_modules/fixture-runtime"];
+    if (kind === "file-resolution") item.resolved = "file:../local-runtime";
+    if (kind === "file-dependency") {
+      f.pkg.dependencies["fixture-runtime"] = "file:../local-runtime";
+      f.lock.packages[""].dependencies["fixture-runtime"] = "file:../local-runtime";
+      f.json("package.json", f.pkg);
+    }
+    if (kind === "link") {
+      f.lock.packages["node_modules/fixture-runtime"] = { resolved: "local-runtime", link: true };
+    }
+    if (kind === "outside-node-modules") f.lock.packages["local-runtime"] = { version: "1.0.0" };
+    if (kind === "path-traversal") f.lock.packages["node_modules/../../scripts"] = { version: "1.0.0" };
+    if (kind === "workspace") {
+      f.pkg.dependencies["fixture-runtime"] = "workspace:*";
+      f.lock.packages[""].dependencies["fixture-runtime"] = "workspace:*";
+      f.json("package.json", f.pkg);
+    }
+    f.json("package-lock.json", f.lock);
+    const source = f.commit(`unapproved local installation path ${kind}`);
+    reject(f, source, f.binding);
+  });
+}
