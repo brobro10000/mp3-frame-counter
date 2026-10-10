@@ -16,6 +16,9 @@ original requirement captures remain unchanged.
 - Run required shell commands and create scoped deployment credentials and dedicated Cloud Run stage/production
   resources. Prefer short-lived federation and existing owner-authorized account access; keep secrets and personal
   machine/account details out of tracked files and review output.
+- The owner subsequently authorized activating cloud billing and requested infrastructure as code for cloud services,
+  with reproducible setup and teardown. Use a narrowly scoped declarative configuration for dedicated resources,
+  reviewed plans, protected state and explicit teardown safeguards; do not reuse unrelated projects.
 - Implement automatic deployment of verified software releases to stage, including hosted acceptance and recovery
   evidence. Software artifact publication remains a distinct operation from deployment.
 

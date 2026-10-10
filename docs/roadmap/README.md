@@ -325,7 +325,9 @@ These tracks are independent of the assessment deadline and do not authorize sca
 | Changed hosting economics or constraints | Reevaluate providers, including a Vercel frontend      | Full 20 MiB path, one-origin/routing decision, artifact identity and hosted acceptance. |
 
 A V2 capability label does not force SemVer 2.0.0. Breaking wire behavior requires an explicit versioned contract;
-compatible internal changes remain on v1.x. No speculative Kubernetes, Terraform or generalized provider framework.
+compatible internal changes remain on v1.x. No speculative Kubernetes or generalized provider framework. The later
+execution amendment requests infrastructure as code: plan narrowly scoped Terraform configuration for dedicated cloud
+resources, protected state, reproducible setup and guarded teardown as part of hosted delivery.
 
 ## Decision gates and responsibility
 
