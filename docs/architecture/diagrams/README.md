@@ -18,6 +18,12 @@ PR changes a referenced source and commit its updates to that PR. Review every g
 including physical frame counting and the release-only boundary, and require CI on the resulting head. AI output does
 not modify requirements or establish approval, test results or deployment. Avoid parallel edits while a sync is running.
 
+Diagram-only edits do not exercise source-triggered regeneration. The observed controlled probe produced a successful
+bot commit after a referenced Compose comment changed, but only refreshed metadata and retained the diagram placeholder.
+That placeholder was restored manually. A successful app check proves neither a meaningful diagram change nor semantic
+accuracy; compare its actual diff with the source. See the
+[probe record](../../validation/mermaid.md#controlled-sync-probe).
+
 The root [`.mermaidignore`](../../../.mermaidignore) opts in only these three standalone diagrams. Other standalone
 diagrams, original requirements, evidence, historical/generated agent artifacts and the frozen acceptance package are
 excluded from regeneration. The manual phase-policy and deferred-hosting views remain in `v1.md`. Do not copy the

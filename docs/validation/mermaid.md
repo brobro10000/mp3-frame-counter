@@ -125,3 +125,28 @@ and protected inputs. `npm run validate` passed 16/16 renders, formatting, workf
 tests and 62 tooling tests. Requirements, archives, acceptance bytes, product code and CI gates were unchanged. The
 [PR checks](https://github.com/brobro10000/mp3-frame-counter/pull/5/checks) and PR validation section record the live
 integration outcome separately.
+
+## Controlled sync probe
+
+On 2026-10-10 UTC the owner requested a simulated diagram change to exercise the integration. The runtime view's
+internal frontend listener label was temporarily replaced with `listener pending sync`; all 16 diagrams still rendered.
+The [diagram-only check](https://github.com/brobro10000/mp3-frame-counter/runs/114094435345) at `a7ed94d` skipped
+because no referenced source changed. This is expected source-trigger behavior, not a parser failure.
+
+A documentation-only comment in `compose.yaml` then clarified that NGINX listens on container port 8080 while
+`FRONTEND_PORT` controls the host binding. No executable setting or application behavior changed. The resulting
+[source-triggered check](https://github.com/brobro10000/mp3-frame-counter/runs/114094657076) at `6b9993e` succeeded with
+**Updated 1 Diagram**, consumed one Mermaid AI credit, and created
+[bot commit 407f084](https://github.com/brobro10000/mp3-frame-counter/commit/407f08493430791678158ca5eb3e7b498808f5ef).
+The commit changed only `runtime.mmd`; GitHub Actions started again on that bot head.
+
+Inspection found that the bot rewrote frontmatter formatting, added its actual generation timestamp and changed final
+newline handling, but left the diagram body and temporary label unchanged. The listener was therefore restored to
+`:8080` manually. The probe proves source-reference matching, app execution, bot write-back and CI re-entry. It does
+**not** establish that AI repairs every stale label. Review actual generated changes, retain mandatory rendering and
+require fresh CI on the final corrected head. The useful Compose comment remains; no simulation placeholder, application
+behavior change, requirement/archive modification or frozen-baseline amendment remains.
+
+After restoration, `npm run validate` again passed all 16 renders and all 82 gate/tooling tests, with formatting, lint,
+policy and portability checks green. Independent read-only review confirmed the bot's diagram body was unchanged and the
+Compose configuration parsed identically before and after the comment. Final hosted evidence is linked from the PR.

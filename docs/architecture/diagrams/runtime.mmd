@@ -20,7 +20,7 @@ generationTime: '2026-10-10T01:12:38.134Z'
 flowchart LR
     B["Browser"]
     subgraph LOCAL["Local Compose: two non-root application containers"]
-        F["Frontend: static HTML and NGINX (listener pending sync)"]
+        F["Frontend: static HTML and NGINX :8080"]
         A["API: node:http :3000, bounded upload buffer"]
         P["Pure in-process TypeScript frame counter"]
         F -->|"Raw POST /file-upload"| A
