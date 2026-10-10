@@ -3,8 +3,8 @@ title: Planned roadmap prerequisites to verified production
 query: >-
   Show the adopted planning order, not implemented automation. Acceptance-gate migration precedes independent
   successor suites and actual merge binding. Version allocation precedes release-line activation. Transport and
-  docs successors are separate. Verified line activation and truthful lifecycle observations precede transport
-  authoring. Conditional queue-tooling support precedes live queue syntax and is not a hosting prerequisite because
+  docs successors are separate. A narrow governance-only dependency policy precedes runtime installation. Verified
+  line activation and truthful lifecycle observations precede transport authoring. Conditional queue-tooling support precedes live queue syntax and is not a hosting prerequisite because
   reconciliation is the selected fallback. Stage and production evidence precede v1.0.0.
 references:
   - 'File: /docs/roadmap/README.md'
@@ -19,7 +19,8 @@ flowchart TD
     GATE --> TRANSPORT
     TRANSPORT --> TBIND["Bind actual merged suite"]
     LINE --> FASTIFY["Fastify migration"]
-    TBIND --> FASTIFY
+    TBIND --> RUNTIME["RUNTIME-POLICY: narrowly admit pinned Fastify"]
+    RUNTIME --> FASTIFY
     FASTIFY --> DOCS["Independent docs and CSP contract"]
     DOCS --> DBIND["Bind actual merged docs suite"]
     DBIND --> REDOC["Offline Redoc and scoped CSP"]
