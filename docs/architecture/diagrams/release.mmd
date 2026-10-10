@@ -38,11 +38,11 @@ references:
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
   - 'File: /release-policy.json'
-generationTime: '2026-10-10T22:25:58.264Z'
+generationTime: '2026-10-10T22:55:31.749Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
-    PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
+    PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free bootstrap/access Terraform format, init and validate"]
     EVENT --> PREP["Product trusted-base admission<br/>emit exact source/base decision and digest"]
     PREP --> SETUP["Select and extract exact suites; locked npm ci<br/>prepare package-local Chromium and verify launch/close<br/>write setup evidence, then run each standalone check"]
     SETUP --> P["Product: run unit/build checks<br/>candidate controls and readiness are not product acceptance"]

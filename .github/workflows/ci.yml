@@ -184,12 +184,15 @@ jobs:
         with:
           terraform_version: 1.13.3
           terraform_wrapper: false
-      # Validate the bootstrap schema without cloud credentials, backend access, planning or resource changes.
-      - name: Validate cloud bootstrap without credentials
+      # Validate the cloud roots without credentials, backend access, live plans or resource changes.
+      - name: Validate cloud foundations without credentials
         run: |
           terraform -chdir=infra/cloud/bootstrap fmt -check
           terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly
           terraform -chdir=infra/cloud/bootstrap validate -no-color
+          terraform -chdir=infra/cloud/access fmt -check
+          terraform -chdir=infra/cloud/access init -backend=false -input=false -lockfile=readonly
+          terraform -chdir=infra/cloud/access validate -no-color
       - run: npm run mermaid:install
       # Match upstream Mermaid CLI CI: Ubuntu's Chrome AppArmor profile permits Chrome's own sandbox to operate.
       - run: aa-exec --profile=chrome npm run validate
