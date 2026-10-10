@@ -229,7 +229,8 @@ function negatives(lane, cases, make = lane.make) {
   for (const [label, mutate] of cases) {
     let input = make();
     passing(check, input, lane.output);
-    input = mutate(input) ?? input;
+    const replacement = mutate(input);
+    if (replacement !== undefined) input = replacement;
     refusal(check, input, `${lane.name}: ${label}`);
   }
 }
