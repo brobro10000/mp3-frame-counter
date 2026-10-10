@@ -128,3 +128,11 @@ configuration, dependencies and frozen acceptance remain identical to the tested
 [PR #24](https://github.com/brobro10000/mp3-frame-counter/pull/24) requires fresh mandatory CI and actual Docker
 companion review before an authorized normal owner merge. Protected-main acceptance/activation and publication remain
 pending; none is inferred from these local results. Earlier pending statements above describe their pre-check snapshots.
+
+## Companion evidence gap and response
+
+The first exact-head companion review, run `20261010T183230-6d14196e`, returned incomplete without an established code
+finding: its snapshot lacked the underlying local offline-build records. The
+[portable evidence capsule](docs-offline-build-records.md) now includes those exact records, their hashes,
+retained-image source binding and fresh isolated generation/runtime readbacks. No product code, frozen acceptance, CSP
+or governance condition changed. A new exact-head review remains required; the earlier incomplete report is retained.
