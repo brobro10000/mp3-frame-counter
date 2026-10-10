@@ -20,14 +20,16 @@ import { lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { detectPhase } from "./phase-policy.mjs";
 
+export { resolveAcceptance } from "./acceptance-transitions.mjs";
+
 export const baselinePath = "docs/testing/baseline.json";
 export const suitePath = "tests/acceptance";
 export const manifestPath = `${suitePath}/fixtures/manifest.json`;
 const digest = (value) => createHash("sha256").update(value).digest("hex");
 
-/** Read bounded Git metadata with explicit argv; failure remains fatal rather than becoming an empty result. */
+/** Read exact Git objects without replacement refs; bounded failures remain fatal instead of returning no evidence. */
 export function git(root, args, encoding = "utf8") {
-  return execFileSync("git", args, { cwd: root, encoding, maxBuffer: 32 * 1024 * 1024 });
+  return execFileSync("git", ["--no-replace-objects", ...args], { cwd: root, encoding, maxBuffer: 32 * 1024 * 1024 });
 }
 
 /** List a committed tree or current nonignored files; use NUL delimiters so spaces remain meaningful. */

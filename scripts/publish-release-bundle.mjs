@@ -27,12 +27,15 @@ try {
     console.log("Source-only phase: no application release bundle.");
   } else {
     assert.equal(phase, "integration", "Application release requires both independently tested images");
-    const { ordinal } = verifyReleaseSource(root, context);
+    const report = readFileSync(requireArtifactPath(root, ".artifacts/e2e-result.json"));
+    const { ordinal } = verifyReleaseSource(root, context, {
+      admission: JSON.parse(report).acceptanceAdmission,
+      expectedAdmissionSha256: process.env.GATE_ADMISSION_SHA256,
+    });
     const version = versionForOrdinal(ordinal);
     execFileSync(process.execPath, ["scripts/prepare-release.mjs"], { stdio: "inherit", timeout: 420000 });
     const relativeDirectory = `.artifacts/releases/${version}`;
     const directory = requireArtifactPath(root, relativeDirectory);
-    const report = readFileSync(requireArtifactPath(root, ".artifacts/e2e-result.json"));
     for (const [name, bytes] of [
       ["ci-origin.json", Buffer.from(`${JSON.stringify(context, null, 2)}\n`)],
       ["e2e-result.json", report],
@@ -42,7 +45,9 @@ try {
         assert.deepEqual(readFileSync(requireArtifactPath(root, path)), bytes, "Conflicting CI bundle");
       else writeFileSync(path, bytes, { flag: "wx", mode: 0o600 });
     }
-    await verifyReleaseBundle(root, relativeDirectory, context);
+    await verifyReleaseBundle(root, relativeDirectory, context, {
+      expectedAdmissionSha256: process.env.GATE_ADMISSION_SHA256,
+    });
     appendFileSync(
       process.env.GITHUB_OUTPUT,
       `ready=true\nversion=${version}\ndirectory=${relativeDirectory}\n` +

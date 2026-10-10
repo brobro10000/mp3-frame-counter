@@ -3,11 +3,16 @@
  * Imported by the preparation/publication entry points. Inputs are GitHub context, local Git objects and a prepared
  * artifact directory; no provider or GitHub mutations occur here. Reads and hashes exact files, rejects provisional
  * baselines, changed artifacts, stale ordinals, incomplete jobs and non-main contexts. No deployment approval is implied.
+ * After policy introduction, callers must supply the independent product-job admission digest; the report's envelope
+ * is verified against that digest, its original producing attempt and a fresh source/base resolver decision. Legacy
+ * source histories retain their original schemas and bytes. Publication provenance binds the report as a hashed asset.
  */
 import assert from "node:assert/strict";
 import { lstatSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { git, verifyBaseline } from "./acceptance-baseline.mjs";
+import { acceptancePolicyIntroduced, verifyAcceptanceAdmission } from "./acceptance-admission.mjs";
+import { requirePreflightWorkflow } from "./acceptance-preflight.mjs";
 import {
   archiveIdentity,
   canonical,
@@ -67,8 +72,45 @@ export function requireOrigin(origin, context) {
   );
 }
 
-/** Check full-history source and frozen-suite Git identity before accepting downloaded or locally prepared bytes. */
-export function verifyReleaseSource(root, context) {
+/** Verify the closed report envelope using an independent digest and the original main-push producing context. */
+function releaseAdmission(root, context, admission, expectedAdmissionSha256) {
+  assert(admission && typeof admission === "object" && !Array.isArray(admission), "Missing acceptance admission");
+  assert([Object.prototype, null].includes(Object.getPrototypeOf(admission)), "Invalid admission envelope prototype");
+  assert.deepEqual(Reflect.ownKeys(admission).sort(), ["record", "sha256"], "Unexpected admission envelope fields");
+  for (const field of ["record", "sha256"]) {
+    const descriptor = Object.getOwnPropertyDescriptor(admission, field);
+    assert(descriptor.enumerable && Object.hasOwn(descriptor, "value"), "Invalid admission envelope property");
+  }
+  assert(
+    typeof expectedAdmissionSha256 === "string" && /^[a-f0-9]{64}$/.test(expectedAdmissionSha256),
+    "Missing independent acceptance admission digest",
+  );
+  assert.equal(admission.sha256, expectedAdmissionSha256, "Admission differs from the independent product digest");
+  assert.equal(context.schemaVersion, 1, "Unsupported release context schema");
+  assert.equal(context.workflow, ".github/workflows/ci.yml", "Unexpected producing workflow");
+  const expectedContext = {
+    repository: context.repository,
+    eventName: "push",
+    ref: "refs/heads/main",
+    sourceRevision: context.sourceRevision,
+    sourceTree: git(root, ["--no-replace-objects", "rev-parse", `${context.sourceRevision}^{tree}`]).trim(),
+    baseRevision: context.baseRevision,
+    workflowRevision: context.workflowRevision,
+    toolingRevision: context.baseRevision,
+    runId: context.runId,
+    attempt: context.attempt,
+  };
+  const resolution = verifyAcceptanceAdmission(root, {
+    record: admission.record,
+    expectedContext,
+    expectedSha256: expectedAdmissionSha256,
+  });
+  assert(resolution.policySha256 !== null, "Introduced acceptance policy is missing from the source");
+  return { baseline: resolution.required, acceptanceAdmission: structuredClone(admission) };
+}
+
+/** Check full-history source and required-suite identity before accepting downloaded or locally prepared bytes. */
+export function verifyReleaseSource(root, context, { admission, expectedAdmissionSha256 } = {}) {
   assert.equal(git(root, ["rev-parse", "--is-shallow-repository"]).trim(), "false", "Full history is required");
   assert.equal(git(root, ["status", "--porcelain"]).trim(), "", "Release checkout must be clean");
   assert.equal(
@@ -77,14 +119,19 @@ export function verifyReleaseSource(root, context) {
     "Checkout differs from tested main source",
   );
   git(root, ["merge-base", "--is-ancestor", context.baseRevision, context.sourceRevision]);
-  const baseline = verifyBaseline(root, context.baseRevision);
+  const introduced = acceptancePolicyIntroduced(root, context.sourceRevision);
+  if (!introduced) assert.equal(admission, undefined, "Legacy source cannot carry acceptance admission evidence");
+  const accepted = introduced
+    ? releaseAdmission(root, context, admission, expectedAdmissionSha256)
+    : { baseline: verifyBaseline(root, context.baseRevision) };
+  const { baseline } = accepted;
   assert.equal(
     baseline.publicationStatus,
     "protected-main",
     "Release requires a separately landed protected-main baseline",
   );
   return {
-    baseline,
+    ...accepted,
     ordinal: Number(git(root, ["rev-list", "--first-parent", "--count", context.sourceRevision]).trim()),
     configuration: configurationFingerprint(
       Object.fromEntries(
@@ -94,14 +141,16 @@ export function verifyReleaseSource(root, context) {
   };
 }
 
-export async function verifyReleaseBundle(root, directory, context) {
+/** Verify immutable bundle bytes against the original admission and an independently supplied product-job digest. */
+export async function verifyReleaseBundle(root, directory, context, { expectedAdmissionSha256 } = {}) {
   const path = requireArtifactPath(root, directory);
   assert.deepEqual(readdirSync(path).sort(), preparedAssetNames, "Unexpected or missing prepared release assets");
   for (const name of preparedAssetNames)
     assert(lstatSync(join(path, name)).isFile(), "Release assets must be regular files");
   const origin = JSON.parse(readFileSync(join(path, "ci-origin.json"), "utf8"));
   requireOrigin(origin, context);
-  const source = verifyReleaseSource(root, context);
+  const report = JSON.parse(readFileSync(join(path, "e2e-result.json"), "utf8"));
+  const source = verifyReleaseSource(root, origin, { admission: report.acceptanceAdmission, expectedAdmissionSha256 });
   const initial = JSON.parse(readFileSync(join(path, "manifest.json"), "utf8"));
   const manifest = await verifyPreparedDirectory(path, initial.identity);
   assert.equal(manifest.sourceRevision, context.sourceRevision);
@@ -110,7 +159,6 @@ export async function verifyReleaseBundle(root, directory, context) {
   assert.equal(manifest.ordinal, source.ordinal, "Release ordinal differs from full source history");
   assert.equal(manifest.version, versionForOrdinal(source.ordinal));
   assert.deepEqual(manifest.identity.sourceConfiguration, source.configuration, "Source configuration differs");
-  const report = JSON.parse(readFileSync(join(path, "e2e-result.json"), "utf8"));
   assert.deepEqual(localEvidence(report), manifest.identity.evidence, "Archived E2E evidence differs from preparation");
   const evidence = manifest.identity.evidence;
   assert.equal(evidence.baselinePublication, "protected-main");
@@ -121,7 +169,12 @@ export async function verifyReleaseBundle(root, directory, context) {
   const assets = [];
   for (const name of preparedAssetNames)
     assets.push({ name, path: join(path, name), ...(await archiveIdentity(join(path, name))) });
-  return { manifest, origin, assets };
+  return {
+    manifest,
+    origin,
+    assets,
+    ...(source.acceptanceAdmission ? { acceptanceAdmission: source.acceptanceAdmission } : {}),
+  };
 }
 
 /** Validate live API evidence for the original producing attempt, including successful jobs reused on a later retry. */
@@ -153,6 +206,13 @@ export function requireObservedChecks(bundle, repository, branch, comparison, ru
     );
     assert.equal(matches[0].status, "completed");
     assert.equal(matches[0].conclusion, "success", `Mandatory ${name} did not succeed`);
+    if (Object.hasOwn(bundle, "acceptanceAdmission") && ["validate-foundation", "validate-product"].includes(name)) {
+      assert(Array.isArray(matches[0].steps), `Missing acceptance preflight evidence for ${name}`);
+      const preflights = matches[0].steps.filter((step) => step.name === "Validate acceptance admission");
+      assert.equal(preflights.length, 1, `Missing or ambiguous acceptance preflight for ${name}`);
+      assert.equal(preflights[0].status, "completed", `Acceptance preflight for ${name} did not complete`);
+      assert.equal(preflights[0].conclusion, "success", `Acceptance preflight for ${name} did not succeed`);
+    }
   }
 }
 
@@ -226,16 +286,30 @@ export function canBeLatest(bundle, branch, releases) {
 
 /** Keep release credentials confined to the post-gate main job, with exact same-run artifact handoff and no installs. */
 export function requireReleaseWorkflow(workflow) {
+  requirePreflightWorkflow(workflow);
   assert.deepEqual(workflow.permissions, { contents: "read" });
   assert.equal(workflow.concurrency.group, "mvp-${{ github.event.pull_request.number || github.run_id }}");
   const product = workflow.jobs["validate-product"];
   const mainOnly = "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}";
+  for (const command of ["node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"]) {
+    const consumers = product.steps.filter((step) => step.run === command);
+    assert.equal(consumers.length, 1, "Require exactly one acceptance consumer command");
+    assert.deepEqual(
+      consumers[0].env,
+      {
+        GATE_ADMISSION_PATH: "${{ steps.acceptance-preflight.outputs.admission-path }}",
+        GATE_ADMISSION_SHA256: "${{ steps.acceptance-preflight.outputs.admission-sha256 }}",
+      },
+      "Consumer admission must come directly from the trusted preflight",
+    );
+  }
   const bundle = product.steps.find((step) => step.id === "release-bundle");
   assert.equal(bundle?.if, mainOnly);
   assert.equal(bundle.run, "node scripts/publish-release-bundle.mjs");
   assert.deepEqual(product.outputs, {
     "release-ready": "${{ steps.release-bundle.outputs.ready }}",
     "release-artifact": "${{ steps.release-bundle.outputs.artifact-name }}",
+    "acceptance-admission-sha256": "${{ steps.acceptance-preflight.outputs.admission-sha256 }}",
   });
   const upload = product.steps.find((step) => step.uses?.startsWith("actions/upload-artifact@"));
   assert.equal(upload?.if, "${{ steps.release-bundle.outputs.ready == 'true' }}");
@@ -254,7 +328,10 @@ export function requireReleaseWorkflow(workflow) {
   );
   assert.deepEqual(publisher.permissions, { contents: "write", actions: "read" });
   assert.deepEqual(publisher.concurrency, { group: "publish-release-main", "cancel-in-progress": false });
-  assert.deepEqual(publisher.env, { CI_BASE_REF: "${{ github.event.before }}" });
+  assert.deepEqual(publisher.env, {
+    CI_BASE_REF: "${{ github.event.before }}",
+    GATE_ADMISSION_SHA256: "${{ needs.validate-product.outputs.acceptance-admission-sha256 }}",
+  });
   assert.equal(publisher.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
   const download = publisher.steps.find((step) => step.uses?.startsWith("actions/download-artifact@"));
   assert.deepEqual(download?.with, {
@@ -266,10 +343,18 @@ export function requireReleaseWorkflow(workflow) {
     ["node scripts/publish-release.mjs"],
   );
   for (const [name, job] of Object.entries(workflow.jobs)) {
-    if (name !== "publish-release")
+    if (["validate-foundation", "validate-product"].includes(name))
+      assert.deepEqual(job.permissions, { contents: "read", "pull-requests": "read" });
+    else if (name !== "publish-release")
       assert.equal(job.permissions, undefined, "Only publisher may override read-only permissions");
     assert.equal(job.env?.GITHUB_TOKEN, undefined, "Do not expose a job-wide publication token");
+    assert.equal(job.env?.GATE_REVIEW_TOKEN, undefined, "Do not expose a job-wide review token");
     for (const step of job.steps) {
+      if (step.env?.GATE_REVIEW_TOKEN !== undefined) {
+        assert(["validate-foundation", "validate-product"].includes(name), "Unexpected review credential job");
+        assert.equal(step.id, "acceptance-preflight", "Only preflight may receive review credentials");
+        assert.equal(step.env.GATE_REVIEW_TOKEN, "${{ github.token }}");
+      }
       if (step.env?.GITHUB_TOKEN !== undefined) {
         assert.equal(name, "publish-release", "PR validators must not receive publication credentials");
         assert.equal(step.run, "node scripts/publish-release.mjs");

@@ -194,7 +194,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     assert.equal(process.env.GITHUB_JOB, "publish-release", "Use the dedicated release publication job");
     const context = publicationContext(process.env);
     const root = process.cwd();
-    const bundle = await verifyReleaseBundle(root, ".artifacts/release-input", context);
+    const bundle = await verifyReleaseBundle(root, ".artifacts/release-input", context, {
+      expectedAdmissionSha256: process.env.GATE_ADMISSION_SHA256,
+    });
     const directory = requireArtifactPath(root, ".artifacts");
     const result = await publishRelease(bundle, githubApi(context.repository, process.env.GITHUB_TOKEN), directory);
     console.log(JSON.stringify(result, null, 2));

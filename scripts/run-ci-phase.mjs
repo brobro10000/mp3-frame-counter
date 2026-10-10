@@ -6,7 +6,9 @@
  * comparison prevents reverting to an earlier phase after integration and does not accept a phase/skip argument.
  *
  * Acceptance-only work installs and checks its standalone package. Product work requires an independently frozen
- * pre-product baseline, extracts it outside the product tree, installs its locked dependencies and runs its `check`.
+ * pre-product genesis or admitted successor, extracts it outside the product tree and runs its locked `check`.
+ * A pending candidate runs separate discovery/oracle/negative controls and writes candidate-only evidence; it cannot
+ * satisfy required product acceptance. Post-policy CI uses the trusted preflight record/digest; local runs claim no CI.
  * Parser work additionally runs root test:unit and build; integration additionally runs root test:e2e with the
  * verified TRUSTED_ACCEPTANCE_ROOT. That lifecycle command must start the real app and run the suite's e2e script.
  * The runner removes its temporary suite checkout and propagates missing tools, invalid records and command failures.
@@ -15,14 +17,15 @@
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { repositoryFiles, suitePath, verifyBaseline } from "./acceptance-baseline.mjs";
+import { git, repositoryFiles, suitePath } from "./acceptance-baseline.mjs";
+import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import { requireMonotonicPhase, requiredRootScripts } from "./phase-policy.mjs";
 
 const root = process.cwd();
-let temporary;
+const temporary = [];
 
 /** Execute a real command, inheriting visible logs but preserving a nonzero exit and a bounded wait. */
 function run(command, args, cwd = root, env = process.env, options = {}) {
@@ -45,17 +48,49 @@ try {
   }
   let acceptanceRoot = join(root, suitePath);
   if (["parser", "integration"].includes(phase)) {
-    const baseline = verifyBaseline(root, baseRef);
-    temporary = mkdtempSync(join(tmpdir(), "mp3-acceptance-"));
-    const archive = run("git", ["archive", "--format=tar", baseline.suiteCommit, suitePath], root, process.env, {
-      stdio: ["ignore", "pipe", "inherit"],
-      maxBuffer: 32 * 1024 * 1024,
-    }).stdout;
-    run("tar", ["-xf", "-", "-C", temporary], root, process.env, {
-      input: archive,
-      stdio: ["pipe", "inherit", "inherit"],
-    });
-    acceptanceRoot = join(temporary, suitePath);
+    const selection = runtimeAcceptance(root, process.env);
+    const extract = (baseline) => {
+      const directory = mkdtempSync(join(tmpdir(), "mp3-acceptance-"));
+      temporary.push(directory);
+      const archive = run(
+        "git",
+        ["--no-replace-objects", "archive", "--format=tar", baseline.suiteCommit, suitePath],
+        root,
+        process.env,
+        {
+          stdio: ["ignore", "pipe", "inherit"],
+          maxBuffer: 32 * 1024 * 1024,
+        },
+      ).stdout;
+      run("tar", ["-xf", "-", "-C", directory], root, process.env, {
+        input: archive,
+        stdio: ["pipe", "inherit", "inherit"],
+      });
+      return join(directory, suitePath);
+    };
+    acceptanceRoot = extract(selection.baseline);
+    const candidate = selection.resolution?.candidate ?? selection.resolution?.pendingBinding;
+    if (candidate) {
+      // Candidate discovery/oracle/negative controls are separate from required product acceptance.
+      const candidateRoot = extract(candidate);
+      const evidence = {
+        schemaVersion: 1,
+        kind: "candidate-harness-controls",
+        sourceRevision: git(root, ["rev-parse", "HEAD"]).trim(),
+        suiteCommit: candidate.suiteCommit,
+        suiteTree: candidate.suiteTree,
+        status: "failed",
+        productAcceptance: false,
+      };
+      try {
+        run("npm", ["ci"], candidateRoot);
+        run("npm", ["run", "check"], candidateRoot);
+        evidence.status = "passed";
+      } finally {
+        mkdirSync(join(root, ".artifacts"), { recursive: true });
+        writeFileSync(join(root, ".artifacts/acceptance-candidate.json"), `${JSON.stringify(evidence, null, 2)}\n`);
+      }
+    }
   }
   if (phase !== "foundation") {
     run("npm", ["ci"], acceptanceRoot);
@@ -68,5 +103,5 @@ try {
   console.error(error.message);
   process.exitCode = 1;
 } finally {
-  if (temporary) rmSync(temporary, { recursive: true, force: true });
+  for (const directory of temporary) rmSync(directory, { recursive: true, force: true });
 }

@@ -23,6 +23,11 @@ not human review or authority to approve a production deployment. The release is
 
 ## Active work after PLAN-01
 
+**Historical window, superseded 2026-10-10:** the following records the state immediately after PLAN-01. COST-BOOTSTRAP
+has since merged and its apply/readback are recorded in [cost validation](cloud-cost-bootstrap.md). Follow the
+[current three-card window](../phases/next-iteration.md) for GATE-01, VER-01 and LINE-02; the earlier statements below
+do not describe present cloud state.
+
 The [three-card window](../phases/next-iteration.md) now contains COST-BOOTSTRAP, GATE-01 and VER-01. COST-BOOTSTRAP
 follows the existing PLAN → cost/access prerequisite branch independently of the acceptance migration. It adds only
 dedicated project/API/cost-control infrastructure and credential-free source checks. GATE-01 must still precede any

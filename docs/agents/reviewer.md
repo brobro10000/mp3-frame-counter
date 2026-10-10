@@ -1,14 +1,20 @@
 # Reviewer role
 
+**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
+supersedes the historical documentation-only PLAN-01 limit below and authorizes companion review submission and clean
+owner merges without repeated routine consent. Review the exact current head under the existing protections. Production
+application deployment still requires human intervention. The
+[GATE-01 transition guide](../testing/acceptance-transition.md) describes dormant support pending integration
+validation/review; r3 remains active and no successor is approved here.
+
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and
 [independence policy](../testing/independence-and-baseline.md).
 
 Before baseline freeze, review precise HTTP/tag/error policy, primary format evidence, fixture provenance/licenses,
 MediaInfo physical-count reconciliation, three distinct known counts, exact-limit validity and negative-control
-failures.
-Confirm no product implementation informed oracle construction and no fake app or unavailable-server result is called
-E2E success. Record what was actually reviewed and who reviewed it.
+failures. Confirm no product implementation informed oracle construction and no fake app or unavailable-server result is
+called E2E success. Record what was actually reviewed and who reviewed it.
 
 For product changes, check unchanged trusted baseline identity, meaningful unit coverage, exact count/JSON semantics,
 public-ingress uploads, cleanup and recovery. Inspect source/configuration/images for no persistence, prohibited parser
@@ -23,9 +29,9 @@ main-only publication permissions, immutable tags/assets, draft completion and i
 Provider fit, candidate results, production approval, partial rollout and hosted recovery apply only when deployment is
 explicitly resumed. Do not call a written plan deployed or a health response full acceptance.
 
-These role instructions do not enforce distinct-person review. Preserve the owner's explicitly authorized PR-only
-review exception and identify its use. Agent review is not GitHub human approval. Do not approve, merge, invoke an
-override, change rules or authorize production actions without an explicit user instruction.
+These role instructions do not enforce distinct-person review. Preserve the owner's explicitly authorized PR-only review
+exception and identify its use. Agent review is not GitHub human approval. Do not approve, merge, invoke an override,
+change rules or authorize production actions without an explicit user instruction.
 
 ## Roadmap role extension — 2026-10-10
 
@@ -43,6 +49,11 @@ For GATE-01, independently examine expected-decision fixtures, trusted-base admi
 pending successor, actual squash binding and persistent descendant applicability. Reject implementation/test/policy
 changes combined to approve themselves. Workflow replacement is not prevented by an internal preflight alone and needs
 explicit independent review under the repository controls.
+
+Check the exact preflight command and startup environment, trusted-base extraction, token isolation and original
+source/base/run/attempt binding. Pure admission helpers establish consistency, not authenticated authority. Reject
+report-selected hashes, local selections presented as CI admission, or immutable retry evidence rewritten for a later
+attempt. Confirm all consumers resolve the same required suite before treating GATE-01 as merge-ready.
 
 For VER-01, review source-bound allocation, historical identity/retry compatibility, numeric ordering and refusal of
 premature `1.0.0`. Preserve one publication authority. Docs review must require offline assets and real CSP/browser

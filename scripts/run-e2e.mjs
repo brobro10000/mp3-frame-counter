@@ -4,7 +4,9 @@
  * Invoke `npm run test:e2e` through `npm run check:phase`; no CLI arguments, caller URLs or test filters are accepted.
  * TRUSTED_ACCEPTANCE_ROOT must name the controller's verified suite checkout outside this repository. Docker and
  * Compose must be running; optional DOCKER_CONFIG is inherited by Docker commands without recording its location.
- * This script rechecks the freeze and extracted suite, builds both clean images, publishes stable OS-selected loopback ports,
+ * This script rechecks the required suite and preflight/local selection, then verifies extracted bytes. CI reports
+ * retain the admission envelope; local post-policy reports explicitly carry only local selection, never CI authority.
+ * It builds both clean images, publishes stable OS-selected loopback ports,
  * installs pinned Chromium and runs the complete suite with authenticated, explicitly scoped API fault operations.
  * On Linux CI only, pinned Playwright also installs its required browser OS packages through apt/sudo; local host
  * packages are never implicitly installed. Every stage shares a 1,100-second work budget plus 30-second cleanup.
@@ -29,7 +31,8 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, resolve } from "node:path";
-import { git, repositoryFiles, suitePath, verifyBaseline } from "./acceptance-baseline.mjs";
+import { git, repositoryFiles, suitePath } from "./acceptance-baseline.mjs";
+import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import {
   command,
   faultServer,
@@ -176,9 +179,12 @@ try {
   await withCleanup(
     async () => {
       assert.equal(process.argv.length, 2, "E2E accepts no filters, phase selectors or target overrides");
-      const baseline = verifyBaseline(root, process.env.CI_BASE_REF || undefined);
+      const selection = runtimeAcceptance(root, process.env);
+      const { baseline } = selection;
       verifyExtracted(baseline);
       Object.assign(report, {
+        ...(selection.admission ? { acceptanceAdmission: selection.admission } : {}),
+        ...(selection.localSelection ? { localSelection: selection.localSelection } : {}),
         sourceRevision: git(root, ["rev-parse", "HEAD"]).trim(),
         sourceDirty: Boolean(git(root, ["status", "--porcelain"])),
         trackedDiffSha256: hash(git(root, ["diff", "HEAD", "--binary"], null)),

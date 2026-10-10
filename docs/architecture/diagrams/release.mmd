@@ -12,23 +12,30 @@ query: >-
   independent Docker image builds, the two running Compose containers and host
   acceptance processes, then export of those exact tested images. Images and
   archives are artifacts, not extra running services. Earlier source-only phases
-  have a separate foundation-delivery path outside this view.
-  Foundation includes credential-free Terraform formatting, initialization and
-  validation; keep these checks inside its mandatory gate, with no cloud apply.
+  have a separate foundation-delivery path outside this view. Both validation
+  jobs perform trusted-base acceptance admission before head-owned commands.
+  Candidate harness checks remain separate from required product E2E; carry the
+  preflight digest through the original same-run release bundle. Foundation
+  includes credential-free Terraform formatting, initialization and validation;
+  keep these checks inside its mandatory gate, with no cloud apply.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /scripts/run-ci-phase.mjs'
+  - 'File: /scripts/acceptance-preflight.mjs'
+  - 'File: /scripts/acceptance-runtime.mjs'
   - 'File: /scripts/ci-gate.mjs'
   - 'File: /scripts/publish-release-bundle.mjs'
   - 'File: /scripts/prepare-release.mjs'
   - 'File: /scripts/publish-release.mjs'
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
-generationTime: '2026-10-10T06:55:37.214Z'
+generationTime: '2026-10-10T07:58:36.830Z'
 ---
 flowchart TD
-    EVENT["Current integrated application: PR or protected-main push"] --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
-    EVENT --> P["Product: verify frozen baseline and run unit/build checks"]
+    EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
+    PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
+    EVENT --> PREP["Product trusted-base admission<br/>emit exact source/base decision and digest"]
+    PREP --> P["Product: resolve required suite and run unit/build checks<br/>pending candidate harness controls stay separate"]
     P --> BUILD["Build two independent Docker images<br/>frontend: static assets with NGINX<br/>API: TypeScript build stage to minimal Node runtime"]
     BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium tests their real HTTP boundary"]
     TEST --> KIND{"Successful application main push?"}
@@ -40,7 +47,7 @@ flowchart TD
     G -->|"No"| STOP["Fail checks; no release"]
     G -->|"Yes"| MAIN{"Protected-main push?"}
     MAIN -->|"No: PR"| REVIEW["Checks available for independent review and protected merge"]
-    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, baseline, same-run checks and bundle hashes"]
+    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, admitted required suite,<br/>original preflight digest, same-run checks and bundle hashes"]
     VERIFY --> DRAFT["Create or verify exact v0.1.ordinal tag and private draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
     ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]
