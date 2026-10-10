@@ -171,7 +171,9 @@ The final pinned Linux amd64 `npm run check` passed: TypeScript, 46 original fix
 controls, 52 transport controls, 46 docs controls, 95 hosted controls and exact 72/22/3 discovery. No application target
 was supplied. The aggregate binds its 32 declared source inputs to digest
 `9e6b08d598f03e0bb12712f3ede0f8e39063ef2ce77d3a3b88decece795552a5`; this is a control-input digest, not a full Git
-suite-tree attestation. macOS independently passed the 95 controls; corrected discovery and typechecking passed there.
+suite-tree attestation. A preceding macOS run passed the same 95 control cases. Subsequent reporter/discovery
+corrections received focused constructor, discovery and type checks there; the final complete package check above ran on
+Linux.
 
 A disposable, network-isolated Linux container also passed 15 checks using the actual browser/HTTP adapters and normal
 TLS validation, including trusted positives, untrusted-certificate refusals, preserved response bytes/security headers,
