@@ -109,3 +109,19 @@ this actual main as first parent; its earlier test-first history is retained as 
 preserves the parent's corrected comments and evidence, and retains this card's reviewed three-card window. Main run
 38084476141 has started; publication remains pending at this checkpoint. Fresh dependent checks and companion review are
 still required. This follows the owner's direction to merge ready layers and immediately update dependents.
+
+## Companion recovery-instruction correction
+
+Exact-head PR run [38084595643](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084595643) passed for
+`fc4f0a208faab94138b9927c34f46000901eadf3`: 545 tooling tests, 20 gates, 120 units, all 72 required local cases with
+cleanup and 19 Mermaid renders. Docker companion run `20261010T204624-a808f085` reviewed all 14 changed paths and
+returned one P3: the new card incorrectly made publication the cutoff for preserving an admitted release line. The
+existing allocator and version policy require retaining 0.3 after merge, including failed or absent publication. Root
+corrected only that recovery wording; executable code and expectations are unchanged. Review report SHA-256 is
+`bac5eab589f1c4c8e67af07d9ddf476fb1c46663f916cba66cdc1012a7f7470b`, verified against its execution receipt. No approval
+was posted. Fresh required checks and companion review apply to the correction.
+
+Parent PR #26 has now completed main run 38084476141 and published v0.2.26, release 409195020. Root rehashed all eight
+metadata assets, verified source/admission/image consistency and read the independent main-CI audit; image archives were
+not downloaded or rehashed. This supersedes the earlier pending-publication checkpoint without changing deployment
+state.

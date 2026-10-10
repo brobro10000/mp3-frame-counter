@@ -199,8 +199,9 @@ test, provider command or Terraform apply. Independently review the classifier a
 obtain actual-head Docker companion approval. Source/base changes invalidate review.
 
 **Release and rollback:** normal owner merge allows the existing publisher to allocate the first actual 0.3 version from
-that exact source. Never predict the final tag or rewrite old releases. Before publication, revert coherently; after a
-new-line release exists, repair forward without deleting/reinterpreting versions or downgrading policy.
+that exact source. Never predict the final tag or rewrite old releases. An unmerged proposal may be discarded or
+reworked. Once the 0.3 policy enters main history, recovery must retain that admitted line and repair forward even if
+publication never completes; an implementation rollback cannot restore 0.2. Preserve published identities and assets.
 
 **Done and stop:** independently reviewed dormant path rules and source-bound 0.3 publication are verified on actual
 main. The finite hosted adapter interface is adopted or remains explicitly blocked. No registry, federation, application
