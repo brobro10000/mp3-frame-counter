@@ -7,10 +7,22 @@
  * and a draft release, uploads only missing assets, verifies GitHub's observed SHA-256/size, then publishes last.
  * Retries reuse identical bytes; mismatches or partial assets fail without overwrite/delete. Failures retain draft/tag
  * state for inspection. Historical releases never replace newer latest releases. Writes two ignored provenance files;
- * never builds, loads, retags/pushes images, deploys, calls providers or modifies repository controls or credentials.
+ * after verified publication with original admission, writes a fixed private handoff and three Actions output values.
+ * Never builds, loads, retags/pushes images, deploys, calls providers or modifies repository controls or credentials.
  */
 import assert from "node:assert/strict";
-import { createReadStream, existsSync, lstatSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  closeSync,
+  constants,
+  createReadStream,
+  existsSync,
+  fstatSync,
+  lstatSync,
+  mkdirSync,
+  openSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
@@ -23,6 +35,12 @@ import {
   verifyReleaseBundle,
 } from "./publish-release-evidence.mjs";
 import { digest, requireArtifactPath } from "./release-manifest.mjs";
+import { createPublisherHandoff } from "./publisher-handoff.mjs";
+
+/** Require a positive observed GitHub identifier without converting strings or trusting caller claims. */
+function observedId(value) {
+  assert(Number.isSafeInteger(value) && value > 0, "Missing or invalid observed GitHub identity");
+}
 
 /** Fixed GitHub origins, no redirects or shell interpolation; error messages omit credentials and response bodies. */
 export function githubApi(repository, token) {
@@ -92,6 +110,8 @@ export async function publishRelease(bundle, api, generatedDirectory) {
   ]);
   const comparison = await api.request("GET", `${prefix}/compare/${origin.sourceRevision}...${branch?.commit?.sha}`);
   requireObservedChecks(bundle, repository, branch, comparison, run, jobs);
+  observedId(repository.id);
+  observedId(repository.owner?.id);
   const material = publicationMaterial(bundle);
   const assets = [...bundle.assets];
   for (const [name, content] of [
@@ -135,11 +155,15 @@ export async function publishRelease(bundle, api, generatedDirectory) {
   requireReleaseMetadata(release, bundle, material.notes);
   async function verifyAssets(allowUpload) {
     const observed = await api.list(`/releases/${release.id}/assets`);
+    for (const asset of observed) observedId(asset.id);
+    const observedIds = new Set(observed.map((asset) => asset.id));
+    assert.equal(observedIds.size, observed.length, "Duplicate observed release asset IDs");
     assert(new Set(observed.map((asset) => asset.name)).size === observed.length, "Duplicate release assets");
     assert(
       observed.every((asset) => assets.some((expected) => expected.name === asset.name)),
       "Unexpected release assets",
     );
+    const verified = [];
     for (const expected of assets) {
       let actual = observed.find((asset) => asset.name === expected.name);
       if (!actual) {
@@ -150,14 +174,20 @@ export async function publishRelease(bundle, api, generatedDirectory) {
           expected,
           true,
         );
+        observedId(actual?.id);
+        assert(!observedIds.has(actual.id), "Uploaded asset reused an observed asset ID");
+        observedIds.add(actual.id);
       }
       requireMatchingAsset(actual, expected);
+      verified.push({ id: actual.id, name: actual.name, bytes: actual.size, sha256: expected.sha256 });
     }
+    return verified.sort((left, right) => (left.name < right.name ? -1 : left.name > right.name ? 1 : 0));
   }
   await verifyAssets(true);
-  await verifyAssets(false);
+  const verifiedAssets = await verifyAssets(false);
   assert.equal(await tagCommit(api, prefix, tag), manifest.sourceRevision, "Release tag changed");
   const reused = !release.draft;
+  const releaseId = release.id;
   if (release.draft) {
     const [currentBranch, currentReleases] = await Promise.all([
       api.request("GET", `${prefix}/branches/main`),
@@ -174,6 +204,7 @@ export async function publishRelease(bundle, api, generatedDirectory) {
       make_latest: canBeLatest(bundle, currentBranch, currentReleases) ? "true" : "false",
     });
     requireReleaseMetadata(release, bundle, material.notes);
+    assert.equal(release.id, releaseId, "Published release identity changed");
     assert.equal(release.draft, false, "Release publication did not complete");
   }
   return {
@@ -185,7 +216,112 @@ export async function publishRelease(bundle, api, generatedDirectory) {
     releaseId: release.id,
     sourceRevision: manifest.sourceRevision,
     publicationBindingSha256: material.binding,
+    repository: { id: repository.id, ownerId: repository.owner.id },
+    reservationSha256: manifest.reservationSha256,
+    publicationSha256: digest(material.json),
+    assets: verifiedAssets,
   };
+}
+
+/** Bind the already verified original admission to bundle and publisher identities; never resolve a second authority. */
+function handoffInput(bundle, context, expectedAdmissionSha256, result) {
+  const { manifest, origin, acceptanceAdmission } = bundle;
+  assert(/^[a-f0-9]{64}$/.test(expectedAdmissionSha256 ?? "") && expectedAdmissionSha256.length === 64);
+  assert.equal(acceptanceAdmission.sha256, expectedAdmissionSha256, "Independent product admission digest differs");
+  const original = acceptanceAdmission.record.context;
+  assert.deepEqual(
+    {
+      schemaVersion: 1,
+      repository: original.repository,
+      sourceRevision: original.sourceRevision,
+      baseRevision: original.baseRevision,
+      runId: original.runId,
+      attempt: original.attempt,
+      workflow: ".github/workflows/ci.yml",
+      workflowRevision: original.workflowRevision,
+    },
+    origin,
+    "Original admission context differs from verified bundle origin",
+  );
+  // sourceTree was checked against the exact Git object by verifyReleaseBundle; no new resolver/source walk is needed.
+  assert.equal(original.sourceRevision, manifest.sourceRevision);
+  assert.equal(result.sourceRevision, manifest.sourceRevision);
+  assert.equal(result.version, manifest.version);
+  assert.equal(result.tag, `v${manifest.version}`);
+  assert.equal(result.reservationSha256, manifest.reservationSha256);
+  assert.equal(result.status, "released-not-deployed");
+  assert.equal(result.deployed, false);
+  return {
+    originalContext: original,
+    admissionSha256: expectedAdmissionSha256,
+    publisherContext: context,
+    repository: result.repository,
+    release: {
+      id: result.releaseId,
+      version: result.version,
+      tag: result.tag,
+      reservationSha256: result.reservationSha256,
+      publicationSha256: result.publicationSha256,
+      publicationBindingSha256: result.publicationBindingSha256,
+      assets: result.assets,
+    },
+  };
+}
+
+/** Exclusively create the fixed owned handoff, or reuse identical private bytes; never overwrite a conflict/symlink. */
+function persistHandoff(root, handoff) {
+  const directory = requireArtifactPath(root, ".artifacts/publisher-handoff", { allowMissingLeaf: true });
+  try {
+    mkdirSync(directory, { mode: 0o700 });
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+  }
+  const stat = lstatSync(directory);
+  assert(stat.isDirectory() && !stat.isSymbolicLink() && stat.uid === process.getuid());
+  assert.equal(stat.mode & 0o777, 0o700, "Handoff directory must remain private");
+  const path = requireArtifactPath(root, ".artifacts/publisher-handoff/handoff.json", { allowMissingLeaf: true });
+  const bytes = Buffer.from(`${JSON.stringify(handoff, null, 2)}\n`);
+  assert(bytes.length <= 64 * 1024, "Handoff exceeds the receipt bound");
+  let fd;
+  let created = false;
+  try {
+    fd = openSync(path, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW, 0o600);
+    created = true;
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+  }
+  try {
+    const file = fstatSync(fd);
+    assert(file.isFile() && file.uid === process.getuid());
+    assert.equal(file.mode & 0o777, 0o600, "Handoff file must remain private");
+    if (created) writeFileSync(fd, bytes);
+    else {
+      assert.equal(file.size, bytes.length, "Conflicting publisher handoff");
+      assert(readFileSync(fd).equals(bytes), "Conflicting publisher handoff");
+    }
+  } finally {
+    closeSync(fd);
+  }
+  return digest(bytes);
+}
+
+/** Append validated handoff locators to the existing owned Actions output channel only after successful file creation. */
+function outputHandoff(handoff, sha256) {
+  assert(typeof process.env.GITHUB_OUTPUT === "string" && process.env.GITHUB_OUTPUT.length > 0);
+  const fd = openSync(process.env.GITHUB_OUTPUT, constants.O_WRONLY | constants.O_APPEND | constants.O_NOFOLLOW);
+  try {
+    const stat = fstatSync(fd);
+    assert(stat.isFile() && stat.uid === process.getuid());
+    const { sourceRevision, runId, attempt } = handoff.publisherContext;
+    writeFileSync(
+      fd,
+      `handoff-ready=true\nhandoff-sha256=${sha256}\n` +
+        `handoff-artifact-name=publisher-handoff-${sourceRevision}-${runId}-${attempt}\n`,
+    );
+  } finally {
+    closeSync(fd);
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
@@ -199,6 +335,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     });
     const directory = requireArtifactPath(root, ".artifacts");
     const result = await publishRelease(bundle, githubApi(context.repository, process.env.GITHUB_TOKEN), directory);
+    if (bundle.acceptanceAdmission) {
+      const handoff = createPublisherHandoff(handoffInput(bundle, context, process.env.GATE_ADMISSION_SHA256, result));
+      const sha256 = persistHandoff(root, handoff);
+      outputHandoff(handoff, sha256);
+    }
     console.log(JSON.stringify(result, null, 2));
   } catch (error) {
     console.error(`Release publication failed: ${String(error.message).replaceAll(process.cwd(), "[repository]")}`);

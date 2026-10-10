@@ -269,7 +269,7 @@ function fakeApi(bundle) {
   const prefix = `/repos/${origin.repository}`;
   const runRoute = `/actions/runs/${origin.runId}/attempts/${origin.attempt}`;
   const state = {
-    repository: { full_name: repository, private: true, default_branch: "main" },
+    repository: { id: 1102, owner: { id: 2202 }, full_name: repository, private: true, default_branch: "main" },
     branch: { name: "main", protected: true, commit: { sha: origin.sourceRevision } },
     comparison: { status: "identical" },
     run: {
@@ -337,7 +337,13 @@ function fakeApi(bundle) {
         const name = new URL(`https://api.github.com${route}`).searchParams.get("name");
         if (state.failAsset === name) throw new Error("Synthetic upload failure");
         const bytes = readFileSync(data.path);
-        const asset = { name, state: "uploaded", size: bytes.length, digest: `sha256:${sha256(bytes)}` };
+        const asset = {
+          id: 4401 + state.assets.length,
+          name,
+          state: "uploaded",
+          size: bytes.length,
+          digest: `sha256:${sha256(bytes)}`,
+        };
         state.assets.push(asset);
         state.afterUpload?.(name);
         return structuredClone(asset);

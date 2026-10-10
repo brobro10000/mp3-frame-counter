@@ -28,12 +28,12 @@ caller-owned nested objects, and CLI tests omitted symlink traversal through the
 corrections preserve the original red. A second focused run recorded 46 groups, 13 passed and 33 failed, with no skips;
 its SHA256 is `cda94cb6c61e718c4e1b5922230ad0b46004348f032ee9b383c1a965c88b909e`. Independent readback then caught a
 missing fixture-only `renameSync` import that absent implementation had masked. The import was repaired with passing
-syntax/format checks; that final static-only change is not attributed to the preceding test run. Final review is
-pending; implementation has not begun.
+syntax/format checks; that final static-only change is not attributed to the preceding test run. The final expectation
+review found no remaining actionable defects before implementation began.
 
-Final test hashes are `5f7898323768052a247f28a5fb28237646c76f6ba27053c4ebf032601d6d678a` for the new handoff suite and
-`d55d287c3122e668aa287cf2a5e17f574c676d5c8aaf21897689f7fe86f9a024` for the additive publisher suite. Root read the
-author handoffs and rehashed all 21 inventoried evidence records.
+The initial frozen test hashes were `5f7898323768052a247f28a5fb28237646c76f6ba27053c4ebf032601d6d678a` for the new
+handoff suite and `d55d287c3122e668aa287cf2a5e17f574c676d5c8aaf21897689f7fe86f9a024` for the additive publisher suite.
+Root read the author handoffs and rehashed all 21 inventoried evidence records.
 
 ## Historical reader compatibility observation
 
@@ -58,9 +58,32 @@ Root authorized the independent author to canonicalize only the temporary fixtur
 the complete two-line logical diff and verified the new publisher-test hash
 `091d46d868b8b3a8242e3aba3cf1ba2cb0821171513e3cdae6d1873a399d3e2c`; handoff tests remain `5f789832…`. No expected
 digest, refusal decision or implementation changed. The prior frozen bytes and failure remain preserved. Static checks
-passed; the corrected implementation run remains pending.
+passed; a separate source reviewer confirmed the exact fixture-only correction.
 
 ## Current limits
 
-The emitter is implemented with partial focused evidence above. Actual artifact upload, historical authentication, cloud
-delivery and production remain unverified. Final focused and CI evidence must be added when actually observed.
+The corrected focused run passed all 46 groups, with zero skips, cancellations or todo cases, using unchanged
+implementation bytes. Log SHA256: `3971ef448d1e6e2a929dcdf23a71fe2955cb8944dd55c5f6e9c542adfa2ca1e1`. Root read the
+handoff and separate implementation review and rehashed all twelve implementation evidence records. Independent review
+found no actionable source/integration defect; memo SHA256:
+`ff22604acfa604f0aec0495bb77a4f3bf02192f66ad3e80ef13f48b2a93519a3`.
+
+Actual artifact upload, historical authentication, cloud delivery and production remain unverified. Full local and
+actual CI evidence must be added when observed. The normal delivery design will consume direct successful publisher
+outputs in the same attempt; it does not require the unresolved historical step-log adapter.
+
+## Full validation and older fixture compatibility
+
+The first `npm run validate` passed formatting, workflow lint, policy, portability, nineteen Mermaid renders and twenty
+gate tests. The tooling stage ran 655 tests: 649 passed and six failed, with no skips. All six failed because two older
+publication fixtures omitted observed numeric GitHub identities now required by the additive publisher result. The
+partial-publication negative stopped before its intended synthetic-upload failure for the same reason. Full log SHA256:
+`e5b9e155a0e05e4da027ffbc3d071d87aa20025eb9ee2df74f0a46dd9411c1ba`.
+
+Root authorized an independent author to add deterministic observed repository/owner/asset IDs only to those fixture
+responses. Original expected decisions, retry assertions and byte goldens must remain. The implementation is unchanged;
+this is post-implementation fixture compatibility, not a new pre-implementation oracle. The two corrected suites then
+passed all eighteen tests with no skips. Syntax and owned-file formatting passed. Log SHA256:
+`d5277afb8c5fe3fe97b76587e2d92dce7189e2eb6c1368f0ac28b5507d3987c1`. Root read the complete four-hunk diff and rehashed
+all thirteen correction records. Final full-suite coverage is required from the new exact-head CI; the original local
+full run remains recorded as failed.

@@ -366,7 +366,58 @@ export function requireReleaseWorkflow(workflow) {
   });
   assert.deepEqual(
     publisher.steps.filter((step) => step.run).map((step) => step.run),
-    ["node scripts/publish-release.mjs"],
+    ["node scripts/publish-release.mjs", "node scripts/publisher-handoff.mjs"],
+  );
+  const handoffIds = ["publish-release", "upload-publisher-handoff", "publisher-handoff-receipt"];
+  const handoffSteps = handoffIds.map((id) => {
+    const matches = publisher.steps.filter((step) => step.id === id);
+    assert.equal(matches.length, 1, "Require one exact publisher handoff step");
+    return matches[0];
+  });
+  const [publication, handoffUpload, receipt] = handoffSteps;
+  assert.deepEqual(publication, {
+    name: "Publish verified private release without deployment",
+    id: "publish-release",
+    env: { GITHUB_TOKEN: "${{ github.token }}" },
+    run: "node scripts/publish-release.mjs",
+  });
+  assert.equal(publisher.steps.indexOf(handoffUpload), publisher.steps.indexOf(publication) + 1);
+  assert.equal(publisher.steps.indexOf(receipt), publisher.steps.indexOf(handoffUpload) + 1);
+  assert.equal(publisher.steps.filter((step) => step.uses?.startsWith("actions/upload-artifact@")).length, 1);
+  assert.deepEqual(handoffUpload, {
+    name: "Upload verified publisher handoff",
+    id: "upload-publisher-handoff",
+    if: "${{ steps.publish-release.outputs.handoff-ready == 'true' }}",
+    uses: "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+    with: {
+      name: "${{ steps.publish-release.outputs.handoff-artifact-name }}",
+      path: ".artifacts/publisher-handoff/handoff.json",
+      archive: true,
+      "compression-level": 0,
+      "if-no-files-found": "error",
+      overwrite: false,
+      "retention-days": 90,
+      "include-hidden-files": true,
+    },
+  });
+  assert.deepEqual(receipt, {
+    name: "Record verified publisher handoff receipt",
+    id: "publisher-handoff-receipt",
+    run: "node scripts/publisher-handoff.mjs",
+    env: {
+      HANDOFF_ARTIFACT_ID: "${{ steps.upload-publisher-handoff.outputs.artifact-id }}",
+      HANDOFF_ARTIFACT_SHA256: "${{ steps.upload-publisher-handoff.outputs.artifact-digest }}",
+      HANDOFF_SHA256: "${{ steps.publish-release.outputs.handoff-sha256 }}",
+    },
+  });
+  assert.deepEqual(
+    publisher.outputs,
+    Object.fromEntries(
+      ["handoff-ready", "handoff-artifact-id", "handoff-artifact-sha256", "handoff-sha256"].map((key) => [
+        key,
+        `\${{ steps.publisher-handoff-receipt.outputs.${key} }}`,
+      ]),
+    ),
   );
   for (const [name, job] of Object.entries(workflow.jobs)) {
     if (["validate-foundation", "validate-product"].includes(name))
@@ -376,6 +427,7 @@ export function requireReleaseWorkflow(workflow) {
     assert.equal(job.env?.GITHUB_TOKEN, undefined, "Do not expose a job-wide publication token");
     assert.equal(job.env?.GATE_REVIEW_TOKEN, undefined, "Do not expose a job-wide review token");
     for (const step of job.steps) {
+      if (handoffIds.includes(step.id)) assert.equal(name, "publish-release", "Handoff steps belong only to publisher");
       if (step.env?.GATE_REVIEW_TOKEN !== undefined) {
         assert(["validate-foundation", "validate-product"].includes(name), "Unexpected review credential job");
         assert.equal(step.id, "acceptance-preflight", "Only preflight may receive review credentials");
