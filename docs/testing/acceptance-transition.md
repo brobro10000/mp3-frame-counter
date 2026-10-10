@@ -2,8 +2,8 @@
 
 ## Current status — 2026-10-10
 
-GATE-01 implements dormant successor-admission support in this change. It remains pending integration validation,
-independent review and merge; this document records neither approval nor protected-main activation. The
+GATE-01 implements dormant successor-admission support in this change. Local integration passed; final CI, exact-head
+companion review and merge remain pending; this document records neither approval nor protected-main activation. The
 [implementation evidence](../validation/acceptance-transitions.md) records actual checks. The
 [transition registry](acceptance-transitions.json) contains no entries. **r3 remains the only active acceptance suite**,
 bound by the unchanged [genesis record](baseline.json) to `a0a56d94e5457101cd043b6055ab084782c3e16f`.
@@ -89,7 +89,7 @@ observations. They do not authenticate arbitrary caller arguments or confer GitH
 resolver using the original base and observations and compares the complete decision and canonical digest. A caller must
 not replace the original base with the source to bypass newly admitted binding checks.
 
-Consumer integration must preserve the following distinction before this change is merge-ready:
+Consumer integration preserves the following distinction; final CI and exact-head review remain required:
 
 | Report evidence                           | Meaning and permitted use                                                                                                                                                      |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

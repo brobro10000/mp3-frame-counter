@@ -52,3 +52,32 @@ The release artifact schema remains unchanged: the E2E report binds the new admi
 manifest/reservation identities retain historical compatibility. Future backfill needs retained independent digest
 provenance; a digest copied solely from its own bundle is insufficient. Hosted profile mappings, new path classes,
 release-line allocation and any cloud delivery remain separate reviewed work.
+
+## Integrated local verification — 2026-10-10
+
+After rebasing onto PR #10's protected-main merge `cdfd37be7d2f99a20df90b8bb1b42097f7a242ce`, clean source
+`2921e31f4e83d91eff3fda8a1c4bfd063abed306` passed:
+
+- `npm run validate`: formatting, actionlint 1.7.12, policy/portability, 19/19 Mermaid renders, 20/20 terminal-gate
+  tests and 304/304 tooling tests, with no failures or skips.
+- `CI_BASE_REF=<exact main base> npm run check:phase`: standalone r3 harness controls, 75/75 unit tests, TypeScript
+  build, both real application containers and 60/60 browser/HTTP acceptance cases; scoped cleanup passed.
+- The first local export refused native ARM images at the existing `linux/amd64` guard before reservation/export. This
+  expected platform limitation was retained, not suppressed. Repeating the complete phase with
+  `DOCKER_DEFAULT_PLATFORM=linux/amd64` passed all 75 unit and 60 acceptance cases on the intended image platform.
+- `npm run prepare:release` exported the exact tested AMD64 image IDs. A second invocation reported `reused: true`;
+  SHA-256 comparison of every prepared file confirmed unchanged bytes. The local preview is `0.1.34`, derived from the
+  feature history; it is not the future squash release version, a tag, publication or deployment.
+
+The local report records `sourceDirty: false`, required genesis commit `a0a56d94e5457101cd043b6055ab084782c3e16f`,
+`localSelection.kind: local-acceptance-resolution` and no CI admission. Reservation SHA-256 is
+`af6666227841c9fa877164450ab3c19af1251dd42012c60db716399542b88b4a`. The later documentation amendment does not relabel
+these runs as tests of a newer source. CI will verify the actual PR merge source and trusted bootstrap separately.
+
+PR #10's [main run 38035910679](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38035910679) passed and
+published [v0.1.10](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.10), with ten assets targeting
+the base above. Its companion
+[automated approval](https://github.com/brobro10000/mp3-frame-counter/pull/10#pullrequestreview-5478201971) covered
+exact head `3b1bf0b7a49b7eb6b543d71dcda355318b1efaff`; owner `brobro10000` merged without bypass. This predecessor
+release is observed metadata; its archive bytes were not downloaded or rehashed here. GATE-01 publication remains
+pending.

@@ -1,7 +1,7 @@
 # Independent acceptance baseline and change control
 
 **GATE-01 working-change amendment, 2026-10-10:** dormant transition support is implemented in the current change and
-remains pending integration validation, independent review and merge. Read the
+remains pending final CI, exact-head companion review and merge. Read the
 [acceptance transition guide](acceptance-transition.md) for trusted preflight, bootstrap, candidate/binding separation
 and release evidence. The registry is empty; r3 remains the only active suite, with unchanged genesis metadata and
 historical objects. The earlier roadmap amendment below records the pre-GATE technical limitation, not permission to

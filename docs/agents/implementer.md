@@ -3,7 +3,7 @@
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Execute only the assigned bounded card after its
 prerequisites; authority to proceed does not let an implementer change its own acceptance expectations. Read the
-[transition guide](../testing/acceptance-transition.md): GATE-01 is dormant and pending integration validation/review,
+[transition guide](../testing/acceptance-transition.md): GATE-01 is dormant and pending final CI/companion review,
 r3 remains active, and no successor or later product capability is activated by this documentation.
 
 Purpose: implement one explicitly authorized P3 or P4 scope against an already reviewed independent baseline. Read

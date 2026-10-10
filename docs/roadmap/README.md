@@ -5,7 +5,7 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **PLAN-01 and COST-BOOTSTRAP merged; v0.1.9 published; live project cost controls verified**. The
+Status: **PLAN-01 and COST-BOOTSTRAP merged; v0.1.10 published; live project cost controls verified**. The
 [execution record](../validation/roadmap-execution.md) preserves PLAN-01. The
 [cost record](../validation/cloud-cost-bootstrap.md) records PR #9, its reviewed apply and live readback. A dedicated
 project now has a USD 75 Cloud Run cap and USD 100 all-service alert budget; no application service is deployed. GATE-01

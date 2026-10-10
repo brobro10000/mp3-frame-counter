@@ -1,7 +1,7 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** PLAN-01 and COST-BOOTSTRAP are merged; v0.1.9 is published. The dedicated project, USD
-75 Run cap and USD 100 all-service alert budget have been read back; see
+**Execution status, 2026-10-10:** PLAN-01 and COST-BOOTSTRAP are merged; v0.1.10 is published. The dedicated project,
+USD 75 Run cap and USD 100 all-service alert budget have been read back; see
 [cost evidence](../validation/cloud-cost-bootstrap.md). The owner authorized
 [continued execution](roadmap-execution-authorization.md), companion-reviewed merges and automatic stage delivery. The
 three active cards below are GATE-01, VER-01 and LINE-02. GATE-01 is in progress; no successor is active. Production
