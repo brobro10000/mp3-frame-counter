@@ -1,0 +1,92 @@
+# Hosted delivery policy and 0.3 line: execution record
+
+Dated 2026-10-10. This records the
+[bounded governance card](../phases/next-iteration.md#pr-card-1--hosted-delivery-policy--line-03-open-the-hosted-delivery-release-envelope)
+and [finite delivery boundary](../deployment/hosted-delivery-policy.md). It is neither hosted acceptance nor deployment
+approval. Parent PR #26 remains in main-target verification at this checkpoint; its actual publication is a
+prerequisite.
+
+## Scope and independent expectations
+
+Root adopted ten exact future IaC filenames: five access/governance and five runtime/product. The classifier remains a
+path boundary, not a content-level Terraform/IAM verifier. Runtime changes activate a bound successor; access changes do
+not. Unknown paths, mixed product/governance, candidate-only and binding-only restrictions remain enforced. Root also
+selects the roadmap's existing source-bound 0.3 policy using only `release-policy.json`; allocator behavior, global
+ordinal, legacy retries and ordinary-major-one refusal do not change. No resources or workflow privileges exist because
+these filenames or release line are admitted.
+
+An independent author appended seven groups to `scripts/acceptance-transitions.test.mjs`, without reading a new
+implementation. A separate reviewer inspected the expectations and actual retained red. Root read the complete diff/log
+and review, then compared the original committed 31,129-byte prefix byte-for-byte. Test-only commit `bcce8fb` precedes
+classifier implementation. Frozen test SHA-256 is `e4e8331a911cdc663fcd75446084dafa9ed6e2c1aedc1c4ffd63a58b678717c4`;
+review-memo SHA-256 is `6cf2537affa34b7d4649d1f1fba684ee467f20de157b739ffe08a9d3dbcfef3d`.
+
+Pinned Node 24.20.0 command:
+
+```sh
+node --test --test-name-pattern='^hosted IaC paths:' scripts/acceptance-transitions.test.mjs
+```
+
+Actual pre-implementation result: seven groups, three passed and four failed, zero skips/cancellations. The four
+failures are the existing unknown-path error for the intended access/runtime literals, not fixture/import setup. Tables
+stop at the first red entry, so this does not prove all ten add/change rows or all later negative assertions executed.
+Final complete green was subsequently verified. Retained red-log SHA-256 is
+`90511310ab9fa7cbdc879659d026446a616c9d8e75a9a464f5af152b6e01247e`. Local ignored diagnostics are not release assets.
+
+A separate implementer added thirteen classifier lines: the ten literal paths and one boundary comment, with no
+admission-logic rewrite. All seven focused groups passed, including every unconditional add/change row and later
+negative branch. An independent implementation reviewer found no P1–P3 defect. Root read the complete diff, focused log
+and review and rehashed the seven handoff records. Source SHA-256 is
+`c0ca4fa727021e3687f5f8dadf2b7ab38178528a3d661051e4c2e9d6d798e555`; implementation-review SHA-256 is
+`fb051ed8cac86df33e3385675b5d21fff7236a2536de1902ee0f276356fe2c85`.
+
+Root then ran the entire `scripts/acceptance-transitions.test.mjs` with pinned Node 24.20.0: all 94 tests passed, zero
+failures/skips/cancellations. Raw-log SHA-256 is `b5ce1d86056bc1e51216f89c4bf93e1b33a43a38fc4f3fd2df37bfbcaef18d0c`. The
+original frozen test hash is unchanged.
+
+## Existing version-policy regression evidence
+
+Root ran the three existing allocation, allocation-publication and allocation-preparation-CLI test files with pinned
+Node 24.20.0. All 59 tests passed, with zero skips/cancellations. The run covers source-bound allocation, prior line
+activation, historical replay, original retry bytes, missing/deleted/malformed policy, numeric ordering, delayed
+old-line publication and major-one refusal. Raw-log SHA-256 is
+`1647d9179e777b996d13ef156275f949deedc80dc545f2bbdd3d392f26a7d0e3`. These isolated fixtures do not publish a real tag or
+establish the actual new line's main release. Exact committed-source policy and mandatory CI remain final checks.
+
+## Adapter feasibility evidence
+
+An independent deployment-design lane tested synthetic credentials with owned loopback HTTP fixtures only. Existing Node
+24.20.0, npm 11.19.0, Playwright 1.64.0 and Chromium 156.0.8078.4 were used without installation. The first
+fetch/fulfill probe passed 12 of 14 groups: stdin/private-file transport, sanitization and cleanup passed, but duplicate
+security-header fidelity failed and the combined CSP/worker result was not diagnostically complete. That adapter was not
+adopted. No original failed record was overwritten.
+
+The separate CDP probe preserved request-header injection per hop and continued actual responses without rewriting. Its
+final 26 checks passed against a direct-browser baseline, with exact duplicate-header arrays, effective CSP,
+authentication controls, foreign/redirect/frame/popup/WebSocket confinement and a real unblocked-worker counterpart. All
+owned listeners/browser/temp files were cleaned and the sentinel scan found no persisted synthetic token. Four recorded
+diagnostic iterations distinguish incorrect worker/popup accounting from actual security behavior; no zero-network or
+response-fidelity condition was relaxed. Root read the complete final source/result/report and rehashed all 13 retained
+records.
+
+Final prototype source SHA-256 is `be11bd4f96a8827b093a6557b93e58874626139fed9250391723f5d9c1ca392e`; result SHA-256 is
+`fb9c89e80268c4ab26494d0f6584ea1b055a8f9de7ea03e83a63d21b55da263f`; report SHA-256 is
+`ca12f8a370d6971e562b04bf056f72148153a0f49798c824ba8f8f4840dfdc26`. The fixed one-page mechanism refuses unowned popups
+and all WebSockets; it does not claim arbitrary popup/OOPIF support. A separate reviewer read the final mechanism, all
+retained probe checksums and installed protocol/debugging sources. Root read the full 90-line review and adopted the
+bounded candidate interface with mandatory integration controls. Review SHA-256 is
+`090d3e0e58d39f4e11c8c308888d1a68d9b3066dc72b2d8ed95d2eadfde4b35f`.
+
+The review requires terminal guard/CDP failure latching and draining through cleanup, forbidden-attempt visibility,
+Node-parent protocol-log suppression, complete upload/docs predicates, and Linux/HTTPS compatibility before freeze. Its
+finite limits include the observational 418 body hash and lack of arbitrary browser-egress proof. No Linux, HTTPS, real
+token audience, Google IAM, hosted application or deployment was exercised by the probe. Feasibility does not close
+ACCESS-01, HOST-01 or LAUNCH-01.
+
+## Remaining completion gates
+
+The classifier and bounded adapter design are independently reviewed; focused/full transition regressions pass. Run
+final repository checks, then reconcile actual parent publication and obtain fresh main-target CI/companion approval.
+Normal owner merge and verified actual-main software publication complete this card. Frozen acceptance, registry,
+product, dependencies, workflows, publisher and cloud bootstrap remain unchanged; every production application candidate
+continues to require human intervention.

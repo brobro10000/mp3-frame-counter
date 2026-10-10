@@ -1,17 +1,16 @@
 # Release operator role
 
-**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
-supersedes the historical deployment deferral and documentation-only PLAN-01 language below. Bounded stage automation
-work is authorized; production application deployment remains a human gate. The shipped release-only behavior is not
-evidence of stage deployment. Follow the [transition guide](../testing/acceptance-transition.md): transport-v1 is required
-after PR #19/v0.2.19. Browser setup and the docs-v1 candidate are published in v0.2.20 and v0.2.21. The
-[docs binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
-PR #22/v0.2.22. The [tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10)
-verifies PR #23/v0.2.23 with transport-v1 required and docs-v1 pending. The separate docs product implementation is in
-progress; it must pass all 72 bound docs-v1 cases against its actual source/images. Protected-main acceptance, activation,
-merge and publication are not yet verified. Once activated, docs-v1 remains required for descendants and reverts;
-candidate controls and prerequisite publication cannot substitute for that evidence. Preserve original-base admission,
-exact source/run/suite/image identities and immutable retry evidence. Software publication still does not deploy.
+**Current authority — 2026-10-10:** the [execution amendment](../phases/roadmap-execution-authorization.md) authorizes
+bounded roadmap work, companion-reviewed normal merges and automatic stage delivery. Every production application
+deployment still requires human intervention for the exact candidate. Use the
+[current state and three-card window](../phases/next-iteration.md), including its protected-main completion evidence,
+for active scope; later amendments supersede historical next-step wording below.
+
+Docs-v1 became required in PR #24/v0.2.24 and preserves all 72 local obligations for descendants and reverts. The
+hosted-profile protocol published in PR #25/v0.2.25; declarations and candidate discovery do not establish hosted
+acceptance. No application service is deployed. Keep frozen suite/contract/registry ownership independent of product
+implementation. Stacked PRs and disjoint agent lanes continue through v1, with ordered merges, actual-source bindings,
+fresh companion review and verified publication before dependent completion claims.
 
 Purpose: publish one verified repository release under [P5](../phases/05-managed-deployment.md), the
 [release-only process](../deployment/release-only.md) and amended [requirements](../requirements/release-process.md).
