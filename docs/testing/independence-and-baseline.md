@@ -1,7 +1,9 @@
 # Independent acceptance baseline and change control
 
-Status: P2 package, fixtures, runner and test-only baseline have been implemented and independently reviewed. The
-[freeze record](baseline.json) remains provisional until the separate acceptance PR merges to protected main. See
+Status: P2 package, fixtures, runner and test-only baseline have been implemented and independently reviewed.
+[PR #4](https://github.com/brobro10000/mp3-frame-counter/pull/4) separately merged the unchanged test-only suite to
+protected main at `a0a56d94e5457101cd043b6055ab084782c3e16f`. The [freeze record](baseline.json) now binds that actual
+merged revision; product CI and release must still verify its ancestry and unchanged tree/manifest. See
 [actual P2 evidence](../validation/p2-acceptance.md). Trace: APP-V1-009,010,013 and
 [acceptance contract](acceptance-contract.md). The process below continues to govern changes.
 

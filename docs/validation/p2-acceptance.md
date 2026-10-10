@@ -13,11 +13,13 @@ observed oracle evidence established every expected result.
 - Fixtures: **46 fixed entries**, including three original encoded tones, explicit structural cases and exact limits.
 - Fixture manifest SHA-256: `2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a`.
 - Acceptance lockfile SHA-256: `e9b5abe1791e8465de066ce7638351d7630beb1aa24a2c5c8f3d01bee6313acd`.
-- Reviewed local suite commit: recorded by the controller in `docs/testing/baseline.json` after independent review,
-  explicitly marked provisional until the test-only PR merges. It can establish test-first independence for local
-  product work, but cannot establish protected-main CI or release readiness.
-- Definitive CI/release suite commit: the actual separately merged test-only main revision, verified by the controller.
-  A local commit is not substituted for GitHub's squash-merged revision or trusted-main ancestry.
+- Original reviewed local suite commit: `28c2a9c548f872dac54d9395a8ca0ed852f82240`. Its provisional freeze established
+  test-first independence before local product work; it remains the historical review identity.
+- Definitive CI/release suite commit: `a0a56d94e5457101cd043b6055ab084782c3e16f`, the separately merged test-only
+  [PR #4](https://github.com/brobro10000/mp3-frame-counter/pull/4). The controller-owned
+  [freeze record](../testing/baseline.json) binds this actual protected-main revision, not the original local SHA.
+- Unchanged suite tree at both revisions: `b789ffe426f4d0a303144338923748c9cdf424cf`. Publication satisfies the baseline
+  prerequisite; product CI and release readiness still require their own successful validation.
 
 The author does not create or self-approve the baseline record. Parent/reviewer path ownership and the later recorded
 Git tree protect change attribution; these are process safeguards, not separate authenticated human reviewers. The
@@ -90,18 +92,18 @@ Review corrections before freeze also put stop/pause inside restoration `try/fin
 abort observation, and made executable URL conversion work in checkout paths containing spaces. No fixture expectation
 was derived from a product failure or modified to make implementation pass.
 
-The controller must independently verify and record the reviewed test-only local commit, suite Git tree and manifest
-hash before local P3 work. Under the owner's unattended phase-execution instruction, that explicitly provisional local
-baseline permits local product work while the test-only PR awaits merge authorization. Tests, fixtures and gate logic
-remain immutable to product implementers. This preserves the independently reviewed baseline-before-product ordering
-without claiming protected-main freeze, completed P2 shipping, main CI readiness or release readiness.
+Before local P3 work, the controller verified and recorded the reviewed test-only local commit, suite Git tree and
+manifest hash. Under the owner's unattended phase-execution instruction, that explicitly provisional baseline permitted
+local product work while the test-only PR awaited merge authorization. It established the independently reviewed
+baseline-before-product ordering without claiming protected-main publication or release readiness at that time. Tests,
+fixtures and gate logic remain immutable to product implementers.
 
-The definitive CI/release freeze still requires a separately merged test-only main commit with the identical reviewed
-suite tree and manifest. CI verifies ancestry against its trusted main base; the local provisional check is not a
-substitute. P4/P5 must run every applicable test through the actual frontend, record exact target/artifact identities
-and verify controller authorization/restoration. A skipped, missing or failed mandatory case is not a full pass. This
-handoff does not establish deployed behavior, resource limits, image contents, no-persistence operation, cloud fit,
-release approval or recovery; those retain their phase-specific evidence requirements.
+The separate P2 merge now supplies the definitive protected-main suite identity with the identical reviewed tree and
+manifest. CI must continue to verify ancestry against its trusted main base; the historical local provisional check is
+not a substitute. P4/P5 must run every applicable test through the actual frontend, record exact target/artifact
+identities and verify controller authorization/restoration. A skipped, missing or failed mandatory case is not a full
+pass. This handoff does not establish deployed behavior, resource limits, image contents, no-persistence operation,
+cloud fit, release approval or recovery; those retain their phase-specific evidence requirements.
 
 ## Root integration and independent review
 
@@ -111,6 +113,17 @@ controller. Its fresh standalone `npm ci`, TypeScript/fixture/control checks and
 application implementation existed during these observations, and no discovered case is claimed as a passed product E2E
 test.
 
-The local test-only commit will be retained as the provisional review baseline. Required main CI rejects that local
-commit until the independently reviewed test-only scope has landed on the trusted main base and the definitive freeze
-record identifies its actual merged SHA. This remains an explicit shipping prerequisite.
+## Protected-main publication reconciliation
+
+PR #4 merged at `a0a56d94e5457101cd043b6055ab084782c3e16f`, whose parent is the P1 merge
+`60e51fb7da24155bfe3f15e91cbe33884047e574`. A fresh read-only Git identity audit verified that the merged acceptance
+tree is byte-identical to the original reviewed local tree: `git diff --quiet` between the two revisions for
+`tests/acceptance/` returned zero. The manifest extracted directly from the merged commit retains the SHA-256 above,
+contract r3 and 46 fixture entries. All 21 acceptance-package paths are present. The P2 merge contains no product source
+directories, runtime Dockerfiles or Compose configuration; every test path remains under `tests/acceptance/`.
+
+The freeze record now identifies the actual merged SHA with publication status `protected-main`, preserving the suite
+tree, manifest hash, contract revision and original advisory review fields. The original local commit remains historical
+evidence of independent authorship and review before product implementation. This metadata binding changes no tests,
+fixtures, expectations or gate logic. Product CI must verify the merged suite's trusted-main ancestry and immutable
+identity; successful product CI, release publication and deployment are not established by this reconciliation.

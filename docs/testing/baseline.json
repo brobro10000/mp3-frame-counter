@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "suiteCommit": "28c2a9c548f872dac54d9395a8ca0ed852f82240",
+  "suiteCommit": "a0a56d94e5457101cd043b6055ab084782c3e16f",
   "suiteTree": "b789ffe426f4d0a303144338923748c9cdf424cf",
   "manifestSha256": "2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a",
   "contractRevision": "r3",
-  "publicationStatus": "provisional-local-review",
+  "publicationStatus": "protected-main",
   "review": {
     "kind": "independent-agent",
     "coverage": "review_unified_coverage",
     "isolation": "planning_pr_evidence"
   },
-  "shippingPrerequisite": "Merge the separate test-only P2 scope, then bind this unchanged suite tree to its actual protected-main SHA before product CI or release."
+  "shippingPrerequisite": "Preserve the reviewed suite tree and manifest; product CI and release must verify this protected-main suite commit is an ancestor of the trusted main base."
 }

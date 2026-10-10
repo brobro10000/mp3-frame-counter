@@ -7,20 +7,20 @@ means deployed or human-approved code. See [source precedence](../requirements/R
 
 ## Reconciliation and decision register
 
-| ID     | Status                       | Decision / rationale                                                                                                                                                                                                                        | Source and affected work                                  |
-| ------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| DEC-01 | Observed + user-confirmed    | The repository exists and PR #1 merged at 143498a. The brief's claim that nothing earlier executed is false here. Preserve foundation and adapt it; no new bootstrap exception.                                                             | Git inspection; user's confirmation to reconcile; P1      |
-| DEC-02 | User-confirmed               | Preserve owner-only PR review override and separate core no-bypass ruleset. GitHub does not allow self-approval. No agent approval, merge or override without an explicit instruction.                                                      | User confirmation; repository-controls.md; APP-V1-011     |
-| DEC-03 | Documented scope             | Unified brief supersedes no-cloud and manual-browser-only decisions. V1 now requires managed candidate deployment and independent executable browser/HTTP acceptance.                                                                       | SRC-UNIFIED-BRIEF §§2,5–7; APP-V1-012–015                 |
-| DEC-04 | Documented scope             | P1–P5 replace the old three-phase draft; P2 reviewed test-only baseline precedes parser/API/UI/runtime containers. Existing foundation is not product code.                                                                                 | Unified §§6,10; APP-V1-011,013                            |
-| DEC-05 | Documented scope             | Preserve native HTTP, pure TypeScript whole-buffer parsing, exact 20 MiB, static frontend and independent images. Separate acceptance lockfile is expressly permitted.                                                                      | Unified §§2–4,6; APP-V1-001–010                           |
-| DEC-06 | Documented scope             | Preserve APP-REL-001–006 and supplement them with exact-release production approval, managed candidate E2E and compatible-pair recovery.                                                                                                    | Release amendment + unified §7; APP-V1-012,015            |
-| DEC-07 | Observed metadata validation | Fresh schema-v1 specifications and control-plane metadata were generated from the authorized scope and validated. Metadata approval describes implementation authority and reviewed contracts, not phase completion or production approval. | agents/README.md; active metadata; P1 ordinary-CI handoff |
-| DEC-08 | Reviewed local freeze        | Independent acceptance author and reviewers resolved r3 HTTP/error/tag/free-format policy and sample compatibility before product code. The recorded executable suite is frozen locally; protected-main publication remains pending.        | acceptance-contract.md; p2-acceptance.md; APP-V1-002–005  |
-| DEC-09 | Documented rejection         | Current Vercel container Functions inherit a 4.5 MB payload limit; Supabase hosted function topology requires a runtime/image departure. Neither fits unchanged V1.                                                                         | Dated provider comparison; APP-V1-014                     |
-| DEC-10 | Conditional proposal         | Render frontend web service + private API per environment is preferred for further fit review. Ingress semantics, account/region/permissions and budget are unverified.                                                                     | deployment.md; P5 pre-implementation/provisioning gate    |
-| DEC-11 | Implemented and reviewed     | Trusted-baseline and fail-closed CI controls are implemented and independently reviewed. P4 ran the full unchanged local suite; shipping CI still requires the separately merged test-only baseline on its trusted base.                    | independence-and-baseline.md; P1/P2/P4 evidence           |
-| DEC-12 | Proposed, approval gate      | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release.                         | runbook.md; P5                                            |
+| ID     | Status                       | Decision / rationale                                                                                                                                                                                                                          | Source and affected work                                  |
+| ------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| DEC-01 | Observed + user-confirmed    | The repository exists and PR #1 merged at 143498a. The brief's claim that nothing earlier executed is false here. Preserve foundation and adapt it; no new bootstrap exception.                                                               | Git inspection; user's confirmation to reconcile; P1      |
+| DEC-02 | User-confirmed               | Preserve owner-only PR review override and separate core no-bypass ruleset. GitHub does not allow self-approval. No agent approval, merge or override without an explicit instruction.                                                        | User confirmation; repository-controls.md; APP-V1-011     |
+| DEC-03 | Documented scope             | Unified brief supersedes no-cloud and manual-browser-only decisions. V1 now requires managed candidate deployment and independent executable browser/HTTP acceptance.                                                                         | SRC-UNIFIED-BRIEF §§2,5–7; APP-V1-012–015                 |
+| DEC-04 | Documented scope             | P1–P5 replace the old three-phase draft; P2 reviewed test-only baseline precedes parser/API/UI/runtime containers. Existing foundation is not product code.                                                                                   | Unified §§6,10; APP-V1-011,013                            |
+| DEC-05 | Documented scope             | Preserve native HTTP, pure TypeScript whole-buffer parsing, exact 20 MiB, static frontend and independent images. Separate acceptance lockfile is expressly permitted.                                                                        | Unified §§2–4,6; APP-V1-001–010                           |
+| DEC-06 | Documented scope             | Preserve APP-REL-001–006 and supplement them with exact-release production approval, managed candidate E2E and compatible-pair recovery.                                                                                                      | Release amendment + unified §7; APP-V1-012,015            |
+| DEC-07 | Observed metadata validation | Fresh schema-v1 specifications and control-plane metadata were generated from the authorized scope and validated. Metadata approval describes implementation authority and reviewed contracts, not phase completion or production approval.   | agents/README.md; active metadata; P1 ordinary-CI handoff |
+| DEC-08 | Reviewed local freeze        | Independent acceptance author and reviewers resolved r3 HTTP/error/tag/free-format policy and sample compatibility before product code. The unchanged executable suite is now separately merged and bound to protected-main commit `a0a56d9`. | acceptance-contract.md; p2-acceptance.md; APP-V1-002–005  |
+| DEC-09 | Documented rejection         | Current Vercel container Functions inherit a 4.5 MB payload limit; Supabase hosted function topology requires a runtime/image departure. Neither fits unchanged V1.                                                                           | Dated provider comparison; APP-V1-014                     |
+| DEC-10 | Conditional proposal         | Render frontend web service + private API per environment is preferred for further fit review. Ingress semantics, account/region/permissions and budget are unverified.                                                                       | deployment.md; P5 pre-implementation/provisioning gate    |
+| DEC-11 | Implemented and reviewed     | Trusted-baseline and fail-closed CI controls are implemented and independently reviewed. P4 ran the full unchanged local suite; shipping CI still requires the separately merged test-only baseline on its trusted base.                      | independence-and-baseline.md; P1/P2/P4 evidence           |
+| DEC-12 | Proposed, approval gate      | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release.                           | runbook.md; P5                                            |
 
 ## DEC-13 — Release-only milestone (latest owner amendment)
 
@@ -50,7 +50,7 @@ ID3 forms, reserved MPEG header policy and permitted parameter changes; sample c
 convention; permitted fixtures with three distinct counts and a valid exact-limit recipe. The
 [P2 record](../validation/p2-acceptance.md) and [oracle](../validation/sample-baseline.md) preserve the observations and
 advisory agent review. No human approval is implied. The suite identity is recorded in
-[baseline.json](../testing/baseline.json); its protected-main publication is still pending.
+[baseline.json](../testing/baseline.json); its unchanged suite is now bound to the actual P2 protected-main commit.
 
 The reviewed local controller owns bounded isolated stop/start/pause/resume operations, and the
 [P4 integration record](../validation/p4-integration.md) records 60 of 60 unchanged acceptance cases passing at clean
@@ -83,8 +83,9 @@ The owner has authorized P1–P5 and unattended advancement after each dependenc
 This supersedes the earlier P0-only and per-phase permission wording. Agent review does not become human approval.
 DEC-07 was resolved through fresh schema-v1 inputs and installed direct validators; no archived execution plan was
 reused. DEC-08 was resolved by independent acceptance authorship/review before the local freeze. P1/P2 exact-head CI
-passed and P3/P4 were reviewed and locally validated. Separate merges, final trusted-main baseline binding and the
-repository release remain outstanding; deployment is deferred by DEC-13.
+passed and P3/P4 were reviewed and locally validated. P1/P2 are now separately merged and the unchanged baseline bound
+to protected main. Current product CI, product merge and repository release remain outstanding; deployment is deferred
+by DEC-13.
 
 The phase scope remains narrow even though all phases are authorized:
 
@@ -94,3 +95,13 @@ boundaries without making future E2E optional. Resolve the plugin/ordinary-CI ha
 inputs before regenerated metadata. Produce a reviewable foundation-adaptation evidence handoff before P2. No parser,
 HTTP/UI, test suite, fixture generation, runtime containers or cloud setup belongs to P1 itself. Cloud account creation,
 budget and exact-release evidence remain separate unresolved prerequisites until observed.
+
+## Protected-main publication after P1/P2 merges
+
+PR #3 merged as `60e51fb7da24155bfe3f15e91cbe33884047e574` and PR #4 as `a0a56d94e5457101cd043b6055ab084782c3e16f`. The
+independent acceptance author verified that P2's suite tree, manifest hash and contract r3 are identical to the earlier
+reviewed local baseline, with no product source in the P2 commit, and bound [baseline.json](../testing/baseline.json) to
+that actual protected-main SHA. This resolves the pending publication portion of DEC-08/11; it changes no acceptance
+expectation or gate. Earlier execution notes retain their historical scope. PR #5's product/release patches were
+replayed unchanged onto main; current-head CI and product merge remain separate observations. Deployment remains
+deferred under DEC-13.

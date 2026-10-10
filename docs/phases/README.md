@@ -30,6 +30,6 @@ planned exit criteria. The later execution instruction supersedes their P0-only 
 wording.
 
 The [execution status](../validation/execution-status.md) now records reviewed P1/P2 handoffs and passing local P3/P4
-results, including the complete 60-case acceptance run at clean `2adf71b`. Separate baseline publication and the first
-repository release remain outstanding; deployment is deferred. Phase authorization and local acceptance do not mark P5
-or the complete MVP finished.
+results, including the complete 60-case acceptance run at clean `2adf71b`. PR #3 merged as `60e51fb` and the separate P2
+PR #4 merged as `a0a56d9`; its independently verified suite tree and fixture hash are unchanged. The first repository
+release remains outstanding; deployment is deferred. PR #5 must pass checks on its reconciled revision before merge.

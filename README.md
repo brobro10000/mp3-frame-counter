@@ -8,8 +8,9 @@ not decode audio or use a runtime parsing library.
 The [five-phase implementation](docs/phases/README.md) is authorized. The integrated local application passed all **60
 independent acceptance cases** and **75 parser/API unit tests**. See the
 [tested revision and evidence](docs/validation/p4-integration.md). The current goal is **releases without deployment**;
-acceptance publication on protected main and the first automatic GitHub release remain outstanding. The
-[execution status](docs/validation/execution-status.md) records each boundary and the remaining actions.
+the independent acceptance suite is now merged on protected main. The first automatic GitHub release remains
+outstanding. The [execution status](docs/validation/execution-status.md) records each boundary and the remaining
+actions.
 
 ## Local application
 
@@ -63,8 +64,9 @@ install scripts disabled. Browser files and rendered SVGs are ignored and do not
 
 Acceptance source is independently authored and frozen by [baseline identity](docs/testing/baseline.json). Product
 implementers may read it but cannot change expected outcomes to pass. The CI controller extracts the recorded Git tree
-outside the application checkout. Shipping CI requires the separate acceptance baseline on the trusted base branch; the
-current local record remains provisional until that merge. Zero tests, skipped cases and failed checks fail closed.
+outside the application checkout. The independent author bound the unchanged suite to P2’s actual protected-main commit
+`a0a56d9` after PR #4 merged. Shipping CI verifies that ancestry and every frozen byte. Zero tests, skipped cases and
+failed checks fail closed.
 
 For a small local upload with an independently known count:
 
