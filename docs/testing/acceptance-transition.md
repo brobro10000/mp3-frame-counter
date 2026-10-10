@@ -6,12 +6,18 @@ The independent transport-v1 candidate merged in PR #15 and was bound by PR #16 
 `5645b0501ca403750a2d894d6a492afa4b42185b`; the immutable [registry](acceptance-transitions.json) preserves that
 binding. PR #19 activated it at `f4fb747df8890511edde7878064bb9af79823138`. Protected-main run `38054409309` passed all
 67 required transport cases and published v0.2.19; see the
-[activation completion](../validation/fastify-transport.md#protected-main-completion). **transport-v1 is required for
-descendants; no candidate or binding is pending.** The [genesis record](baseline.json), historical suite objects and
-[binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain unchanged.
-DOCS-HARNESS must precede the independently authored docs candidate and its separate actual binding. Earlier gate
+[activation completion](../validation/fastify-transport.md#protected-main-completion). **transport-v1 remains required
+for descendants.** DOCS-HARNESS published in v0.2.20. The independent docs-v1 candidate merged as
+`351d2e5b998f882287c4c5e4bb41427d4ad5c41e` in PR #21 and published v0.2.21 with separate 46-control/72-case discovery
+evidence. This change proposes its actual binding with predecessor transport-v1; binding review, merge and publication
+remain pending. See the [candidate and binding record](../validation/docs-binding.md). After binding, intervening
+governance keeps transport-v1 required; the next product change must pass docs-v1 and activate it persistently.
+
+The [genesis record](baseline.json), historical suite objects and
+[transport binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain
+unchanged. Earlier gate
 [publication/retry evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) retains its
-original scope.
+original scope. DOCS-TOOL-POLICY remains a separate prerequisite after binding and before docs product work.
 
 The [execution authorization](../phases/roadmap-execution-authorization.md) permits bounded roadmap work and the normal
 companion-review/owner-merge process. It preserves independent expectations, prerequisite order and the human production

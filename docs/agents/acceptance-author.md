@@ -3,10 +3,12 @@
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
 implementation. Follow the [transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1,
-with 67 required external cases and no pending successor. Its
+with 67 required external cases. Its
 [completion evidence](../validation/fastify-transport.md#protected-main-completion) verifies protected-main publication.
-Author the docs successor only after the separate DOCS-HARNESS browser prerequisite is verified. Candidate authoring does
-not itself activate a contract.
+DOCS-HARNESS published in v0.2.20; the independent docs-v1 candidate published in PR #21/v0.2.21. Its
+[separate binding](../validation/docs-binding.md) is proposed here and remains pending review, merge and publication.
+Preserve the frozen candidate; binding and later tool policy precede docs product implementation. Candidate controls
+and discovery do not activate a contract or establish product acceptance.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),

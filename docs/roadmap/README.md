@@ -5,12 +5,18 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **FASTIFY merged; v0.2.19 publication verified**. The
-[completion evidence](../validation/fastify-transport.md#protected-main-completion) records actual protected-main
-source, exact-head automated companion approval, 82 unit tests, all 67 transport cases, image identities and
-publication. transport-v1 is now required, with no pending candidate or binding. The next three cards are
-**DOCS-HARNESS, DOCS-CONTRACT and DOCS-BIND**. Browser preparation precedes independent documentation/CSP expectations;
-no docs route or rendering is implemented by the transport release.
+Status: **DOCS-CONTRACT merged; v0.2.21 publication verified; DOCS-BIND proposed**. The
+[candidate publication record](../validation/docs-binding.md) identifies the actual squash, exact-head automated
+companion approval, protected-main run, distinct 46 candidate controls/72 discovered cases, 82 unit tests, 67 required
+transport cases and release metadata. transport-v1 remains required. Binding review, merge and publication remain
+pending; no documentation product acceptance or deployment is claimed.
+
+The next three cards are **DOCS-BIND, DOCS-TOOL-POLICY and DOCS-IMPLEMENTATION**. The
+[browser prerequisite](../validation/acceptance-browser-setup.md#protected-main-completion--2026-10-10) published in
+v0.2.20. The independent docs candidate selects local Redoc CE 2.5.4 without a CLI, docs-only CSP and finite retained
+live-document observation; read its [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) for
+limits and authority. Binding and tool-policy publication precede product dependency/build/route/CSP changes. No docs
+route or renderer is implemented in the released application yet.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
