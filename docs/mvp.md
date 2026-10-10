@@ -1,8 +1,9 @@
 # V1 MP3 frame counter requirements
 
-Status: **execution authorized, 2026-10-09**. Planning PR #2 merged at `0c9f538`, and the owner instructed execution of
-P1–P5. Read the [authorization record](phases/execution-authorization.md) and actual phase evidence before inferring
-completion. Fixed requirements remain distinct from operational choices and independently reviewed edge behavior.
+Status: **V1 release-only milestone verified, 2026-10-10**. Planning PR #2 merged at `0c9f538`; the later authorized
+P1–P5 execution culminated in product merge `ce50762b` and release `v0.1.6`. Read the
+[V1 closure](validation/v1-closure.md) for exact main-run, asset and retry evidence, and the
+[authorization record](phases/execution-authorization.md) for scope. Deployment and external submission are not claimed.
 
 V1 is the first functional product: select an MP3, upload its raw bytes and display its correct MPEG Version 1 Audio
 Layer 3 physical frame count. It also includes an independently reviewed acceptance baseline, reproducible local
@@ -44,24 +45,25 @@ the separate status table records actual observations. Original assessment and r
 
 ## Current evidence and completion status
 
-Observed locally on 2026-10-09 at clean application revision `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`: **75 unit tests
-and 60 of 60 unchanged external acceptance cases passed**, with zero skips and successful cleanup. See the
-[P4 narrative and exact report](validation/p4-integration.md). The unchanged P2 suite later merged separately at
-`a0a56d9`. PR CI at `3e7e21d` repeated all 75 unit and 60 external cases successfully in
-[run 38012435332](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38012435332). The application PR remains
-open and the first repository release is unobserved; see [current progression](validation/execution-status.md). Local
-and PR verification are distinct from protected-main publication and deferred deployment.
+The original local 75-unit/60-case result at `2adf71b` remains in the [P4 record](validation/p4-integration.md). The
+unchanged P2 baseline subsequently merged at `a0a56d9`. Product PR #5 merged at `ce50762b` on 2026-10-10 after the
+companion's exact-head automated approval.
+[Main run 38023037504](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/attempts/1) repeated
+all 75 unit and 60 external cases, passed mandatory checks and published `v0.1.6`. The publisher-only retry reused all
+release assets unchanged. [Closure evidence](validation/v1-closure.md) binds those observations to their source and
+distinguishes deferred deployment, unknown assessment deadline and unobserved external submission.
 
-| Requirements       | Current status and evidence                                                                                                                                                        | Remaining boundary                                                                                                         |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| APP-V1-001–003     | Locally verified through the real frontend/API, including exact-limit and failure/recovery behavior; [P4](validation/p4-integration.md).                                           | Repeat acceptance at the actual integrated protected-main source; hosted checks are deferred.                              |
-| APP-V1-004,005,009 | Independent oracle/format policy and parser verified locally; [P2](validation/p2-acceptance.md), [sample oracle](validation/sample-baseline.md) and [P3](validation/p3-parser.md). | Preserve the frozen policy and provenance during later release validation.                                                 |
-| APP-V1-006,007     | Independent non-root images and exact two-service local operation verified; [P4](validation/p4-integration.md).                                                                    | Exact CI archive publication remains pending; registry digests and managed configuration are deferred.                     |
-| APP-V1-008         | Working local Make/setup/test interface and script documentation; [README](../README.md).                                                                                          | Observe the first repository release; provider operations are deferred.                                                    |
-| APP-V1-010,013     | Independent test-only baseline precedes product code; unit/build/full local E2E and reviewed fail-closed controls exist; [baseline record](testing/independence-and-baseline.md).  | Protected-main baseline `a0a56d9` verified by passing product PR CI at `3e7e21d`; repeat on the eventual main revision.    |
-| APP-V1-011         | P1/P2 reviewable handoffs and exact-head CI passed; P3/P4 independently reviewed local results exist; [phase sequence](phases/README.md).                                          | P1/P2 merged and product PR CI passed; owner merge decision and P5 publication remain. Agent review is not human approval. |
-| APP-V1-012,014,015 | Release-only P5 automation implemented and tested; actual publication pending; [latest amendment](requirements/release-process.md) defers deployment.                              | Active APP-REL-001–006 require protected-main CI and actual repository publication; hosted criteria are deferred.          |
-| APP-V1-016         | Parser, transport and frontend boundaries reviewed locally; [P3](validation/p3-parser.md) and [P4](validation/p4-integration.md).                                                  | Verify repository publication; retain hosting choices for future deployment work.                                          |
+| Requirements                       | Current status and evidence                                                                                                                                                                                                 | Remaining boundary                                                                |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| APP-V1-001–003                     | Browser/API and exact-limit/failure/recovery cases passed on released main source; [closure](validation/v1-closure.md).                                                                                                     | Preserve the contract; managed-host checks remain deferred.                       |
+| APP-V1-004,005,009                 | Independent oracle and local supplied-sample reconciliation plus parser tests; [P2](validation/p2-acceptance.md), [sample](validation/sample-baseline.md), [P3](validation/p3-parser.md). Main repeated the portable cases. | Preserve format limits and private-sample provenance.                             |
+| APP-V1-006,007                     | Separate non-root images and two-service acceptance passed; exact tested archives published and verified.                                                                                                                   | Registry identities and managed configuration are deferred.                       |
+| APP-V1-008                         | Exercised Make/setup/test interface and script documentation; [README](../README.md) and release provenance support reproducible handoff.                                                                                   | Final external assessment submission is unobserved.                               |
+| APP-V1-010,013                     | Independent test-only baseline precedes product; unchanged suite at `a0a56d9` verified on released main.                                                                                                                    | Independently review any later baseline amendment.                                |
+| APP-V1-011                         | Ordered phase handoffs, separate P1/P2 merges and reviewed product PR #5 merge are recorded; [progression](validation/execution-status.md).                                                                                 | Closure PR review/merge remains separate. Automated review is not human approval. |
+| APP-V1-012, release portion of 015 | All active APP-REL-001–006 criteria evidenced by publication and identical retry; [closure](validation/v1-closure.md).                                                                                                      | Preserve released bytes and exact provenance for later releases.                  |
+| APP-V1-014, hosted portion of 015  | Explicitly deferred by [SRC-RELEASE-ONLY](requirements/release-process.md).                                                                                                                                                 | Provider, stage/production and recovery gates apply only when deployment resumes. |
+| APP-V1-016                         | Simple parser, transport and frontend boundaries reviewed and retained in released artifacts.                                                                                                                               | Add infrastructure only for separately approved, measured needs.                  |
 
 ## Fixed boundaries and limits
 

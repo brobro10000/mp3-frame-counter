@@ -26,6 +26,17 @@ release and assets, plus `actions: read` to verify original-run checks. It recei
 controls, owner-only review exception and frozen acceptance ownership are unchanged. A GitHub release neither authorizes
 a merge nor counts as production approval.
 
+## Ongoing automatic release trigger
+
+The committed workflow listens for `push` to `main`; under the repository protections this normally follows a reviewed
+squash merge. Opening or updating a PR runs validation but cannot publish. No manual tag, local release command or
+provider action is needed for the normal successful path.
+
+Eligibility is inferred from the application present in the repository, not a changed-file filter. Documentation-only
+merges therefore also run full application validation and can produce a new release. Version/tag/notes/checksums are
+created automatically after all mandatory jobs succeed, using the exact accepted image bundle. An earlier-phase selector
+cannot bypass the tests. Publication failures stay visible in Actions; the retry instructions below preserve identity.
+
 ## Version, retention and retries
 
 Versions use `0.1.<first-parent Git ordinal of tested main source>` and tags use `v<version>`. Full Git history is
@@ -56,15 +67,16 @@ release deletion. Same-run workflow artifacts have seven-day retention and are o
 prior release image archives and provenance. These hashes are integrity evidence, not signed attestations against a
 malicious repository owner, and Docker archive hashes are distinct from image IDs and future registry digests.
 
-The [validation record](../validation/release-only.md) separates passing local tests and source review from the pending
-first remote publication.
+The [implementation validation record](../validation/release-only.md) preserves its dated local evidence. The
+[V1 closure](../validation/v1-closure.md) records subsequent protected-main publication and the actual identical retry.
 
 ## First release and deferred deployment
 
-P1 and the separate P2 baseline are merged, and the unchanged baseline is bound to protected-main commit `a0a56d9`. The
-product/publisher PR passed CI at `3e7e21d`; its merge and first successful main-run publication remain outstanding. See
-[current execution status](../validation/execution-status.md). Local tests and a configured publisher do not prove this
-first remote execution. No manual feature-branch publication is a substitute.
+PR #5 merged as `ce50762b` on 2026-10-10. Main run `38023037504`, attempt 1, passed all mandatory checks and published
+[`v0.1.6`](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.6) with all ten assets verified. Repeating
+only the publisher succeeded in attempt 2 while retaining the original tested bundle, tag, release and every asset
+identity. See [exact closure evidence](../validation/v1-closure.md). P2's baseline remains unchanged at `a0a56d9`. These
+observations are specific to that release; later revisions need their own verification.
 
 When deployment resumes, the [deployment runbook](runbook.md) still requires provider/account/budget approval, immutable
 registry identities, full stage acceptance through real ingress, exact production approval, hosted smoke and recovery. A

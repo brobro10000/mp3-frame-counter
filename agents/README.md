@@ -30,3 +30,9 @@ commit that will disappear after squash is insufficient. Product implementers ca
 
 Normal development, CI and application use require neither Codex nor this private plugin. Keep raw plugin output with
 machine-local roots in ignored `.mvp-workflow/`; retain only portable, truthful evidence summaries in the repository.
+
+## V1 closure and later iterations
+
+The [V1 closure record](../docs/validation/v1-closure.md) records actual P1–P5 release-only completion and the remaining
+boundaries. The generated control-plane snapshot stays historical; no completed plugin result is implied. Consult that
+record and the central requirements before separately planning the next iteration, after the closure PR review/merge.

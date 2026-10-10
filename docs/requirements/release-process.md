@@ -82,3 +82,11 @@ APP-V1-014 and the hosted promotion/recovery portion of APP-V1-015 are deferred.
 later work; their requirements do not block the current merge or release-only milestone. Before any future deployment,
 revalidate provider fit, credentials, costs, exact artifacts/configuration, full candidate acceptance, production
 approval and recovery. Release publication alone never grants that deployment authority.
+
+## Observed V1 completion
+
+The [V1 closure record](../validation/v1-closure.md) verifies all active APP-REL-001–006 criteria at source `ce50762b`
+and release `v0.1.6`, including protected-main checks, exact tested assets and an actual identical publisher retry on
+2026-10-10. The amendment-intake statements above remain historical. Every future release must satisfy the same checks;
+[ongoing triggers and retries](../deployment/release-only.md) document the automatic process. Deferred criteria remain
+unexecuted, and no deployment is authorized by this completion record.

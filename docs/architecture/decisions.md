@@ -63,6 +63,10 @@ cannot be inferred from the user's acceptance of a planning revision.
 
 ## Compact risk register
 
+These risks retain their original planning identities. The [V1 closure](../validation/v1-closure.md) records resolved
+release-only criteria and remaining boundaries. R-06 now has an eligible automated GitHub reviewer (`brobro1000`);
+independent human review and future production approval are still separate, and the owner exception remains configured.
+
 | Risk                                                                | Impact                                            | Owner role                   | Mitigation                                                                                                                              | Resolve by                                                   |
 | ------------------------------------------------------------------- | ------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
 | R-01 Oracle unavailable or MediaInfo convention differs             | False expected counts and misleading correctness  | Acceptance author + reviewer | Obtain authorized tool/sample evidence; reconcile physical metadata frames; freeze independent manifest.                                | P2 baseline, then P3 sample reconciliation                   |
@@ -85,8 +89,9 @@ DEC-07 was resolved through fresh schema-v1 inputs and installed direct validato
 reused. DEC-08 was resolved by independent acceptance authorship/review before the local freeze. P1/P2 exact-head CI
 passed and P3/P4 were reviewed and locally validated. P1/P2 are now separately merged and the unchanged baseline bound
 to protected main. Product PR CI at `3e7e21d` passed all mandatory checks in
-[run 38012435332](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38012435332). The owner merge decision
-and first repository release remain outstanding; deployment is deferred by DEC-13.
+[run 38012435332](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38012435332). Subsequently, PR #5 merged
+at `ce50762b`, main validation published `v0.1.6`, and an identical publisher retry passed. The
+[V1 closure](../validation/v1-closure.md) records those exact observations; deployment stays deferred under DEC-13.
 
 The completed P1 work followed this narrow scope; it remains the boundary for any future foundation-only change:
 
@@ -105,5 +110,6 @@ reviewed local baseline, with no product source in the P2 commit, and bound [bas
 that actual protected-main SHA. This resolves the pending publication portion of DEC-08/11; it changes no acceptance
 expectation or gate. Earlier execution notes retain their historical scope. PR #5's product/release patches were
 replayed unchanged onto main, followed by the independent baseline binding and source-linked diagram setup. The
-reconciled product passed PR CI; merge and the first release remain separate observations. See the
-[current progression and dated history](../validation/execution-status.md). Deployment remains deferred under DEC-13.
+reconciled product passed PR CI. PR #5 subsequently merged at `ce50762b`; its protected-main run published `v0.1.6` and
+an identical publisher retry preserved all assets. See [V1 closure](../validation/v1-closure.md) and
+[current progression](../validation/execution-status.md). Deployment remains deferred under DEC-13.

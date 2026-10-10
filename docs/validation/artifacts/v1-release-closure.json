@@ -1,0 +1,326 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-10-10T04:15:36.213326+00:00",
+  "milestone": "V1 release-only",
+  "repository": "brobro10000/mp3-frame-counter",
+  "sourceRevision": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+  "mergedPullRequest": {
+    "number": 5,
+    "headRevision": "8f41b9f4c93dbcdd00afc637f6a7be2daf59442b",
+    "mergedAt": "2026-10-10T04:08:51Z",
+    "reviewer": "brobro1000",
+    "reviewId": 5477487545,
+    "reviewKind": "automated"
+  },
+  "workflow": {
+    "runId": 38023037504,
+    "url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504",
+    "producingAttempt": 1,
+    "jobs": [
+      {
+        "id": 114127938128,
+        "name": "validate-product",
+        "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-10T04:08:56Z",
+        "completed_at": "2026-10-10T04:10:54Z",
+        "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114127938128"
+      },
+      {
+        "id": 114127938240,
+        "name": "validate-foundation",
+        "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-10T04:08:56Z",
+        "completed_at": "2026-10-10T04:10:08Z",
+        "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114127938240"
+      },
+      {
+        "id": 114128306256,
+        "name": "control-plane",
+        "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-10T04:10:57Z",
+        "completed_at": "2026-10-10T04:11:10Z",
+        "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114128306256"
+      },
+      {
+        "id": 114128350183,
+        "name": "publish-release",
+        "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-10T04:11:12Z",
+        "completed_at": "2026-10-10T04:11:52Z",
+        "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114128350183"
+      },
+      {
+        "id": 114128351257,
+        "name": "deliver-foundation",
+        "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+        "run_attempt": 1,
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-10T04:11:10Z",
+        "completed_at": "2026-10-10T04:11:10Z",
+        "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114128351257"
+      }
+    ],
+    "publicationRetry": {
+      "id": 114128858347,
+      "name": "publish-release",
+      "head_sha": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+      "run_attempt": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-10T04:14:08Z",
+      "completed_at": "2026-10-10T04:14:34Z",
+      "html_url": "https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/job/114128858347"
+    },
+    "upstreamValidationExecutionTimesUnchanged": true
+  },
+  "release": {
+    "id": 408630914,
+    "tag_name": "v0.1.6",
+    "target_commitish": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+    "html_url": "https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.6",
+    "draft": false,
+    "prerelease": false,
+    "published_at": "2026-10-10T04:11:49Z"
+  },
+  "assets": [
+    {
+      "name": "SHA256SUMS",
+      "id": 626962768,
+      "size": 167,
+      "digest": "sha256:4a4c9034770282eccca29b446f0fa040e382ef82ef4985cce74586c7e1651047",
+      "created_at": "2026-10-10T04:11:33Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "api.docker.tar",
+      "id": 626962798,
+      "size": 170095104,
+      "digest": "sha256:b3587183e23fe7e4a85246f48cdcae68f86beade447ebd646f16d4dbc28efcc3",
+      "created_at": "2026-10-10T04:11:33Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "ci-origin.json",
+      "id": 626963034,
+      "size": 348,
+      "digest": "sha256:72b1a40853f790e01816e25b05bfac6f33b4fc97df4137d4e598dfaedc570123",
+      "created_at": "2026-10-10T04:11:40Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "e2e-result.json",
+      "id": 626963052,
+      "size": 1209,
+      "digest": "sha256:79164d30811921286b9ab1f33da55c93c386bf6a0d3ce814f43cf01b1548baaf",
+      "created_at": "2026-10-10T04:11:41Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "frontend.docker.tar",
+      "id": 626963078,
+      "size": 61552640,
+      "digest": "sha256:24805bd7b0560b54a8b8dd365de6684d8c86f7389a418969f93672c9041ec66c",
+      "created_at": "2026-10-10T04:11:42Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "manifest.json",
+      "id": 626963204,
+      "size": 3637,
+      "digest": "sha256:e34916efbd6676a1f7dd22a94becc1d97b4bb951276fbcb0998da79b5ff48535",
+      "created_at": "2026-10-10T04:11:45Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "publication-notes.md",
+      "id": 626963277,
+      "size": 981,
+      "digest": "sha256:d6b26b95ea7f75ec2f4f8010b2250e101c36a8ef7dc412af41165ffc5175ca06",
+      "created_at": "2026-10-10T04:11:47Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "publication.json",
+      "id": 626963258,
+      "size": 3064,
+      "digest": "sha256:8ca76070d586ee31e94996586b6b4a21a2a22eebeb76b8ea68dc56e0aa69e0ee",
+      "created_at": "2026-10-10T04:11:46Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "release-notes.md",
+      "id": 626963216,
+      "size": 908,
+      "digest": "sha256:e6e5a4049f4b28d6fb8cf340da455fdacc4599d7150f49631748bb614b5efb55",
+      "created_at": "2026-10-10T04:11:45Z",
+      "state": "uploaded"
+    },
+    {
+      "name": "reservation.json",
+      "id": 626963245,
+      "size": 2060,
+      "digest": "sha256:7d210ce36f1090d274555613100f14a53f468b54a2a1a1f62eb6a4cbec49d0fc",
+      "created_at": "2026-10-10T04:11:46Z",
+      "state": "uploaded"
+    }
+  ],
+  "publication": {
+    "schemaVersion": 1,
+    "status": "release-only-provenance",
+    "deployed": false,
+    "deploymentDeferred": true,
+    "version": "0.1.6",
+    "tag": "v0.1.6",
+    "sourceRevision": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+    "platform": "linux/amd64",
+    "ci": {
+      "schemaVersion": 1,
+      "repository": "brobro10000/mp3-frame-counter",
+      "sourceRevision": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+      "baseRevision": "a0a56d94e5457101cd043b6055ab084782c3e16f",
+      "runId": 38023037504,
+      "attempt": 1,
+      "workflow": ".github/workflows/ci.yml",
+      "workflowRevision": "ce50762b404e6b37ee10171fabd98db9aa06b265"
+    },
+    "mandatoryChecks": {
+      "control-plane": "success",
+      "validate-foundation": "success",
+      "validate-product": "success"
+    },
+    "suiteCommit": "a0a56d94e5457101cd043b6055ab084782c3e16f",
+    "suiteTree": "b789ffe426f4d0a303144338923748c9cdf424cf",
+    "fixtureManifestSha256": "2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a",
+    "localAcceptanceConfigurationSha256": "b6e14f4f4fd5dcf95a35f936dc88643a3e0698afa4691feaa0f6d5c43d89a6fb",
+    "sourceConfigurationSha256": "1a60e6dcb8e0f674182bb867dcae1b092cbd511b0b51691182a467d350dad5f7",
+    "images": {
+      "api": {
+        "localImageId": "sha256:47033ff9c7ee914692efd73864af7c6c30432232d95806d4a65032484c0f3a14",
+        "archiveFile": "api.docker.tar",
+        "archiveSha256": "b3587183e23fe7e4a85246f48cdcae68f86beade447ebd646f16d4dbc28efcc3",
+        "archiveBytes": 170095104,
+        "registryDigest": null
+      },
+      "frontend": {
+        "localImageId": "sha256:ea1441b12f85b7bcce6578f0ef81553db06c1309a0c710cd168346dafa6da17f",
+        "archiveFile": "frontend.docker.tar",
+        "archiveSha256": "24805bd7b0560b54a8b8dd365de6684d8c86f7389a418969f93672c9041ec66c",
+        "archiveBytes": 61552640,
+        "registryDigest": null
+      }
+    },
+    "provider": null,
+    "assets": [
+      {
+        "name": "SHA256SUMS",
+        "sha256": "4a4c9034770282eccca29b446f0fa040e382ef82ef4985cce74586c7e1651047",
+        "bytes": 167
+      },
+      {
+        "name": "api.docker.tar",
+        "sha256": "b3587183e23fe7e4a85246f48cdcae68f86beade447ebd646f16d4dbc28efcc3",
+        "bytes": 170095104
+      },
+      {
+        "name": "ci-origin.json",
+        "sha256": "72b1a40853f790e01816e25b05bfac6f33b4fc97df4137d4e598dfaedc570123",
+        "bytes": 348
+      },
+      {
+        "name": "e2e-result.json",
+        "sha256": "79164d30811921286b9ab1f33da55c93c386bf6a0d3ce814f43cf01b1548baaf",
+        "bytes": 1209
+      },
+      {
+        "name": "frontend.docker.tar",
+        "sha256": "24805bd7b0560b54a8b8dd365de6684d8c86f7389a418969f93672c9041ec66c",
+        "bytes": 61552640
+      },
+      {
+        "name": "manifest.json",
+        "sha256": "e34916efbd6676a1f7dd22a94becc1d97b4bb951276fbcb0998da79b5ff48535",
+        "bytes": 3637
+      },
+      {
+        "name": "release-notes.md",
+        "sha256": "e6e5a4049f4b28d6fb8cf340da455fdacc4599d7150f49631748bb614b5efb55",
+        "bytes": 908
+      },
+      {
+        "name": "reservation.json",
+        "sha256": "7d210ce36f1090d274555613100f14a53f468b54a2a1a1f62eb6a4cbec49d0fc",
+        "bytes": 2060
+      }
+    ]
+  },
+  "acceptance": {
+    "schemaVersion": 1,
+    "project": "mp3-e2e-2495-80756d2899f7",
+    "status": "passed",
+    "targetKind": "local",
+    "cleanup": "passed",
+    "acceptance": {
+      "planned": 60,
+      "passed": 60,
+      "failed": 0,
+      "skipped": 0,
+      "status": "passed"
+    },
+    "sourceRevision": "ce50762b404e6b37ee10171fabd98db9aa06b265",
+    "sourceDirty": false,
+    "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "suiteCommit": "a0a56d94e5457101cd043b6055ab084782c3e16f",
+    "suiteTree": "b789ffe426f4d0a303144338923748c9cdf424cf",
+    "manifestSha256": "2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a",
+    "contractRevision": "r3",
+    "baselinePublication": "protected-main",
+    "configurationSha256": "b6e14f4f4fd5dcf95a35f936dc88643a3e0698afa4691feaa0f6d5c43d89a6fb",
+    "images": {
+      "api": "sha256:47033ff9c7ee914692efd73864af7c6c30432232d95806d4a65032484c0f3a14",
+      "frontend": "sha256:ea1441b12f85b7bcce6578f0ef81553db06c1309a0c710cd168346dafa6da17f"
+    },
+    "containers": {
+      "api": "983f1c0df8ed56398393451c63115ad8d60c4718159602c4d26d92726fe32519",
+      "frontend": "77869f8ca1b1085afabbf7f9d0edd89d7e59a8985b821ec9564e9476dc4b969b"
+    },
+    "durationMs": 74774
+  },
+  "handoffArtifact": {
+    "id": 11659000497,
+    "name": "release-ce50762b404e6b37ee10171fabd98db9aa06b265-38023037504-1",
+    "size_in_bytes": 231657065,
+    "digest": "sha256:8984ce470e396108fcd66603fc3fa0a2b18a1a1fca70bea7d5d4908109670f9f",
+    "expires_at": "2026-10-17T04:10:49Z"
+  },
+  "verification": {
+    "tagMatchesSource": true,
+    "exactlyTenUploadedAssets": true,
+    "publicationAssetHashesAndSizesMatchGitHub": true,
+    "eightSmallAssetsDownloadedAndHashed": true,
+    "archiveChecksumsMatchManifestPublicationAndGitHub": true,
+    "archiveBytesDownloadedLocally": false,
+    "retryPreservedReleaseIdTagBodyAndPublicationTime": true,
+    "retryPreservedAllAssetIdsSizesDigestsAndCreationTimes": true,
+    "originalProducerAttemptRetained": true,
+    "deployed": false,
+    "liveInterruptedUploadOrConflictInjected": false
+  },
+  "limitations": [
+    "Docker archives were verified against GitHub-reported SHA-256 and byte sizes, not independently downloaded locally.",
+    "Interrupted-upload and conflicting-content refusal use passing deterministic publisher tests; no live failure was injected.",
+    "Deferred hosting and final external assessment submission are not completion claims."
+  ]
+}

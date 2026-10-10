@@ -5,12 +5,12 @@ and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX front
 separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
 not decode audio or use a runtime parsing library.
 
-The [five-phase implementation](docs/phases/README.md) is authorized. The integrated application passed all **60
-independent acceptance cases** and **75 parser/API unit tests**, locally and in
-[PR CI at `3e7e21d`](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38012435332). The current goal is
-**releases without deployment**; the independent acceptance suite is now merged on protected main. The first automatic
-GitHub release remains outstanding. The [execution status](docs/validation/execution-status.md) records each boundary
-and the remaining actions.
+The [V1 release-only milestone](docs/validation/v1-closure.md) is verified at merged source `ce50762b`: **60 independent
+acceptance cases**, **75 parser/API unit tests** and all mandatory checks passed on protected main. CI published
+[release `v0.1.6`](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.6), and a publisher-only retry
+reused its ten verified assets unchanged. **Nothing is deployed.** The
+[execution status](docs/validation/execution-status.md) records the phase history; the closure record preserves known
+limits and the boundary for the next iteration.
 
 ## Local application
 

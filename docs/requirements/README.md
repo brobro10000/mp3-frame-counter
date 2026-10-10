@@ -8,12 +8,12 @@ The assessment and planning baseline are captured. The owner subsequently author
 [execution record](../phases/execution-authorization.md) and phase evidence for current status. Requirement capture
 alone never establishes implementation or deployment completion.
 
-For the current result, use the [execution status](../validation/execution-status.md): the local application has passed
-the complete independent suite locally and in PR CI. P1 and P2 are merged, and the unchanged baseline is bound to P2’s
-protected-main commit `a0a56d9`. Product PR #5 remains open after passing CI at `3e7e21d`; the first GitHub release
-remains outstanding. Deployment is deferred by the latest owner instruction, SRC-RELEASE-ONLY. The execution status
-links the project progression, dated local evidence and verified GitHub runs separately from unexecuted release
-requirements.
+For the current result, use the [V1 closure record](../validation/v1-closure.md) and
+[execution status](../validation/execution-status.md). PR #5 merged at `ce50762b`; protected-main CI passed the
+unchanged independent suite and published `v0.1.6` with verified assets. An identical publisher-only retry succeeded.
+The baseline remains bound to P2's protected-main commit `a0a56d9`. Deployment stays deferred under SRC-RELEASE-ONLY.
+The closure record identifies remaining limits and external assessment submission separately from the verified release
+milestone.
 
 ## Contents
 
@@ -85,6 +85,10 @@ draft's generated contracts are archived under `agents/history/v1-draft/`; origi
 transcription or explicitly record a justified later amendment; never invent a requirement.
 
 ## Cross-referencing future work
+
+Begin from the [V1 closure and carryovers](../validation/v1-closure.md#carryover-into-a-separately-scoped-iteration).
+Close its PR through the existing controls, then define the next bounded iteration; closure adds no speculative
+features.
 
 1. Cite relevant stable IDs from `assessment.md`, `release-process.md` and `../mvp.md` in plans, tasks, tests and PR
    descriptions. Use the existing foundation `REQ-001` and `REQ-002` only for that historical phase; application IDs use

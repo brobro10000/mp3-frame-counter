@@ -51,3 +51,10 @@ automatic publication complete. The workflow has seven-day handoff artifact rete
 and conservative original-attempt checks; [operational guidance](../deployment/release-only.md) explains retries.
 Deployment remains deferred. No merge, owner override, tag, release or cloud deployment was performed in this
 validation.
+
+## Subsequent protected-main completion
+
+On 2026-10-10, PR #5 merged at `ce50762b`. Main CI published `v0.1.6` and an identical publisher-only retry preserved
+its ten verified assets. The [V1 closure](v1-closure.md) records source, checks, images, assets and retry evidence. This
+later observation resolves the first-publication boundary without changing the dated local results above. Deployment
+remains deferred.

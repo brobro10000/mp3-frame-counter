@@ -29,8 +29,8 @@ corresponding future cloud action. P5 follows the amended release-only criteria;
 planned exit criteria. The later execution instruction supersedes their P0-only authorization and mandatory pause
 wording.
 
-The [execution status](../validation/execution-status.md) now records reviewed P1/P2 handoffs and passing local P3/P4
-results, including the complete 60-case acceptance run at clean `2adf71b`. PR #3 merged as `60e51fb` and the separate P2
-PR #4 merged as `a0a56d9`; its independently verified suite tree and fixture hash are unchanged. The first repository
-release remains outstanding; deployment is deferred. PR #5 passed mandatory checks at `3e7e21d`; see the execution
-status for the exact run and chronological record. Any subsequent revision must pass its own checks before merge.
+The [V1 closure](../validation/v1-closure.md) records completion of the active P1–P5 scope. PR #3 merged as `60e51fb`,
+PR #4 published the unchanged baseline as `a0a56d9`, and PR #5 merged the product as `ce50762b`. Protected-main CI
+passed all mandatory checks and published `v0.1.6`; an identical publisher-only retry preserved its verified assets.
+Deployment remains deferred. The [execution status](../validation/execution-status.md) preserves the earlier local/PR
+evidence and chronology. Later revisions need fresh checks, and the next iteration requires its own bounded plan.
