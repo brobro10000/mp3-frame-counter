@@ -58,7 +58,13 @@ const bootstrapValidation =
   ].join("\n") + "\n";
 assert.deepEqual(
   validation.steps.filter((step) => step.run).map((step) => step.run),
-  ["npm ci", bootstrapValidation, "npm run mermaid:install", "aa-exec --profile=chrome npm run validate"],
+  [
+    validation.steps.find((step) => step.id === "acceptance-preflight").run,
+    "npm ci",
+    bootstrapValidation,
+    "npm run mermaid:install",
+    "aa-exec --profile=chrome npm run validate",
+  ],
 );
 // Cost bootstrap validation is mandatory but deliberately has no cloud identity or mutation command.
 assert.equal(validation.env, undefined);
@@ -74,7 +80,12 @@ const product = jobs["validate-product"];
 assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
 assert.deepEqual(
   product.steps.filter((step) => step.run).map((step) => step.run),
-  ["npm ci", "node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"],
+  [
+    product.steps.find((step) => step.id === "acceptance-preflight").run,
+    "npm ci",
+    "node scripts/run-ci-phase.mjs",
+    "node scripts/publish-release-bundle.mjs",
+  ],
 );
 assert.equal(product.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
 assert.equal(product.env?.CI_BASE_REF, "${{ github.event.pull_request.base.sha || github.event.before }}");
@@ -89,7 +100,8 @@ assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation")
 for (const [name, job] of Object.entries(jobs)) {
   assert.equal(job["runs-on"], "ubuntu-24.04");
   assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= (name === "validate-product" ? 30 : 10));
-  if (name !== "publish-release") assert.equal(job.permissions, undefined);
+  if (!["publish-release", "validate-foundation", "validate-product"].includes(name))
+    assert.equal(job.permissions, undefined);
   assert.equal(job["continue-on-error"], undefined);
   assert.equal(job.strategy, undefined);
   for (const step of job.steps) {
@@ -119,6 +131,8 @@ assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
+for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
+  assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");

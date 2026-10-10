@@ -43,7 +43,7 @@ import { createGithubReviewRequest } from "./acceptance-review-http.mjs";
 export { collectBindingObservations };
 
 // The coordinator replaces this only after finalizing and reviewing the exact inline workflow bootstrap.
-export const preflightScriptSha256 = "";
+export const preflightScriptSha256 = "494cec20a0826efd95661acea73650df187cf6c1f9d810cd174288ff66f36101";
 
 const baseExpression = "${{ github.event.pull_request.base.sha || github.event.before }}";
 const tokenExpression = "${{ github.token }}";
@@ -66,13 +66,17 @@ function noReviewCredential(value) {
 export function requirePreflightWorkflow(workflow) {
   assert(workflow && typeof workflow === "object" && !Array.isArray(workflow), "Expected workflow data");
   assert.deepEqual(workflow.permissions, { contents: "read" }, "Workflow-wide permissions must remain read-only");
-  noReviewCredential(workflow.env);
+  assert.equal(workflow.env, undefined, "Workflow cannot override the runner environment");
   for (const name of ["validate-foundation", "validate-product"]) {
     const job = workflow.jobs?.[name];
     assert(job && typeof job === "object", "Required validation job is missing");
     assert.deepEqual(job.permissions, { contents: "read", "pull-requests": "read" }, "Invalid validation permissions");
     assert.equal(job["continue-on-error"], undefined, "Validation failure cannot be ignored");
-    noReviewCredential(job.env);
+    assert.deepEqual(
+      job.env,
+      name === "validate-product" ? { CI_BASE_REF: baseExpression } : undefined,
+      "Validation job cannot override the runner environment",
+    );
     assert(Array.isArray(job.steps), "Validation job requires explicit steps");
     const matches = job.steps.filter((step) => step.id === "acceptance-preflight");
     assert.equal(matches.length, 1, "Validation job requires exactly one acceptance preflight");
@@ -88,7 +92,7 @@ export function requirePreflightWorkflow(workflow) {
     );
     assert.deepEqual(
       step.env,
-      { CI_BASE_REF: baseExpression, GATE_REVIEW_TOKEN: tokenExpression },
+      { CI_BASE_REF: baseExpression, GATE_REVIEW_TOKEN: tokenExpression, NODE_OPTIONS: "", BASH_ENV: "", ENV: "" },
       "Invalid preflight inputs",
     );
     assert(typeof step.run === "string" && step.run.length > 0, "Acceptance preflight requires its reviewed bootstrap");
