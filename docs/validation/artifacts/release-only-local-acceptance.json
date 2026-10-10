@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "project": "mp3-e2e-4199-ccabe465f822",
+  "status": "passed",
+  "targetKind": "local",
+  "cleanup": "passed",
+  "acceptance": {
+    "planned": 60,
+    "passed": 60,
+    "failed": 0,
+    "skipped": 0,
+    "status": "passed"
+  },
+  "sourceRevision": "dab51daeda4a2217c038fb2d067c194b526aa148",
+  "sourceDirty": false,
+  "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "suiteCommit": "28c2a9c548f872dac54d9395a8ca0ed852f82240",
+  "suiteTree": "b789ffe426f4d0a303144338923748c9cdf424cf",
+  "manifestSha256": "2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a",
+  "contractRevision": "r3",
+  "baselinePublication": "provisional-local-review",
+  "configurationSha256": "5a8d471fa2613001f778f73a39afc726ca04b5d432ee7dfcdd47215b440b44e6",
+  "images": {
+    "api": "sha256:9b5776aeac39c6dc2dbb6904b77921647cc85a903b0e446ed6b89d59ced87463",
+    "frontend": "sha256:e6fd690b510915b67ece81dc535c98e973677fbe51bd2722465221652d3580b4"
+  },
+  "containers": {
+    "api": "6871aabbb4aeeb8139939fdaf5d9b5c4e6eac616fabe1c9ea664ae27cabf32e1",
+    "frontend": "1ef3d2b9ced13a7a582837198f896e57929d3f89c44c1e1ec1bb673453733d99"
+  },
+  "durationMs": 42758
+}

@@ -56,3 +56,11 @@ performed during this release-only amendment.
 The [release-only process](../deployment/release-only.md) separates configured automation from the first observed
 publication. The [deployment runbook](../deployment/runbook.md) retains deferred operational criteria and does not
 represent an operating stage/production pipeline.
+
+## Release-only implementation validation
+
+The reviewed publisher and scope amendment are implemented at `dab51daeda4a2217c038fb2d067c194b526aa148`.
+[Release-only validation](release-only.md) records passing 16/16 Mermaid renders, 82 gate/tooling tests, 75 application
+unit tests and a fresh clean-source 60/60 external acceptance run with successful cleanup. The suite remains provisional
+until its separate protected-main merge; no actual GitHub release or deployment has been observed. These results do not
+remove the PR dependency or count as human approval.

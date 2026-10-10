@@ -56,6 +56,9 @@ release deletion. Same-run workflow artifacts have seven-day retention and are o
 prior release image archives and provenance. These hashes are integrity evidence, not signed attestations against a
 malicious repository owner, and Docker archive hashes are distinct from image IDs and future registry digests.
 
+The [validation record](../validation/release-only.md) separates passing local tests and source review from the pending
+first remote publication.
+
 ## First release and deferred deployment
 
 The first actual automatic release cannot occur until P1 and the separate P2 baseline merge, the baseline is bound to
