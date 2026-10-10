@@ -21,10 +21,14 @@ query: >-
   version from the exact tested source's committed release policy and global
   first-parent ordinal. Preserve legacy identities and schema-1 bytes; new
   policy-bound evidence uses schema 2. Compare stable latest versions
-  numerically.
+  numerically. Before each standalone suite check, show exact suite selection,
+  locked npm installation, package-local Chromium preparation and a bounded
+  launch/close probe. Keep candidate controls and preparation evidence separate
+  from required product acceptance.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /scripts/run-ci-phase.mjs'
+  - 'File: /scripts/acceptance-browser-setup.mjs'
   - 'File: /scripts/acceptance-preflight.mjs'
   - 'File: /scripts/acceptance-runtime.mjs'
   - 'File: /scripts/ci-gate.mjs'
@@ -40,7 +44,8 @@ flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
     PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
     EVENT --> PREP["Product trusted-base admission<br/>emit exact source/base decision and digest"]
-    PREP --> P["Product: resolve required suite and run unit/build checks<br/>pending candidate harness controls stay separate"]
+    PREP --> SETUP["Select and extract exact suites; locked npm ci<br/>prepare package-local Chromium and verify launch/close<br/>write setup evidence, then run each standalone check"]
+    SETUP --> P["Product: run unit/build checks<br/>candidate controls and readiness are not product acceptance"]
     P --> BUILD["Build two independent Docker images<br/>frontend: static assets with NGINX<br/>API: TypeScript build stage to minimal Node runtime"]
     BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium tests their real HTTP boundary"]
     TEST --> KIND{"Successful application main push?"}
@@ -60,4 +65,3 @@ flowchart TD
     DRAFT -.->|"Conflict or interruption"| FAIL
     ASSETS -.->|"Failure"| FAIL
     FAIL -.->|"Retry only with identical source and bytes"| VERIFY
-    P --> PREPARE["Prepare acceptance browser and write preparation evidence"]

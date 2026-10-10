@@ -152,3 +152,11 @@ Obtain fresh Ubuntu setup before standalone checks and complete unchanged requir
 Record exact-head automated companion approval, actual merge and source-bound main publication separately. Setup records
 always remain `productAcceptance: false`; no warm cache, synthetic pass or download alone substitutes for the required
 fresh Linux preparation observation. No documentation renderer or hosted capability is established here.
+
+## PR diagram correction — 2026-10-10
+
+PR #20's diagram assistant added preparation as a detached leaf in `9f9226d`. The coordinator corrected the canonical
+release diagram to place exact suite selection, locked installation, browser readiness and standalone controls before
+product build/E2E, and added the helper as a source reference. No executable behavior changed. `npm run check:mermaid`
+rendered all 19 tracked diagrams successfully. The superseded initial PR run `38057257304` was canceled when the bot
+updated the head; canceled work is not passing evidence. Final-head CI and companion review remain required.
