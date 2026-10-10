@@ -50,5 +50,8 @@ The later owner amendment defers deployment; read docs/requirements/release-proc
 - Run deterministic validation for the affected boundary and report commands actually executed.
 - Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.
 - Mermaid account widgets and GitHub diagram-sync checks are not parser evidence; see docs/validation/mermaid.md.
+- Keep implemented source-linked diagrams canonical in docs/architecture/diagrams/; maintain their frontmatter references.
+- Limit automatic Mermaid rewriting to the three files opted in by .mermaidignore; preserve requirements and history.
+- Review bot diagram commits against source and require fresh CI; do not duplicate their bodies in Markdown.
 - Preserve registered original captures; rendering derivatives must link their originals and record any storage mapping.
 - Preserve unrelated repository content and obtain explicit authority before destructive or external side effects.

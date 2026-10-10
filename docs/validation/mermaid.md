@@ -95,8 +95,33 @@ is subject to validation, including historical and supplied views; no invalid Ma
 
 The Mermaid Diagram Sync Assistant is installed. Its observed
 [check on the P1 revision](https://github.com/brobro10000/mp3-frame-counter/commit/445e374f3410f43296b9508e28d5f8d0f375120b/checks)
-completed as **skipped**, with “No Diagrams to Update”: no diagram referenced a changed source file. This repository
-currently uses Markdown fences without linked standalone `.mmd` files. The app's
+completed as **skipped**, with “No Diagrams to Update”: no diagram referenced a changed source file. At that revision
+the repository used Markdown fences without linked standalone `.mmd` files. The app's
 [documented purpose](https://mermaid.ai/docs/ai/github-app) is to regenerate source-linked diagrams and commit updates
 to PRs. That is separate from syntax validation. No app settings, account credits or automatic rewriting were enabled by
-this repair. The mandatory repository check runs without an account, connector, Codex or private plugin.
+that syntax repair. The mandatory repository check runs without an account, connector, Codex or private plugin.
+
+## Source-sync setup
+
+The owner subsequently authorized enabling source-linked updates. The three implemented runtime, upload and release
+views now live in [canonical standalone files](../architecture/diagrams/README.md), with exact source references and
+scope queries in YAML frontmatter. Their former Markdown copies are replaced by links to avoid drift after bot commits.
+The two manual planning views stay in the architecture page; its active release flow now reflects SRC-RELEASE-ONLY.
+
+The root `.mermaidignore` allows automatic updates only to those three `.mmd` files. Requirements captures, archived and
+generated agent artifacts, validation evidence and the frozen acceptance package are excluded from regeneration.
+Mandatory rendering still discovers all **16** diagrams: three standalone implemented views and thirteen Markdown
+fences. No validation gate, dependency, baseline, permission or release trigger changes are needed.
+
+The metadata follows the first-party
+[writer and path resolver](https://github.com/Mermaid-Chart/vscode-mermaid-chart/blob/7ac3d0242002113af58e19515590b6ffaa3d39df/src/frontmatter.ts#L185-L307).
+The [GitHub app documentation](https://mermaid.ai/docs/ai/github-app) describes source matching and `.mermaidignore`.
+Local source-reference checks and SVG renders validate repository setup; successful live app recognition and any bot
+commit must be observed separately on the PR head before claiming automatic synchronization works.
+
+Local setup verification passed: all 19 references resolve to tracked source files; a Gitignore-style scope probe
+allowed the three opted-in diagrams and representative product/workflow sources while excluding unregistered diagrams
+and protected inputs. `npm run validate` passed 16/16 renders, formatting, workflow lint, policy, portability, 20 gate
+tests and 62 tooling tests. Requirements, archives, acceptance bytes, product code and CI gates were unchanged. The
+[PR checks](https://github.com/brobro10000/mp3-frame-counter/pull/5/checks) and PR validation section record the live
+integration outcome separately.

@@ -1,0 +1,30 @@
+---
+title: Local runtime and independent acceptance boundary
+query: >-
+  Show the implemented local runtime as a compact flowchart. Keep the two Compose application containers distinct
+  from the temporary independent acceptance runner and host controller. Show the single browser origin, raw upload
+  proxy, bounded in-process API/parser boundary, and reviewed fixture inputs. This view describes local execution;
+  do not infer cloud deployment or introduce services absent from the referenced source.
+references:
+  - "File: /compose.yaml"
+  - "File: /frontend/Dockerfile"
+  - "File: /frontend/nginx.conf.template"
+  - "File: /server/Dockerfile"
+  - "File: /server/src/http.ts"
+  - "File: /server/src/mp3.ts"
+  - "File: /scripts/run-e2e.mjs"
+---
+flowchart LR
+    B["Browser"]
+    subgraph LOCAL["Local Compose: two non-root application containers"]
+        F["Frontend: static HTML and NGINX :8080"]
+        A["API: node:http :3000, bounded upload buffer"]
+        P["Pure in-process TypeScript frame counter"]
+        F -->|"Raw POST /file-upload"| A
+        A -->|"Complete received bytes, at most 20 MiB"| P
+    end
+    B -->|"One loopback origin: default port 8080"| F
+    T["Independent short-lived acceptance runner"] -->|"BASE_URL: browser and HTTP"| F
+    O["Reviewed fixture manifest and expectations"] --> T
+    C["Host or CI controller"] -.->|"Scoped lifecycle and cleanup"| LOCAL
+    C -.->|"Runs against exact app image pair"| T

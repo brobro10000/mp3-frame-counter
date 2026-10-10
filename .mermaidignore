@@ -1,0 +1,12 @@
+# Sync only the three implemented architecture views. New diagrams require deliberate opt-in below.
+**/*.mmd
+**/*.mermaid
+!docs/architecture/diagrams/runtime.mmd
+!docs/architecture/diagrams/upload.mmd
+!docs/architecture/diagrams/release.mmd
+
+# Historical captures, generated contracts, evidence and the frozen baseline are never regeneration inputs.
+agents/
+docs/requirements/
+docs/validation/
+tests/acceptance/

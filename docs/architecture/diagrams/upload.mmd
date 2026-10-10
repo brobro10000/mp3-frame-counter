@@ -1,0 +1,51 @@
+---
+title: MP3 upload and result sequence
+query: >-
+  Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, native Node API and
+  pure parser. Include local file validation, pending controls, the actual-byte 20 MiB bound, typed parser failures,
+  proxy failures, JSON validation and restored controls after every outcome. Count complete physical MPEG-1 Layer III
+  frames including metadata-bearing frames. Keep errors readable and show that aborted uploads cannot succeed.
+  Use only behavior supported by the referenced files; this is not a cloud deployment diagram.
+references:
+  - "File: /frontend/app.js"
+  - "File: /frontend/nginx.conf.template"
+  - "File: /server/src/http.ts"
+  - "File: /server/src/mp3.ts"
+---
+sequenceDiagram
+    actor User
+    participant Browser
+    participant Frontend as NGINX frontend
+    participant API as Node API
+    participant Parser as Pure parser
+    User->>Browser: Select file and Analyze MP3
+    alt Missing file or file exceeds 20 MiB
+        Browser-->>User: Readable local error
+    else File passes local validation
+        Browser->>Browser: Set pending, disable duplicate submit, start deadline
+        Browser->>Frontend: Raw POST /file-upload with audio/mpeg
+        alt Ingress rejection or unavailable/timed-out upstream
+            Frontend-->>Browser: Error status and JSON
+        else Request forwarded over HTTP/1.1 without buffering or retry
+            Frontend->>API: Forward raw bytes
+            API->>API: Validate headers, admission and actual received bytes
+            alt Invalid request, over limit, busy or timed out
+                API-->>Frontend: Contracted error status and JSON
+            else Complete nonempty body within 20 MiB
+                API->>Parser: Count complete physical MPEG-1 Layer III frames
+                alt Valid supported file
+                    Parser-->>API: Positive count including metadata-bearing frames
+                    API-->>Frontend: 200 JSON with frameCount
+                else Invalid or unsupported structure
+                    Parser-->>API: Typed failure
+                    API-->>Frontend: 400 or 415 JSON
+                end
+            end
+            Frontend-->>Browser: Preserve API status and JSON
+        end
+        Browser->>Browser: Validate JSON and exact success shape
+        Browser-->>User: Count or readable error#59; allow retry
+        Browser->>Browser: Always clear deadline and restore controls
+    end
+    Note over Browser,API: Abort or network failure is not partial success
+    Note over API,Parser: Release bounded upload memory#59; no MediaInfo, retained upload or background job
