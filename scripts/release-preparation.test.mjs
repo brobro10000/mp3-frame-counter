@@ -6,7 +6,18 @@
  */
 
 import assert from "node:assert/strict";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -301,4 +312,192 @@ test("symlinked artifact, release and report parents fail before creating anythi
   rmSync(join(artifacts, "releases"));
   const safe = requireArtifactPath(root, ".artifacts/releases", { allowMissingLeaf: true });
   assert.equal(existsSync(safe), false, "The path check itself must not create directories");
+});
+
+// Independent VER-01 expectations follow. These fixed digests were captured from the unchanged schema-1
+// implementation before allocator work; the complete original text is retained in ignored version-design evidence.
+const legacyPreparationGoldens = [
+  {
+    ordinal: 6,
+    reservation: "964f45fa19f89809b83c3bba1c98e8427741af00aa19f57a5653440edcb60888",
+    manifest: "7ebeee11d3479f41cf611ea649ec67aad56cae0715204a19ea1497f0076e4e67",
+    notes: "1b3284a136785e8f970a816a846595b4444153d36378d89bf4f9b3f75f3dbb35",
+    binding: "aaf2a72fd2e81fd2a6d76ad7ccf39eb31aa63f19dc35d5dc880fdb2e37285391",
+  },
+  {
+    ordinal: 7,
+    reservation: "8655d0a253dbe2795e2a86995c6f0d6c110df4df5b05239fcb0e98b7f4a50af8",
+    manifest: "2dce3482ebc36d925941c5753d5ff2cb75fd2bf33cd06f1d5ffbd2a37f98fc60",
+    notes: "63ea9a8d77c8c315110fa2d85ad269b2ad42031d5169eec8caf592a25fa8b8f1",
+    binding: "a190bbe85d63c454680a28ced6e096c36ab4f94bbf968eb9794ee6f509243b07",
+  },
+];
+const preparationHash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const serialized = (value) => `${JSON.stringify(value, null, 2)}\n`;
+const resolvedAllocation = (input = report()) => ({
+  sourceRevision: input.sourceRevision,
+  version: "0.2.18",
+  ordinal: 18,
+  policy: {
+    schemaVersion: 1,
+    strategy: "global-first-parent-ordinal",
+    line: "0.2",
+    sha256: "e".repeat(64),
+  },
+});
+
+for (const golden of legacyPreparationGoldens) {
+  test(`literal legacy ordinal ${golden.ordinal} reservation, manifest and notes stay byte-identical`, () => {
+    const expected = preparationIdentity(report(), golden.ordinal, sourceConfig());
+    const saved = createManifest(expected, "6".repeat(40), archives());
+    assert.equal(preparationHash(serialized(expected)), golden.reservation);
+    assert.equal(preparationHash(serialized(saved)), golden.manifest);
+    assert.equal(preparationHash(releaseNotes(saved)), golden.notes);
+    assert.equal(saved.reservationSha256, golden.binding);
+    assert.equal(saved.schemaVersion, 1);
+    assert.equal(Object.hasOwn(expected, "releasePolicy"), false);
+    assert.equal(Object.hasOwn(expected, "policy"), false);
+  });
+}
+
+test("resolved historical allocation preserves literal old identity bytes rather than inserting null policy", () => {
+  for (const golden of legacyPreparationGoldens) {
+    const input = report();
+    const allocation = {
+      sourceRevision: input.sourceRevision,
+      version: golden.ordinal === 6 ? "0.1.6" : "0.1.7",
+      ordinal: golden.ordinal,
+      policy: null,
+    };
+    const expected = preparationIdentity(input, allocation, sourceConfig());
+    const saved = createManifest(expected, "6".repeat(40), archives());
+    assert.equal(preparationHash(serialized(expected)), golden.reservation);
+    assert.equal(preparationHash(serialized(saved)), golden.manifest);
+    assert.equal(preparationHash(releaseNotes(saved)), golden.notes);
+  }
+});
+
+test("schema-2 preparation binds the selected line, ordinal and exact policy digest in one reservation", () => {
+  const input = report();
+  const allocation = resolvedAllocation(input);
+  const expected = preparationIdentity(input, allocation, sourceConfig());
+  assert.deepEqual(Object.keys(expected), [
+    "version",
+    "ordinal",
+    "platform",
+    "evidence",
+    "sourceConfiguration",
+    "releasePolicy",
+  ]);
+  assert.equal(expected.version, "0.2.18");
+  assert.equal(expected.ordinal, 18);
+  assert.deepEqual(expected.releasePolicy, allocation.policy);
+  assert.equal(expected.evidence.sourceRevision, input.sourceRevision);
+  const saved = createManifest(expected, "6".repeat(40), archives());
+  assert.equal(saved.schemaVersion, 2);
+  assert.equal(saved.version, "0.2.18");
+  assert.equal(Object.hasOwn(saved, "releasePolicy"), false, "One policy binding belongs in the identity");
+  assert.equal(saved.deployable, false);
+  assert.equal(saved.productionApproval, null);
+  assert.doesNotThrow(() => requireSameReservation(saved, expected));
+  const notes = releaseNotes(saved);
+  assert.equal(notes, releaseNotes(structuredClone(saved)));
+  assert(notes.includes("0.2") && notes.includes("18") && notes.includes(allocation.policy.sha256));
+  assert.match(notes, /(?:selected.*line|release.*line|policy.*line|line.*0\.2)/i);
+  assert.match(notes, /(?:global.*ordinal|ordinal.*18)/i);
+});
+
+test("preparation refuses mismatched source, version, ordinal or malformed policy in a supplied allocation", () => {
+  const input = report();
+  assert.equal(preparationIdentity(input, resolvedAllocation(input), sourceConfig()).version, "0.2.18");
+  for (const mutate of [
+    (value) => (value.sourceRevision = "9".repeat(40)),
+    (value) => (value.version = "0.1.18"),
+    (value) => (value.ordinal = 17),
+    (value) => (value.ordinal = 0),
+    (value) => (value.ordinal = "18"),
+    (value) => (value.ordinal = Number.MAX_SAFE_INTEGER + 1),
+    (value) => (value.policy = null),
+    (value) => (value.policy.sha256 = "not-a-digest"),
+    (value) => (value.policy.schemaVersion = 2),
+    (value) => (value.policy.strategy = "future-counter"),
+    (value) => (value.policy.line = "0.02"),
+    (value) => (value.policy.approved = true),
+    (value) => (value.version = "1.0.0"),
+  ]) {
+    const changed = resolvedAllocation(input);
+    mutate(changed);
+    assert.throws(() => preparationIdentity(input, changed, sourceConfig()));
+  }
+});
+
+test("policy changes cannot reuse an old reservation even when source, line and ordinal claims match", () => {
+  const input = report();
+  const allocation = resolvedAllocation(input);
+  const expected = preparationIdentity(input, allocation, sourceConfig());
+  const saved = createManifest(expected, "6".repeat(40), archives());
+  allocation.policy.sha256 = "f".repeat(64);
+  const changed = preparationIdentity(input, allocation, sourceConfig());
+  assert.notEqual(createManifest(changed, "6".repeat(40), archives()).reservationSha256, saved.reservationSha256);
+  assert.throws(() => requireSameReservation(saved, changed));
+});
+
+test("schema downgrades, policy removal and legacy upgrades cannot disguise a different reservation format", () => {
+  const expected = preparationIdentity(report(), resolvedAllocation(), sourceConfig());
+  const saved = createManifest(expected, "6".repeat(40), archives());
+  for (const mutate of [
+    (value) => (value.schemaVersion = 1),
+    (value) => delete value.identity.releasePolicy,
+    (value) => (value.identity.releasePolicy.line = "0.1"),
+    (value) => (value.identity.releasePolicy.sha256 = "f".repeat(64)),
+    (value) => (value.releasePolicy = structuredClone(expected.releasePolicy)),
+  ]) {
+    const changed = structuredClone(saved);
+    mutate(changed);
+    assert.throws(() => requireSameReservation(changed, expected));
+  }
+  const legacy = manifest();
+  legacy.schemaVersion = 2;
+  assert.throws(() => requireSameReservation(legacy, identity()));
+});
+
+test("schema-2 complete local retry preserves original bytes and preparation revision without writing", async (t) => {
+  const directory = mkdtempSync(join(tmpdir(), "release-versioned-retry-"));
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const expected = preparationIdentity(report(), resolvedAllocation(), sourceConfig());
+  const savedArchives = {};
+  for (const service of services) {
+    writeFileSync(join(directory, `${service}.docker.tar`), `Independent versioned ${service} archive`);
+    savedArchives[service] = await archiveIdentity(join(directory, `${service}.docker.tar`));
+  }
+  const saved = createManifest(expected, "6".repeat(40), savedArchives);
+  writeFileSync(join(directory, "manifest.json"), serialized(saved));
+  writeFileSync(join(directory, "reservation.json"), serialized(expected));
+  writeFileSync(join(directory, "release-notes.md"), releaseNotes(saved));
+  writeFileSync(
+    join(directory, "SHA256SUMS"),
+    services.map((service) => `${savedArchives[service].sha256}  ${service}.docker.tar`).join("\n") + "\n",
+  );
+  const snapshot = () =>
+    Object.fromEntries(
+      readdirSync(directory)
+        .sort()
+        .map((name) => [
+          name,
+          {
+            sha256: preparationHash(readFileSync(join(directory, name))),
+            modified: statSync(join(directory, name)).mtimeMs,
+          },
+        ]),
+    );
+  const before = snapshot();
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const reused = await verifyPreparedDirectory(directory, expected);
+    assert.equal(reused.preparationRevision, "6".repeat(40));
+    assert.deepEqual(reused, saved);
+    assert.deepEqual(snapshot(), before);
+  }
+  rmSync(join(directory, "api.docker.tar"));
+  await assert.rejects(verifyPreparedDirectory(directory, expected));
+  assert.equal(existsSync(join(directory, "api.docker.tar")), false, "Missing reserved bytes must not be recreated");
 });
