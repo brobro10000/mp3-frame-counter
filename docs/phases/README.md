@@ -1,5 +1,10 @@
 # MVP phase order
 
+**Current handoff, 2026-10-10:** the release-only P1–P5 milestone and PR #7 closure are complete; main `92807357`
+published v0.1.7. The [versioned roadmap](../roadmap/README.md) and [next three cards](next-iteration.md) now govern
+documentation and separately scoped future work. The table below preserves the completed phase sequence; earlier
+execution authority does not authorize roadmap implementation.
+
 P0 planning merged in PR #2 at `0c9f538`. The owner subsequently authorized execution of all five phases, required shell
 commands and UI work, with unattended progress. See the [execution authorization](execution-authorization.md). PR #1's
 merged foundation remains factual history. Each phase still requires its actual dependency checks and evidence;

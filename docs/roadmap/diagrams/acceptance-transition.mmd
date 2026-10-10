@@ -1,0 +1,24 @@
+---
+title: Planned acceptance genesis and successor transition
+query: >-
+  Show proposed independently reviewed successor admission after GATE-01. Preserve immutable r3 genesis, require
+  candidate harness/oracle controls, bind the actual test-only merged identity, and make the next product change
+  satisfy the successor. Requirements persist for descendants only after the implementation is merged and revalidated.
+  Candidate future-behavior failures never count as released acceptance. This mechanism is not implemented yet.
+references:
+  - 'File: /docs/roadmap/README.md'
+  - 'File: /docs/phases/next-iteration.md'
+  - 'File: /docs/testing/independence-and-baseline.md'
+---
+flowchart LR
+    GENESIS["Immutable r3 genesis"] --> ACTIVE["Current required acceptance"]
+    CANDIDATE["Independent candidate tests"] --> CONTROLS["Discovery, oracle and negative controls"]
+    CONTROLS --> MERGE["Test-only merge"]
+    MERGE --> BIND["Bind actual SHA, tree and review"]
+    BIND --> NEXT["Next product change requires successor"]
+    ACTIVE --> NEXT
+    NEXT --> CHECK{"Exact-source acceptance passes?"}
+    CHECK -->|No| BLOCK["Block merge or publication"]
+    CHECK -->|Yes| IMPL["Authorized implementation merge and revalidation"]
+    IMPL --> REQUIRED["Successor required for descendants"]
+    REQUIRED --> RELEASE["Publish supported contract"]

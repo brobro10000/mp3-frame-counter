@@ -1,0 +1,42 @@
+---
+title: Planned two-container stage and production delivery
+query: >-
+  Show planned Cloud Run services containing separately built NGINX and Node API containers, with the pure parser
+  and docs assets inside the API container. CI builds/tests Docker images; Cloud Run runs their OCI contents without
+  a hosted Docker daemon. Stage and production use the same tested digests and environment-specific configuration.
+  Keep prelaunch access authenticated, and show exact launch approval, smoke, metadata finalization and recovery.
+  Browser code executes outside containers. No deployment is claimed by this diagram.
+references:
+  - 'File: /docs/roadmap/README.md'
+  - 'File: /docs/phases/next-iteration.md'
+  - 'File: /docs/deployment/runbook.md'
+---
+flowchart TD
+    CI["CI: Docker builds and tests two OCI images"] --> PUB["Verified GitHub artifact release"]
+    PUB --> REG["Registry: same image content, immutable digests"]
+    subgraph STAGE["Stage Cloud Run service: authenticated HTTPS"]
+        SF["NGINX ingress container"]
+        SA["Node API container: Fastify, parser and docs assets"]
+        SF -->|"localhost:3000"| SA
+    end
+    REG --> SF
+    REG --> SA
+    STAGE --> TEST["Stage acceptance and identity checks"]
+    TEST --> CONFIG["Review production configuration"]
+    subgraph PROD["Production service: authenticated before first launch"]
+        PF["NGINX ingress container"]
+        PA["Node API container: same tested image"]
+        PF -->|"localhost:3000"| PA
+    end
+    CONFIG --> PROD
+    REG --> PF
+    REG --> PA
+    PROD --> VERIFY["Production candidate verification"]
+    VERIFY --> APPROVE["Exact launch authorization"]
+    APPROVE --> LIVE["Public access and intended traffic"]
+    BROWSER["User browser: app.js runs outside containers"] --> LIVE
+    LIVE --> PF
+    LIVE --> SMOKE{"Identity and smoke pass?"}
+    SMOKE -->|Yes| FINAL["Same publisher finalizes v1.0.0"]
+    SMOKE -->|No| RECOVER["Restore prior revision or withdraw first exposure"]
+    RECOVER --> CHECK["Verify recovery and retain failure evidence"]

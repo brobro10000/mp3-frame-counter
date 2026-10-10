@@ -1,5 +1,15 @@
 # Independent acceptance baseline and change control
 
+**Roadmap amendment, 2026-10-10:** the [successor design](../roadmap/README.md#acceptance-succession) requires
+[GATE-01](../phases/next-iteration.md#pr-card-2--gate-01-admit-independently-reviewed-successor-suites) before any
+successor-suite PR. Current verification still freezes every r3 path/byte and requires a pre-product suite commit; the
+amendment procedure below is not an existing technical route around those checks. Preserve genesis JSON and historical
+suite objects, use separate test-only proposals and actual merged binding, and keep gate authors independent of product
+implementers. The proposed trusted preflight does not make a head-owned workflow tamper-proof.
+
+The companion brobro1000 can supply an eligible automated GitHub approval under current rules; it is not a human review.
+Historical references to unavailable human approval do not mean an automated review is fabricated or ineligible.
+
 Status: P2 package, fixtures, runner and test-only baseline have been implemented and independently reviewed.
 [PR #4](https://github.com/brobro10000/mp3-frame-counter/pull/4) separately merged the unchanged test-only suite to
 protected main at `a0a56d94e5457101cd043b6055ab084782c3e16f`. The [freeze record](baseline.json) now binds that actual
