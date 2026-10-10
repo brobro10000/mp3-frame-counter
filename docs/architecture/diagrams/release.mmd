@@ -34,7 +34,7 @@ references:
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
   - 'File: /release-policy.json'
-generationTime: '2026-10-10T09:34:20.319Z'
+generationTime: '2026-10-10T13:50:20.531Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -60,3 +60,4 @@ flowchart TD
     DRAFT -.->|"Conflict or interruption"| FAIL
     ASSETS -.->|"Failure"| FAIL
     FAIL -.->|"Retry only with identical source and bytes"| VERIFY
+    P --> PREPARE["Prepare acceptance browser and write preparation evidence"]
