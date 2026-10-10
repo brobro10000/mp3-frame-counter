@@ -37,6 +37,7 @@ services:
     build:
       context: frontend
     environment:
+      # NGINX listens on 8080 inside the container; FRONTEND_PORT changes only the published host port.
       PORT: "8080"
       API_UPSTREAM: api:3000
     ports:
