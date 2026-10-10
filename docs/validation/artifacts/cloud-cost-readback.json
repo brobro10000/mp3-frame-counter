@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "kind": "operator-observation-summary",
+  "recordedAt": "2026-10-10T07:42:33.108841+00:00",
+  "independentCloudVerification": false,
+  "sourceRevision": "ede7f4cfec248cd000ff37a23c14a390163a41da",
+  "configurationSha256": "f0afe17707095971bdf63bda4d752a3ff88c681190455228e9fd52cc909f6dd5",
+  "redaction": "Project, account and resource identities, etags, credentials and local paths omitted. Hashes identify retained private records, not provider attestations.",
+  "primarySources": [
+    {
+      "url": "https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets#OwnershipScope",
+      "observedOn": "2026-10-10",
+      "enum": "OWNERSHIP_SCOPE_UNSPECIFIED",
+      "excerpt": "Unspecified ownership scope, same as ALL_USERS."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/services/billingbudgets/resource_billing_budget.go",
+      "sha256": "a08e10c905edf50f7355da8f79f8f0f98f3ee4d52479801b08973ae2528fa31f",
+      "schemaField": "ownership_scope",
+      "type": "schema.TypeString",
+      "optional": true,
+      "computedFieldAbsent": true,
+      "readbackExpression": "flattenBillingBudgetsBudgetOwnershipScope(res[\"ownershipScope\"], d, config)",
+      "observedOn": "2026-10-10"
+    }
+  ],
+  "savedPlan": {
+    "sha256": "d0b2aa0e4baa063be9583f7dea62a60986e2a8ae26a8bfc9e49ae16ba829b9e3",
+    "changes": [
+      {
+        "address": "google_billing_budget.application_total",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project.application",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project_service.bootstrap[\"billingbudgets.googleapis.com\"]",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project_service.bootstrap[\"cloudbilling.googleapis.com\"]",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project_service.bootstrap[\"cloudresourcemanager.googleapis.com\"]",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project_service.bootstrap[\"run.googleapis.com\"]",
+        "actions": ["create"]
+      },
+      {
+        "address": "google_project_service.service_usage",
+        "actions": ["create"]
+      }
+    ]
+  },
+  "billingReadback": {
+    "billingEnabled": true,
+    "intendedProjectAndAccountMatched": true
+  },
+  "budgetReadback": {
+    "amount": {
+      "specifiedAmount": {
+        "currencyCode": "USD",
+        "units": "100"
+      }
+    },
+    "calendarPeriod": "MONTH",
+    "creditTypesTreatment": "EXCLUDE_ALL_CREDITS",
+    "projectCount": 1,
+    "servicesFilterAbsent": true,
+    "ownershipScopeAbsent": true,
+    "thresholdRules": [
+      {
+        "thresholdPercent": 0.5,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 0.75,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 0.9,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 1,
+        "spendBasis": "CURRENT_SPEND"
+      },
+      {
+        "thresholdPercent": 1,
+        "spendBasis": "FORECASTED_SPEND"
+      }
+    ],
+    "notificationsRule": {}
+  },
+  "capCheck": {
+    "observedAt": "2026-10-10T07:21:36Z",
+    "status": "ready",
+    "recordedResourceMatched": true,
+    "amountUsd": 75,
+    "period": "MONTH",
+    "service": "services/152E-C115-5142",
+    "verificationCodeRevision": "a21108cf2982eb973fa9b4502007084bbd450d08"
+  },
+  "drift": {
+    "before": {
+      "exitCode": 2,
+      "add": 0,
+      "change": 1,
+      "destroy": 0,
+      "onlyAttribute": "ownership_scope",
+      "proposedValue": "ALL_USERS"
+    },
+    "after": {
+      "exitCode": 0,
+      "message": "No changes. Your infrastructure matches the configuration."
+    },
+    "subsequentApply": false
+  },
+  "rawObservationSha256": {
+    "verified-budget.private.json": "50429bfa4081c40f0abe21da267cdc91bdcc505f58750cb4cea9e579d41e3b67",
+    "verified-billing.private.json": "336ab2da37187fd24e4ff26a07341741eae65ba692269251b16d6d1a37745fe4",
+    "cap-check-20261010T072136Z.private.log": "80f856d64bd2f1ab0a24672bf58e682cdaa806aeb8d529b02d2ce1ec2cb240e9",
+    "post-apply-drift.private.log": "cbe8a14b2a20ef8cb88d0727c47a65f47daa997d29eec3f6d645e850d7742d60",
+    "post-apply-drift-corrected.private.log": "35a2d1f0a2cee16dea49a9a44ccc0cbfe105e0471d0dce097f452857f46d61c5"
+  },
+  "limits": [
+    "No independent companion access to live Google APIs.",
+    "Notification delivery and cap enforcement timing were not tested.",
+    "Not a guaranteed invoice ceiling or application deployment."
+  ]
+}

@@ -98,7 +98,11 @@ production application deployment remains a separate human decision.
 
 ## Live bootstrap and readback — 2026-10-10
 
-The earlier source-authoring observations above remain historical.
+The earlier source-authoring observations above remain historical. Live observations below were performed by the
+owner-authorized coordinator/operator, not independently by the companion. The
+[sanitized observation record](artifacts/cloud-cost-readback.json) binds the inspected configuration, retained raw
+record hashes, budget fields and before/after drift results. It captures the relevant primary-source default and pinned
+provider schema/readback behavior; it is an operator record, not a provider-signed attestation.
 [PR #9](https://github.com/brobro10000/mp3-frame-counter/pull/9) merged as owner `brobro10000` at
 `a21108cf2982eb973fa9b4502007084bbd450d08`, after the Docker companion `brobro1000` reviewed all 19 changed paths at
 `ad24d73a9f6bc3d0292a93770ab808b3d08bfc61` and
@@ -136,7 +140,8 @@ exit 0, **no changes**, without applying another cloud mutation.
 [API ownership defaults](https://docs.cloud.google.com/billing/docs/reference/budget/rest/v1/billingAccounts.budgets#OwnershipScope),
 [pinned provider schema/readback](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/services/billingbudgets/resource_billing_budget.go).
 
-This proves setup and point-in-time readiness, not enforcement timing, future notification delivery or a guaranteed USD
-100 invoice ceiling. No registry, storage backend, workload federation, application service, stage or production
-deployment exists from this bootstrap. Production application deployment remains a separate human gate. Retain the
-controls and their private state while later reviewed IaC adds only the necessary application infrastructure.
+The operator observed setup and point-in-time readiness; the companion has no independent live access. These checks do
+not establish enforcement timing, future notification delivery or a guaranteed USD 100 invoice ceiling. No registry,
+storage backend, workload federation, application service, stage or production deployment exists from this bootstrap.
+Production application deployment remains a separate human gate. Retain the controls and their private state while later
+reviewed IaC adds only the necessary application infrastructure.
