@@ -211,7 +211,7 @@ function execute(f, jobName, changes = {}, eventChanges = {}) {
       ? {
           number: Number(env.GITHUB_REF.split("/")[2]),
           pull_request: {
-            base: { sha: env.CI_BASE_REF },
+            base: { ref: "main", sha: env.CI_BASE_REF },
             head: { sha: f.git("rev-parse", `${sourceRevision}^2`) },
           },
         }
@@ -395,7 +395,12 @@ test("source identity must match the event payload, exact checkout and unmodifie
   requireRejected(
     pr,
     { GITHUB_EVENT_NAME: "pull_request", GITHUB_REF: "refs/pull/17/merge" },
-    { pull_request: { base: { sha: "9".repeat(40) }, head: { sha: proposal } } },
+    { pull_request: { base: { ref: "main", sha: "9".repeat(40) }, head: { sha: proposal } } },
+  );
+  requireRejected(
+    pr,
+    { GITHUB_EVENT_NAME: "pull_request", GITHUB_REF: "refs/pull/17/merge" },
+    { pull_request: { base: { ref: "unprotected-branch", sha: pr.product }, head: { sha: proposal } } },
   );
   f.put("server/src/parser.ts", "// Dirty working-tree product change outside the recorded source.\n");
   requireRejected(f, { GITHUB_SHA: source });
