@@ -21,3 +21,28 @@ baseline before P3 begins. Retain that reviewable handoff and follow the current
 [execution authorization](../phases/execution-authorization.md) for phase advancement. Agent review is not human
 approval; protected-main publication still requires the repository review policy or the explicit owner exception.
 Changes later require a separate reviewed contract/oracle amendment.
+
+## Roadmap role extension — 2026-10-10
+
+The P2 instructions above describe the preserved genesis process. For later work, read the
+[versioned roadmap](../roadmap/README.md) and the separate [phase instructions](../phases/next-iteration.md). PLAN-01
+authorizes documentation persistence only; it does not authorize executable tests, gate migration or deployment.
+
+For a separately authorized GATE-01, independently specify expected admission decisions and temporary Git-history
+fixtures before the gate implementer changes policy. Review trusted-base execution, exact reviewed merge binding,
+persistent successor applicability and agreement among CI, extraction, preparation and publication. Preserve r3 source,
+freeze metadata and historical evidence; the new gate must remain dormant until a distinct successor is admitted.
+
+After that migration, own candidate contract/suite changes independently of product implementation. Permit one pending
+successor at a time. A separate binding records the actual protected-main squash commit, suite tree, manifest,
+predecessor and reviewed tree. Candidate discovery, oracle and negative controls cannot satisfy product acceptance. The
+next product-affecting change must pass the bound successor, which remains required for descendants and reverts.
+
+Author transport, docs/CSP and hosted successors separately. Preserve raw upload/count/error semantics and the inclusive
+20 MiB limit during the planned Fastify migration. Docs acceptance must exercise rendering, interaction, effective CSP,
+same-origin assets and negative controls without weakening upload-page protection. Hosted profile mappings distinguish
+local acceptance, stage acceptance and production smoke; a local pass cannot substitute for unexecuted hosted checks.
+
+Keep source expectations independent of product output. Never silently alter required cases, choose an older suite or
+convert skipped/failing assertions into acceptance. Stop at the independently reviewable handoff specified by the card;
+record source/suite identities, actual results and unresolved prerequisites without inventing approval.

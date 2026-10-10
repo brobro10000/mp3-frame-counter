@@ -1,5 +1,20 @@
 # Decisions, proposals and blockers
 
+## DEC-14 — Versioned roadmap planning amendment, 2026-10-10
+
+The owner adopted the [versioned roadmap](../roadmap/README.md) for PLAN-01 documentation. PR #7 merged at `92807357`
+and published v0.1.7. The native-HTTP product and release-only automation remain implemented; Fastify, OpenAPI 3.0.3,
+offline Redoc/CSP and conditional Cloud Run stage/production are future work. This planning direction supersedes
+DEC-05's native-HTTP-only future boundary and DEC-10's preferred Render topology, without retroactively changing either
+decision's history or permitting implementation. DEC-13 still governs current releases without hosting.
+
+GATE-01 must precede independent successor suites, VER-01 must precede line activation, and compatible queue tooling
+must precede live queue syntax. The roadmap selects reconciliation/backfill until compatibility is demonstrated. Use the
+[next three cards](../phases/next-iteration.md) and named cost/access/launch gates. Preserve generated system contracts
+and historical validation; this amendment is not regenerated plugin approval or a deployment claim.
+
+## Historical P1–P5 decision context
+
 Status: unified plan with execution authorized on **2026-10-09**; see the
 [later instruction](../phases/execution-authorization.md). Evidence labels mean: **observed** from actual inspection;
 **documented** in supplied/official sources; **proposed** for future review; **blocked** pending the named input. None

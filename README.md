@@ -12,6 +12,12 @@ reused its ten verified assets unchanged. **Nothing is deployed.** The
 [execution status](docs/validation/execution-status.md) records the phase history; the closure record preserves known
 limits and the boundary for the next iteration.
 
+**Roadmap update, 2026-10-10:** PR #7 has merged at `92807357`; protected-main CI published
+[v0.1.7](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.7). The
+[versioned roadmap](docs/roadmap/README.md) and [next three PR cards](docs/phases/next-iteration.md) preserve this
+assessment snapshot and plan the prerequisites for Fastify, API documentation and a conditional hosted release. The
+roadmap is documentation, not deployed functionality; `v1.0.0` is reserved for verified production.
+
 ## Local application
 
 Install Docker with Compose. Both images build from source without host dependencies or generated output:

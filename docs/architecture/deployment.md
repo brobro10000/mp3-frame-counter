@@ -1,5 +1,11 @@
 # Managed deployment evaluation
 
+**Planning supersession, 2026-10-10:** the
+[versioned roadmap](../roadmap/README.md#conditional-cloud-run-topology-and-cost) now selects Cloud Run as the
+conditional lead: separate stage/production services, each containing the tested NGINX/API image pair. Cost, account
+access and actual hosted fit remain gated. The Render comparison below is preserved as dated research and an
+alternative, not the current preferred topology. Deployment remains unverified and unexecuted.
+
 **Deferred by the later [release-only amendment](../requirements/release-process.md).** This research applies when
 deployment resumes. GitHub releases currently require neither a provider nor stage/production rollout. Observations
 below retain their original research-time scope; see [later preflight evidence](../validation/deployment-preflight.md).

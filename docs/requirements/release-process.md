@@ -1,5 +1,10 @@
 # Application releases without deployment
 
+**Later amendment, 2026-10-10:** [roadmap execution](../phases/roadmap-execution-authorization.md) resumes hosted work
+and authorizes automatic stage deployment with human intervention for production. Software releases remain independent
+of deployment. The release-only policy and evidence below describe the earlier milestone and retain their historical
+scope.
+
 Current authority: **2026-10-09 release-only amendment**, [SRC-RELEASE-ONLY](sources/release-only-request.txt). After
 reviewing deployment readiness, the owner explicitly deferred deployment and requested releases without deploying. This
 supersedes the earlier requirement to deploy before publishing a successful application release. The earlier

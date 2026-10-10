@@ -4,6 +4,17 @@ This directory is the central reference for the MP3 File Analysis App assessment
 [formalized assessment requirements](assessment.md) and the [first application MVP release process](release-process.md)
 before planning or reviewing future work, then read the [V1 contract and choices](../mvp.md).
 
+**Current execution authority:** the owner subsequently authorized
+[roadmap execution and reviewed merges](../phases/roadmap-execution-authorization.md), with automatic stage delivery and
+a human gate for production deployment. That amendment supersedes the documentation-only and deployment-deferral
+instructions below without changing historical evidence.
+
+**Later planning amendment, 2026-10-10:** PR #7 closure is merged at `92807357` and v0.1.7 is published. The owner
+adopted the [versioned roadmap](../roadmap/README.md) and [next three cards](../phases/next-iteration.md) for
+documentation. They trace stable APP IDs without rewriting original captures or frozen evidence. Assessment submission
+remains separate from the optional Fastify/docs/hosting progression; future production v1.0.0 requires the new hosted
+gates. Earlier instructions below to close PR #7 are historical and no longer a pending prerequisite.
+
 The assessment and planning baseline are captured. The owner subsequently authorized P1–P5 execution; read the
 [execution record](../phases/execution-authorization.md) and phase evidence for current status. Requirement capture
 alone never establishes implementation or deployment completion.
