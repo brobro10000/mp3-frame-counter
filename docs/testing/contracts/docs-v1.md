@@ -95,10 +95,12 @@ workers, WebSockets and unrelated protocol families. Cleanup is separately manda
 
 Owned positive/negative fixtures use the same public response, YAML, artifact, browser and policy predicates as real
 tests. Controls include decorative shell, incompatible/mismatched CSP, script/font/reference attempts, changed served
-schema, missing/wrong logo, duplicate/tighter/looser policies, root-policy leakage and a late page error. Native guard
-calibration requires actual owned destination receipts for positives and zero receipts plus attribution for independent
-CSP/guard negatives across direct, redirect/two-hop and live-document beacon cases. No successful response is invented
-for product.
+schema, missing/wrong logo, duplicate/tighter/looser policies, root-policy leakage and late page error/meta insertion.
+The two owned late-fault fixtures arm on the actual 400-response click and inject only on a fixed post-screenshot
+signal; their observed timestamps must fall strictly before final classification. Public specs omit this fixture-only
+signal and retain the same predicates and 200 ms interval. Native guard calibration requires actual owned destination
+receipts for positives and zero receipts plus attribution for independent CSP/guard negatives across direct,
+redirect/two-hop and live-document beacon cases. No successful response is invented for product.
 
 Standalone checks enforce exact complete discovery and real inventory/report mutation controls (missing, duplicate,
 zero, skipped, failed, retries, expected failure and stale attribution). Browser controls write package-local evidence

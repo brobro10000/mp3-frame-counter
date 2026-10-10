@@ -127,11 +127,16 @@ export async function docsFixture(fault = "positive") {
       return;
     }
     if (path === "/docs/control.js") {
-      let script =
-        "document.addEventListener('click',e=>{if(e.target.closest('button')?.textContent.trim().startsWith('400'))setTimeout(()=>{throw Error('owned-late-page-error')},100)},{once:true});";
-      if (fault === "late-meta")
-        script =
-          "document.addEventListener('click',e=>{if(e.target.closest('button')?.textContent.trim().startsWith('400'))setTimeout(()=>{const m=document.createElement('meta');m.httpEquiv='Content-Security-Policy';m.content=\"default-src 'self'\";document.head.append(m)},100)},{once:true});";
+      // Arm on the real response expansion; the helper signals only after the screenshot completes.
+      const action =
+        fault === "late-meta"
+          ? "const m=document.createElement('meta');m.httpEquiv='Content-Security-Policy';m.content=\"default-src 'self'\";document.head.append(m)"
+          : "throw Error('owned-late-page-error')";
+      const script =
+        "let armed=false;document.addEventListener('click',e=>{if(e.target.closest('button')?.textContent.trim().startsWith('400'))armed=true},{once:true});" +
+        "document.addEventListener('docs-control-retained-window',()=>{if(!armed)return;armed=false;" +
+        action +
+        "},{once:true});";
       send(200, script, "application/javascript");
       return;
     }

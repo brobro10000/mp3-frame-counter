@@ -397,6 +397,7 @@ if (!child) {
             fixture.origin,
             { width: 1280, height: 900 },
             fileURLToPath(new URL(fault + ".png", directory)),
+            fault === "late-error" || fault === "late-meta",
           );
           writeFileSync(new URL(fault + "-observation.json", directory), JSON.stringify(value, null, 2) + "\n");
           same(value.status, "failed", "WRONG_CONTROL_ACCEPTED");
@@ -408,15 +409,17 @@ if (!child) {
               value.observation.issues.some((i) => !i.reportOnly),
               "EFFECTIVE_CSP_REJECTION",
             );
-          if (fault === "late-error")
+          if (fault === "late-error" || fault === "late-meta") {
+            const events = fault === "late-error" ? value.observation.errors : value.observation.meta;
             assert.ok(
-              value.observation.errors.some(
+              events.some(
                 (e) =>
                   value.screenshotFinishedMs < e.atMonotonicMs - value.startedMonotonicMs &&
                   e.atMonotonicMs - value.startedMonotonicMs < value.classificationMs,
               ),
-              "LATE_ERROR_BOUNDARY",
+              fault === "late-error" ? "LATE_ERROR_BOUNDARY" : "LATE_META_BOUNDARY",
             );
+          }
           if (fault === "foreign-reference") same(value.observation.requests, [], "REFERENCE_BEFORE_NAVIGATION");
           if (fault.startsWith("foreign-") && fault !== "foreign-reference")
             assert.ok(

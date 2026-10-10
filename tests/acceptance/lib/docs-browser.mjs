@@ -3,6 +3,8 @@
  * validated origin, viewport and package-local screenshot path. Creates a fresh context, preflights YAML references,
  * observes render/interaction through screenshot plus 200 ms, and rejects policy/errors/foreign attempts. Writes only
  * the requested screenshot; returns bounded evidence even on failure. Caller owns browser, this function closes context.
+ * The optional boolean ownedRetainedProbe signals only owned late-fault fixtures after screenshot completion; public
+ * specs omit it. It neither changes observations nor bypasses predicates or the retained interval.
  */
 import { performance } from "node:perf_hooks";
 import { observe } from "./docs-observer.mjs";
@@ -30,7 +32,8 @@ export function assertObservation(record) {
   );
   requireThat(!record.console.length, "CONSOLE_ERROR");
 }
-export async function checkDocsBrowser(browser, origin, viewport, screenshot) {
+export async function checkDocsBrowser(browser, origin, viewport, screenshot, ownedRetainedProbe = false) {
+  requireThat(typeof ownedRetainedProbe === "boolean", "OWNED_PROBE_INPUT");
   const context = await browser.newContext({ viewport, serviceWorkers: "block" });
   let observer, page;
   const result = {
@@ -146,6 +149,12 @@ export async function checkDocsBrowser(browser, origin, viewport, screenshot) {
       if (page && observer) {
         await within(page.screenshot({ path: screenshot }), 5000, "SCREENSHOT_DEADLINE");
         result.screenshotFinishedMs = performance.now() - start;
+        if (ownedRetainedProbe)
+          await within(
+            page.evaluate(() => document.dispatchEvent(new Event("docs-control-retained-window"))),
+            1000,
+            "OWNED_PROBE_SIGNAL",
+          );
         await new Promise((resolve) => setTimeout(resolve, 200));
         const finalMeta = await page.locator('meta[http-equiv*="Content-Security-Policy" i]').count();
         collect(() => same(finalMeta, 0, "META_POLICY"));
