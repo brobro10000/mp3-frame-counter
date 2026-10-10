@@ -1,5 +1,5 @@
 {
-  "contractRevision": "transport-v1",
+  "contractRevision": "docs-v1",
   "cases": [
     {
       "file": "acceptance.spec.ts",
@@ -268,6 +268,26 @@
     {
       "file": "transport.spec.ts",
       "title": "TC-07 unfinished upload closes and SIGTERM exits normally"
+    },
+    {
+      "file": "docs.spec.ts",
+      "title": "DC-01 public docs routes methods assets and policy ownership"
+    },
+    {
+      "file": "docs.spec.ts",
+      "title": "DC-02 served YAML preserves independent transport semantics and local references"
+    },
+    {
+      "file": "docs.spec.ts",
+      "title": "DC-03 desktop actual Redoc response expansion under effective CSP"
+    },
+    {
+      "file": "docs.spec.ts",
+      "title": "DC-03 narrow actual Redoc response expansion under effective CSP"
+    },
+    {
+      "file": "docs.spec.ts",
+      "title": "DC-04 upload page retains its original effective style protection"
     }
   ]
 }

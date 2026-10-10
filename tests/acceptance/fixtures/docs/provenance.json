@@ -1,0 +1,13 @@
+{
+  "url": "https://cdn.redoc.ly/redoc/logo-mini.svg",
+  "retrievedAt": "2026-10-10T14:41:44.016491+00:00",
+  "acquisition": "/usr/bin/curl; default TLS verification; no redirects; 20s/64KiB bounds",
+  "status": 200,
+  "contentType": "image/svg+xml",
+  "bytes": 539,
+  "sha256": "1dab4315f8de2177b2b2726b29e84a26314c69cd27d692228947c0058793d5a7",
+  "elementNames": ["path", "svg"],
+  "activeReferenceScan": [],
+  "priorAttempt": "Python SSL trust store could not verify issuer; no bytes acquired; TLS verification was not disabled",
+  "scope": "Pinned local logo candidate; no product adoption"
+}

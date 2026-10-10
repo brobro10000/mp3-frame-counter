@@ -3,20 +3,22 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Independent external acceptance contract transport-v1; no application imports",
+  "description": "Independent external acceptance candidate docs-v1; no application imports",
   "engines": {
     "node": "24.20.0",
     "npm": "11.19.0"
   },
   "packageManager": "npm@11.19.0",
   "scripts": {
-    "check": "tsc --noEmit && node scripts/check-fixtures.ts && node scripts/check-openapi.ts && node scripts/negative-controls.ts && node scripts/transport-controls.ts && node scripts/check-discovery.ts",
+    "check": "tsc --noEmit && node scripts/check-fixtures.ts && node scripts/check-openapi.ts && node scripts/negative-controls.ts && node scripts/transport-controls.ts && node scripts/docs-controls.mjs && node scripts/check-discovery.ts",
     "e2e": "node scripts/run-e2e.ts",
     "browser:install": "playwright install chromium"
   },
   "devDependencies": {
     "@playwright/test": "1.64.0",
     "@types/node": "24.19.2",
-    "typescript": "7.0.2"
+    "redoc": "2.5.4",
+    "typescript": "7.0.2",
+    "yaml": "2.9.1"
   }
 }
