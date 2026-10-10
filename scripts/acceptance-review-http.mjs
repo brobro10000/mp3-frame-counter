@@ -1,7 +1,8 @@
 /**
  * Read bounded GitHub JSON for acceptance review observations using an explicitly supplied repository and token.
  * Import createGithubReviewRequest({ repository, token, fetchImpl? }), then call the returned request("GET", path).
- * Only the collector's repository, PR, exact review and Git commit routes are allowed at https://api.github.com.
+ * Only the collector's repository, PR, exact review, bounded review-list and Git commit routes are allowed at
+ * https://api.github.com. Review-list queries require exactly per_page=100&page=<1 through 10> in that order.
  * Requests have a 30-second timeout, reject redirects and stop after 1 MiB of actual response bytes. There are no
  * retries, mutations, environment/credential discovery, file writes or import-time I/O. Tokens remain in memory.
  * Invalid input, failed HTTP/transport, oversized bodies and invalid JSON reject with sanitized local diagnostics.
@@ -35,9 +36,14 @@ function requireRoute(repository, method, path) {
   requireCondition(path.startsWith(`${prefix}/`), "GitHub review route is outside the trusted repository");
   const suffix = path.slice(prefix.length);
   const pull = /^\/pulls\/([1-9][0-9]*)(?:\/reviews\/([1-9][0-9]*))?$/.exec(suffix);
+  const reviewPage = /^\/pulls\/([1-9][0-9]*)\/reviews\?per_page=100&page=([1-9][0-9]*)$/.exec(suffix);
   const commit = /^\/git\/commits\/[a-f0-9]{40}$/.test(suffix);
   requireCondition(
-    commit || (pull && pull.slice(1).every((id) => id === undefined || Number.isSafeInteger(Number(id)))),
+    commit ||
+      (pull && pull.slice(1).every((id) => id === undefined || Number.isSafeInteger(Number(id)))) ||
+      (reviewPage &&
+        reviewPage.slice(1).every((id) => Number.isSafeInteger(Number(id))) &&
+        Number(reviewPage[2]) <= 10),
     "Unsupported GitHub review route",
   );
 }
@@ -92,7 +98,7 @@ export function createGithubReviewRequest({ repository, token, fetchImpl = globa
     requireRoute(repository, method, path);
     const url = new URL(path, origin);
     requireCondition(
-      url.origin === origin && url.pathname === path && !url.username && !url.password && !url.search && !url.hash,
+      url.origin === origin && `${url.pathname}${url.search}` === path && !url.username && !url.password && !url.hash,
       "Invalid GitHub review destination",
     );
     try {
