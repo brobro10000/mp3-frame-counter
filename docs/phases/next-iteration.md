@@ -1,21 +1,49 @@
 # Next iteration: phase instructions and three PR cards
 
-**Current state, 2026-10-10:** DOCS-IMPLEMENTATION is merged and published as
-[v0.2.24](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.24). The exact main source is
-`71e2cab6cdcac67675929563ed12db9d07ce227f`; docs-v1 is now required for descendants and reverts. This dated amendment
-supersedes earlier pending-docs statements in the entrypoint/role guidance; those statements describe the preceding
-work. No application service is deployed.
+**Current state, 2026-10-10:** HOSTED-PROFILE-POLICY is merged and published as
+[v0.2.25](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.25), from exact main source
+`0a691a1856d8b742975cc2eb310032b800eb41ea`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
+descendants and reverts. This dated amendment supersedes earlier pending-docs statements in entrypoint/role guidance;
+those statements describe the preceding work. No application service is deployed.
 
-The three-card window retains completed **DOCS-IMPLEMENTATION**, current **HOSTED-PROFILE-POLICY** and next
-**PROFILE-DECLARATIONS**. The hosted protocol has been independently reviewed; the coordinator adopts its five decisions
-under the owner's roadmap authority. Its documentation PR still needs exact-head companion review, required CI, merge
-and verified publication. Independent expectations for the next card may proceed in parallel under the amendment below;
-dependent publication must follow the actual predecessor publication.
+The three-card window retains completed **DOCS-IMPLEMENTATION**, completed **HOSTED-PROFILE-POLICY** and current
+**PROFILE-DECLARATIONS**. Independent expectations for the current card were reviewed and committed before initial
+implementation; the narrowly amended historical-genesis expectations and their actual chronology are recorded in
+[validation](../validation/acceptance-profiles.md). The owner authorized stacked PRs and disjoint subagent domains;
+actual main ancestry has been reconciled. Current implementation, CI, companion review and publication remain separate
+from the verified predecessor release.
 
 Software releases remain independent of deployment. The [cost evidence](../validation/cloud-cost-bootstrap.md) preserves
 the USD 75 shared Run cap and USD 100 project alert budget. Every production application deployment, including
 authenticated candidates, requires human intervention under the
 [execution amendment](roadmap-execution-authorization.md).
+
+### HOSTED-PROFILE-POLICY protected-main completion
+
+[PR #25](https://github.com/brobro10000/mp3-frame-counter/pull/25) merged normally at **19:32:51Z** as
+`0a691a1856d8b742975cc2eb310032b800eb41ea`, with sole parent `71e2cab6cdcac67675929563ed12db9d07ce227f` and tree
+`bc4e59b04520a28e63a4fc4b6e29ad103bcbfd49`, identical to reviewed head `0e5e5ee1f4b7c5a06da3519c52e329cc1b6d541e`.
+Required PR run 38079272847 passed. Companion run `20261010T192306-7d4d1f9b` produced
+[automated approval 5480520934](https://github.com/brobro10000/mp3-frame-counter/pull/25#pullrequestreview-5480520934)
+as `brobro1000`; owner `brobro10000` merged without a bypass.
+
+[Main run 38080236553, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38080236553) passed all
+three mandatory jobs and publication. It passed 120 units, all 72 required external cases and scoped cleanup; the 46
+docs controls and complete 72-case discovery remained separate evidence. Foundation passed 480 tooling tests, 20 gate
+tests and 19 Mermaid renders. The original admission digest agreed across product, control and publisher:
+`f836b3e2aeb85346c19e9b0b8eb55fc5d6bed26e684dc29cf8858f89b9144d74`. Root replayed the captured record against its
+original source/base/run context: documentation admission, docs-v1 required, no candidate or pending binding.
+
+Release **409162811**, **v0.2.25**, was published at **19:38:32Z**, with ten assets and `deployed: false`. Exact tested
+Docker IDs are API `sha256:35efd68c1931606fc1c671aa3595799fbd4e10bbc26773ed07564080bcda2cf6` and frontend
+`sha256:43c880a222b3fc3e9d78ad28233ae1c334222441164539aaab1908c10f934788`; these are not registry digests. Root rehashed
+all eight downloaded metadata assets and verified source/run, reservation, configuration, image and acceptance
+consistency. Image archive checksums/sizes were compared as metadata only; no archive was downloaded or rehashed.
+
+Root read the independent CI audit, rehashed its six private records and matched all 92 exact log citations. Audit
+SHA-256 is `9ac477380eaafa5aa4f7c39e41bd6db1b4e0789749ae1d28ea7886ecd7a3d8ee`; root metadata verification is
+`46b28bc41e036ca0d048dcd08f7d10c77af0a70010b7d02472034312f5c88d1b`. Those local diagnostic records are not release
+assets or signed attestations. This completes the protocol prerequisite, not hosted execution or deployment.
 
 ### DOCS-IMPLEMENTATION protected-main completion
 
@@ -92,6 +120,13 @@ collection support `main` targets only; do not claim those gates ran on a stacke
 reconcile against its actual squash, retarget the dependent PR to `main`, and require fresh exact-head CI and companion
 review before merging. Never merge a dependent PR into an unprotected feature branch as a substitute for protected-main
 review. Changes to the parent's shared contract pause dependent work until reviewed and reconciled.
+
+The owner's subsequent instruction applies this stacked, parallel workflow throughout the remaining version progression
+to verified v1.0.0. Use as many independent agent lanes as have useful, bounded work within available capacity. Separate
+acceptance authoring, product implementation, delivery/infrastructure and independent review by file ownership and
+stable contracts. Prepare later domains while earlier PRs validate; serialize Git operations, actual suite binding,
+dependency-sensitive merges and environment mutations. Concurrency never substitutes for prerequisite evidence or the
+human gate on every production application deployment.
 
 1. Refresh exact main, open work, applicable requirements and evidence before each card. Record the inspected source; an
    old clean tree or successful run does not establish the state of a new revision.
@@ -265,14 +300,15 @@ workaround.
 
 ## PR card 2 — HOSTED-PROFILE-POLICY: Settle the reviewed profile protocol
 
-**Status:** documentation authoring and independent compatibility review started in parallel under the owner's later
-instruction above. The draft began from reviewed PR #24 head `155caf019c4745732a39c19846886d6ae39e6e9b` and was
-reconciled to its actual squash `71e2cab6cdcac67675929563ed12db9d07ce227f`, whose tree is identical. Main validation and
-publication are now verified above. The five protocol decisions are adopted in the
-[reviewed policy](../testing/hosted-profile-policy.md); its own publication remains pending. This card establishes the
-protocol needed before executable profile support and independent hosted-suite authoring; it creates neither. Current
-consumers require one complete inventory, and the future promotion reader assumes equal local and candidate counts. A
-new metadata validator alone would not resolve those incompatible assumptions.
+**Status:** completed in PR #25/v0.2.25; see its protected-main completion above. Documentation authoring and
+independent compatibility review started in parallel under the owner's later instruction above. The draft began from
+reviewed PR #24 head `155caf019c4745732a39c19846886d6ae39e6e9b` and was reconciled to its actual squash
+`71e2cab6cdcac67675929563ed12db9d07ce227f`, whose tree is identical. Main validation and publication are now verified
+above. The five protocol decisions are adopted in the [reviewed policy](../testing/hosted-profile-policy.md); its own
+publication is verified above. This card establishes the protocol needed before executable profile support and
+independent hosted-suite authoring; it creates neither. Current consumers require one complete inventory, and the future
+promotion reader assumes equal local and candidate counts. A new metadata validator alone would not resolve those
+incompatible assumptions.
 
 ### Outcome, prerequisites and ownership
 
@@ -374,8 +410,10 @@ consumers rather than reinterpret historical evidence or weaken a required suite
 
 ## PR card 3 — PROFILE-DECLARATIONS: Validate immutable acceptance profile declarations
 
-**Status:** next, with independent expectations permitted in parallel with the protocol PR. No implementation or test
-result is claimed. The protocol must complete its actual protected-main publication before this dependent PR publishes.
+**Status:** in progress as stacked PR #26, reconciled to actual protocol main. Independent expectations are reviewed and
+committed; disjoint helper/reader implementation and root integration are underway. The protocol publication
+prerequisite is verified above. Current results, including compatibility corrections, are recorded in
+[validation](../validation/acceptance-profiles.md); no current PR/main completion is implied.
 
 ### Outcome and prerequisites
 
@@ -416,6 +454,11 @@ context; source-reader failures have code `ERR_ACCEPTANCE_PROFILE_SOURCE`, while
 TypeError propagates. Before registry introduction, authenticate exact genesis through the already verified baseline
 plus immutable baseline/contract objects. Review these expected decisions before writing tests; never substitute the
 source for its original trusted base.
+
+The source reader preserves physical file presence separately from parsed JSON null: a present hosted inventory cannot
+become an absence sentinel. An immediate predecessor inventory must name that authenticated predecessor's own contract
+revision, which may differ from the selected successor revision. Invalid parsed declarations use the declaration error;
+Git/byte-decoding failures retain the source error. This r17.4 clarification does not rewrite original suite evidence.
 
 ### Test-first sequence and focused checks
 
