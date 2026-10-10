@@ -4,8 +4,8 @@
 supersedes the historical documentation-only PLAN-01 limit below and authorizes companion review submission and clean
 owner merges without repeated routine consent. Review the exact current head under the existing protections. Production
 application deployment still requires human intervention. The
-[GATE-01 transition guide](../testing/acceptance-transition.md) describes merged dormant support with verified
-publication and retry; r3 remains active and no successor is approved here.
+[transition guide](../testing/acceptance-transition.md) records transport-v1 activation in PR #19/v0.2.19. It remains
+required for descendants, with no pending successor. Review browser setup, docs candidate and binding as separate cards.
 
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and

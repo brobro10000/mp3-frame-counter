@@ -1,18 +1,14 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** RUNTIME-POLICY merged as `3e1851eaddb558f6c38eedc88334605212a7a153`. Protected-main
-run `38050747378` published **v0.2.17** with unchanged r3 acceptance and transport-v1 still bound and pending. The
-[runtime-policy completion](../validation/runtime-dependency-policy.md#protected-main-completion) records actual review,
-approval, merge, main checks and publication. The dependency policy permits the planned exact Fastify pin; Fastify is
-not installed in the published application. The separate fixture correction in PR #18 subsequently merged as
-`17b389e71fadb869150982e4b459e52b37d664b2`; main run `38052804356` published v0.2.18 under the same required/pending
-selection. See the [fixture completion record](../validation/runtime-policy-fixture.md#protected-main-completion).
+**Execution status, 2026-10-10:** FASTIFY merged in PR #19 as `f4fb747df8890511edde7878064bb9af79823138`. Protected-main
+run `38054409309` passed 82 unit tests and all 67 external transport cases and published **v0.2.19**. transport-v1 is
+required, activated by this actual implementation; no candidate or binding remains pending. The
+[completion record](../validation/fastify-transport.md#protected-main-completion) preserves exact review, source,
+images, admission and release evidence, with verification limits.
 
-The three active cards are **FASTIFY → DOCS-HARNESS → DOCS-CONTRACT**. Internal Fastify startup/ownership expectations
-were committed before transport implementation; see the [migration record](../validation/fastify-transport.md). A
-separate browser-preparation prerequisite is needed before candidate browser controls: the current runner installs
-Chromium only after standalone `check` commands. A warm local cache or the separate Mermaid browser cannot establish
-fresh-runner readiness. The
+The three active cards are **DOCS-HARNESS → DOCS-CONTRACT → DOCS-BIND**. A separate browser-preparation prerequisite is
+needed before candidate browser controls: the current runner installs Chromium only after standalone `check` commands. A
+warm local cache or the separate Mermaid browser cannot establish fresh-runner readiness. The
 [version record](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) preserves verified line
 allocation; the [cost evidence](../validation/cloud-cost-bootstrap.md) preserves the dedicated project's USD 75 Run cap
 and USD 100 all-service alert budget. No application is deployed. Production application deployment/promotion requires
@@ -27,6 +23,8 @@ the completed binding card remains in the
 [exact binding document](https://github.com/brobro10000/mp3-frame-counter/blob/5645b0501ca403750a2d894d6a492afa4b42185b/docs/phases/next-iteration.md).
 The completed runtime-policy card remains in the
 [exact policy document](https://github.com/brobro10000/mp3-frame-counter/blob/3e1851eaddb558f6c38eedc88334605212a7a153/docs/phases/next-iteration.md).
+The completed Fastify card remains in the
+[exact migration document](https://github.com/brobro10000/mp3-frame-counter/blob/f4fb747df8890511edde7878064bb9af79823138/docs/phases/next-iteration.md).
 This window does not rewrite their dated execution evidence.
 
 Trace: APP-V1-009,010,011,013 for independent acceptance and delivery; APP-V1-012,015 and APP-REL-001–006 for exact
@@ -55,95 +53,7 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — FASTIFY: Migrate transport under the bound compatibility contract
-
-**Outcome:** Fastify owns upload parsing/route execution while preserving the reviewed raw HTTP and browser contracts,
-resource bounds, pure parser and two-image topology. A wrapper that merely forwards the unchanged native handler does
-not establish this migration. Trace APP-V1-001–005,007–010,013,015 and transport-v1 TC-01–07.
-
-**Prerequisites:** actual TRANSPORT-BIND and RUNTIME-POLICY main releases and their evidence; fresh main with the exact
-single pending transport-v1 successor and no intervening product change. Verify the trusted resolver requires that suite
-for this implementation. Revalidate the production pin/lock provenance and compatibility before installation. Prior
-bounded research recommends Fastify 5.12.5; it is not an installed/tested version or a version-specific policy
-exception.
-
-### Ownership, writable paths and immutable boundaries
-
-The product implementer owns `server/src/http.ts`, `server/src/index.ts`, narrowly needed transport modules under
-`server/src/`, transport-focused `tests/unit/**`, the root Fastify declaration and resulting npm lock graph, and
-necessary `server/Dockerfile` production-dependency packaging. Record the exact file set before editing. Root
-coordinates only related architecture/testing/validation Markdown and existing canonical implemented Mermaid sources if
-their displayed transport changes. Keep changes small and reuse existing paths.
-
-Parser implementation/format semantics and its existing independent unit expectations, all `tests/acceptance/**`, the
-bound transport contract, registry/genesis, root policy/governance scripts, `test:tooling` wiring, workflows, release
-allocator/publisher, phase rules and generated `agents/**` remain read-only. Preserve frontend/UI/NGINX and Compose
-topology/configuration. No new runtime dependency beyond the approved exact Fastify declaration; no docs/Redoc plugin,
-multipart upload, API/health response expansion, database, storage, worker or cloud work.
-
-### Independent expectations and implementation sequence
-
-1. Inspect the actual bound suite and its independent fixture/inventory identities before code changes. Its external
-   expectations already precede implementation and cannot be edited for a pass. Specify focused internal startup,
-   admission, exactly-once release and shutdown expectations from that contract before implementing new control flow.
-   Meaningful unit tests belong to product scope; new or relaxed external expectations require separate acceptance work.
-2. Select a small internal asynchronous readiness/startup boundary so routes/parsers exist before listening. Preserve
-   bootstrap-owned SIGTERM/SIGINT and idempotent shutdown. Record the selected internal interface and why it preserves
-   existing use; the planning preflight intentionally did not freeze a particular method signature.
-3. Remove framework eager JSON/text body handling for uploads. Use ordered admission before buffering and a bounded
-   stream collector, enforcing actual bytes, idle/total deadlines, cancellation and one terminal release operation.
-   Fastify's default limit or hook ordering alone is not evidence. Preserve two active uploads, existing
-   connection/header bounds, 20 MiB actual-byte enforcement and no second whole-upload copy or retained/logged body.
-4. Integrate Expect/continue exactly once with the framework request lifecycle. Invalid/busy requests must reject before
-   Continue or body transmission; unsupported expectations retain readable 417. Preserve raw pathname/method/media
-   precedence, case/encoding decisions, query behavior, explicit HEAD/Allow/empty-body semantics and closed JSON errors.
-   Review any narrow raw-response bridge for timer/connection ownership and double-send prevention.
-5. Keep successful upload execution in the Fastify content-parser/route path and call the unchanged pure parser.
-   Preserve JSON content types and exact success/error/health objects. Do not expose framework default error schemas,
-   automatic HEAD behavior or router normalization contrary to transport-v1.
-6. Preserve stop-admission and the independent five-second forced-socket intent while awaiting framework shutdown. Avoid
-   immediate forced destruction of active work or a framework closing response that bypasses the contract. Independently
-   review raw-server settings, timer ownership, allocation/retention and shutdown configuration. Passing TC-07
-   establishes bounded straggler closure/normal exit, not graceful admitted-response completion.
-7. Package the exact production dependency graph in the API image, preserving non-root execution, resource/security
-   settings and independently buildable frontend/API images. Verify pinned Node 24.20.0, TypeScript 7 compilation and
-   actual linux/amd64 execution. Reassess measured memory headroom; do not silently widen existing resource budgets.
-
-### Validation, independent review and failure signals
-
-Run focused unit/type/build and dependency-policy checks first. Execute the unchanged bound transport-v1 suite through
-the normal trusted controller against the final exact image pair, with complete inventory, zero skips/retries and
-recorded cleanup. Current candidate expectations are 67 cases; use the actual bound inventory as authority. Retain any
-failed runs. Rerun affected checks after fixes, then complete normal mandatory CI and renderer checks for changed
-diagrams.
-
-An independent reviewer checks changed transport/dependency/source/configuration behavior, especially pre-buffering
-admission, actual-byte enforcement, bounded aggregate resources, safe errors, dependency contents and shutdown. Preserve
-the explicit unresolved-drain disposition. Any future drain-pass claim requires a justified stopping boundary before
-completing the held body, its exact complete response and normal exit; acknowledgment/reset/sleep is insufficient.
-
-Missing/mixed admission, package-policy disagreement, unsupported pin/provenance, any mandatory successor failure,
-changed frozen evidence, resource expansion, skipped lifecycle restoration or stale review blocks merge. A framework or
-controller limitation requiring governance changes becomes a separate reviewed prerequisite; never repair the gate or
-acceptance from the product PR. Companion approval must cover the exact final head after all fixes and diagram changes.
-
-After owner merge, verify protected-main admission, persistent transport-v1 selection, full acceptance against the
-actual source/image pair and normal v0.2.x publication. Preparation/publication must retain the original CI admission,
-run/attempt and exact tested image evidence. Neither local success nor a PR artifact is the published release.
-
-### Rollback, release effect and stop
-
-Before merge, correct or discard the implementation without editing the bound successor. After activation, every
-descendant and product revert still requires transport-v1. A reviewed revert may restore compatible native behavior and
-dependencies only if it passes that same successor; no r3 selector, binding deletion, tag rewrite or asset replacement.
-Preserve failed evidence and repair forward if a simple compatible revert is unavailable.
-
-**Done and stop:** Fastify is implemented, independently reviewed, merged, verified under the persistently required
-transport-v1 contract and published as v0.2.x with exact image evidence. Record any remaining operational proof limits.
-No hosted deployment or semantic v1.0.0 is claimed. Stop before the separate DOCS-HARNESS prerequisite, docs/CSP
-successor and runtime docs routes.
-
-## PR card 2 — DOCS-HARNESS: Prepare the pinned browser before standalone acceptance checks
+## PR card 1 — DOCS-HARNESS: Prepare the pinned browser before standalone acceptance checks
 
 **Outcome:** the trusted phase runner prepares each extracted suite's pinned Chromium before its `check` command,
 including candidate/pending and required-suite branches. Fresh Linux CI proves basic browser launch availability.
@@ -178,16 +88,18 @@ unavoidable conflict is independently established; do not refactor it merely to 
 
 ### Required implementation boundary
 
-1. Keep trusted admission, exact Git extraction and candidate/required selection unchanged. For each selected
-   extraction, execute `npm ci`, fixed browser preparation, then its existing complete `npm run check`. Apply this to
-   the candidate/pending branch and the required branch; after activation, controls must not lose their setup.
+1. Keep trusted admission, exact Git extraction and candidate/required selection unchanged. Only parser/integration
+   phases prepare browsers, after `runtimeAcceptance` validates the original context. For each selected extraction,
+   execute `npm ci`, fixed browser preparation, then its existing complete `npm run check`. Apply this to candidate,
+   pending and required selections, including after activation. Preserve historical pre-product phase behavior.
 2. Invoke the extracted package's installed, locked `@playwright/test/cli.js` with the pinned Node executable and fixed
    arguments. On validated Linux CI only, run `install-deps chromium`; then run `install chromium` on supported CI/local
    hosts. Do not select a browser/version from caller flags, PATH utilities, environment download-host overrides,
    arbitrary URLs, global binaries or a presumed prepopulated cache. Do not introduce a second version allocator.
 3. Use an explicit minimal environment for setup/readiness commands: necessary PATH/HOME/temp/locale/runtime values and
    validated CI state only. Do not pass GitHub tokens, admission files/digests, arbitrary Node injection or npm/browser
-   configuration overrides. Specify exact allowed keys in the reviewed helper contract; report no private paths.
+   configuration overrides. Construct PATH from the pinned Node directory and fixed system directories. The
+   [helper contract](../testing/acceptance-browser-setup.md) fixes allowed keys and evidence; report no private paths.
 4. Linux CI OS-package installation belongs to this visible governance runner. Local execution never invokes
    `install-deps`, apt or sudo; missing local OS prerequisites fail with an actionable, sanitized explanation. Do not
    hide privileged installation in candidate control scripts or install hooks.
@@ -195,10 +107,12 @@ unavoidable conflict is independently established; do not refactor it merely to 
    using no product URL or docs predicate. An empty/about:blank page is sufficient; accept no caller target, and perform
    no intentional network request from the probe. Preserve sandbox/security defaults unless an independently reviewed
    platform necessity is demonstrated. Successful download alone is not successful launch.
-6. Bound dependency setup, browser acquisition and launch independently, propagate nonzero exit/signal/timeout, and
-   clean up browser processes and temporary suite directories on every path. Use the existing 120-second Linux-deps and
-   180-second browser-install limits as starting maxima plus a short launch limit; freeze aggregate behavior before
-   implementation and measure fit inside the unchanged 30-minute product job. No silent deadline extension or skip.
+6. Use one shared 360-second preparation deadline across selections, with ceilings of 120 seconds for Linux
+   dependencies, 180 seconds for acquisition and 20 seconds for the probe. Retain at most ten seconds of first-failure
+   cleanup and the unchanged 30-minute job. The probe's 15-second normal-exit deadline leaves five seconds under its
+   parent; adapt to remaining time or fail before spawning. Playwright launches detached browser processes: killing the
+   Node group alone does not prove browser cleanup. Missing completed close or forced termination is unverified cleanup
+   and failure.
 7. Keep acquisition network separate from future offline fixture evaluation. Record actual selected suite identity,
    pinned package/browser metadata, commands, setup/readiness outcome, timings and cleanup without secrets. Candidate
    evidence remains `productAcceptance: false`; setup/readiness is not application acceptance or DOCS-01 evidence.
@@ -253,9 +167,9 @@ unchanged required transport admission and exact-source publication; neither loc
 **Done and stop:** reviewed harness support is merged, fresh Linux readiness and unchanged complete transport acceptance
 are observed, and protected-main publication is verified. DOCS-CONTRACT may then begin its separate independent
 candidate and DOCS-01 experiments. Stop before candidate authoring, docs binding/tool-policy/product routes/CSP, cloud
-delivery or production. The next window is FASTIFY, DOCS-HARNESS and DOCS-CONTRACT; later work remains provisional.
+delivery or production. The active window is DOCS-HARNESS, DOCS-CONTRACT and DOCS-BIND; later work remains provisional.
 
-## PR card 3 — DOCS-CONTRACT: Independently define the documentation successor
+## PR card 2 — DOCS-CONTRACT: Independently define the documentation successor
 
 **Outcome:** one candidate-only `docs-v1` contract and complete independent acceptance extension for `/docs/`, the
 served OpenAPI specification, meaningful renderer interaction and effective CSP. Existing transport acceptance stays
@@ -380,16 +294,116 @@ required. Verify actual main admission, candidate identity, 67-case acceptance a
 version, future squash SHA or approval ID. No docs deployment or production authority is implied.
 
 **Done and stop:** reviewed candidate contract/harness and DOCS-01 disposition, verified actual candidate merge and
-publication, preserved transport acceptance and recorded limits. Stop before the later separate actual binding, selected
-docs-tool policy allowance, product build/assets/routes/CSP activation or hosted work. Those remain provisional
-successors; none is an additional detailed card or implementation authorized by this drafting task.
+publication, preserved transport acceptance and recorded limits. Hand off actual merge/review identities to the separate
+DOCS-BIND card; do not append the binding in this candidate PR. Selected docs-tool policy, product build/assets/routes,
+CSP activation and hosted work remain outside this card.
+
+## PR card 3 — DOCS-BIND: Bind the actual independently reviewed docs successor
+
+### Outcome and owner
+
+The coordinator appends one actual `docs-v1` binding, with predecessor `transport-v1`, under the existing
+single-successor policy. An independent reviewer verifies identity and admission; root owns Git, companion review and
+authorized merge. The binding-only merge keeps transport-v1 required and reserves the next product-affecting change for
+docs-v1. It adds no served documentation, renderer assets, tool allowance, CSP configuration or deployment. Trace
+APP-V1-009,010,013 and APP-REL-001–006; docs behavior comes from the separately reviewed roadmap successor, not new
+assessment obligations.
+
+### Prerequisites
+
+- Verified protected-main Fastify activation/publication: transport-v1 persistently required, complete bound inventory
+  (currently 67 cases), exact source/image evidence and cleanup. Local or PR success is insufficient.
+- Verified DOCS-HARNESS main publication and fresh Linux package-local browser readiness before standalone checks.
+- Actual independent DOCS-CONTRACT squash merge and publication, with docs-v1 the sole pending candidate, predecessor
+  transport-v1, unchanged earlier expectations and complete candidate controls/discovery. No second pending successor.
+- Recorded DOCS-01 disposition from the candidate's isolated renderer/CSP experiments and independent security review.
+  Renderer/CLI/template identities, effective-policy ownership and any authorized narrow exception must be resolved by
+  that work; this card cannot choose them. Research versions, assumed nonce support or browser availability are not
+  proof.
+- Fresh trusted main, complete history and authenticated review observations. Reconcile any intervening source, review,
+  candidate, policy or publication change before binding; do not reuse a planning revision as current evidence.
+
+### Writable scope
+
+Own only one append to `docs/testing/acceptance-transitions.json` and a narrowly scoped
+`docs/validation/docs-binding.md` evidence record. Root may update current-status references in
+`docs/testing/acceptance-transition.md` and `docs/phases/next-iteration.md` without rewriting dated evidence. Freeze the
+exact changed-path set before editing; additional paths need explicit scope review.
+
+### Read-only boundaries
+
+Preserve genesis, the existing transport registry entry, all historical suite/contract objects, all
+`tests/acceptance/**` and `docs/testing/contracts/**`. Product/parser/UI, Docker/NGINX/Compose, root package and
+lockfile, policy/admission/runner scripts, workflows, release allocation/publication, generated artifacts and cloud
+resources are read-only. No candidate repair, new tests, browser setup change, root tooling installation or product
+activation here.
+
+### Binding procedure and evidence
+
+1. Inspect the candidate's actual protected-main squash commit and parent diff. The diff must contain only the admitted
+   acceptance paths and unique docs contract; existing unchanged product files in its full tree are not disqualifying.
+2. Verify the complete Git tree of the exact approved head equals the squash tree. Record the actual suite subtree,
+   fixture-manifest SHA-256 and contract path/hash from that squash. Do not substitute the PR head for `suiteCommit`,
+   predict a squash SHA, or copy transport's candidate identities into the new entry.
+3. Authenticate the same-repository merged PR, squash, reviewed head/tree and actual submitted approval by a reviewer
+   other than the author. Bounded complete review history must establish the recorded approval is still that reviewer's
+   current decisive decision; later rejection, dismissal or replacement cannot silently reuse the old review ID.
+4. Append the existing closed-schema fields only: actual suite commit/tree, manifest hash, contract revision/id,
+   predecessor, contract path/hash and review repository/PR/review ID/reviewer/head/tree. Preserve the transport entry.
+5. Use trusted-base admission with the original source/base/run/attempt. Expect binding admission, transport-v1 required
+   and docs-v1 pending; no docs activation. Preserve actual observations and the independently supplied admission
+   digest. A local resolver result or fabricated review object is not authenticated CI admission.
+
+### Tests, review and publication
+
+Run existing focused resolver/admission/review/consumer checks, formatting and required repository validation against
+the final scoped source. Existing controls must reject missing/stale observations, wrong trees/identities, mixed product
+paths and conflicting pending successors; do not change predicates to make this binding pass.
+
+CI must retain separate pinned-browser candidate/pending checks, meaningful positive/negative controls and exact
+complete candidate discovery. Record the actual discovered count and identities; invent no docs case quota. Execute the
+complete required transport suite against the exact image pair with zero failures, skips or retries and passed cleanup.
+Candidate controls or future docs behavior failures cannot satisfy required product acceptance.
+
+Independent review checks the actual squash-parent scope, reviewed-tree equivalence, immutable predecessor, DOCS-01
+record and selection across consumers. Obtain fresh companion approval of the final binding head, successful mandatory
+checks and resolved conversations before an authorized owner merge; distinguish automated approval from human review.
+After merge, verify actual protected-main admission, required/pending selection, original digest, CI attempt, full
+required acceptance, tested image identities and allocator-selected v0.2.x release/tag/assets. Record hashes and
+download limits; PR artifacts and a publication request alone do not establish publication. Preserve failures and
+historical captures.
+
+### Separate tool-policy and product work
+
+The selected docs-tool allowance remains a separately scoped governance prerequisite wherever existing root policy would
+reject it. This binding cannot add that allowance or imply it passed. Governance-only policy work must preserve
+transport selection while docs-v1 is pending. Root dependency/lock changes, build inputs and generated/served assets are
+product changes: after binding they trigger docs-v1 and cannot be introduced as a bypassing tooling-only preparation.
+Resolve any unclassifiable prerequisite through separate trusted policy work before implementation. The later complete
+docs product PR must pass docs-v1; activation persists for descendants and product reverts. No hosted or production
+claim follows.
+
+### Rollback and stop
+
+Missing prerequisite evidence, unresolved DOCS-01, stale/mismatched review or trees, mixed paths, conflicting pending
+successors, changed frozen bytes or any mandatory failure blocks binding; retain the failure and return to its owner.
+
+Before merge, correct or withdraw this proposal without editing the merged candidate. After admission, do not remove or
+rewrite the binding, mutate historical expectations, select an older suite or rewrite tags/assets. Cancellation or
+correction needs a separately reviewed transition supported by policy; this card invents no cancellation mechanism.
+After docs activation, a product revert must still satisfy docs-v1; preserve evidence and repair forward if needed.
+
+**Done and stop:** the exact candidate is independently bound on protected main, unchanged transport acceptance passes,
+docs-v1 remains pending, and the matching software release is verified. Stop before tool-policy implementation, renderer
+build/install, docs routes/CSP/product activation, hosting or production. Execution begins only after actual prior
+prerequisites are available; unresolved DOCS-01/tool-policy facts remain explicit gates, never assumed completion.
 
 ## Provisional work after the three-card window
 
-Later packages remain outcomes and decision gates: actual docs/CSP binding; selected documentation-tool policy; offline
-Redoc and scoped CSP; closed IaC path policy and delivery-policy prerequisites; hosted profiles/trusted launcher;
-exact-image registry handoff; reconciliation/backfill with retained original admission authority; account/cost/access
-gates; stage acceptance; production candidate and recovery; human production authorization; production smoke and v1.0.0
-finalization. Tooling compatibility still precedes extended queue syntax. Stage automation and production human
-intervention retain their existing authority boundaries. No later package is an extra detailed card here, and none
-becomes an assessment-submission prerequisite.
+Later packages remain outcomes and decision gates: selected documentation-tool policy; offline Redoc and scoped CSP;
+closed IaC path policy and delivery-policy prerequisites; hosted profiles/trusted launcher; exact-image registry
+handoff; reconciliation/backfill with retained original admission authority; account/cost/access gates; stage
+acceptance; production candidate and recovery; human production authorization; production smoke and v1.0.0 finalization.
+Tooling compatibility still precedes extended queue syntax. Stage automation and production human intervention retain
+their existing authority boundaries. No later package is an extra detailed card here, and none becomes an
+assessment-submission prerequisite.

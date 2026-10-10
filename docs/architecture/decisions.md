@@ -10,10 +10,11 @@ through Fastify. The upload contract, resource limits, frontend, proxy and two-i
 independent bound transport-v1 suite is required by this product change and descendants; its expectations cannot be
 relaxed here.
 
-Read the [migration evidence](../validation/fastify-transport.md) for observed checks and remaining review/publication
-work. This is implementation authority and source behavior, not a deployment or graceful-drain proof. Packaging adds
-only the locked production graph; docs/Redoc and hosted delivery remain separate cards. Preserve DEC-05/DEC-14 and the
-generated system specification as historical contracts; this dated amendment records the adopted architecture change.
+Read the [migration completion](../validation/fastify-transport.md#protected-main-completion) for PR #19's exact-head
+automated approval, protected-main acceptance and v0.2.19 publication. This is not deployment or graceful-drain proof.
+Packaging adds only the locked production graph; docs/Redoc and hosted delivery remain separate cards. Preserve
+DEC-05/DEC-14 and the generated system specification as historical contracts; this dated amendment records the adopted
+architecture change.
 
 ## DEC-14 — Versioned roadmap planning amendment, 2026-10-10
 

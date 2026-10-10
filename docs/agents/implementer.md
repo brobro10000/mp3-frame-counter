@@ -3,11 +3,11 @@
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Execute only the assigned bounded card after its
 prerequisites; authority to proceed does not let an implementer change its own acceptance expectations. Read the
-[transition guide](../testing/acceptance-transition.md): PR #16/v0.2.16 binds transport-v1 as the pending successor.
-RUNTIME-POLICY completed in PR #17/v0.2.17 with r3 still required. The bounded Fastify migration is now authorized as the
-next product change and must pass the bound successor. This supersedes the historical native-HTTP implementation choice
-below while preserving its public contract and resource protections. Frozen suite/contract/registry and trust-policy
-code remain outside product implementation ownership.
+[transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1 and released Fastify. Its
+67 cases remain required for descendants; no successor is pending. DOCS-HARNESS and independent docs/CSP authoring and
+binding precede later docs product work. The released migration supersedes the historical native-HTTP choice below
+while preserving its public contract and resource protections. Frozen suite/contract/registry and trust-policy code
+remain outside product implementation ownership.
 
 Purpose: implement one explicitly authorized P3 or P4 scope against an already reviewed independent baseline. Read
 [MVP](../mvp.md), [architecture](../architecture/v1.md), [phase plan](../phases/README.md),

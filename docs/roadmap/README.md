@@ -5,15 +5,12 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **RUNTIME-POLICY and its fixture correction merged; v0.2.18 publication verified**. The
-[runtime-policy evidence](../validation/runtime-dependency-policy.md#protected-main-completion) records actual
-independent expectations, companion approval, merge, main CI and publication. The published application still uses the
-native transport; the narrow policy permits a later exact Fastify declaration. r3 remains required on main with
-transport-v1 pending. The next product change must pass that bound successor. The next cards are **FASTIFY, DOCS-HARNESS
-and DOCS-CONTRACT**; internal startup/ownership expectations precede transport implementation. The
-[fixture completion](../validation/runtime-policy-fixture.md#protected-main-completion) records PR #18's subsequent
-governance-only release. Fastify's [local evidence](../validation/fastify-transport.md) does not establish its
-publication.
+Status: **FASTIFY merged; v0.2.19 publication verified**. The
+[completion evidence](../validation/fastify-transport.md#protected-main-completion) records actual protected-main
+source, exact-head automated companion approval, 82 unit tests, all 67 transport cases, image identities and
+publication. transport-v1 is now required, with no pending candidate or binding. The next three cards are
+**DOCS-HARNESS, DOCS-CONTRACT and DOCS-BIND**. Browser preparation precedes independent documentation/CSP expectations;
+no docs route or rendering is implemented by the transport release.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -105,6 +102,15 @@ Read-only controller inspection identified DOCS-HARNESS before docs candidate au
 The selected default is a bounded governance prerequisite that prepares the extracted suite's pinned browser and proves
 basic launch on fresh Linux CI before both check branches. This capability is proposed, not executed. It does not prove
 Redoc rendering, CSP feasibility or the sensitivity of future browser predicates; those remain DOCS-01/DOCS-CONTRACT.
+
+### Verified Fastify activation amendment — 2026-10-10
+
+PR #19 merged as `f4fb747df8890511edde7878064bb9af79823138`; main run `38054409309`, attempt 1, published v0.2.19. The
+[completion record](../validation/fastify-transport.md#protected-main-completion) supersedes earlier transport
+prerequisite wording: the bound transport-v1 suite is active and required, and no successor is pending. Fastify 5.12.5
+owns upload parsing and route execution while preserving the physical parser, public contract and two-image topology.
+The original native-transport planning assessment below remains historical. Operational admitted-response drain is still
+not proved by the bounded shutdown cases; docs/CSP and hosted verification remain separate prerequisites.
 
 ## Original planning assessment and evidence boundary
 
@@ -440,7 +446,7 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | Gate          | Default and current boundary                                                                                                         | Owner / blocked work                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
-| GATE-REVIEW   | GATE-01 merged with independent expectations, exact-head companion approval and verified publication/retry; no successor is active.  | Independent gate reviewer + owner; GATE-01.                 |
+| GATE-REVIEW   | GATE-01 verified; PR #19/v0.2.19 activated transport-v1. No successor is pending; preserve independent transitions.                  | Independent gate reviewer + owner; later transitions.       |
 | VERSION-01    | Source-bound minor plus global ordinal implemented and verified; 0.2 activation and first publication verified.                      | Release reviewer + owner; line changes.                     |
 | DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                            | Acceptance author + security reviewer; docs activation.     |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
@@ -491,10 +497,10 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances Fastify implementation, the DOCS-HARNESS browser
-prerequisite and independent docs/CSP candidate authoring. The transport binding and runtime policy are complete.
-GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual
-merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances the DOCS-HARNESS browser prerequisite, independent
+docs/CSP candidate authoring and its separate actual binding. Fastify and its prerequisite cards are complete. GATE-01
+and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual merge
+binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 
