@@ -6,9 +6,10 @@ owner merges without repeated routine consent. Review the exact current head und
 application deployment still requires human intervention. The
 [transition guide](../testing/acceptance-transition.md) records transport-v1 activation in PR #19/v0.2.19. It remains
 required for descendants. Browser setup and the independent docs-v1 candidate are published in v0.2.20 and v0.2.21.
-Review the [proposed binding](../validation/docs-binding.md) separately; its own review, merge and publication remain
-pending. Verify actual candidate squash, current decisive approval and reviewed-tree equivalence without changing
-frozen candidate expectations or admitting tool policy/product work in the binding.
+The [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) verifies
+PR #22/v0.2.22; docs-v1 is pending. Review the selected Redoc tool allowance separately from product adoption, including
+independent expected decisions, meaningful red/green, exact pins/channels and unchanged acceptance selection. Preserve
+frozen suite, contract and registry bytes; require fresh exact-head companion review and actual main publication.
 
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and

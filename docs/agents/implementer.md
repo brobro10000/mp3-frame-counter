@@ -5,8 +5,10 @@ supersedes the historical documentation-only PLAN-01 limit below. Execute only t
 prerequisites; authority to proceed does not let an implementer change its own acceptance expectations. Read the
 [transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1 and released Fastify. Its
 67 cases remain required for descendants. DOCS-HARNESS and the independent docs-v1 candidate are published in v0.2.20
-and v0.2.21. The [separate docs binding](../validation/docs-binding.md) is proposed here; its review, merge and
-publication remain pending. Actual binding and subsequent DOCS-TOOL-POLICY publication precede docs product work.
+and v0.2.21. The [docs binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10)
+published in PR #22/v0.2.22; transport remains required and docs-v1 is pending. DOCS-TOOL-POLICY publication still
+precedes docs product work. Implement only assigned policy paths after independent expectations and meaningful red;
+that governance change does not authorize root dependency/build/route/CSP edits.
 The released migration supersedes the historical native-HTTP choice below while preserving its public contract and
 resource protections. Frozen suite/contract/registry and trust-policy code remain outside product implementation ownership.
 

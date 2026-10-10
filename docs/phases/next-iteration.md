@@ -1,28 +1,26 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** DOCS-CONTRACT merged in
-[PR #21](https://github.com/brobro10000/mp3-frame-counter/pull/21) as `351d2e5b998f882287c4c5e4bb41427d4ad5c41e`.
-Protected-main
-[run 38068892955, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38068892955/attempts/1)
-passed and published [v0.2.21](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.21), release
-409075563, at 16:50:08Z. Main reported 46 candidate controls, exact 72-case discovery, 82 unit passes and all 67
-required transport cases with scoped cleanup. Candidate controls/discovery are not docs product acceptance. Root
-verified eight release metadata assets against GitHub digests; image archives were not downloaded/rehashed. No
-deployment occurred.
+**Execution status, 2026-10-10:** DOCS-BIND merged in [PR #22](https://github.com/brobro10000/mp3-frame-counter/pull/22)
+as `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6`.
+[Main run 38071238087, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38071238087/attempts/1)
+passed and published [v0.2.22](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.22), release
+409093836, at 17:24:22Z. Main passed 46 pending controls/72-case discovery, 82 unit tests and all 67 required transport
+cases with scoped cleanup. Root rehashed eight release metadata assets; image archives were not downloaded/rehashed.
+Read the [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) for exact
+approval, source, admission, image and verification identities.
 
-At that published source, transport-v1 remains required; docs-v1 is the published candidate and no docs binding is yet
-merged. **This change proposes DOCS-BIND; its review, merge and publication remain pending.** The
-[binding evidence record](../validation/docs-binding.md) separates the actual candidate publication from binding work.
-No application documentation routes, root Redoc dependency, product CSP or docs activation have shipped here.
+Transport-v1 remains required; docs-v1 is the single bound pending successor. No docs product acceptance, root Redoc
+dependency, application documentation routes, product CSP or deployment has shipped. **This change implements only
+DOCS-TOOL-POLICY; its validation, review, merge and publication are recorded separately as they occur.**
 
-The three active cards are **DOCS-BIND → DOCS-TOOL-POLICY → DOCS-IMPLEMENTATION**. Tool-policy expectation authoring and
-implementation wait for actual binding publication; product work also waits for actual tool-policy publication.
-[DOCS-HARNESS](../validation/acceptance-browser-setup.md) is complete. Current main records Linux browser preparation
-before each candidate and required standalone check; readiness alone does not establish rendering or CSP behavior. The
+The three active cards are **DOCS-TOOL-POLICY → DOCS-IMPLEMENTATION → HOSTED-PROFILE-POLICY**. Actual binding
+publication permits independent tool-policy expectations, then separate implementation. Actual tool-policy publication
+still precedes product work; hosted-profile work follows verified docs activation/publication. Browser preparation
+precedes standalone suite checks but does not prove rendering or CSP. The
 [version record](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) preserves allocation;
 [cost evidence](../validation/cloud-cost-bootstrap.md) preserves the dedicated USD 75 Run cap and USD 100 project
-budget. Production deployment/promotion requires human intervention under the
-[execution amendment](roadmap-execution-authorization.md).
+budget. Production application deployment/promotion, including authenticated candidates, requires human intervention
+under the [execution amendment](roadmap-execution-authorization.md).
 
 The [docs-v1 contract](../testing/contracts/docs-v1.md) and
 [independent DOCS-01 disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) record the selected Redoc
@@ -35,6 +33,7 @@ Use the [roadmap](../roadmap/README.md) and the [acceptance](../agents/acceptanc
 [implementation](../agents/implementer.md), [review](../agents/reviewer.md) and [release](../agents/release-operator.md)
 roles. Completed cards remain in immutable source:
 
+- [DOCS-BIND card](https://github.com/brobro10000/mp3-frame-counter/blob/cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6/docs/phases/next-iteration.md#pr-card-1--docs-bind-bind-the-actual-independently-reviewed-docs-successor).
 - [DOCS-HARNESS card](https://github.com/brobro10000/mp3-frame-counter/blob/351d2e5b998f882287c4c5e4bb41427d4ad5c41e/docs/phases/next-iteration.md#pr-card-1--docs-harness-prepare-the-pinned-browser-before-standalone-acceptance-checks).
 - [DOCS-CONTRACT card](https://github.com/brobro10000/mp3-frame-counter/blob/351d2e5b998f882287c4c5e4bb41427d4ad5c41e/docs/phases/next-iteration.md#pr-card-2--docs-contract-independently-define-the-documentation-successor).
 - [Lifecycle and transport candidate cards](https://github.com/brobro10000/mp3-frame-counter/blob/6c28382d71a014351311e63154ef1c8916b8a229/docs/phases/next-iteration.md),
@@ -68,117 +67,12 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — DOCS-BIND: Bind the actual independently reviewed docs successor
+## PR card 1 — DOCS-TOOL-POLICY: Admit the selected Redoc build dependency
 
-**Status:** candidate publication is verified above; the binding proposed by this change is not merged or published.
-
-### Outcome and owner
-
-The coordinator appends one actual `docs-v1` binding, with predecessor `transport-v1`, under the existing
-single-successor policy. An independent reviewer verifies identity and admission; root owns Git, companion review and
-authorized merge. The binding-only merge keeps transport-v1 required and reserves the next product-affecting change for
-docs-v1. It adds no served documentation, renderer assets, tool allowance, CSP configuration or deployment. Trace
-APP-V1-009,010,013 and APP-REL-001–006; docs behavior comes from the separately reviewed roadmap successor, not new
-assessment obligations.
-
-### Prerequisites
-
-- Verified protected-main Fastify activation/publication: transport-v1 persistently required, complete bound inventory
-  (currently 67 cases), exact source/image evidence and cleanup. Local or PR success is insufficient.
-- Verified DOCS-HARNESS main publication and fresh Linux package-local browser readiness before standalone checks.
-- Actual independent DOCS-CONTRACT squash merge and publication, with docs-v1 the published candidate, predecessor
-  transport-v1, unchanged earlier expectations and complete candidate controls/discovery. No second pending successor.
-- Recorded DOCS-01 disposition from the candidate's isolated renderer/CSP experiments and independent security review.
-  The [contract](../testing/contracts/docs-v1.md) and
-  [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) select Redoc CE 2.5.4 without a CLI, the
-  exact two-edit derivative, docs-only style/image exceptions and NGINX header ownership. This binding changes none of
-  those decisions or their finite observation limits; browser availability alone is not renderer/CSP evidence.
-- Fresh trusted main, complete history and authenticated review observations. Reconcile any intervening source, review,
-  candidate, policy or publication change before binding; do not reuse a planning revision as current evidence.
-
-### Writable scope
-
-Root owns one append to `docs/testing/acceptance-transitions.json`; the evidence writer owns only new
-`docs/validation/docs-binding.md`. Exactly these ten additional files may receive targeted current-status
-reconciliation: `docs/testing/acceptance-transition.md`, `docs/testing/independence-and-baseline.md`,
-`docs/phases/next-iteration.md`, `AGENTS.md`, `docs/roadmap/README.md`, `docs/validation/acceptance-browser-setup.md`,
-and the four roles `docs/agents/acceptance-author.md`, `docs/agents/implementer.md`, `docs/agents/reviewer.md`,
-`docs/agents/release-operator.md`. The phase writer owns this document; root owns the remaining status paths. These
-twelve paths are the entire binding scope. Preserve dated historical evidence; no diagrams or README expansion. An
-independent reviewer audits the actual registry/source/review equivalence without editing the binding or suite.
-
-### Read-only boundaries
-
-Preserve genesis, the existing transport registry entry, all historical suite/contract objects, all
-`tests/acceptance/**` and `docs/testing/contracts/**`. Product/parser/UI, Docker/NGINX/Compose, root package and
-lockfile, policy/admission/runner scripts, workflows, release allocation/publication, generated artifacts and cloud
-resources are read-only. No candidate repair, new tests, browser setup change, root tooling installation or product
-activation here.
-
-### Binding procedure and evidence
-
-1. Inspect the candidate's actual protected-main squash commit and parent diff. The diff must contain only the admitted
-   acceptance paths and unique docs contract; existing unchanged product files in its full tree are not disqualifying.
-2. Verify the complete Git tree of the exact approved head equals the squash tree. Record the actual suite subtree,
-   fixture-manifest SHA-256 and contract path/hash from that squash. Do not substitute the PR head for `suiteCommit`,
-   predict a squash SHA, or copy transport's candidate identities into the new entry.
-3. Authenticate the same-repository merged PR, squash, reviewed head/tree and actual submitted approval by a reviewer
-   other than the author. Bounded complete review history must establish the recorded approval is still that reviewer's
-   current decisive decision; later rejection, dismissal or replacement cannot silently reuse the old review ID.
-4. Append the existing closed-schema fields only: actual suite commit/tree, manifest hash, contract revision/id,
-   predecessor, contract path/hash and review repository/PR/review ID/reviewer/head/tree. Preserve the transport entry.
-5. Use trusted-base admission with the original source/base/run/attempt. Expect binding admission, transport-v1 required
-   and docs-v1 pending; no docs activation. Preserve actual observations and the independently supplied admission
-   digest. A local resolver result or fabricated review object is not authenticated CI admission.
-
-### Tests, review and publication
-
-Run existing focused resolver/admission/review/consumer checks, formatting and required repository validation against
-the final scoped source. Existing controls must reject missing/stale observations, wrong trees/identities, mixed product
-paths and conflicting pending successors; do not change predicates to make this binding pass.
-
-CI must retain separate pinned-browser candidate/pending checks, meaningful positive/negative controls and exact
-complete candidate discovery. Record the actual discovered count and identities; invent no docs case quota. Execute the
-complete required transport suite against the exact image pair with zero failures, skips or retries and passed cleanup.
-Candidate controls or future docs behavior failures cannot satisfy required product acceptance.
-
-Independent review checks the actual squash-parent scope, reviewed-tree equivalence, immutable predecessor, DOCS-01
-record and selection across consumers. Obtain fresh companion approval of the final binding head, successful mandatory
-checks and resolved conversations before an authorized owner merge; distinguish automated approval from human review.
-After merge, verify actual protected-main admission, required/pending selection, original digest, CI attempt, full
-required acceptance, tested image identities and allocator-selected v0.2.x release/tag/assets. Record hashes and
-download limits; PR artifacts and a publication request alone do not establish publication. Preserve failures and
-historical captures.
-
-### Separate tool-policy and product work
-
-The selected root development-only `redoc: "2.5.4"` allowance remains the separate DOCS-TOOL-POLICY prerequisite. This
-binding cannot add that allowance or imply it passed. Governance-only policy work must preserve transport selection
-while docs-v1 is pending. Root dependency/lock changes, build inputs and generated/served assets are product changes:
-after binding they trigger docs-v1 and cannot be introduced as a bypassing tooling-only preparation. Resolve any
-unclassifiable prerequisite through separate trusted policy work before implementation. The later complete docs product
-PR must pass docs-v1; activation persists for descendants and product reverts. No hosted or production claim follows.
-
-### Rollback and stop
-
-Missing prerequisite evidence, unresolved DOCS-01, stale/mismatched review or trees, mixed paths, conflicting pending
-successors, changed frozen bytes or any mandatory failure blocks binding; retain the failure and return to its owner.
-
-Before merge, correct or withdraw this proposal without editing the merged candidate. After admission, do not remove or
-rewrite the binding, mutate historical expectations, select an older suite or rewrite tags/assets. Cancellation or
-correction needs a separately reviewed transition supported by policy; this card invents no cancellation mechanism.
-After docs activation, a product revert must still satisfy docs-v1; preserve evidence and repair forward if needed.
-
-**Done and stop:** the exact candidate is independently bound on protected main, unchanged transport acceptance passes,
-docs-v1 remains pending, and the matching software release is verified. Stop before tool-policy implementation, renderer
-build/install, docs routes/CSP/product activation, hosting or production. Actual binding publication closes this card
-and permits independent tool-policy expectations; no future approval, merge or release is presumed.
-
-## PR card 2 — DOCS-TOOL-POLICY: Admit the selected Redoc build dependency
-
-**Status:** adopted for planning; execution and independent expectation authoring require actual DOCS-BIND publication.
-The selected arrangement is root development-only `redoc` exactly `2.5.4`, with no CLI; it is not installed by this
-card.
+**Status:** execution prerequisites are satisfied by PR #22/v0.2.22. Independent expected decisions precede the separate
+implementation; its own validation, review and publication remain to be established in the
+[tool-policy evidence record](../validation/docs-tool-policy.md). The selected arrangement is root development-only
+`redoc` exactly `2.5.4`, with no CLI; this card does not install or declare it.
 
 ### Outcome and ownership
 
@@ -234,18 +128,22 @@ exact-pin and generic lock checks. The caller still rejects `redoc-cli`, `@redoc
 development name. Existing runtime policy retains Fastify admission and alternate dependency-channel checks on both
 roots. Redoc's transitive `@redocly/openapi-core` does not acquire direct-root admission. No generic-policy refactor.
 
-### Proposed exact writable scope
+### Adopted exact writable scope
 
 - `scripts/policy.mjs`: only the development-tool allowance and its narrow validation integration.
 - New `scripts/docs-tool-policy.mjs` and `scripts/docs-tool-policy.test.mjs`: a small pure parsed-metadata validator and
   independently authored deterministic tests, including real policy-CLI fixtures. Root freezes the interface first.
 - `package.json`: only append the new test file to the existing `scripts.test:tooling` command, preserving prior tests.
 - New `docs/testing/docs-tool-policy.md` and `docs/validation/docs-tool-policy.md`: frozen policy expectations and
-  actual execution/review/publication evidence. Root may update only related current status in
-  `docs/phases/next-iteration.md`.
+  actual execution/review/publication evidence. Root owns `docs/phases/next-iteration.md` and its three-card window.
+- Exactly nine additional current-status paths: `AGENTS.md`, `docs/roadmap/README.md`,
+  `docs/testing/acceptance-transition.md`, `docs/testing/independence-and-baseline.md`,
+  `docs/validation/docs-binding.md` and the four existing `docs/agents/` roles. Reconcile binding completion and
+  prerequisite order while preserving historical observations.
 
-These paths are proposed ownership, not permission to refactor adjacent checks. Any additional path needs explicit scope
-review before work. Preserve dependency declarations, package metadata outside that one script, and all lockfile bytes.
+These sixteen paths are the entire adopted scope. No diagrams, README expansion or adjacent-check refactor. Any
+additional path needs explicit scope review before work. Preserve dependency declarations, package metadata outside that
+one script, and all lockfile bytes.
 
 ### Read-only boundaries and admission
 
@@ -317,7 +215,7 @@ transport-v1 still passes and docs-v1 remains pending. Hand off the actual polic
 disposition to the separate docs product card. Root package/lock changes, installation/build/assets/routes/CSP must then
 pass docs-v1 and activate it persistently. Stop before that product work, registry delivery, hosting or production.
 
-## PR card 3 — DOCS-IMPLEMENTATION: Serve the bound offline documentation
+## PR card 2 — DOCS-IMPLEMENTATION: Serve the bound offline documentation
 
 **Status:** adopted for planning; product work requires actual DOCS-BIND and DOCS-TOOL-POLICY publications. Root assigns
 a product implementer and owns integration; the independent candidate author receives no product implementation details.
@@ -469,11 +367,114 @@ or v1.0.0. Production remains an exact-candidate human gate. Unknown prerequisit
 build isolation or a mandatory failure returns to its named owner with evidence; this card does not authorize a
 workaround.
 
+## PR card 3 — HOSTED-PROFILE-POLICY: Settle the reviewed profile protocol
+
+**Status:** adopted as the next bounded documentation decision card after actual DOCS-IMPLEMENTATION publication. It
+establishes the protocol needed before executable profile support and independent hosted-suite authoring; it creates
+neither. Current consumers require one complete inventory, and the future promotion reader assumes equal local and
+candidate counts. A new metadata validator alone would not resolve those incompatible assumptions.
+
+### Outcome, prerequisites and ownership
+
+Publish one compact, independently reviewed protocol decision for local, stage and production profiles. Close the five
+finite decisions below, name each consumer's responsibility and hand off exact executable scope to the next card. Trace
+APP-V1-009,010,013–015 and APP-REL-001–006; hosted evidence remains additional roadmap scope, not a retrospective
+assessment requirement. Ordinary software releases continue independently of deployment.
+
+Enter only after verified DOCS-IMPLEMENTATION main activation/publication establishes the complete 72-case docs-v1 local
+gate. Refresh its exact source, required suite, image and publication evidence; local or PR passes cannot satisfy this
+prerequisite. Preserve actual binding/tool-policy evidence and all frozen suite/contract/registry/genesis bytes.
+
+An independent policy designer owns new `docs/testing/hosted-profile-policy.md`. A separate reviewer checks its
+decisions and consumer compatibility before root adopts them. Root owns only related `docs/phases/next-iteration.md`
+card/status updates and Git/review integration. These two documentation paths are the entire scope. All executables,
+dependencies, workflows, product/configuration, infrastructure, acceptance suites/contracts, registry and historical
+evidence are read-only. Do not put this planning document under the frozen successor `contracts/` namespace.
+
+### Required decisions and recommended defaults
+
+1. **Metadata schema:** select one fixed file inside a future independently reviewed successor tree; recommend
+   `tests/acceptance/fixtures/profiles.json`. Define a closed, versioned JSON shape containing only
+   local/stage/production profile IDs and requirement/case identity references. Reject unknown versions/fields,
+   commands, URLs, credentials and arbitrary paths. Specify every field/type and omission rule. The existing suite-tree
+   binding authenticates these future bytes; prefer no registry schema extension. Do not add the file or invent actual
+   cases in the current suite.
+2. **Inventory ownership:** recommend retaining `fixtures/inventory.json` as the complete local inventory, with separate
+   exact complete hosted inventories in the successor. Decide their fixed locations and relationship, including how
+   candidate discovery verifies every declared inventory without application execution. Preserve every predecessor local
+   obligation; ordinary local execution remains unfiltered. Counts alone do not prove identity or completeness.
+3. **Pure validation interface:** freeze exact export, parsed arguments, result and rejection boundaries after the two
+   preceding decisions. Inputs include the reviewed metadata, complete inventories and selected contract revision;
+   output validates declarations only. No environment, process, filesystem or network authority belongs to the helper.
+   Define how its source-reading caller obtains bytes from the resolver-selected immutable suite, with no override path
+   or substitution from product-owned metadata. This card writes the contract, not an unused helper.
+4. **Consumer/evidence compatibility:** preserve legacy complete-local commands, reports, software preparation,
+   publication and retry bytes. Missing profile metadata means existing full local behavior, never zero tests or hosted
+   capability. Specify the first consumer that needs the new protocol and a separately versioned hosted report binding
+   profile, complete inventory identity, suite/contract, source, image pair and target observations. Replace the future
+   equal-count premise only in a later reviewed consumer change; do not relabel an existing local result as hosted.
+5. **Requirement mapping:** assign local, stage-functional and non-destructive production-smoke responsibilities at the
+   contract level without authoring cases. Docker pause/stop and private diagnostic controls stay local unless a
+   separate safe nonproduction equivalent is approved. Full stage behavior and production smoke have distinct complete
+   inventories; an unexecuted mandatory hosted requirement is not satisfied by local evidence. Name remaining hosted
+   lifecycle observations for the independent successor author.
+
+Independent review and root adoption must close all five decisions before this card is complete. Defaults are proposals
+until that decision record exists. Resolve concrete contract ambiguity here; do not defer the same ambiguity to a future
+helper author. If provider/authentication knowledge is required, name that separate dependency and stop at its interface
+instead of expanding into a launcher or cloud environment.
+
+### Preserved authority and inspected consumer boundaries
+
+Ordinary PR/main application acceptance always selects local. Candidate/pending controls and discovery remain
+`productAcceptance: false`. Profile metadata describes obligations; it cannot authorize destinations, credentials,
+faults, deployment or production. No environment variable, caller-selected profile or arbitrary URL grants that
+permission. Keep the existing local Compose controller, exact-source/two-image evidence and immutable historical
+publication/retry records intact.
+
+Verify the design against these existing boundaries, using exact source identities from the card's refreshed base:
+
+- `acceptance-transitions.mjs` already authenticates the whole suite tree; `acceptance-runtime.mjs` binds selection and
+  admission without a hosted profile selector. No registry change is implied by adding reviewed metadata.
+- `run-ci-phase.mjs` runs fixed candidate/pending checks separately from required application acceptance. `run-e2e.mjs`
+  supplies a local target, owns Compose/fault infrastructure and requires the full unfiltered local result.
+- Acceptance inventory/report helpers require complete identity accounting and zero skips/retries. The syntactic
+  `candidate` target still requires private diagnostics/fault authorization and has no production mode; it is not a
+  trusted authenticated hosted launcher.
+- `release-manifest.mjs` uses local evidence for publication. Its future supplied-record promotion check requires equal
+  local/candidate counts and observes neither deployment nor human approval; this is a concrete compatibility gap.
+
+Stage and production execution remain unavailable to current consumers. Trusted destination/authentication, browser and
+HTTP credential scoping, registry handoff, IaC path admission, delivery workflow permissions and hosted launcher
+execution are separate later cards. Automatic stage delivery stays authorized; every production application deployment,
+including an authenticated candidate, retains exact-candidate human intervention under LAUNCH-01. COST-01, ACCESS-01 and
+HOST-01 retain their separate gates. No cloud resources or credentials are created by this card.
+
+### Validation, review, release and stop
+
+This documentation card has no implementation red/green claim. Check schema examples and decision tables against actual
+consumer interfaces, ensure every field has one owner, preserve legacy behavior and report all unresolved facts. Run
+normal scoped documentation validation, exact-head companion review, mandatory CI and authorized owner merge. Verify the
+actual protected-main documentation release; do not predict a version or treat that publication as hosted capability.
+
+The handoff identifies a bounded executable prerequisite only where current consumers need it. Its future independently
+written tests must cover legacy compatibility, valid dormant metadata, malformed/unknown shapes, incomplete or duplicate
+inventory references, source substitution and inability of a caller profile to weaken local execution. Review and freeze
+those expectations, retain actual red, then implement in that later card. Hosted suite authoring and actual binding are
+also separate; this paragraph authorizes none of those writes now.
+
+**Done and stop:** the reviewed document resolves all five protocol decisions, preserves full local acceptance and names
+exact next-card ownership. An unchosen inventory/report rule blocks completion. Stop before executable support,
+successor authoring/binding, registry/IaC/workflows, provider operations or production. A documentation correction can
+revert this proposal before dependent implementation; after adoption, amend the decision transparently and coordinate
+consumers rather than reinterpret historical evidence or weaken a required suite.
+
 ## Provisional work after the three-card window
 
-Later packages remain outcomes and named gates: closed IaC path/delivery-policy prerequisites; hosted profiles and
-trusted launcher; exact-image registry handoff; reconciliation/backfill with original admission authority;
-account/cost/access gates; stage acceptance and recovery; production candidate/configuration evidence; human production
-authorization; production smoke and v1.0.0 finalization. Tooling compatibility still precedes extended queue syntax.
-Stage automation and production human intervention retain their existing authority boundaries. No later package is a
-fourth detailed card or an assessment-submission prerequisite. Software publication is independent of deployment.
+Later packages remain outcomes and named gates: executable profile/consumer compatibility after the decision card;
+independent hosted successor and actual binding; closed IaC path/delivery-policy prerequisites; trusted hosted launcher;
+exact-image registry handoff; reconciliation/backfill with original admission authority; account/cost/access gates;
+stage acceptance and recovery; production candidate/configuration evidence; human production authorization; production
+smoke and v1.0.0 finalization. Tooling compatibility still precedes extended queue syntax. Stage automation and
+production human intervention retain their existing authority boundaries. No later package is a fourth detailed card or
+an assessment-submission prerequisite. Software publication is independent of deployment.
