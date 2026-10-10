@@ -393,9 +393,11 @@ accidental exposure, and verify bindings. Record resource IDs, ownership, cleanu
 repeatable/idempotent. No unrelated project reuse or account-wide changes.
 
 Prefer short-lived repository/branch/environment-bound federation; separate bootstrap administrator permissions from
-routine deployment and PR jobs. Current account access is unverified. If an enforced private-repository environment
-review gate is unavailable, explicitly use an owner-invoked operation bound to the exact release and disclose that
-manual process limitation; do not label it an enforced independent approval.
+routine deployment and PR jobs. Bootstrap administrator access is recorded in
+[cost validation](../validation/cloud-cost-bootstrap.md); deployment federation and environment identities remain
+unconfigured and unverified. If an enforced private-repository environment review gate is unavailable, explicitly use an
+owner-invoked operation bound to the exact release and disclose that manual process limitation; do not label it an
+enforced independent approval.
 [Google deployment federation](https://docs.cloud.google.com/iam/docs/workload-identity-federation-with-deployment-pipelines).
 
 ## Requirement traceability and orchestrator boundary

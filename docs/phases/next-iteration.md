@@ -231,11 +231,11 @@ card only with current prerequisite evidence.
 
 ## Provisional work after the three-card window
 
-Use the [roadmap](../roadmap/README.md) for the remaining ordered packages: line activation; independent transport suite
-and binding; Fastify; independent docs/CSP suite and binding; offline Redoc; hosted profiles and trusted launcher;
-registry handoff; reconciliation/backfill; account/cost/access gates; stage verification; production candidate, recovery
-and first-launch authority; production smoke and finalization. Queue-tooling compatibility precedes any live
-`queue: max` syntax. Keep later v1.x/V2 evolution separate from the assessment submission deadline.
+Use the [roadmap](../roadmap/README.md) for the remaining ordered packages: independent transport suite and binding;
+Fastify; independent docs/CSP suite and binding; offline Redoc; hosted profiles and trusted launcher; registry handoff;
+reconciliation/backfill; account/cost/access gates; stage verification; production candidate, recovery and first-launch
+authority; production smoke and finalization. Queue-tooling compatibility precedes any live `queue: max` syntax. Keep
+later v1.x/V2 evolution separate from the assessment submission deadline.
 
 Do not expand these into additional detailed PR cards yet. Human-readable planning continues even when the installed
 orchestrator cannot consume the new architecture. Preserve its active generated plan and historical evidence; any future
