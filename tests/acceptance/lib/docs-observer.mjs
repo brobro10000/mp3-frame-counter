@@ -7,6 +7,18 @@
 import { performance } from "node:perf_hooks";
 import assert from "node:assert/strict";
 
+/**
+ * Install bounded DOM/CDP observation and native origin blocking before any navigation of a fresh page/context.
+ * @param page - Fresh Chromium page owned by the caller; this observer covers its page session only.
+ * @param context - That page's fresh context, receiving init scripts/bindings; do not reuse it for a second observer.
+ * @param allowedOrigins - Caller-approved canonical origins; appended native allow patterns precede the catch-all deny.
+ * @param id - Evidence label copied into the returned record, not an authorization credential.
+ * @returns Live mutable record plus assertAlive() and end(); installation/API failures reject.
+ * Records up to 500 events per channel and 1200 characters per projected string. Overflow/session loss is flagged by
+ * the observer, then rejected by assertAlive or consumer predicates. Caller must end/classify the finite window and
+ * close context/browser, including
+ * after setup failure; end does not disable blocking, detach CDP or remove installed listeners/bindings.
+ */
 export async function observe(page, context, allowedOrigins, id) {
   const record = {
     id,
@@ -24,6 +36,7 @@ export async function observe(page, context, allowedOrigins, id) {
   };
   let sequence = 0;
   const text = (value) => String(value ?? "").slice(0, 1200);
+  /** Append a projected event with Node monotonic time while active; flag capacity overflow and ignore later arrivals. */
   const push = (channel, value) => {
     if (!record.active) return;
     if (record[channel].length >= 500) {
@@ -46,6 +59,7 @@ export async function observe(page, context, allowedOrigins, id) {
     }),
   );
   await context.addInitScript(() => {
+    /** Report CSP meta in an inserted/changed subtree; ignore binding rejection, including during document shutdown. */
     const inspect = (node) => {
       if (!(node instanceof Element)) return;
       const metas = node.matches("meta") ? [node] : [...node.querySelectorAll("meta")];
@@ -77,6 +91,7 @@ export async function observe(page, context, allowedOrigins, id) {
     }),
   );
   const cdp = await context.newCDPSession(page);
+  /** Mark page/session loss only inside the active interval; deliberate post-end cleanup is outside the claim. */
   const unexpected = () => {
     if (record.active) record.unexpectedClose = true;
   };
@@ -137,12 +152,16 @@ export async function observe(page, context, allowedOrigins, id) {
   record.patterns = patterns;
   return {
     record,
+    /** Reject overflow/early closure and probe the CDP session; caller must impose its own deadline on this Promise. */
     async assertAlive() {
       assert.equal(record.unexpectedClose, false, "Observer target/session closed during observation");
       assert.equal(record.overflow, false, "Bounded observation buffer overflowed");
       await cdp.send("Network.enable");
       assert.equal(record.unexpectedClose, false, "Observer session did not remain alive");
     },
+    /**
+     * Stop event appends synchronously and record closure time; does not freeze the object or release browser resources.
+     */
     end() {
       record.active = false;
       record.closedAtMonotonicMs = performance.now();

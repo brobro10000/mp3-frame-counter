@@ -19,6 +19,11 @@ import {
   resources,
 } from "./docs-contract.mjs";
 import { within } from "./transport.ts";
+/**
+ * Build a fresh path-to-Buffer asset map from pinned local Redoc, logo and independent specification bytes.
+ * Verifies the original bundle, exact two-operation derivative and logo identities before returning; unexpected
+ * files/bytes or serialization failures throw. Reads local files only, executes no vendor code and writes no files.
+ */
 export function fixtureAssets() {
   const source = readFileSync(new URL("../node_modules/redoc/bundles/redoc.standalone.js", import.meta.url));
   same(sha256(source), ORIGINAL_HASH, "ORIGINAL_IDENTITY");
@@ -47,6 +52,10 @@ export function fixtureAssets() {
     ["/docs/assets/redoc-logo-mini.svg", logo],
   ]);
 }
+/**
+ * Bind an owned Node HTTP server to an ephemeral 127.0.0.1 port and resolve its origin string within five seconds.
+ * Rejects on listen error/deadline. A timeout does not cancel listen; caller must close the server even on failure.
+ */
 export async function listen(server) {
   await within(
     new Promise((resolve, reject) => {
@@ -58,10 +67,22 @@ export async function listen(server) {
   );
   return "http://127.0.0.1:" + server.address().port;
 }
+/**
+ * Force-close an owned server's connections, request listener close and resolve when its callback fires.
+ * API errors or the five-second observation deadline reject; timeout does not cancel the pending close operation.
+ */
 export async function closeServer(server) {
   server.closeAllConnections();
   await within(new Promise((resolve) => server.close(resolve)), 5000, "FIXTURE_CLOSE");
 }
+/**
+ * Start an owned docs server and a second-loopback receipt sink for a positive fixture or one named fault.
+ * @param fault - Control-runner fault name, default positive; caller must use a defined name, not an arbitrary string.
+ * @returns Both origins, the live sink-receipts array and an async close method that attempts both server cleanups.
+ * This factory does not validate the fault inventory. Artifact/readiness failures reject; failed startup attempts
+ * cleanup of both servers, and cleanup rejection takes precedence. After success, caller must await close in finally.
+ * No application target is contacted, vendor code is generated but not executed, and no files are written.
+ */
 export async function docsFixture(fault = "positive") {
   const assets = fixtureAssets(),
     receipts = [];
@@ -96,6 +117,11 @@ export async function docsFixture(fault = "positive") {
         '<!doctype html><section data-section-id="operation/countFrames"><p>/file-upload /healthz audio/mpeg application/octet-stream frameCount 20971520</p><div><button>400</button><p>Description only</p></div></section>',
       ),
     );
+  /**
+   * Serve fixed public-contract routes with one selected fault; consume input without reflecting it into responses.
+   * Raw duplicate-policy headers and HEAD body suppression are intentional evidence. Control-only script/style routes
+   * support the named faults; their strings are generated here and run only later in the caller's owned browser.
+   */
   const server = http.createServer((req, res) => {
     req.resume();
     const path = new URL(req.url, origin).pathname;
@@ -201,6 +227,7 @@ export async function docsFixture(fault = "positive") {
     origin,
     sinkOrigin,
     receipts,
+    /** Attempt both owned server closes even if one rejects; resolve without a value or rethrow a cleanup failure. */
     async close() {
       const outcomes = await Promise.allSettled([closeServer(server), closeServer(sink)]);
       const failed = outcomes.find((x) => x.status === "rejected");

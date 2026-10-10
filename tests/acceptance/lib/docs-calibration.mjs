@@ -8,6 +8,13 @@ import assert from "node:assert/strict";
 import http from "node:http";
 import { performance } from "node:perf_hooks";
 import { observe } from "./docs-observer.mjs";
+/**
+ * Calibrate native HTTP guarding with twelve owned direct/redirect/two-hop/live-beacon scenarios on a caller's browser.
+ * Permitted positives require a real destination receipt; separate CSP/native-block negatives require attributed zero
+ * receipts. Resolves an evidence report with passed/failed status and separate confirmed/unverified cleanup; callers
+ * must check both. Scenario errors are retained in that report, not normally rethrown; no partial matrix is a pass.
+ * Owns ephemeral servers/fresh contexts and attempts their cleanup, but never closes the supplied Chromium browser.
+ */
 export async function calibrateGuard(browser) {
   const result = {
     kind: "candidate-guard-controls",
@@ -22,6 +29,7 @@ export async function calibrateGuard(browser) {
   const receipts = [],
     redirects = [];
   let origin, sinkOrigin;
+  /** Race an operation against ms milliseconds, rejecting with label on timeout without canceling the underlying work. */
   function within(promise, ms, label) {
     let timer;
     return Promise.race([
@@ -41,6 +49,11 @@ export async function calibrateGuard(browser) {
     });
     res.end("owned destination receipt");
   });
+  /**
+   * Serve the fixed calibration page/script and genuine redirects using only driver-chosen mode/kind/token inputs.
+   * Synthetic CSP allows the receipt origin except in CSP-only negatives; records redirect evidence without rewriting
+   * browser responses. This owned probe server is not a general route/input validator or application endpoint.
+   */
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, origin);
     if (url.pathname.startsWith("/redirect/") || url.pathname.startsWith("/nested/")) {
@@ -79,6 +92,7 @@ export async function calibrateGuard(browser) {
       `<!doctype html><html><body><button>Run owned probe</button><script src="/cal.js?token=${token}&kind=${kind}"></script></body></html>`,
     );
   });
+  /** Resolve an owned server's ephemeral loopback origin; errors/deadline reject, and finally still owns its close. */
   async function listen(target) {
     await within(
       new Promise((resolve, reject) => {
@@ -90,6 +104,7 @@ export async function calibrateGuard(browser) {
     );
     return "http://127.0.0.1:" + target.address().port;
   }
+  /** Close owned connections/listener with a five-second observation bound; reject without canceling a delayed close. */
   async function close(target) {
     target.closeAllConnections();
     await within(new Promise((resolve) => target.close(resolve)), 5000, "server cleanup");
@@ -112,6 +127,11 @@ export async function calibrateGuard(browser) {
           const page = await context.newPage();
           observer = await observe(page, context, mode === "blocker" ? [origin] : [origin, sinkOrigin], id);
           record.observation = observer.record;
+          /**
+           * Match an enforced connect-src refusal to this exact destination. Redirect cases additionally require the
+           * recorded redirect and a security log naming destination/directive when CSP reports the initiating URL.
+           * Returns a boolean from current evidence; does not imply that zero receipts alone establish attribution.
+           */
           const cspAttributed = () => {
             const violations = [
               ...observer.record.issues.filter((v) => v.reportOnly === false),
@@ -133,6 +153,7 @@ export async function calibrateGuard(browser) {
                     ))),
             );
           };
+          /** Return whether the exact destination request has a matching inspector-blocked failure ID. */
           const blockAttributed = () =>
             observer.record.requests.some(
               (request) =>

@@ -121,6 +121,12 @@ if (!child) {
   const environment = {};
   for (const name of ["HOME", "PATH", "TMPDIR", "TEMP", "TMP", "SystemRoot", "LANG", "CI"])
     if (process.env[name]) environment[name] = process.env[name];
+  /**
+   * Launch this script with --child or --termination-probe, a fresh run identity and package-local directory URL.
+   * Uses the restricted environment and bounds output/deadline; owns SIGTERM then a failed SIGKILL fallback, not proof
+   * of detached browser cleanup. Writes process.json/child.log and returns exit/budget/forced/readiness metadata even
+   * for nonzero exits. Spawn or evidence-I/O errors reject; caller must validate metadata and the fresh child report.
+   */
   async function run(mode, identity, destination) {
     mkdirSync(destination, { recursive: true });
     const output = [];
@@ -135,6 +141,7 @@ if (!child) {
       detached: process.platform !== "win32",
       stdio: ["ignore", "pipe", "pipe", "ipc"],
     });
+    /** Request cleanup once, mark this run over budget, then force termination after 15s without claiming cleanup. */
     const stop = () => {
       if (budgetExpired) return;
       budgetExpired = true;
@@ -234,15 +241,24 @@ if (!child) {
   let browser, probePage, releaseProbe;
   let terminationRequested = false;
   const activeFixtures = new Set();
+  /**
+   * Open a named owned fixture and register it for termination cleanup; startup refusal propagates without registration.
+   */
   const openFixture = async (fault) => {
     const fixture = await docsFixture(fault);
     activeFixtures.add(fixture);
     return fixture;
   };
+  /** Await fixture cleanup before removing its ownership entry; a rejection preserves the entry and propagates. */
   const finishFixture = async (fixture) => {
     await fixture.close();
     activeFixtures.delete(fixture);
   };
+  /**
+   * Attempt the owned browser and every registered fixture cleanup, even when another close rejects.
+   * Resolve without a value only after all settle, otherwise throw one failure; observation timeouts do not cancel
+   * pending closes, and this function does not by itself turn a failed/terminated run into successful evidence.
+   */
   async function cleanupOwned() {
     const outcomes = await Promise.allSettled([
       ...(browser ? [within(browser.close(), 5000, "BROWSER_CLEANUP")] : []),
@@ -251,6 +267,10 @@ if (!child) {
     const failed = outcomes.find((x) => x.status === "rejected");
     if (failed) throw failed.reason;
   }
+  /**
+   * Mark SIGTERM requested, start bounded owned cleanup and release the waiting termination probe after settlement.
+   * Cleanup errors are suppressed here so final reporting can retain failed/unverified status; no success is implied.
+   */
   const terminate = () => {
     terminationRequested = true;
     cleanupOwned()
@@ -258,6 +278,11 @@ if (!child) {
       .finally(() => releaseProbe?.());
   };
   process.once("SIGTERM", terminate);
+  /**
+   * Execute one planned control body, retaining its evidence in a single non-skipped attempt under id.
+   * Refuse after termination; append failed status before running, promote only on fulfillment, and retain a bounded
+   * error then rethrow on rejection. Resolves without a value; parent report validation separately enforces inventory.
+   */
   const record = async (id, body) => {
     if (terminationRequested) throw Error("CONTROL_TERMINATED");
     const entry = { id, status: "failed", attempts: 1, skipped: false };

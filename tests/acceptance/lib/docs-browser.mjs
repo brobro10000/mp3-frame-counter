@@ -1,10 +1,7 @@
 /**
- * Real docs/root browser predicates, invoked by public specs and owned controls. Inputs are an existing browser,
- * validated origin, viewport and package-local screenshot path. Creates a fresh context, preflights YAML references,
- * observes render/interaction through screenshot plus 200 ms, and rejects policy/errors/foreign attempts. Writes only
- * the requested screenshot; returns bounded evidence even on failure. Caller owns browser, this function closes context.
- * The optional boolean ownedRetainedProbe signals only owned late-fault fixtures after screenshot completion; public
- * specs omit it. It neither changes observations nor bypasses predicates or the retained interval.
+ * Public docs and upload-policy browser checks shared by application cases and owned fixture controls. Each helper
+ * states whether failures are returned as evidence or thrown. Callers own the browser and must enforce cleanup results.
+ * @see ../../../docs/testing/contracts/docs-v1.md
  */
 import { performance } from "node:perf_hooks";
 import { observe } from "./docs-observer.mjs";
@@ -22,6 +19,11 @@ import {
 } from "./docs-contract.mjs";
 import { within } from "./transport.ts";
 
+/**
+ * Require an ended observer record with no overflow, unexpected close, CSP/meta violation or page/console error.
+ * Returns nothing or throws an assertion without mutation. Foreign-request comparison remains the caller's duty;
+ * this predicate does not stop observation, close resources or certify activity outside the recorded interval.
+ */
 export function assertObservation(record) {
   requireThat(!record.active && !record.overflow && !record.unexpectedClose, "OBSERVER_BOUNDARY");
   requireThat(!record.meta.length, "META_POLICY");
@@ -32,6 +34,18 @@ export function assertObservation(record) {
   );
   requireThat(!record.console.length, "CONSOLE_ERROR");
 }
+/**
+ * Observe real rendering and response-schema expansion in a fresh context, then screenshot plus a 200 ms live interval.
+ * @param browser - Existing Chromium browser; caller retains ownership and must close it after all checks.
+ * @param origin - Canonical authorized public/fixture origin, checked through the shared HTTP/spec predicates.
+ * @param viewport - Width/height for the fresh context; desktop width also requires visible branding.
+ * @param screenshot - Writable package-local screenshot path supplied by the caller; capture failure is a failed check.
+ * @param ownedRetainedProbe - Boolean, default false; owned late-fault controls use the fixed post-screenshot signal.
+ * @returns A bounded passed/failed observation result; callers must apply assertBrowserResult rather than trust return.
+ * Invalid probe options or context creation reject. After context allocation, observation/assertion failures are
+ * collected in the result; context close is attempted with a five-second bound, marking cleanup unverified on failure.
+ * Timed-out operations are not canceled by the observation timeout; the caller still owns final browser cleanup.
+ */
 export async function checkDocsBrowser(browser, origin, viewport, screenshot, ownedRetainedProbe = false) {
   requireThat(typeof ownedRetainedProbe === "boolean", "OWNED_PROBE_INPUT");
   const context = await browser.newContext({ viewport, serviceWorkers: "block" });
@@ -45,6 +59,7 @@ export async function checkDocsBrowser(browser, origin, viewport, screenshot, ow
   };
   const start = performance.now();
   result.startedMonotonicMs = start;
+  /** Run a synchronous assertion, retaining its bounded message on failure so final observation/cleanup can continue. */
   const collect = (check) => {
     try {
       check();
@@ -190,10 +205,22 @@ export async function checkDocsBrowser(browser, origin, viewport, screenshot, ow
   result.finishedAt = new Date().toISOString();
   return result;
 }
+/**
+ * Require a producer result with confirmed cleanup and passed status; throw recorded failures without rerunning it.
+ */
 export function assertBrowserResult(result) {
   same(result.cleanup, "confirmed", "BROWSER_CLEANUP");
   same(result.status, "passed", result.failures.join(";"));
 }
+/**
+ * Verify the root response's original policy and actively prove it refuses an initially empty inline style sheet.
+ * @param browser - Caller-owned Chromium instance; this helper creates and attempts to close only its fresh context.
+ * @param origin - Canonical authorized origin whose root may be loaded and probed in the disposable context.
+ * @returns The closed observer record containing the required enforced style-src-elem refusal and no page errors.
+ * Inserts the sentinel only in that context, retains it for 200 ms, then checks liveness and attribution. HTTP/policy,
+ * browser, attribution or cleanup failures reject rather than returning a failed-result record. Cleanup runs in finally;
+ * its five-second observation timeout does not cancel close, so the caller retains responsibility for the browser.
+ */
 export async function checkRootBrowser(browser, origin) {
   const response = await requestDocs(origin, "/");
   assertHeaders(response.headers, ROOT_POLICY, "ROOT");

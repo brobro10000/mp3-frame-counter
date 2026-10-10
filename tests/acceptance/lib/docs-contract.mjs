@@ -2,6 +2,7 @@
  * Shared external docs contract predicates. Inputs are bounded HTTP bytes/headers and the preserved local OpenAPI
  * fixture; no product source is imported. Used by docs.spec.ts and docs-controls.mjs. Reads the fixture at import,
  * sends only explicitly requested public-origin HTTP(S) traffic, never follows redirects, and rejects any mismatch.
+ * @see ../../../docs/testing/contracts/docs-v1.md
  */
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
@@ -26,17 +27,27 @@ export const resources = [
   ["/docs/assets/docs.css", "text/css"],
   ["/docs/assets/redoc-logo-mini.svg", "image/svg+xml"],
 ];
+/** Return lowercase SHA-256 hex for Node crypto-compatible input bytes; no input mutation or I/O. */
 export const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+/** Require bytes to match an expected SHA-256 hex digest; return nothing or throw ARTIFACT_IDENTITY. */
 export function assertArtifact(bytes, expected) {
   same(sha256(bytes), expected, "ARTIFACT_IDENTITY");
 }
+/** Assert a truthy condition, using code as the failure message; return nothing on success. */
 export function requireThat(condition, code) {
   assert.ok(condition, code);
 }
+/** Assert deep strict equality without mutation, using code as the failure message; return nothing on success. */
 export function same(actual, expected, code) {
   assert.deepEqual(actual, expected, code);
 }
+/** Collect raw header values without combining duplicates; name must already be lowercase. Returns a new array. */
 export const headerValues = (headers, name) => headers.filter((h) => h.name.toLowerCase() === name).map((h) => h.value);
+/**
+ * Normalize a CSP string for the fixed contract comparison without interpreting it as a general CSP validator.
+ * Returns a new directive map with sorted values; folds directive names and self/none keywords only. Throws on a
+ * duplicate directive, preserving hashes, other token case and repeated values so mismatches remain observable.
+ */
 export function policyTokens(policy) {
   const result = {};
   for (const item of policy
@@ -50,6 +61,13 @@ export function policyTokens(policy) {
   }
   return result;
 }
+/**
+ * Require one enforced policy, no report-only policy, and exactly one no-store/nosniff/no-referrer header each.
+ * @param headers - Raw name/value entries preserving duplicates, as returned by requestDocs or Playwright.
+ * @param policy - Expected CSP, defaulting to the docs policy; comparison ignores directive/token order.
+ * @param prefix - Failure-message namespace, default DOCS; root callers supply ROOT with ROOT_POLICY.
+ * @returns Nothing on success; throws on missing, duplicate or mismatched headers without mutating input.
+ */
 export function assertHeaders(headers, policy = DOCS_POLICY, prefix = "DOCS") {
   const csp = headerValues(headers, "content-security-policy");
   same(csp.length, 1, prefix + "_CSP_COUNT");
@@ -62,6 +80,10 @@ export function assertHeaders(headers, policy = DOCS_POLICY, prefix = "DOCS") {
   ])
     same(headerValues(headers, name), [value], prefix + "_HEADER");
 }
+/**
+ * Require one Content-Type matching expected, case-insensitively, with only an optional UTF-8 charset suffix.
+ * response uses raw header entries; expected is a literal media type. Returns nothing or throws a MEDIA assertion.
+ */
 export function assertMedia(response, expected) {
   const values = headerValues(response.headers, "content-type");
   same(values.length, 1, "MEDIA_COUNT");
@@ -70,6 +92,13 @@ export function assertMedia(response, expected) {
     "MEDIA_TYPE",
   );
 }
+/**
+ * Check the expected status and JSON media type, then a closed error object with a nonempty string under 1024 chars.
+ * @param response - requestDocs result with raw headers and a Buffer body.
+ * @param status - Required HTTP error status.
+ * @param head - When true, require an empty body instead of parsing JSON; defaults false.
+ * @returns Nothing on success; malformed JSON or any shape/status/media mismatch throws. Input is not mutated.
+ */
 export function assertError(response, status, head = false) {
   same(response.status, status, "ROUTE_STATUS");
   assertMedia(response, "application/json");
@@ -83,6 +112,12 @@ export function assertError(response, status, head = false) {
     );
   }
 }
+/**
+ * Parse 1..262144 UTF-8 bytes using strict YAML 1.2 core rules into a plain object suitable for the bounded predicates.
+ * Rejects parser warnings/errors, duplicate/non-string keys, custom tags, multiple documents, nonfinite/non-JSON
+ * values, cycles, excessive aliases, depth over 64 or more than 50000 visited nodes. Ordinary shared aliases may remain.
+ * Returns the parsed object without external resolution; throws a YAML refusal or parser error, never a partial value.
+ */
 export function parseYaml(bytes) {
   requireThat(bytes.length > 0 && bytes.length <= 262144, "YAML_SIZE");
   const doc = parseDocument(bytes.toString("utf8"), {
@@ -107,6 +142,10 @@ export function parseYaml(bytes) {
   }
   const ancestors = new Set();
   let nodes = 0;
+  /**
+   * Validate one parsed subtree, counting visits and tracking only current ancestors so shared acyclic aliases work.
+   * Throws on complexity, type or cycle violations; mutates validation counters, not the parsed object.
+   */
   function json(node, depth = 0) {
     requireThat(++nodes <= 50000 && depth <= 64, "YAML_COMPLEXITY");
     if (node === null || ["string", "boolean"].includes(typeof node)) return;
@@ -127,8 +166,14 @@ export function parseYaml(bytes) {
   requireThat(value && !Array.isArray(value) && typeof value === "object", "YAML_OBJECT");
   return value;
 }
+/**
+ * Inspect an already bounded, acyclic JSON object and resolve every $ref through its own properties only.
+ * Returns reference strings in traversal order, including duplicates. Throws for non-fragment references, invalid
+ * pointer escapes, missing targets or non-object targets. Does not fetch, follow references recursively or mutate input.
+ */
 export function fragmentReferences(spec) {
   const refs = [];
+  /** Walk contained JSON values, resolving each reference against spec and appending it; invalid references throw. */
   function walk(node) {
     if (!node || typeof node !== "object") return;
     for (const [key, value] of Object.entries(node)) {
@@ -151,8 +196,11 @@ export function fragmentReferences(spec) {
   walk(spec);
   return refs;
 }
-// Strip annotations only at explicit OpenAPI object locations. Mapping keys (including a schema property named
-// description) remain structural. Component schemas are compared intact against the closed independent fixture.
+/**
+ * Return copied path/operation containers with only supported narrative fields removed for semantic comparison.
+ * Mapping keys remain structural, including properties named description. Nested schemas are retained intact and
+ * input is not mutated; malformed path/operation structures can throw. This is not general OpenAPI normalization.
+ */
 function pathsWithoutNarrative(paths) {
   return Object.fromEntries(
     Object.entries(paths).map(([path, methods]) => [
@@ -181,6 +229,13 @@ function pathsWithoutNarrative(paths) {
     ]),
   );
 }
+/**
+ * Compare a bounded, acyclic parsed specification with the independent transport fixture's selected semantics.
+ * Requires local references, OpenAPI 3.0.3, default same-origin servers/no global auth, intact closed components,
+ * normalized operation structure, the inclusive limit note and transport/proxy metadata. Returns nothing or throws;
+ * no mutation/I/O occurs, and unrelated OpenAPI metadata is not comprehensively validated.
+ * @see ../../../docs/testing/contracts/docs-v1.md
+ */
 export function assertSpec(spec) {
   fragmentReferences(spec);
   same(Object.hasOwn(spec, "servers") ? spec.servers : [{ url: "/" }], [{ url: "/" }], "SPEC_SERVERS");
@@ -196,6 +251,15 @@ export function assertSpec(spec) {
   for (const key of ["x-transport-requirements", "x-controlled-proxy-responses"])
     same(spec[key], expectedSpec[key], "SPEC_TRANSPORT");
 }
+/**
+ * Send one bodyless HTTP(S) request without following redirects or pooling its connection.
+ * @param origin - Canonical origin only, with no path/trailing slash; invalid URL/origin throws synchronously.
+ * @param path - Slash-prefixed, non-protocol-relative path, optionally with a query; invalid prefix throws synchronously.
+ * @param method - Method passed to Node, default GET; callers choose the contract's fixed route/method probes.
+ * @returns A Promise of status, duplicate-preserving raw name/value headers and a Buffer body, for any HTTP status.
+ * Request errors, aborted responses, bodies over 2 MiB or the absolute five-second deadline reject. The helper owns
+ * the request/timer, destroys the request on size/deadline refusal and clears the timer on response end/request close.
+ */
 export function requestDocs(origin, path, method = "GET") {
   const base = new URL(origin);
   requireThat(base.origin === origin && ["http:", "https:"].includes(base.protocol), "PUBLIC_ORIGIN");
@@ -231,6 +295,12 @@ export function requestDocs(origin, path, method = "GET") {
     req.end();
   });
 }
+/**
+ * Exercise the fixed public root/docs route, method, redirect, media, header, artifact and unknown-path matrix.
+ * origin must be a canonical authorized public or owned-fixture origin. Sends bodyless requests sequentially through
+ * requestDocs, which owns their connections; returns nothing on success and rejects at the first transport/assertion
+ * failure. Does not start a server, inspect product configuration or validate all methods accepted by HTTP.
+ */
 export async function checkPublicResponses(origin) {
   const root = await requestDocs(origin, "/");
   same(root.status, 200, "ROOT_STATUS");
@@ -274,6 +344,11 @@ export async function checkPublicResponses(origin) {
   same(query.status, 200, "QUERY_IDENTITY");
   assertHeaders(query.headers);
 }
+/**
+ * Fetch the public YAML document from a canonical authorized origin, check its status/headers/download disposition,
+ * then parse and compare its semantics through the shared predicates. Returns the admitted parsed object; rejects
+ * transport, parsing or contract failures. requestDocs owns the connection; no reference fetch or source mutation occurs.
+ */
 export async function checkServedSpec(origin) {
   const res = await requestDocs(origin, "/docs/openapi.yaml");
   same(res.status, 200, "SPEC_STATUS");

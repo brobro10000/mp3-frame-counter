@@ -4,6 +4,15 @@
  * rejects partial, stale, duplicate, skipped/retried or failed evidence. Never constructs application acceptance.
  */
 import assert from "node:assert/strict";
+/**
+ * Require a fresh, complete candidate-control report with passed single attempts and confirmed cleanup.
+ * @param report - Parsed untrusted report; extra evidence fields are preserved but are not certified by this predicate.
+ * @param runId - Fresh identity selected by the caller before launching the child.
+ * @param sourceDigest - Digest computed from the caller's exact source inputs, never taken on trust from the report.
+ * @param planned - Nonempty unique IDs in required execution order; both reported plan and outcomes must match exactly.
+ * @returns Nothing on success; throws CONTROL assertions for stale/missing/duplicate/skipped/retried/failed evidence.
+ * Pure and nonmutating; this checks candidate accounting, never application acceptance or actual resource state.
+ */
 export function assertControlReport(report, runId, sourceDigest, planned) {
   assert.ok(report && typeof report === "object", "CONTROL_REPORT_OBJECT");
   assert.equal(report.kind, "candidate-docs-controls", "CONTROL_KIND");
