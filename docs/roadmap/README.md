@@ -146,12 +146,15 @@ Maximums may be exceeded briefly and do not cap spending.
 
 The cost target is allowance-covered operation, conditional on actual eligibility. Cloud Run requires a billing account;
 ongoing allowances, expiring credits and a no-card/no-charge plan are different. Shared billing-account usage, registry
-retention, both containers/environments, CI/browser minutes, egress, logs and cold starts belong in the estimate. Do not
-assume billing consent. Use no keep-alive traffic; retain live/prior-good/candidate artifacts needed for recovery.
-Alerts are not hard caps. If the requirements cannot be met within verified free operation, hosting stays blocked until
-the owner accepts billing risk or a reviewed topology change; assessment submission and unrelated work can continue.
+retention, both containers/environments, CI/browser minutes, egress, logs and cold starts belong in the estimate. The
+later [execution amendment](../phases/roadmap-execution-authorization.md#monthly-cost-boundary) records billing
+activation authority and the owner's USD 100 monthly budget: create the dedicated project, then verify a shared USD 75
+Cloud Run spend cap and a USD 100 all-service alert budget before billable application resources. Reporting delay and
+ancillary costs mean this is not a guaranteed USD 100 invoice ceiling. Preserve enforcement; never raise or lift the cap
+automatically. Use no keep-alive traffic and retain live/prior-good/candidate artifacts needed for recovery.
 [Free-tier eligibility](https://docs.cloud.google.com/free/docs/free-cloud-features),
-[Cloud Run pricing](https://cloud.google.com/run/pricing).
+[Cloud Run pricing](https://cloud.google.com/run/pricing),
+[spend-cap limits](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps).
 
 Retain the [historical paid Render proposal](../architecture/deployment.md) as an alternative. Vercel Functions'
 documented 4.5 MB limit fails the unchanged upload path. A future Vercel frontend needs separately verified routing to
@@ -342,7 +345,7 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                       | Release reviewer + owner; VER-01 and line changes.      |
 | DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                   | Acceptance author + security reviewer; docs activation. |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                | Release/tooling owner; QUEUE-WORKFLOW only.             |
-| COST-01       | Conditional Cloud Run targeting allowances; eligibility, billing and overage consent unknown.                               | Owner; cloud resources/hosting.                         |
+| COST-01       | Billing activation authorized; USD 75 Run cap and USD 100 project budget must be verified before billable app resources.    | Owner + deployment operator; paid resources/hosting.    |
 | ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                     | Owner + deployment operator; setup/exposure.            |
 | HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                 | Acceptance author + deployment operator; stage exit.    |
 | LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.             | Owner; production deployment and exposure.              |
