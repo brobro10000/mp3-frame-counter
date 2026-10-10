@@ -1,18 +1,21 @@
 ---
 title: Local runtime and independent acceptance boundary
 query: >-
-  Show the implemented local runtime as a compact flowchart. Keep the two Compose application containers distinct
-  from the temporary independent acceptance runner and host controller. Show the single browser origin, raw upload
-  proxy, bounded in-process API/parser boundary, and reviewed fixture inputs. This view describes local execution;
-  do not infer cloud deployment or introduce services absent from the referenced source.
+  Show the implemented local runtime as a compact flowchart. Keep the two
+  Compose application containers distinct from the temporary independent
+  acceptance runner and host controller. Show the single browser origin, raw
+  upload proxy, bounded in-process API/parser boundary, and reviewed fixture
+  inputs. This view describes local execution; do not infer cloud deployment or
+  introduce services absent from the referenced source.
 references:
-  - "File: /compose.yaml"
-  - "File: /frontend/Dockerfile"
-  - "File: /frontend/nginx.conf.template"
-  - "File: /server/Dockerfile"
-  - "File: /server/src/http.ts"
-  - "File: /server/src/mp3.ts"
-  - "File: /scripts/run-e2e.mjs"
+  - 'File: /compose.yaml'
+  - 'File: /frontend/Dockerfile'
+  - 'File: /frontend/nginx.conf.template'
+  - 'File: /server/Dockerfile'
+  - 'File: /server/src/http.ts'
+  - 'File: /server/src/mp3.ts'
+  - 'File: /scripts/run-e2e.mjs'
+generationTime: '2026-10-10T01:12:38.134Z'
 ---
 flowchart LR
     B["Browser"]
