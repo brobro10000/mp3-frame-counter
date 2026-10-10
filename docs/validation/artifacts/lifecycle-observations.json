@@ -1,0 +1,248 @@
+{
+  "schemaVersion": 1,
+  "kind": "operator-lifecycle-observations",
+  "observedAt": "2026-10-10",
+  "authority": "Local operator observation; not CI acceptance or a provider-signed attestation.",
+  "sourceRevision": "495d95710a36ed9b63d76b43381e2f0ac811deb2",
+  "diagnosticSha256": "53ede3d03ec8eee0f12fedc9ae32e2a51a476774a441dd856d0838a938070bc1",
+  "rawObservationsSha256": "89ec20e603118ab8d18fde49167f1889d5ace811b60f2ebad49dec2489fd2a30",
+  "testedReportSha256": "e46836744acda2d319d6f907bc972ccfcb7c28097c7229f07f240db42b03521d",
+  "platform": "linux/amd64",
+  "controls": {
+    "decisions": 14,
+    "passed": 14,
+    "logSha256": "77cdc146de4ee079aa37c52de61238d6e2539e40e48705333bff7779458c344c"
+  },
+  "resourceAbsence": {
+    "containers": true,
+    "networks": true,
+    "method": "Subsequent exact Compose project-label queries by coordinator returned empty output."
+  },
+  "observations": {
+    "schemaVersion": 1,
+    "kind": "lifecycle-signal-diagnostic",
+    "project": "mp3-e2e-signal-e205ccadc6a6",
+    "sourceRevision": "495d95710a36ed9b63d76b43381e2f0ac811deb2",
+    "sourceReportSha256": "e46836744acda2d319d6f907bc972ccfcb7c28097c7229f07f240db42b03521d",
+    "images": {
+      "api": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013",
+      "frontend": "sha256:86366189ac874d86402f8a45b6760a42c125420bd6ee8cd66393637c208f0598"
+    },
+    "fixture": {
+      "id": "one-frame",
+      "bytes": 384,
+      "frameCount": 1,
+      "sha256": "a0c133863e989efb35706adc8b03b075216340ad28bea7ac5869f222667dccfc"
+    },
+    "limits": {
+      "workBudgetMs": 150000,
+      "cleanupBudgetMs": 20000,
+      "observationWindowMs": 8000,
+      "boundaryWindowMs": 3000,
+      "acceptedDrainBoundary": "strict stopping-503 only; reset/refusal and acknowledgment are insufficient"
+    },
+    "cases": [
+      {
+        "mode": "drain",
+        "status": "operationally-unresolved",
+        "forcedCleanup": false,
+        "observations": [
+          {
+            "kind": "stopping-503",
+            "atMs": 68.4364999999998,
+            "heldCount": 1,
+            "heldOpen": true,
+            "priorProbeResponsesComplete": true,
+            "state": {
+              "schemaVersion": 1,
+              "kind": "api-lifecycle-state",
+              "target": {
+                "project": "mp3-e2e-signal-e205ccadc6a6",
+                "service": "api",
+                "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+                "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+              },
+              "generation": {
+                "startedAt": "2026-10-10T10:10:37.939801637Z",
+                "restartCount": 0
+              },
+              "state": {
+                "running": true,
+                "paused": false,
+                "restarting": false,
+                "dead": false,
+                "exitCode": 0,
+                "oomKilled": false,
+                "hasError": false
+              }
+            },
+            "response": {
+              "complete": false,
+              "error": "ECONNRESET"
+            }
+          }
+        ],
+        "admissionWaitMs": 3.694666999999754,
+        "acknowledgment": {
+          "schemaVersion": 1,
+          "kind": "api-signal-acknowledgment",
+          "signal": "SIGTERM",
+          "target": {
+            "project": "mp3-e2e-signal-e205ccadc6a6",
+            "service": "api",
+            "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+            "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+          },
+          "generation": {
+            "startedAt": "2026-10-10T10:10:37.939801637Z",
+            "restartCount": 0
+          }
+        },
+        "ackAtMs": 51.991291000000274,
+        "exit": {
+          "schemaVersion": 1,
+          "kind": "api-lifecycle-state",
+          "target": {
+            "project": "mp3-e2e-signal-e205ccadc6a6",
+            "service": "api",
+            "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+            "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+          },
+          "generation": {
+            "startedAt": "2026-10-10T10:10:37.939801637Z",
+            "restartCount": 0
+          },
+          "state": {
+            "running": false,
+            "paused": false,
+            "restarting": false,
+            "dead": false,
+            "exitCode": 0,
+            "oomKilled": false,
+            "hasError": false
+          }
+        },
+        "exitAtMs": 5192.992833,
+        "response": {
+          "complete": false,
+          "error": "ECONNRESET"
+        },
+        "responseAtMs": 5035.978749999998,
+        "heldClosed": true,
+        "closedAtMs": 5036.014833000001,
+        "reason": "No strict stopping boundary"
+      },
+      {
+        "mode": "straggler",
+        "status": "observed",
+        "forcedCleanup": false,
+        "observations": [],
+        "admissionWaitMs": 3.2132500000006985,
+        "acknowledgment": {
+          "schemaVersion": 1,
+          "kind": "api-signal-acknowledgment",
+          "signal": "SIGTERM",
+          "target": {
+            "project": "mp3-e2e-signal-e205ccadc6a6",
+            "service": "api",
+            "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+            "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+          },
+          "generation": {
+            "startedAt": "2026-10-10T10:10:54.995612714Z",
+            "restartCount": 0
+          }
+        },
+        "ackAtMs": 54.24079200000051,
+        "exit": {
+          "schemaVersion": 1,
+          "kind": "api-lifecycle-state",
+          "target": {
+            "project": "mp3-e2e-signal-e205ccadc6a6",
+            "service": "api",
+            "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+            "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+          },
+          "generation": {
+            "startedAt": "2026-10-10T10:10:54.995612714Z",
+            "restartCount": 0
+          },
+          "state": {
+            "running": false,
+            "paused": false,
+            "restarting": false,
+            "dead": false,
+            "exitCode": 0,
+            "oomKilled": false,
+            "hasError": false
+          }
+        },
+        "exitAtMs": 5217.110792000003,
+        "response": {
+          "complete": false,
+          "error": "ECONNRESET"
+        },
+        "responseAtMs": 5046.144875000002,
+        "heldClosed": true,
+        "closedAtMs": 5046.171459000001,
+        "bodyCompleted": false
+      }
+    ],
+    "cleanup": "passed",
+    "status": "operationally-unresolved",
+    "diagnosticConfigurationSha256": "770737275c1d1d55d8393c58c91b85c34d38046495d55e5f110aea2defc74d52",
+    "initial": {
+      "schemaVersion": 1,
+      "kind": "api-lifecycle-state",
+      "target": {
+        "project": "mp3-e2e-signal-e205ccadc6a6",
+        "service": "api",
+        "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+        "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+      },
+      "generation": {
+        "startedAt": "2026-10-10T10:10:37.939801637Z",
+        "restartCount": 0
+      },
+      "state": {
+        "running": true,
+        "paused": false,
+        "restarting": false,
+        "dead": false,
+        "exitCode": 0,
+        "oomKilled": false,
+        "hasError": false
+      }
+    },
+    "restored": {
+      "schemaVersion": 1,
+      "kind": "api-lifecycle-state",
+      "target": {
+        "project": "mp3-e2e-signal-e205ccadc6a6",
+        "service": "api",
+        "containerId": "e20bd3935a29b8f9d31c0c40ddaa69698b5ab08bace74661141e4008aa0fe3a3",
+        "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+      },
+      "generation": {
+        "startedAt": "2026-10-10T10:10:54.995612714Z",
+        "restartCount": 0
+      },
+      "state": {
+        "running": true,
+        "paused": false,
+        "restarting": false,
+        "dead": false,
+        "exitCode": 0,
+        "oomKilled": false,
+        "hasError": false
+      }
+    },
+    "cleanupStartedAfterObservations": true,
+    "durationMs": 23791.091958
+  },
+  "limits": [
+    "Graceful completion of an admitted request is not established.",
+    "The eight-second observation window does not prove an exact five-second bound.",
+    "This diagnostic does not replace the full frozen acceptance report."
+  ]
+}

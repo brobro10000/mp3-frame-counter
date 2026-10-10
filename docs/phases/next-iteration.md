@@ -114,9 +114,11 @@ exact tested images in a fresh owned project with reserved loopback ports, bound
    absence and retain source/image/generation, observation timing, response, exit/OOM/error and cleanup results without
    secrets. Never overwrite full acceptance with diagnostic output.
 
-If no trustworthy stopping predicate emerges, record drain as unresolved operational evidence and obtain an independent
-coordinator/reviewer disposition before candidate authoring. Do not weaken the predicate to get a pass. Any discovered
-product defect becomes a separate implementation finding; this controller card cannot repair it.
+The [actual diagnostic and independent disposition](../validation/lifecycle-controller.md#independent-disposition)
+retain graceful drain as unresolved operational evidence; normal straggler exit is separately observed. Candidate
+authoring remains conditional on this card's reviewed merge and verified main release. Do not weaken the predicate to
+get a pass. Any discovered product defect becomes a separate implementation finding; this controller card cannot repair
+it.
 
 ### Review, rollback, release effect and stop
 
@@ -160,8 +162,10 @@ before this candidate can proceed.
 2. Exercise current transport invariants externally: content-type parameters and rejection, unsupported methods and HEAD
    behavior, Allow headers, byte/count limits, admission before buffering, error precedence, cancellation, deadlines,
    connection cleanup and externally provable lifecycle behavior using TR-LIFECYCLE's reviewed predicate. Retain
-   unresolved graceful-drain guarantees as explicit operational evidence. Map existing tests before adding cases; do not
-   duplicate assertions solely to raise a count or bless a framework default.
+   unresolved graceful-drain guarantees as explicit operational evidence. Independently test bounded straggler closure
+   and normal exit through the reviewed controller, with identity checks and negative controls; require fresh shutdown
+   source/configuration review for the migration. Map existing tests before adding cases; do not duplicate assertions
+   solely to raise a count or bless a framework default.
 3. Preserve known-count independent fixtures, useful controlled error cases and no private sample dependency. The
    candidate must detect a missing or skipped mandatory case and incorrect frame/error responses. Add narrowly scoped
    negative controls proving new assertions detect their intended regression.
