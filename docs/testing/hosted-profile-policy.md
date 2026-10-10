@@ -186,6 +186,44 @@ Ordinary PR/main acceptance remains hardwired to full local. There is no `ACCEPT
 consumer validates dormant hosted data but cannot start a hosted target; `runtimeAcceptance` retains its existing
 admission/local-selection distinction. The independent suite owns complete discovery; the root reader owns provenance.
 
+### Required-profile projection amendment — 2026-10-10
+
+HOSTED-SOURCE-PROJECTION adds the following dormant API to the existing source module, without changing the old
+`readAcceptanceProfileSource` result or original-context requirements:
+
+```text
+readRequiredAcceptanceProfileProjection(root, { selection, sourceRevision, baseRevision })
+  -> null | {
+    required: NormalizedRequiredProfilesV1,
+    declarationInput: {
+      metadata, inventories: { local, stage, production },
+      selectedContractRevision, predecessorLocalInventory
+    },
+    profilesSha256,
+    inventorySha256: { stage, production }
+  }
+```
+
+The same private validated read supplies both exports: one resolution/catalog/suite/lineage pass, atomic validation of
+all selected roles, and one captured raw blob for each parsed declaration and its hash. The projection contains only
+required profiles-v1 data. Successfully validated legacy-local or exact-genesis-null required declarations return null,
+even if a newer candidate or pending hosted suite exists. The future hosted caller must reject null before execution.
+Malformed context, source, lineage or any selected role still throws the existing sanitized source/declaration error; no
+partial required result or null fallback can conceal a defect.
+
+`declarationInput` retains fresh copies of the strictly decoded original bytes' values, including ordering and the
+immediate predecessor inventory's own revision. It is not reconstructed from normalized mappings. Hashes use the exact
+original regular Git blob bytes before parsing; semantically equal whitespace/member-order changes have distinct byte
+identities. The closed result is fresh and deeply frozen on every call. There is no role, profile, path, ref, metadata
+or older-suite override, and no provider, credential, execution, write or import-time I/O side effect.
+
+This API checks source consistency only. Historical release consumers must first call existing
+`verifyAcceptanceAdmission` with independently authenticated original publisher context and an external admission
+digest, then retain that unchanged selection/source/base. A record's own context/digest cannot authenticate itself; the
+new hosted run cannot impersonate the original publisher run. `runtimeAcceptance` remains tied to its actual
+checkout/current CI context. Publisher handoff, exact registry transfer, provider observations and production authority
+remain separate future launcher prerequisites.
+
 ## 4. Local compatibility and separate hosted evidence
 
 Keep existing local commands, no-argument behavior, reports, preparation identity, manifest schemas, publication
