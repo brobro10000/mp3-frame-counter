@@ -5,22 +5,20 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **DOCS-TOOL-POLICY merged; v0.2.23 publication verified; DOCS-IMPLEMENTATION in progress**. The
-[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23,
-exact-head automated companion approval, the actual squash and protected-main run 38073905847, attempt 1. It passed 46
-pending controls/72-case discovery, 82 unit tests and all 67 required transport cases. The governance release keeps
-transport-v1 required and docs-v1 as the single pending bound successor. Docs product acceptance, activation, merge,
-publication and deployment are not established by that prerequisite.
+Status, 2026-10-10: **DOCS-IMPLEMENTATION, HOSTED-PROFILE-POLICY and PROFILE-DECLARATIONS are published**. The latest
+verified release is [v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26). Its required
+docs-v1 suite contains all 72 local cases and persists for descendants and reverts. Offline Redoc and the served OpenAPI
+specification shipped in v0.2.24; the profile protocol shipped in v0.2.25 and its declaration validator in v0.2.26. The
+[protected-main evidence](../phases/next-iteration.md#profile-declarations-protected-main-completion) records the actual
+sources, runs, automated approvals, images and publication limits. No application service is deployed.
 
-The three-card window retains completed **DOCS-TOOL-POLICY**, current **DOCS-IMPLEMENTATION** and next
-**HOSTED-PROFILE-POLICY**. The
-[browser prerequisite](../validation/acceptance-browser-setup.md#protected-main-completion--2026-10-10) published in
-v0.2.20. The independent docs candidate selects local Redoc CE 2.5.4 without a CLI, docs-only CSP and finite retained
-live-document observation; read its [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) for
-limits and authority. Binding and tool-policy publication are complete; separately owned product work must pass all 72
-bound docs-v1 cases before protected-main activation/publication. Once activated, that requirement persists for
-descendants and reverts. No docs route or renderer is implemented in the released application yet. Hosted-profile work
-still follows actual docs activation/publication.
+The next [three-card window](../phases/next-iteration.md) is **HOSTED-DELIVERY-POLICY / LINE-03**, **HOSTED-CONTRACT**
+and **HOSTED-BIND**. The first opens the planned 0.3 line and reserves exact IaC path ownership without adding resources
+or workflow privileges. The independently authored hosted successor must preserve all 72 local obligations. Its browser
+authentication adapter uses the [reviewed bounded CDP design](../deployment/hosted-delivery-policy.md), with executable
+Linux/HTTPS, confinement, response-fidelity and cleanup controls still required before candidate freeze. Candidate
+authoring, actual binding, application activation and hosted verification stay distinct. Stacked PRs and disjoint agent
+lanes apply throughout the remaining path to v1; every production deployment retains human intervention.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -456,9 +454,9 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | Gate          | Default and current boundary                                                                                                         | Owner / blocked work                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
-| GATE-REVIEW   | GATE-01 verified; transport-v1 remains required. PR #22/v0.2.22 bound docs-v1 as the single pending successor.                       | Independent gate reviewer + owner; later transitions.       |
+| GATE-REVIEW   | GATE-01 verified; PR #24/v0.2.24 activated docs-v1 with 72 required local cases. No successor is yet bound.                          | Independent gate reviewer + owner; later transitions.       |
 | VERSION-01    | Source-bound minor plus global ordinal implemented and verified; 0.2 activation and first publication verified.                      | Release reviewer + owner; line changes.                     |
-| DOCS-01       | Bound docs-v1 selects Redoc CE 2.5.4 and scoped CSP with finite observation; actual product activation remains pending.              | Acceptance author + security reviewer; docs activation.     |
+| DOCS-01       | Redoc CE 2.5.4 and scoped CSP shipped in v0.2.24 under docs-v1; preserve its finite observation limits.                              | Acceptance author + security reviewer; future docs changes. |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
 | COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations. | Owner + deployment operator; paid resources/hosting.        |
 | ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                              | Owner + deployment operator; setup/exposure.                |
@@ -507,11 +505,12 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) retains the completed Redoc tool policy, current bound
-documentation implementation and next documentation-only hosted-profile decision. Browser preparation, the docs/CSP
-candidate, its binding and selected tool policy are published. Protected-main docs acceptance/publication remain
-unverified. Fastify and its prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified; each
-later successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) covers hosted delivery policy/line activation, the independent
+hosted successor and its separate actual-merge binding. Fastify, offline Redoc/docs-v1 activation and the hosted-profile
+protocol are published. PROFILE-DECLARATIONS merged at `fd0f35bca1289319ce909a4aff785251c0cd1583`; main run
+[38084476141](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084476141) published v0.2.26. GATE-01 and
+VER-01 publication/retries are verified; each later successor still requires independent authoring, actual merge binding
+and corresponding implementation evidence. None of these milestones establishes application hosting.
 
 ## PLAN-01 local verification — 2026-10-10
 

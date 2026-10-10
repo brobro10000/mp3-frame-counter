@@ -1,22 +1,55 @@
 # Next iteration: phase instructions and three PR cards
 
-**Current state, 2026-10-10:** HOSTED-PROFILE-POLICY is merged and published as
-[v0.2.25](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.25), from exact main source
-`0a691a1856d8b742975cc2eb310032b800eb41ea`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
+**Current state, 2026-10-10:** PROFILE-DECLARATIONS is merged and published as
+[v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26), from exact main source
+`fd0f35bca1289319ce909a4aff785251c0cd1583`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
 descendants and reverts. This dated amendment supersedes earlier pending-docs statements in entrypoint/role guidance;
 those statements describe the preceding work. No application service is deployed.
 
-The three-card window retains completed **DOCS-IMPLEMENTATION**, completed **HOSTED-PROFILE-POLICY** and current
-**PROFILE-DECLARATIONS**. Independent expectations for the current card were reviewed and committed before initial
-implementation; the narrowly amended historical-genesis expectations and their actual chronology are recorded in
-[validation](../validation/acceptance-profiles.md). The owner authorized stacked PRs and disjoint subagent domains;
-actual main ancestry has been reconciled. Current implementation, CI, companion review and publication remain separate
-from the verified predecessor release.
+<a id="pr-card-3--profile-declarations-validate-immutable-acceptance-profile-declarations"></a>
+
+PR #26's PROFILE-DECLARATIONS implementation merged at `fd0f35bca1289319ce909a4aff785251c0cd1583` after corrected-head
+CI and exact-head companion approval. Its
+[bounded card](https://github.com/brobro10000/mp3-frame-counter/blob/32ae32080a40c7ab1fddccc9d585af8f73aee802/docs/phases/next-iteration.md#pr-card-3--profile-declarations-validate-immutable-acceptance-profile-declarations)
+remains in its immutable source. Main run 38084476141 passed and published v0.2.26; the
+[completion evidence](#profile-declarations-protected-main-completion) verifies that prerequisite. The direct dependent
+was immediately reconciled onto actual merged main while publication was verified in parallel.
+
+The next three-card window is **HOSTED-DELIVERY-POLICY / LINE-03**, **HOSTED-CONTRACT** and **HOSTED-BIND**. The first
+opens the planned 0.3 envelope with only dormant path admission and a finite execution interface. The other two keep
+independent candidate authorship and actual merged binding separate. Preserve all prior completed-card evidence through
+its immutable sources; later work remains provisional.
+
+Merge an approved PR as soon as its required checks and prerequisites pass. Immediately reconcile and retarget its
+direct dependents onto the actual merged main, then refresh their checks and companion review. Avoid accumulating
+completed layers; keep parallel work limited to independent domains and necessary prerequisites.
 
 Software releases remain independent of deployment. The [cost evidence](../validation/cloud-cost-bootstrap.md) preserves
 the USD 75 shared Run cap and USD 100 project alert budget. Every production application deployment, including
 authenticated candidates, requires human intervention under the
 [execution amendment](roadmap-execution-authorization.md).
+
+### PROFILE-DECLARATIONS protected-main completion
+
+[PR #26](https://github.com/brobro10000/mp3-frame-counter/pull/26) merged normally at **20:37:33Z** as
+`fd0f35bca1289319ce909a4aff785251c0cd1583`. Its sole parent is `0a691a1856d8b742975cc2eb310032b800eb41ea`; tree
+`d260f17572a4a520610cb33b5b31a12f31efc1ea` equals the reviewed head tree. Companion `brobro1000` posted
+[automated approval 5480724617](https://github.com/brobro10000/mp3-frame-counter/pull/26#pullrequestreview-5480724617)
+for exact head `80e1850224bf3638a0fd4d96fcbedf64a582e9dc`. Owner `brobro10000` merged after all required checks and
+resolved conversations, without bypass.
+
+[Main run 38084476141, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084476141) passed 538
+tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and all 72 required external cases with scoped cleanup.
+Release **409195020**, **v0.2.26**, was published at **20:43:27Z** with ten assets and `deployed: false`. Root verified
+the original admission/source/base/run, suite, image and configuration identities and rehashed all eight metadata
+assets. The two image archives were compared as metadata only; neither was downloaded or rehashed.
+
+Root read and rehashed the independent main-CI audit and its records. Audit SHA256 is
+`c24dd2f5b2fc8bd5288e3990721283e6ddbb9b5e93daf8bad81d2c39060ad8f1`; metadata-verification SHA256 is
+`e4dd9cf473e98cded8b2e1ad3488566b6a283619ae66c458f0c5b33d095bf46a`. These retained local records support the linked
+publication; they are not signed attestations or deployment evidence. The declarations prerequisite is complete.
+
+<a id="pr-card-2--hosted-profile-policy-settle-the-reviewed-profile-protocol"></a>
 
 ### HOSTED-PROFILE-POLICY protected-main completion
 
@@ -147,363 +180,150 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — DOCS-IMPLEMENTATION: Serve the bound offline documentation
+## PR card 1 — HOSTED-DELIVERY-POLICY / LINE-03: Open the hosted-delivery release envelope
 
-**Status:** completed in PR #24/v0.2.24; see the protected-main completion above. The retained instructions below
-describe the implemented scope and its safeguards. Read [implementation evidence](../validation/docs-implementation.md).
+**Outcome:** activate the roadmap's source-bound 0.3 line and reserve ten exact IaC filenames with independent access
+and application ownership. Freeze the hosted launcher/suite boundary once its adapter controls establish feasibility.
+This governance change introduces no cloud resource, hosted execution or active workflow permission.
 
-### Outcome and immutable authority
+**Base and prerequisites:** PR #26 is now published as v0.2.26. This dependent is reconciled onto actual main
+`fd0f35bca1289319ce909a4aff785251c0cd1583` as first parent, preserving its earlier test-first branch history. Fresh
+main-target checks and companion review remain mandatory. Read the
+[profile protocol](../testing/hosted-profile-policy.md), [execution authority](roadmap-execution-authorization.md) and
+[delivery boundary](../deployment/hosted-delivery-policy.md). An unverified predecessor release is not satisfied by its
+feature branch. Resolve AUTH-ADAPTER before authoring the dependent hosted suite; independent IaC path expectations can
+proceed while that probe runs.
 
-Serve the reviewed OpenAPI 3.0.3 specification and interactive Redoc CE 2.5.4 through the existing public NGINX origin,
-with artifacts packaged in the API image and the exact docs-only CSP. Preserve the static upload UI, raw Fastify upload
-contract, pure parser and two independent non-root images. Trace APP-V1-009,010,012,013,015 and APP-REL-001–006. The
-[docs-v1 contract](../testing/contracts/docs-v1.md), complete suite/inventory/manifest, predecessor oracles and
-registered identities are read-only. Its [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md)
-records the finite live-document observation and unverified destructive-teardown boundary. Implement the contract rather
-than changing it to fit the source. No hosting or production operation belongs to this card.
+**Exact executable ownership:** the independent author owns only new expectations in
+`scripts/acceptance-transitions.test.mjs`; a separate implementer later changes only the literal path classification in
+`scripts/acceptance-transitions.mjs`. Root owns `release-policy.json`, changing only line `0.2` to `0.3`. The strategy
+and global first-parent ordinal remain unchanged. No package/lock update is needed. Root owns the delivery-boundary
+document, this phase window, targeted roadmap/README/AGENTS and role pointers, and a scoped validation record.
 
-### Prerequisites to verify before product work
+The five literal `infra/cloud/access/` files in the delivery boundary are governance; the five `infra/cloud/runtime/`
+files are product. Unknown filenames still fail closed. The classifier is not a Terraform content security parser: later
+source/plan review must enforce that runtime files contain no IAM/federation/cost authority and access files contain no
+application revision. No wildcard, generic policy framework, infrastructure file or placeholder job belongs in this PR.
+Existing workflow/publication guards remain byte-identical.
 
-- Actual DOCS-CONTRACT squash/publication, independent DOCS-01 disposition, exact suite/manifest/contract identities and
-  authenticated review evidence. Candidate/PR controls alone are insufficient; refresh facts after intervening changes.
-- Actual DOCS-BIND protected-main publication and trusted registry selection: transport-v1 required, docs-v1 the single
-  bound pending successor. No changed frozen object, second pending successor or unreviewed product activation.
-- Actual DOCS-TOOL-POLICY publication admitting only root devDependency redoc exactly 2.5.4, with no CLI. Preserve the
-  seven existing development tools, exact Fastify runtime pin, Node/npm pins, install-hook policy and lock constraints.
-- Root reviews the following product-only writable list and the existing build-command admission. Any necessary wider
-  permission returns to a separate trusted-policy prerequisite; never edit a classifier/gate to admit this
-  implementation.
+**Test first:** independently author and review seven focused Git-history groups before classifier implementation:
+unchanged dormant history; each access filename; each runtime filename and actual successor activation; mixed
+product/governance refusal; candidate/binding boundaries; unknown near-neighbor paths; historical preservation. Positive
+counterparts must establish valid fixtures. Retain meaningful unknown-path red, then freeze tests before a different
+agent adds the ten literals. Preserve all previous assertions. Use the existing allocator tests for the already
+implemented numeric minor migration, legacy retries and latest selection; no new allocator behavior is introduced.
 
-### Exact proposed product ownership
+**Validation:** new focused path tests, full affected transition tests and allocator/preparation/publication tests;
+format/policy/portability/workflow checks and mandatory CI with all 72 required local cases. No live tag/publication
+test, provider command or Terraform apply. Independently review the classifier and finite auth/role decisions, then
+obtain actual-head Docker companion approval. Source/base changes invalidate review.
 
-| Paths                                                                         | Bounded change                                                                                                                                                                                                          |
-| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| package.json, package-lock.json                                               | Add only direct dev redoc 2.5.4 and its reviewed lock graph; extend existing build to compile then run the builtin generator. Prefix test:unit with npm run build; preserve all other scripts/pins and runtime Fastify. |
-| server/src/build-docs.mjs                                                     | New builtin-only deterministic build helper; fixed package-local/input/output paths, no CLI, installed renderer execution, fetch or environment-selected source.                                                        |
-| server/src/docs/openapi.json                                                  | New product-owned OpenAPI 3.0.3 source conforming to the bound semantic contract; no runtime import from acceptance fixtures.                                                                                           |
-| server/src/docs/index.html, server/src/docs/init.js, server/src/docs/docs.css | New document/template inputs, external initialization and fixed system-font styles.                                                                                                                                     |
-| server/src/docs/redoc-logo-mini.svg, server/src/docs/provenance.json          | Exact reviewed logo bytes and portable source/hash/license attribution; preserve original acquisition facts.                                                                                                            |
-| server/src/docs.ts, server/src/http.ts                                        | Closed asset/spec routing and narrowly integrated raw-path/method dispatch; preserve upload behavior and lifecycle.                                                                                                     |
-| server/Dockerfile                                                             | Offline generation during the existing build stage, packaged outputs, unchanged production dependency separation and non-root runtime.                                                                                  |
-| frontend/nginx.conf.template                                                  | Explicit docs proxy locations and sole public header ownership, with bounded error handling and unchanged upload-page policy.                                                                                           |
-| tests/unit/docs.test.ts, tests/unit/docs-build.test.ts                        | Meaningful route/resource and deterministic-transform failure tests; no duplicate generic framework.                                                                                                                    |
+**Release and rollback:** normal owner merge allows the existing publisher to allocate the first actual 0.3 version from
+that exact source. Never predict the final tag or rewrite old releases. An unmerged proposal may be discarded or
+reworked. Once the 0.3 policy enters main history, recovery must retain that admitted line and repair forward even if
+publication never completes; an implementation rollback cannot restore 0.2. Preserve published identities and assets.
 
-The current root .dockerignore includes server/src/** only; placing the generator and inputs there uses the existing
-Docker COPY boundary without expanding context or policy. Existing TypeScript output remains dist; generation writes its
-bounded artifact set under dist/docs. The generator itself is not copied into dist or the runtime dependency graph. The
-reviewed normal asset-loading design uses the same dist/docs output from source and compiled module layouts. Existing
-phase ordering runs units before its standalone build, so root explicitly admits the narrow product-script change
-`test:unit = npm run build && node --test tests/unit/*.test.ts`. Keep that phase order and all old tests unchanged; its
-second build is acceptable deterministic work. Load real assets during asynchronous readiness before listening; missing
-assets fail closed. No test-only bypass, substitute assets, environment selector or missing-file fallback. Frontend
-Dockerfile, Compose, tsconfig, entrypoint, upload UI/parser/tests, root .dockerignore and all scripts/** stay read-only.
-Root may separately own concise docs/validation/docs-implementation.md evidence and related current-phase status at
-adoption; no broad documentation/diagram regeneration is proposed. Any additional path needs scope review.
+**Done and stop:** independently reviewed dormant path rules and source-bound 0.3 publication are verified on actual
+main. The finite hosted adapter interface is adopted or remains explicitly blocked. No registry, federation, application
+service or deployment is established by this card. Hand off the separate candidate; no production operation.
 
-### Deterministic artifact generation
+## PR card 2 — HOSTED-CONTRACT: Independently define the complete hosted successor
 
-Use existing build as tsc -p tsconfig.json followed by node server/src/build-docs.mjs. Document helper purpose, inputs,
-usage, outputs, side effects and failures. No extra build:docs command, root executable helper or runtime
-compiler/service. Approved npm acquisition occurs separately with the exact lock and ignore-scripts; generation then
-uses local bytes only.
+**Outcome:** one independently reviewed `hosted-v1` candidate preserves every current local assertion and adds complete
+stage-functional and production-smoke inventories, explicit requirement mappings and fixed authenticated entrypoints.
+Discovery and controls remain distinct from real hosted acceptance.
 
-Verify installed Redoc package identity 2.5.4 and original standalone bundle SHA-256
-`dcaf76612bc4a3fbcc923a8966dee2f6146a5f32e5ce1b6f02dd60cbbf89500b`. Require exactly one occurrence of
-https://cdn.redoc.ly/redoc/logo-mini.svg, replace only that occurrence with /docs/assets/redoc-logo-mini.svg, and remove
-only the exact terminal source-map comment. Require the resulting SHA-256
-`21ce5beb19818927f12e2db16e1a332e4f0eac5b8538012b6ecd048585b8cdbf`; no other vendor mutation or fallback. Verify the
-539-byte logo hash `1dab4315f8de2177b2b2726b29e84a26314c69cd27d692228947c0058793d5a7`.
+**Prerequisites:** actual PROFILE-DECLARATIONS publication, the finite delivery/adapter interface from card 1,
+independent author/reviewer ownership and no existing candidate/pending binding. Account provisioning is not needed for
+synthetic controls. A missing or failing authentication interface blocks executable candidate freeze; never supply
+arbitrary URLs, global auth headers or fabricated hosted results to work around it.
 
-Retain the original bundle/map, package identity, license and embedded third-party notices with portable provenance in
-accessible retained build artifacts; the finite public asset route map must not expose those additional files. Preserve
-original map hash `2550d1c2e62c0640b2b4f4f49843433840fc291e001f3edb15ff66470e551476`. Never label that map as matching
-the derivative. Preserve desktop-visible Redoc branding/link and the reviewed responsive sidebar behavior; no invented
-SVG license grant. Read package files without evaluating them. Keep clean generation output byte-identical.
+**Exclusive writable classes:** `tests/acceptance/**` and exactly one new `docs/testing/contracts/hosted-v1.md`. No root
+script, workflow, package, registry or general documentation joins this candidate PR. Inside the standalone package,
+preserve all 72 local `(file,title)` tuples, three local spec bodies, assertions, timing thresholds and original fixture
+recipes/counts. Update only contract revision identity where required; add `fixtures/profiles.json`,
+`inventory.stage.json` and `inventory.production.json` under the adopted closed schema.
 
-Generate openapi.yaml deterministically from the product JSON source; JSON syntax is valid YAML under the contract.
-Validate the fixed same-document fragment references for containment and resolution without a general resolver or
-external loader. No remote specification, font, CDN, worker, search service, telemetry or hidden failed-logo request.
-Search is disabled, fonts are system fonts, and initialization is a same-origin external script. Fail on missing inputs,
-unexpected edit counts, wrong hashes or unresolved/foreign references; a partial/stale output must not become usable.
+Use separate `hosted/stage/specs/` and `hosted/production/specs/` directories with fixed stage/production Playwright
+configs. Ordinary `e2e` remains complete local. `e2e:stage` and `e2e:production` map to fixed wrappers without caller
+arguments, profile selection or destination overrides. Three fixed discovery commands compare complete package-relative
+identities to their inventories without credentials or executing bodies. Preserve local reporting; a separate sanitized
+hosted reporter supplies execution rows to the trusted launcher. It cannot authenticate release/provider observations.
 
-### Offline-build verification gate
+**Independent obligations:** stage has 22 proposed cases covering accessible real UI upload/recovery;
+CBR/VBR/padded/Xing physical counts; accepted media, encoding/errors/methods; uploads above 1 MiB, around 6 MiB, exact
+20 MiB and one byte over; real HTTP/1.1 chunked uploads; externally observable abort recovery; public health; docs
+route/header/spec matrices; desktop/narrow rendering and actual interaction; effective CSP and upload-page isolation.
+Production has three proposed small smoke cases: real UI known-count upload, usable docs and correct published
+specification. Freeze the literal matrix and APP-V1/APP-REL mappings in the new contract before writing specs; these
+proposed counts become discovered evidence only after actual checks. Preserve counts 9/16/21 and the physical two-frame
+Xing oracle; never use product output as truth.
 
-Recommend the actual API build stage use reviewed BuildKit RUN --network=none npm run build after locked acquisition.
-Builder support and existing local/CI compatibility remain an execution prerequisite: confirm them before relying on
-that mechanism. Record actual command/source/image/log evidence and successful generation inside the denied stage, with
-a bounded inert denial control and working positive counterpart; a warm cache or absent failed fetch is not proof.
-Compare two fresh generation output manifests, excluding no content through volatile timestamps. Inspect the runtime
-image for generated artifacts, preserved notices/provenance and absence of Redoc/compiler development dependencies. If
-compatible denial cannot be established, stop at DOCS-OFFLINE-BUILD and return the concrete prerequisite to root. Do not
-transfer the earlier macOS experiment's isolation claim to Linux or silently require a different build framework.
+Do not move local private admission, Docker faults or process deadlines into an unsafe hosted test. Separate operator
+obligations cover provider/release/image/configuration identity, cold start/readiness, resource headroom and retention,
+managed lifecycle/overlap, cost/access and recovery. A passing stage suite alone cannot close those obligations. No
+skip, expected failure, count-only comparison or always-pass metadata case can satisfy an unperformed requirement.
 
-### Public routing, policy and resource preservation
+**Controls before freeze:** use actual discovery/report/adapter predicates with synthetic local targets only. Prove
+wrong context/profile/source, stale/partial/duplicate/unknown/skipped/retried rows, missing inventory, foreign requests
+and redirects, token-bearing diagnostics, altered response/CSP behavior and interrupted cleanup fail. Keep credentials
+out of ordinary discovery and child arguments/environment values; use the adopted bounded private transport. Retain
+failed probe evidence. Existing 72 local specs must remain byte-identical and all previous oracle controls must still
+pass.
 
-Extend only the docs namespace: /docs redirects 308 to exact relative /docs/; known docs resources support GET/HEAD with
-the contract's exact media types, and openapi.yaml has its attachment disposition. HEAD has no body. Unknown contained
-paths return readable 404 JSON before method handling; unsupported methods on known resources return 405 JSON with
-Allow: GET, HEAD. Queries do not change resource identity. No filesystem traversal, HTML fallback or reflected request
-bytes. Use an explicit finite route-to-file map; no runtime generation, package imports or arbitrary static directory.
+**Review/validation:** standalone typecheck, fixtures/oracles, all old/new negative controls and exact three-profile
+discovery; frozen predecessor preservation; mandatory CI runs the old required docs-v1 suite separately from candidate
+controls. Independent suite review precedes companion exact-head review. No real stage target is required for candidate
+publication, and none is implied by passing controls.
 
-The current raw dispatch rejects every path except health/upload, and its upload hooks treat non-GET as upload work.
-Integrate docs before those upload decisions, with explicit docs handling that never reserves an upload slot or enters
-binary collection. Preserve existing health/upload path → method → media/encoding → bounded body order, both raw media
-types, inclusive 20971520 actual bytes, two active uploads, response shapes, bounded rejection drain, recovery, socket
-budgets, cancellation and five-second shutdown. No retained uploads, body/temp-file logging or new parser dependency.
+**Release, recovery and stop:** merge/publish the candidate only after all controls and the interface are complete; the
+release still requires docs-v1. Verify actual protected-main source/tree/manifest/contract and current automated review.
+The single-pending policy forbids another candidate or ad hoc edits after merge; preserve failed evidence and use a
+separately reviewed coherent recovery if correction is necessary. Stop before binding, product/launcher changes or
+actual hosted execution. Do not prewrite a future squash SHA.
 
-NGINX remains the sole public security-header owner. Proxy docs to the configurable private API upstream; explicitly
-hide upstream CSP/report-only and other duplicated policy headers before setting the exact bound docs policy. Account
-for location/add_header inheritance and redirects/errors, including NGINX-originated responses: exactly one enforced
-CSP, no meta/report-only policy, no-store, nosniff and no-referrer across the docs namespace. Apply the exact two style
-hashes, style-src-attr none, img-src self data and worker-src none only there; preserve every other bound directive
-verbatim in meaning. No unsafe-inline/eval, nonce, foreign-origin allowance, ignored violation or upload-page policy
-relaxation. Verify GET / retains its exact original policy. Actual two-container response evidence is mandatory; config
-text alone cannot establish header inheritance. Preserve proxy streaming/no-store, unavailable/timeout JSON behavior and
-health.
+## PR card 3 — HOSTED-BIND: Bind the actual reviewed candidate
 
-Keep the API private and NGINX as the sole published origin. Preserve Compose memory/CPU/PID limits, read-only
-filesystems, capability drops and tmpfs budgets. Review bounded artifact reads/streaming and request cleanup within the
-existing 256 MiB API/64 MiB frontend envelopes; docs must not introduce per-request unbounded allocation or persistent
-storage. No frontend build dependency on API output, third service, database, credentials or infrastructure change.
+**Outcome:** append the exact actual `hosted-v1` successor identity and reviewed merge facts. Docs-v1 remains required
+until a genuine subsequent product change activates the bound successor. Binding is not deployment or acceptance.
 
-### Validation, review and completion
+**Prerequisites:** card 2 actually merged and published, exact independent companion review for its final head/tree,
+verified candidate-only parent diff and preserved local expectations. Read the actual GitHub/main evidence; a feature
+head, branch name, guessed squash or stale approval cannot establish binding.
 
-1. Retain meaningful unit failures for wrong transform hashes/edit counts/references and route/error/HEAD behavior. Test
-   resource interactions only where they expose a concrete regression; preserve existing HTTP/parser tests.
-2. Run mandatory formatting/policy/tooling, type/build and unit checks with pinned tools. Build both images
-   independently, verify real offline generation, and run the complete bound suite through NGINX using the unchanged
-   trusted controller.
-3. Root dependency/build/product changes activate docs-v1 under the existing policy. Confirm that actual selection and
-   all original 67 transport identities remain included. Use the exact bound discovery/report accounting, currently 72
-   cases; no zero/skip/retry/expected-failure or older-suite fallback. Setup and candidate controls are separate
-   evidence.
-4. Require desktop/narrow meaningful renderer interaction, exact served specification/assets/logo, no foreign attempts,
-   enforced-CSP violations or page errors in the bound observation interval, unchanged root protection and owned
-   cleanup. The finite interval does not prove destructive-navigation silence, arbitrary protocol blocking or hosted
-   behavior.
-5. Preserve failures and bind evidence to actual source, contract/suite/manifest, configuration and both tested image
-   IDs. Independent review covers artifact provenance, public headers, build/runtime separation and resource/source
-   limits. Root owns exact-head companion review, fresh required PR CI, resolved conversations and authorized protected
-   merge.
-6. Verify actual protected-main admission/activation, Linux browser preparation, complete acceptance, cleanup and
-   software publication of those exact tested images. Retain archive/provenance identities; never rebuild a release
-   after acceptance. The allocator chooses the actual v0.2.x value. No predicted SHA/tag, manual release, publication
-   request or PR pass is publication proof. Record implemented/tested/reviewed/merged/published/deployed states
-   separately; remain not deployed.
+**Owned paths:** append one entry in `docs/testing/acceptance-transitions.json`; add `docs/validation/hosted-binding.md`
+and update narrowly related phase/roadmap/transition-role pointers. Keep all prior registry entries, baseline, contracts
+and suite bytes unchanged. No product, gate, dependency, workflow or IaC change.
 
-**Done and stop:** docs-v1 is persistently required, the contract passes locally and on protected main, and the exact
-software release is verified. Preserve prior release bytes. Any revert must still satisfy docs-v1; repair forward rather
-than deleting a binding, changing tests or relaxing CSP. Stop before registry/hosting/stage work, production promotion
-or v1.0.0. Production remains an exact-candidate human gate. Unknown prerequisite, changed frozen inputs, unsupported
-build isolation or a mandatory failure returns to its named owner with evidence; this card does not authorize a
-workaround.
+**Binding procedure:** record actual protected-main candidate commit, complete suite tree, fixture manifest hash,
+contract revision/path/hash, immediate predecessor and the observed exact reviewed-head/tree/reviewer/review identity.
+Verify original source/base context and authenticated observations through the existing resolver; local selection is not
+CI authority. Confirm no second candidate/pending entry and no suite/product files in this binding diff.
 
-## PR card 2 — HOSTED-PROFILE-POLICY: Settle the reviewed profile protocol
+**Validation/review:** current complete docs-v1 application acceptance plus separately labeled pending-suite discovery
+and controls; complete declaration provenance and predecessor containment; unchanged publisher/retry schema and normal
+mandatory CI. Independent binding review plus fresh companion approval precede owner merge. Revalidate actual merged
+admission, main CI and software publication before documenting completion.
 
-**Status:** completed in PR #25/v0.2.25; see its protected-main completion above. Documentation authoring and
-independent compatibility review started in parallel under the owner's later instruction above. The draft began from
-reviewed PR #24 head `155caf019c4745732a39c19846886d6ae39e6e9b` and was reconciled to its actual squash
-`71e2cab6cdcac67675929563ed12db9d07ce227f`, whose tree is identical. Main validation and publication are now verified
-above. The five protocol decisions are adopted in the [reviewed policy](../testing/hosted-profile-policy.md); its own
-publication is verified above. This card establishes the protocol needed before executable profile support and
-independent hosted-suite authoring; it creates neither. Current consumers require one complete inventory, and the future
-promotion reader assumes equal local and candidate counts. A new metadata validator alone would not resolve those
-incompatible assumptions.
-
-### Outcome, prerequisites and ownership
-
-Publish one compact, independently reviewed protocol decision for local, stage and production profiles. Close the five
-finite decisions below, name each consumer's responsibility and hand off exact executable scope to the next card. Trace
-APP-V1-009,010,013–015 and APP-REL-001–006; hosted evidence remains additional roadmap scope, not a retrospective
-assessment requirement. Ordinary software releases continue independently of deployment.
-
-Verify DOCS-IMPLEMENTATION main activation/publication and its complete 72-case docs-v1 local gate before completing
-this card for dependent publication. The owner's parallel-authoring amendment permits the bounded protocol draft and
-review while that verification runs. Refresh exact source, required suite, image and publication evidence; local or PR
-passes cannot satisfy the release prerequisite. Preserve actual binding/tool-policy evidence and all frozen
-suite/contract/registry/genesis bytes.
-
-An independent policy designer owns new `docs/testing/hosted-profile-policy.md`. A separate reviewer checks its
-decisions and consumer compatibility before root adopts them. Root owns only related `docs/phases/next-iteration.md`
-card/status updates and Git/review integration. These two documentation paths are the entire scope. All executables,
-dependencies, workflows, product/configuration, infrastructure, acceptance suites/contracts, registry and historical
-evidence are read-only. Do not put this planning document under the frozen successor `contracts/` namespace.
-
-### Required decisions and recommended defaults
-
-1. **Metadata schema:** select one fixed file inside a future independently reviewed successor tree; recommend
-   `tests/acceptance/fixtures/profiles.json`. Define a closed, versioned JSON shape containing only
-   local/stage/production profile IDs and requirement/case identity references. Reject unknown versions/fields,
-   commands, URLs, credentials and arbitrary paths. Specify every field/type and omission rule. The existing suite-tree
-   binding authenticates these future bytes; prefer no registry schema extension. Do not add the file or invent actual
-   cases in the current suite.
-2. **Inventory ownership:** recommend retaining `fixtures/inventory.json` as the complete local inventory, with separate
-   exact complete hosted inventories in the successor. Decide their fixed locations and relationship, including how
-   candidate discovery verifies every declared inventory without application execution. Preserve every predecessor local
-   obligation; ordinary local execution remains unfiltered. Counts alone do not prove identity or completeness.
-3. **Pure validation interface:** freeze exact export, parsed arguments, result and rejection boundaries after the two
-   preceding decisions. Inputs include the reviewed metadata, complete inventories and selected contract revision;
-   output validates declarations only. No environment, process, filesystem or network authority belongs to the helper.
-   Define how its source-reading caller obtains bytes from the resolver-selected immutable suite, with no override path
-   or substitution from product-owned metadata. This card writes the contract, not an unused helper.
-4. **Consumer/evidence compatibility:** preserve legacy complete-local commands, reports, software preparation,
-   publication and retry bytes. Missing profile metadata means existing full local behavior, never zero tests or hosted
-   capability. Specify the first consumer that needs the new protocol and a separately versioned hosted report binding
-   profile, complete inventory identity, suite/contract, source, image pair and target observations. Replace the future
-   equal-count premise only in a later reviewed consumer change; do not relabel an existing local result as hosted.
-5. **Requirement mapping:** assign local, stage-functional and non-destructive production-smoke responsibilities at the
-   contract level without authoring cases. Docker pause/stop and private diagnostic controls stay local unless a
-   separate safe nonproduction equivalent is approved. Full stage behavior and production smoke have distinct complete
-   inventories; an unexecuted mandatory hosted requirement is not satisfied by local evidence. Name remaining hosted
-   lifecycle observations for the independent successor author.
-
-Independent review and root adoption must close all five decisions before this card is complete. The linked decision
-record closes these defaults; changes require a transparent amendment and affected-consumer review. Resolve concrete
-contract ambiguity here; do not defer the same ambiguity to a future helper author. If provider/authentication knowledge
-is required, name that separate dependency and stop at its interface instead of expanding into a launcher or cloud
-environment.
-
-### Preserved authority and inspected consumer boundaries
-
-Ordinary PR/main application acceptance always selects local. Candidate/pending controls and discovery remain
-`productAcceptance: false`. Profile metadata describes obligations; it cannot authorize destinations, credentials,
-faults, deployment or production. No environment variable, caller-selected profile or arbitrary URL grants that
-permission. Keep the existing local Compose controller, exact-source/two-image evidence and immutable historical
-publication/retry records intact.
-
-Verify the design against these existing boundaries, using exact source identities from the card's refreshed base:
-
-- `acceptance-transitions.mjs` already authenticates the whole suite tree; `acceptance-runtime.mjs` binds selection and
-  admission without a hosted profile selector. No registry change is implied by adding reviewed metadata.
-- `run-ci-phase.mjs` runs fixed candidate/pending checks separately from required application acceptance. `run-e2e.mjs`
-  supplies a local target, owns Compose/fault infrastructure and requires the full unfiltered local result.
-- Acceptance inventory/report helpers require complete identity accounting and zero skips/retries. The syntactic
-  `candidate` target still requires private diagnostics/fault authorization and has no production mode; it is not a
-  trusted authenticated hosted launcher.
-- `release-manifest.mjs` uses local evidence for publication. Its future supplied-record promotion check requires equal
-  local/candidate counts and observes neither deployment nor human approval; this is a concrete compatibility gap.
-
-Stage and production execution remain unavailable to current consumers. Trusted destination/authentication, browser and
-HTTP credential scoping, registry handoff, IaC path admission, delivery workflow permissions and hosted launcher
-execution are separate later cards. Automatic stage delivery stays authorized; every production application deployment,
-including an authenticated candidate, retains exact-candidate human intervention under LAUNCH-01. COST-01, ACCESS-01 and
-HOST-01 retain their separate gates. No cloud resources or credentials are created by this card.
-
-### Validation, review, release and stop
-
-This documentation card has no implementation red/green claim. Check schema examples and decision tables against actual
-consumer interfaces, ensure every field has one owner, preserve legacy behavior and report all unresolved facts. Run
-normal scoped documentation validation, exact-head companion review, mandatory CI and authorized owner merge. Verify the
-actual protected-main documentation release; do not predict a version or treat that publication as hosted capability.
-
-The handoff identifies a bounded executable prerequisite only where current consumers need it. Its future independently
-written tests must cover legacy compatibility, valid dormant metadata, malformed/unknown shapes, incomplete or duplicate
-inventory references, source substitution and inability of a caller profile to weaken local execution. Review and freeze
-those expectations, retain actual red, then implement in that later card. Hosted suite authoring and actual binding are
-also separate; this paragraph authorizes none of those writes now.
-
-**Done and stop:** the reviewed document resolves all five protocol decisions, preserves full local acceptance and names
-exact next-card ownership. An unchosen inventory/report rule blocks completion. Stop before executable support,
-successor authoring/binding, registry/IaC/workflows, provider operations or production. A documentation correction can
-revert this proposal before dependent implementation; after adoption, amend the decision transparently and coordinate
-consumers rather than reinterpret historical evidence or weaken a required suite.
-
-## PR card 3 — PROFILE-DECLARATIONS: Validate immutable acceptance profile declarations
-
-**Status:** in progress as stacked PR #26, reconciled to actual protocol main. Independent expectations are reviewed and
-committed; disjoint helper/reader implementation and root integration are underway. The protocol publication
-prerequisite is verified above. Current results, including compatibility corrections, are recorded in
-[validation](../validation/acceptance-profiles.md); no current PR/main completion is implied.
-
-### Outcome and prerequisites
-
-Implement the adopted [hosted profile protocol](../testing/hosted-profile-policy.md) as a pure validator, an immutable
-source reader and one real declaration-checking call in the existing CI phase controller. Current docs-v1 remains
-required and all ordinary application acceptance stays full local. This adds no hosted cases, launcher or deployment.
-Trace APP-V1-009,010,013–015 and APP-REL-001–006.
-
-Pin the actual trusted base and verified DOCS-IMPLEMENTATION source/publication. Freeze independently reviewed expected
-decisions before implementation. Reconcile work begun in parallel to the protocol's actual merged tree; any substantive
-protocol revision pauses dependent work and requires new expected-decision review. Preserve failed evidence.
-
-### Exact ownership and preserved inputs
-
-Independent gate authors own `scripts/acceptance-profiles.test.mjs`, `scripts/acceptance-profile-source.test.mjs` and
-only the synthetic r4 local-inventory addition in `scripts/acceptance-consumers.test.mjs`, preserving existing expected
-outcomes. That non-genesis fixture must carry a complete inert inventory under the new declaration rule. A separate
-implementer owns `scripts/acceptance-profiles.mjs` and `scripts/acceptance-profile-source.mjs`. Root owns the bounded
-integration in `scripts/run-ci-phase.mjs` and only the two new explicit test entries in `package.json`'s `test:tooling`
-command. These seven executable paths are the whole scope; root may update this phase document and append actual
-validation in new `docs/validation/acceptance-profiles.md`. No other script, package field, lockfile, workflow, product,
-container, infrastructure, generated record, acceptance suite, contract, registry entry or genesis byte changes. A
-concrete additional path requires root scope review first.
-
-Use the protocol's exact pure export, arguments, closed result, immutable copy and labeled rejection. The source reader
-owns strict decoding and standard JSON parsing, fixed paths, exact Git blobs, suite/manifest/contract checks and
-predecessor lineage through the authenticated registry digest. Preserve the narrow exact-genesis exception for its
-historical missing inventory. Do not invent historical cases or introduce a custom JSON parser. The reader's export
-signature is `readAcceptanceProfileSource(root, { selection, sourceRevision, baseRevision })`, returning the closed
-`{ required, candidate, pending }` declaration-result map, with null for an absent role or exact genesis passthrough.
-Validate every present role once before any suite extraction, install or standalone check. Options are closed and
-required; no caller role/profile selector is allowed. Receive the unchanged `runtimeAcceptance` selection and original
-source/base context. Permit explicit `baseRevision: null` only for a pre-policy local call whose original optional base
-was omitted; introduced-policy selections and CI still require their exact original base. Replay its existing CI
-admission verification or local exact-source/base resolver for consistency; this does not create new CI authority.
-Preserve source/base/run context and observed reviews. Reject forged/stale selection, unknown options and missing
-context; source-reader failures have code `ERR_ACCEPTANCE_PROFILE_SOURCE`, while the pure declaration helper's labeled
-TypeError propagates. Before registry introduction, authenticate exact genesis through the already verified baseline
-plus immutable baseline/contract objects. Review these expected decisions before writing tests; never substitute the
-source for its original trusted base.
-
-The source reader preserves physical file presence separately from parsed JSON null: a present hosted inventory cannot
-become an absence sentinel. An immediate predecessor inventory must name that authenticated predecessor's own contract
-revision, which may differ from the selected successor revision. Invalid parsed declarations use the declaration error;
-Git/byte-decoding failures retain the source error. This r17.4 clarification does not rewrite original suite evidence.
-
-### Test-first sequence and focused checks
-
-1. Independently specify positive legacy inventory, exact historical genesis, complete dormant three-profile data,
-   metadata order invariance, one case tracing multiple requirements and immutable fresh output. Parse fixtures as
-   source-owned JSON. Include valid counterparts so a rejection cannot pass for an unrelated setup failure.
-2. Cover every schema version/type/field/omission rule, duplicate tuples/requirement IDs, unequal exact sets, missing
-   predecessor cases, incorrect revisions, malformed UTF-8/JSON, partial metadata presence and profile-lineage deletion.
-   Inventory absence outside authenticated genesis must fail. Current inventory-bearing legacy suites remain accepted.
-3. Use independent disposable Git-history fixtures for exact source/base and registry digest, candidate versus
-   required/pending identity, full predecessor traversal, missing objects, symlinks, unsafe extraction/substitution,
-   forged/stale selected identities and prior-profile downgrade. No real GitHub or application/network target is needed.
-4. Verify the controller invokes declaration checks for all selected roles before standalone checks, retains original
-   admission context and never makes hosted execution or a weaker local selection available via caller/environment. Keep
-   controls, discovery and product acceptance distinct. Test real wiring through a bounded isolated fixture; do not make
-   missing imports or timed-out children count as intended rejection.
-5. Review and commit the independent expectations first. Retain meaningful red against missing implementation, then
-   implement the exact boundary and the two mandatory test registrations without editing those frozen expectations.
-6. Run focused tests, the existing acceptance consumer/controller regressions, then normal mandatory validation once
-   against the final source. Required CI still runs all 72 local docs-v1 cases and unchanged unit behavior. New tooling
-   counts must come from actual results. Neither valid declarations nor passing local acceptance proves hosted success.
-
-### Review, release, rollback and stop
-
-Independent review checks authority, path/lineage authenticity, exact inventories, genesis compatibility and controller
-ordering. Root integrates the actual diff, fresh required checks, resolved conversations and exact-head companion
-approval before the authorized owner merge. Verify actual protected-main governance admission, persistent docs-v1,
-complete local acceptance, exact image pair and the allocator-selected normal release. No predicted tag, hosted report,
-registry operation or publication retry is introduced.
-
-A missing object, incomplete lineage, unknown declaration or controller integration failure blocks this card; never fall
-back to an older suite or bypass validation. Before a profile-bearing successor exists, revert dormant support as one
-coherent reviewed change. Once later suites depend on it, preserve readable evidence and repair forward.
-
-**Done and stop:** required/candidate/pending declarations are validated from immutable selected bytes, historical
-behavior and local reports remain unchanged, and actual main publication is verified. Stop before independently
-authoring the hosted successor, changing discovery/reporting, binding it, implementing promotion/finalization readers,
-launcher/registry/IaC/workflows or operating hosted targets. Expand those later packages only at their own gates.
+**Rollback and stop:** preserve append-only bound history; do not remove a record to regain older acceptance. A later
+runtime IaC/configuration change is product and activates the successor; governance-only launcher/access work can merge
+without pretending to activate it. Descendants/reverts retain the successor once active. Stop before actual deployment
+or production approval; stage and production evidence still need their separate trusted launcher and human boundaries.
 
 ## Provisional work after the three-card window
 
-Later packages remain outcomes and named gates: independent hosted successor and actual binding; closed IaC
-path/delivery-policy prerequisites; trusted hosted launcher; exact-image registry handoff; reconciliation/backfill with
-original admission authority; account/cost/access gates; stage acceptance and recovery; production
-candidate/configuration evidence; human production authorization; production smoke and v1.0.0 finalization. Tooling
-compatibility still precedes extended queue syntax. Stage automation and production human intervention retain their
-existing authority boundaries. No later package is a fourth detailed card or an assessment-submission prerequisite.
-Software publication is independent of deployment.
+Expand only when prerequisite evidence exists: trusted launcher/envelope validation and coherent promotion-consumer
+migration; exact tested-image registry transfer; publication reconciliation/backfill before handoff expiry; narrowly
+scoped access/registry/state IaC; runtime pair/configuration IaC; active post-publisher stage workflow and observed
+stage acceptance/recovery; production gate/finalization support. These packages remain provisional, with no guessed
+PRs/SHAs.
+
+Use sibling/stacked branches for disjoint authoring, then reconcile actual squash ancestry and obtain fresh
+checks/review for each main-target PR. Serialize shared policy, bindings, Git operations and environment changes. A
+dependency's pending CI does not stop independent authoring; it does stop claiming that dependency verified or merging
+work that requires it.
+
+Before billable setup, read back the dedicated USD 75 shared Cloud Run cap and USD 100 project alert budget. Before
+hosting, prove scoped federation/invocation, exact registry content and real ingress/resource behavior. Every production
+application deployment requires human intervention for its exact candidate; do not operate the owner dispatch to
+impersonate that gate. Production identity/smoke and additive same-source/image finalization precede `v1.0.0`.

@@ -1,19 +1,16 @@
 # Reviewer role
 
-**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
-supersedes the historical documentation-only PLAN-01 limit below and authorizes companion review submission and clean
-owner merges without repeated routine consent. Review the exact current head under the existing protections. Production
-application deployment still requires human intervention. The
-[transition guide](../testing/acceptance-transition.md) records transport-v1 activation in PR #19/v0.2.19. It remains
-required for descendants. Browser setup and the independent docs-v1 candidate are published in v0.2.20 and v0.2.21.
-The [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) verifies
-PR #22/v0.2.22; docs-v1 is pending. The separate
-[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23/v0.2.23
-and its unchanged acceptance selection. Review the current docs product implementation against all 72 bound docs-v1
-cases, exact artifact/CSP requirements and its bounded ownership. Protected-main acceptance, merge, activation and publication
-remain unverified; the prerequisite release cannot supply them. Once activated, docs-v1 persists for descendants and
-reverts. Preserve frozen suite, contract and registry bytes; require fresh exact-head companion review and actual main
-publication. No deployment is established by either review or a software release.
+**Current authority — 2026-10-10:** the [execution amendment](../phases/roadmap-execution-authorization.md) authorizes
+bounded roadmap work, companion-reviewed normal merges and automatic stage delivery. Every production application
+deployment still requires human intervention for the exact candidate. Use the
+[current state and three-card window](../phases/next-iteration.md), including its protected-main completion evidence,
+for active scope; later amendments supersede historical next-step wording below.
+
+Docs-v1 became required in PR #24/v0.2.24 and preserves all 72 local obligations for descendants and reverts. The
+hosted-profile protocol published in PR #25/v0.2.25; declarations and candidate discovery do not establish hosted
+acceptance. No application service is deployed. Keep frozen suite/contract/registry ownership independent of product
+implementation. Stacked PRs and disjoint agent lanes continue through v1, with ordered merges, actual-source bindings,
+fresh companion review and verified publication before dependent completion claims.
 
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and

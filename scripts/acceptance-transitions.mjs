@@ -206,7 +206,15 @@ function pathKind(path) {
   if (contractPattern.test(path)) return "contract";
   if (path === registryPath) return "registry";
   if (path === baselinePath || path === genesisContractPath) return "immutable";
+  // Reserve only these runtime/product and access/governance filenames; neighboring IaC paths remain unclassified.
   if (
+    [
+      "infra/cloud/runtime/versions.tf",
+      "infra/cloud/runtime/variables.tf",
+      "infra/cloud/runtime/main.tf",
+      "infra/cloud/runtime/outputs.tf",
+      "infra/cloud/runtime/.terraform.lock.hcl",
+    ].includes(path) ||
     /^(?:server|frontend|public|src|app|docker|tests\/unit)\//.test(path) ||
     /^(?:compose(?:\.[\w-]+)?\.ya?ml|docker-compose(?:\.[\w-]+)?\.ya?ml|Dockerfile(?:\.[\w-]+)?|\.dockerignore|tsconfig(?:\.[\w-]+)?\.json)$/.test(
       path,
@@ -228,6 +236,11 @@ function pathKind(path) {
       "docs/main-ruleset.json",
       "docs/review-ruleset.json",
       "release-policy.json",
+      "infra/cloud/access/versions.tf",
+      "infra/cloud/access/variables.tf",
+      "infra/cloud/access/main.tf",
+      "infra/cloud/access/outputs.tf",
+      "infra/cloud/access/.terraform.lock.hcl",
     ].includes(path)
   )
     return "governance";

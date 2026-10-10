@@ -22,12 +22,16 @@ roadmap is documentation, not deployed functionality; `v1.0.0` is reserved for v
 [transport-v1 contract](docs/testing/contracts/transport-v1.md). Protected-main CI passed **82 unit tests and 67
 external cases** and published [v0.2.19](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.19). The
 [completion evidence](docs/validation/fastify-transport.md#protected-main-completion) records exact source, automated
-companion approval, images and publication. Documentation rendering and application hosting remain later work.
+companion approval, images and publication. Documentation rendering and hosting were still future work at that transport
+milestone.
 
-**Documentation implementation, 2026-10-10:** this change adds an offline Redoc reference at `/docs/` and the OpenAPI
-3.0.3 download at `/docs/openapi.yaml`. The selected renderer is packaged in the API image; NGINX applies its scoped
-policy through the same browser origin. The [implementation record](docs/validation/docs-implementation.md) separates
-local verification from pending protected-main activation/publication. Hosting remains future work.
+**Documentation release, 2026-10-10:** v0.2.24 shipped offline Redoc at `/docs/` and OpenAPI 3.0.3 at
+`/docs/openapi.yaml`. The renderer is packaged in the API image; NGINX applies its scoped policy through the same
+origin. Protected-main CI passed 120 units and all 72 required docs-v1 external cases. The latest verified release is
+[v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26), which implements dormant profile
+declaration validation on top of v0.2.25's hosted-profile protocol. Read the
+[completion record](docs/phases/next-iteration.md#profile-declarations-protected-main-completion) for exact publication;
+local/CI success is separate from hosting. No application service is deployed.
 
 ## Local application
 
@@ -88,11 +92,11 @@ install scripts disabled. Browser files and rendered SVGs are ignored and do not
 Acceptance source is independently authored. The immutable [r3 genesis](docs/testing/baseline.json) records P2's actual
 protected-main commit `a0a56d9`; its original evidence remains preserved. The
 [transition policy](docs/testing/acceptance-transition.md) binds separately reviewed successor suites to actual merged
-Git objects. The docs implementation must pass the bound docs-v1 successor: all original 67 transport cases plus five
-documentation cases, with persistent applicability after activation. The separate prerequisite release still uses
-transport-v1; its pass is not docs acceptance. Product implementers cannot change expected outcomes or select an older
-suite to pass. The CI controller extracts the required Git tree outside the application checkout and verifies ancestry
-and every frozen byte. Zero tests, skipped cases and failed checks fail closed.
+Git objects. Docs-v1 is now required: all original 67 transport cases plus five documentation cases persist after
+activation. Candidate discovery and dormant hosted declarations cannot substitute for complete local acceptance. Product
+implementers cannot change expected outcomes or select an older suite to pass. The CI controller extracts the required
+Git tree outside the application checkout and verifies ancestry and every frozen byte. Zero tests, skipped cases and
+failed checks fail closed.
 
 For a small local upload with an independently known count:
 
