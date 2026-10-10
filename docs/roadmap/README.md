@@ -5,15 +5,15 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 merged; v0.1.12 publication/retry verified**. The
+Status: **PLAN-01, COST-BOOTSTRAP, GATE-01, VER-01 and LINE-02 merged; v0.2.13 publication/latest verified**. The
 [execution record](../validation/roadmap-execution.md) preserves PLAN-01. The
 [cost record](../validation/cloud-cost-bootstrap.md) records PR #9, its reviewed apply and live readback. A dedicated
 project now has a USD 75 Cloud Run cap and USD 100 all-service alert budget; no application service is deployed. The
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) verifies its dormant
 admission and immutable publisher retry. The
 [version record](../validation/release-lines.md#protected-main-publication-and-retry) verifies source-bound allocation.
-r3 remains required. The active cards are LINE-02, TR-LIFECYCLE and TRANSPORT-CONTRACT. This source selects line 0.2;
-its first protected-main publication remains pending.
+r3 remains required. The active cards are TR-LIFECYCLE, TRANSPORT-CONTRACT and TRANSPORT-BIND. Line 0.2 is active;
+[its first publication](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) is verified.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
 reserves **v1.0.0 for the first verified production deployment**. It is a human-readable planning amendment, not an
@@ -51,7 +51,8 @@ VER-01 merged in [PR #12](https://github.com/brobro10000/mp3-frame-counter/pull/
 `cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b` after exact-head companion approval. Main run `38041021204` published
 v0.1.12; its publisher-only retry retained schema-2 policy binding, all ten assets and original admission. The
 [completion record](../validation/release-lines.md#protected-main-publication-and-retry) preserves exact identities and
-limits. LINE-02 separately selects 0.2 without a product change. The
+limits. LINE-02 merged as `48ecf8a5e93246c1c3c59de818ac0a5502c71223`; main run `38042465334` published v0.2.13 and
+selected it as latest. This activates 0.2 without a product change. The
 [shutdown diagnostic](../validation/lifecycle-controller.md) requires TR-LIFECYCLE before independent transport
 authoring: existing forced-stop success does not establish graceful drain. No successor or application deployment is
 active. The original assessment snapshot below remains historical and does not change with this progression.
@@ -213,7 +214,7 @@ work-package IDs survive version/date changes. Only the [next three cards](../ph
 
 | Envelope            | Work and required exit                                                                                                                                                                                                                                                |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged and verified. LINE-02 separately activates the next line. Preserve product behavior and artifact releases.                                                                                                     |
+| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged and verified. LINE-02 is verified and activates 0.2. Preserve product behavior and artifact releases.                                                                                                          |
 | v0.2.x              | Approved line activation; TR-LIFECYCLE observations/disposition; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
 | v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                                                                 |
 | v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                                                                |
@@ -389,7 +390,7 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
 | GATE-REVIEW   | GATE-01 merged with independent expectations, exact-head companion approval and verified publication/retry; no successor is active.  | Independent gate reviewer + owner; GATE-01.                 |
-| VERSION-01    | Source-bound minor plus global ordinal implemented and verified; separate 0.2 activation pending publication.                        | Release reviewer + owner; line changes.                     |
+| VERSION-01    | Source-bound minor plus global ordinal implemented and verified; 0.2 activation and first publication verified.                      | Release reviewer + owner; line changes.                     |
 | DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                            | Acceptance author + security reviewer; docs activation.     |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
 | COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations. | Owner + deployment operator; paid resources/hosting.        |
@@ -439,9 +440,9 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances LINE-02, TR-LIFECYCLE and the independent transport
-contract. GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent
-authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances TR-LIFECYCLE, independent transport authoring and
+actual merge binding. GATE-01 and VER-01 publication/retries are verified; each later successor still requires
+independent authoring, actual merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

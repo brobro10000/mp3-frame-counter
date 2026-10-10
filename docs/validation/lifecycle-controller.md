@@ -46,3 +46,21 @@ must characterize a trustworthy external stopping predicate, observe response an
 cleanup after the application observation window. If no predicate can be justified, retain graceful drain as explicit
 operational evidence requiring disposition before successor authoring. Any demonstrated product defect needs a separate
 implementation card; do not change the oracle or report diagnostic cleanup as acceptance.
+
+## Independent expectations before implementation — 2026-10-10
+
+The [frozen observation contract](../testing/lifecycle-controller.md) precedes implementation. An independent author
+retained all eleven existing controller cases and added twenty-two groups covering fixed authority, signal uncertainty,
+strict state projection, HTTP framing and old-action compatibility. The first pinned Node 24.20.0 run reported **33
+cases: 13 passed, 20 failed, none skipped or canceled**. Failures exposed the absent factory/new routes and
+duplicate-Host acceptance; they were not application acceptance failures.
+
+The raw test source SHA-256 was `96db6688f30e366f41c939cad592cbbfae00ef07ff384240b8ef690783b60113`; the retained red log
+SHA-256 was `4884293e67d9823db2fabee18fbc95c74d014e01bd27c9ebc4b63877ddc5538c`. The coordinator preserved both, applied
+only the installed formatter, then committed the expectations and contract at `11c62c0` before adapter work. The
+formatted commit is not byte-identical to the raw red source; no expectations were changed to obtain a pass.
+
+A separate ignored diagnostic defines independent drain and straggler predicates. Its **12 synthetic control decisions
+passed**, including rejection of no-op acknowledgment, premature held-response loss, absent deadline, exit 137, stale
+generation and cleanup substituted for exit evidence. These fixture decisions neither execute Docker nor prove product
+behavior. Actual adapter checks and exact-image observations must be recorded separately below.

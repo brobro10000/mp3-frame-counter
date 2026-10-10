@@ -5,6 +5,9 @@
  * JSON; the returned configuration owns exactly two isolated application services with stable, OS-selected loopback ports.
  * The authenticated fault server binds loopback and invokes only a caller-supplied scoped action. Async commands
  * have deadlines, bounded output and process-group cancellation. Failures throw and cleanup failures stay visible.
+ * createApiLifecycle accepts fixed API identities and a privately injected bounded Docker runner. It reads only that
+ * container and sends only SIGTERM; projected state and daemon acknowledgments never assert application shutdown.
+ * Failed or uncertain signal delivery permanently disables further signals for that instance while preserving reads.
  * No function provisions cloud resources or treats controller tests as product acceptance.
  */
 
@@ -129,15 +132,173 @@ export function loopbackOrigin(binding) {
   return `http://${match[0]}`;
 }
 
+/** Validate closed data records before serialization; getters, hidden fields and custom JSON behavior are forbidden. */
+function closedRecord(value, keys) {
+  assert(value && typeof value === "object" && !Array.isArray(value), "Expected a lifecycle record");
+  assert([Object.prototype, null].includes(Object.getPrototypeOf(value)), "Unexpected lifecycle record prototype");
+  assert.deepEqual(Reflect.ownKeys(value).sort(), [...keys].sort(), "Unexpected lifecycle record fields");
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    assert(descriptor.enumerable && Object.hasOwn(descriptor, "value"), "Expected plain lifecycle data");
+  }
+}
+
+function requireTarget(target) {
+  closedRecord(target, ["project", "service", "containerId", "imageId"]);
+  assert(
+    typeof target.project === "string" && target.project.length <= 128 && /^mp3-e2e-[a-z0-9-]+$/.test(target.project),
+    "Invalid lifecycle project identity",
+  );
+  assert.equal(target.service, "api", "Lifecycle authority is limited to the API");
+  assert(
+    typeof target.containerId === "string" && /^[a-f0-9]{64}$/.test(target.containerId),
+    "Expected an exact Docker container identity",
+  );
+  assert(
+    typeof target.imageId === "string" && /^sha256:[a-f0-9]{64}$/.test(target.imageId),
+    "Expected an immutable tested image identity",
+  );
+}
+
+/** Preserve Docker's nanosecond timestamp bytes while rejecting invalid calendar dates and its zero-time sentinel. */
+function requireGeneration(generation) {
+  closedRecord(generation, ["startedAt", "restartCount"]);
+  const value = generation.startedAt;
+  const match = typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?Z$/.exec(value);
+  assert(match && match[0] === value && !value.startsWith("0000-"), "Invalid Docker start timestamp");
+  assert(!/^0001-01-01T00:00:00(?:\.0{1,9})?Z$/.test(value), "Docker start timestamp is zero");
+  const instant = new Date(value);
+  assert(
+    Number.isFinite(instant.getTime()) && instant.toISOString().slice(0, 19) === value.slice(0, 19),
+    "Invalid Docker start calendar time",
+  );
+  assert(Number.isSafeInteger(generation.restartCount) && generation.restartCount >= 0, "Invalid Docker restart count");
+}
+
+function requireLifecycleState(state) {
+  const booleans = ["running", "paused", "restarting", "dead", "oomKilled", "hasError"];
+  closedRecord(state, [...booleans, "exitCode"]);
+  for (const key of booleans) assert.equal(typeof state[key], "boolean", "Invalid Docker lifecycle flag");
+  assert(Number.isInteger(state.exitCode) && state.exitCode >= 0 && state.exitCode <= 255, "Invalid Docker exit code");
+}
+
+function requireLifecycleResponse(value, action) {
+  const state = action === "state";
+  closedRecord(value, ["schemaVersion", "kind", "target", "generation", state ? "state" : "signal"]);
+  assert.equal(value.schemaVersion, 1, "Unsupported lifecycle response schema");
+  assert.equal(value.kind, state ? "api-lifecycle-state" : "api-signal-acknowledgment");
+  requireTarget(value.target);
+  requireGeneration(value.generation);
+  if (state) requireLifecycleState(value.state);
+  else assert.equal(value.signal, "SIGTERM", "Unexpected lifecycle signal");
+}
+
+function boundedStdout(value, bytes) {
+  assert(typeof value === "string" && Buffer.byteLength(value, "utf8") <= bytes, "Invalid bounded Docker output");
+  return value;
+}
+
+/**
+ * Observe one fixed owned API container and acknowledge one SIGTERM attempt per observed process generation.
+ * The injected runner must enforce the private five-second command deadline, cancellation and no-shell invocation.
+ * Inspection projects validated data only. Signal errors after attempting delivery latch the instance permanently;
+ * reads remain possible, and neither an acknowledgment nor a running exit-zero observation proves graceful exit.
+ */
+export function createApiLifecycle({ project, containerId, imageId, runDocker }) {
+  const target = { project, service: "api", containerId, imageId };
+  requireTarget(target);
+  assert.equal(typeof runDocker, "function", "A bounded private Docker runner is required");
+  const attempted = new Set();
+  let signaling = false;
+  let uncertain = false;
+  const state = async () => {
+    const records = JSON.parse(boundedStdout(await runDocker(["inspect", containerId]), 1024 * 1024));
+    assert(Array.isArray(records) && records.length === 1, "Expected exactly one inspected container");
+    const container = records[0];
+    assert(container && typeof container === "object" && !Array.isArray(container), "Invalid container inspection");
+    assert.equal(container.Id, containerId, "Container identity changed");
+    assert.equal(container.Image, imageId, "Tested image identity changed");
+    assert.equal(container.Config?.Labels?.["com.docker.compose.project"], project, "Container project changed");
+    assert.equal(container.Config?.Labels?.["com.docker.compose.service"], "api", "Container service changed");
+    assert(container.State && typeof container.State === "object", "Missing container lifecycle state");
+    assert.equal(typeof container.State.Error, "string", "Invalid Docker error observation");
+    const result = {
+      schemaVersion: 1,
+      kind: "api-lifecycle-state",
+      target: { ...target },
+      generation: { startedAt: container.State.StartedAt, restartCount: container.RestartCount },
+      state: {
+        running: container.State.Running,
+        paused: container.State.Paused,
+        restarting: container.State.Restarting,
+        dead: container.State.Dead,
+        exitCode: container.State.ExitCode,
+        oomKilled: container.State.OOMKilled,
+        hasError: container.State.Error.length > 0,
+      },
+    };
+    requireLifecycleResponse(result, "state");
+    return result;
+  };
+  const signalTerm = async () => {
+    assert(!signaling, "A lifecycle signal is already in progress");
+    assert(!uncertain, "Previous signal delivery is unresolved");
+    signaling = true;
+    try {
+      const before = await state();
+      assert(
+        before.state.running && !before.state.paused && !before.state.restarting && !before.state.dead,
+        "API is not eligible for signaling",
+      );
+      const generation = JSON.stringify(before.generation);
+      assert(!attempted.has(generation), "This process generation already has a signal attempt");
+      attempted.add(generation);
+      try {
+        const acknowledgment = boundedStdout(await runDocker(["kill", "--signal", "SIGTERM", containerId]), 1024);
+        assert.equal(acknowledgment.trim(), containerId, "Unexpected Docker signal acknowledgment");
+        const after = await state();
+        assert.deepEqual(after.target, before.target, "Signal target changed during delivery");
+        assert.deepEqual(after.generation, before.generation, "Process generation changed during signal delivery");
+        return {
+          schemaVersion: 1,
+          kind: "api-signal-acknowledgment",
+          signal: "SIGTERM",
+          target: { ...before.target },
+          generation: { ...before.generation },
+        };
+      } catch (error) {
+        uncertain = true;
+        throw error;
+      }
+    } finally {
+      signaling = false;
+    }
+  };
+  return { state, signalTerm };
+}
+
 /** Compare fixed-size token digests in constant time and reject browser, framing, host and route ambiguity. */
 export function authorizedControl(request, token, port) {
   const supplied = request.headers["x-acceptance-control-token"];
   const digest = (value) => createHash("sha256").update(value).digest();
   const equal = timingSafeEqual(digest(typeof supplied === "string" ? supplied : ""), digest(token));
+  const raw = request.rawHeaders;
+  if (!Array.isArray(raw) || raw.length % 2 !== 0 || raw.length > 32) return false;
+  const counts = new Map();
+  for (let index = 0; index < raw.length; index += 2) {
+    if (typeof raw[index] !== "string" || typeof raw[index + 1] !== "string") return false;
+    const name = raw[index].toLowerCase();
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
   return Boolean(
     equal &&
+    counts.get("host") === 1 &&
+    counts.get("x-acceptance-control-token") === 1 &&
+    !counts.has("origin") &&
+    !counts.has("transfer-encoding") &&
+    (counts.get("content-length") ?? 0) <= 1 &&
     request.method === "POST" &&
-    /^\/(?:stop|start|pause|resume)$/.test(request.url ?? "") &&
+    /^\/(?:stop|start|pause|resume|state|signal-term)$/.test(request.url ?? "") &&
     request.headers.host === `127.0.0.1:${port}` &&
     request.headers.origin === undefined &&
     request.headers["transfer-encoding"] === undefined &&
@@ -148,12 +309,14 @@ export function authorizedControl(request, token, port) {
 
 /** Start a loopback-only authenticated operation endpoint; unauthorized requests never reach the action callback. */
 export async function faultServer(token, action) {
-  assert(/^[a-f0-9]{64}$/.test(token), "Use a freshly generated 256-bit controller token");
+  assert(typeof token === "string" && /^[a-f0-9]{64}$/.test(token), "Use a freshly generated 256-bit controller token");
   let busy = false;
   const server = createServer({ maxHeaderSize: 4096 }, async (request, response) => {
     const finish = (status, body) => {
+      const json = JSON.stringify(body);
+      assert(Buffer.byteLength(json, "utf8") <= 4096, "Control response exceeded its byte limit");
       response.writeHead(status, { "content-type": "application/json", "cache-control": "no-store" });
-      response.end(JSON.stringify(body));
+      response.end(json);
     };
     if (!authorizedControl(request, token, server.address().port)) {
       finish(403, { error: "Unauthorized control request" });
@@ -166,8 +329,12 @@ export async function faultServer(token, action) {
     }
     busy = true;
     try {
-      await action(request.url.slice(1));
-      finish(200, { status: "ok" });
+      const operation = request.url.slice(1);
+      const result = await action(operation);
+      if (operation === "state" || operation === "signal-term") {
+        requireLifecycleResponse(result, operation);
+        finish(operation === "state" ? 200 : 202, result);
+      } else finish(200, { status: "ok" });
     } catch {
       finish(500, { error: "Control operation failed" });
     } finally {
@@ -176,7 +343,8 @@ export async function faultServer(token, action) {
   });
   server.requestTimeout = 5000;
   server.headersTimeout = 5000;
-  server.maxHeadersCount = 16;
+  // Keep every parsed field visible; authorization applies the sixteen-field limit before any callback.
+  server.maxHeadersCount = 0;
   server.on("clientError", (_error, socket) => socket.destroy());
   await new Promise((resolve, reject) => {
     server.once("error", reject);
