@@ -11,3 +11,5 @@ machine-user review is labeled as automated and must not be presented as an inde
 
 Traceability: APP-V1-011 and the repository-control review process in docs/repository-controls.md. This record exercises
 the review boundary only; it is not evidence of completing an application phase or publishing a release.
+
+Any subsequent content change requires a fresh review of its new commit before approval can qualify.
