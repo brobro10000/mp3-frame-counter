@@ -169,3 +169,65 @@ implementation-only rollback cannot delete policy. Repair forward without reinte
 **Done:** release consumers agree, historical releases remain verifiable, and a later line-activation PR is possible.
 **Stop before** line activation, Fastify implementation or production-finalization work. Continued authority applies
 only within this card's scope and prerequisites.
+
+## LINE-02 protected-main activation — 2026-10-10
+
+[PR #13](https://github.com/brobro10000/mp3-frame-counter/pull/13) merged as `48ecf8a5e93246c1c3c59de818ac0a5502c71223`
+at 09:44:39Z by `brobro10000`, without bypass. Companion run `20261010T093902-fc61e77d` reviewed all nine changed files
+at `3284c42ee1a7564f2827cb870b7f0030482ebd20`, returned `approve` with no findings and passed its documentation gate.
+The [automated approval](https://github.com/brobro10000/mp3-frame-counter/pull/13#pullrequestreview-5478505631) was
+published and verified before merge. PR CI `38041928740` passed synthetic merge
+`43c2e4af56baf096b7e199f98d8ae0cbd844436f`: 373 tooling, 20 terminal-gate, 75 unit and 60 external cases plus all 19
+Mermaid renders. Earlier canceled heads and the diagram bot's timestamp-only change remain in history.
+
+[Main run 38042465334](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38042465334), attempt 1, passed all
+mandatory checks and published [v0.2.13](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.13), release
+`408852181`, at 09:48:08Z. The latest-release API selected that exact release; all ten assets target the actual merge.
+The exact-source allocator independently resolves line `0.2`, ordinal 13 and policy SHA-256
+`adc4302307bf061584deec3fc56ffe6661467c443d54742c46eb20d139c337ce`. Manifest, reservation and schema-2 publication
+agree. Original admission digest is `f494b312eff9e112a17c9a0a5adcd007c2a698335c22bfa084ab186dfa27f180`; r3 remains
+required with 60 passing external cases and no pending successor.
+
+Eight metadata assets were downloaded and independently hashed against GitHub digests. Docker archives were observed
+through metadata only, not downloaded or rehashed. This activation was not given an additional publisher-only retry;
+VER-01's preceding retry and the unchanged release consumers provide the separate retry evidence above. No application
+is deployed. The next bounded card is TR-LIFECYCLE, before transport successor authoring.
+
+## Historical LINE-02 card
+
+**Outcome:** the first source-bound v0.2.x publication using VER-01's shared allocator, without changing product
+behavior or activating a successor suite. The global first-parent ordinal remains the patch component.
+
+**Prerequisites:** GATE-01 and VER-01 merged with successful exact-source publication and immutable retry evidence;
+fresh protected main; the owner's adopted roadmap/version policy. Do not combine activation with allocator changes.
+
+### Owned scope and read-only boundaries
+
+Change only the approved minor-line field in root `release-policy.json` from `0.1` to `0.2` and targeted current-policy
+notes in release/roadmap documentation. Product, tests, dependencies, workflow, publisher implementation, acceptance
+registry/genesis, existing tags/assets and infrastructure remain read-only. Persist the verified VER completion and
+rotate this three-card window, including the observed lifecycle prerequisite and its dependency diagram. An unexpected
+allocator defect returns to a separate repair card before activation.
+
+### Required behavior and validation
+
+1. Read the reviewed policy at exact base; verify VER-01 is implemented and its first main release is published.
+2. Apply only the minor-line change. The source merge itself allocates `0.2.<global source ordinal>`; do not reset
+   patch, guess a future squash SHA, edit package version or allocate an ordinary `1.*` release.
+3. Run policy/format and existing allocation/preparation/publication tests, then normal required CI and unchanged r3
+   acceptance. Existing numeric-latest tests must cover delayed old-line runs. Create no tags during local validation.
+4. Obtain exact-head companion approval, merge as owner through required checks and verify the actual main source,
+   version, release assets and latest selection. Failed publication remains a failed activation outcome until repaired
+   through the same immutable publisher; never overwrite a reservation with different bytes.
+
+### Review, rollback and stop
+
+The release reviewer checks the small policy diff, numeric ordering and historical identity compatibility. Companion
+approval and merge authority come from the execution amendment; production deployment remains separately gated. An
+unmerged activation may be discarded. Once the activation is merged, the admitted `0.2` high-water mark applies even if
+publication failed. Repair forward while retaining that line; reverting to `0.1` is rejected. Never delete tags or
+reinterpret an existing reservation.
+
+**Done and stop:** actual first v0.2.x publication is verified and historical releases remain verifiable. Stop before
+TR-LIFECYCLE implementation, the independent transport successor, Fastify migration, docs/CSP activation or hosted work.
+Expand the next card only with current prerequisite evidence.

@@ -35,6 +35,7 @@ import { git, repositoryFiles, suitePath } from "./acceptance-baseline.mjs";
 import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import {
   command,
+  createApiLifecycle,
   faultServer,
   isolatedCompose,
   loopbackOrigin,
@@ -259,8 +260,17 @@ try {
       assert.equal(baseOrigin, `http://127.0.0.1:${reservations.ports.frontend}`, "Frontend binding changed");
       assert.equal(apiOrigin, `http://127.0.0.1:${reservations.ports.api}`, "API binding changed");
       await Promise.all([healthy(baseOrigin), healthy(apiOrigin)]);
+      // Pin observations and SIGTERM to the tested container; acknowledgment alone never establishes graceful drain.
+      const lifecycle = createApiLifecycle({
+        project,
+        containerId: apiId,
+        imageId: report.images.api,
+        runDocker: (args) => run("docker", args, { timeoutMs: 5000, preserveStdout: true }),
+      });
       fault = await faultServer(token, async (action) => {
         try {
+          if (action === "state") return await lifecycle.state();
+          if (action === "signal-term") return await lifecycle.signalTerm();
           await control(action);
         } catch (error) {
           report.controlFailures ??= [];

@@ -1,9 +1,10 @@
 # Source-bound release version policy
 
 VER-01 extends the existing single publisher with a policy read from the exact tested source. VER-01 introduced line
-`0.1`; the separate LINE-02 change selects `0.2` in this source. Actual publication remains unverified until its
-protected merge and successful main release. The tooling package version, product contract, release triggers, queue
-syntax and production gate remain unchanged. See the [active cards](../phases/next-iteration.md).
+`0.1`; LINE-02 activated `0.2` at protected main `48ecf8a5`. Its first publication v0.2.13 and latest selection are
+[verified](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10). The tooling package version,
+product contract, release triggers, queue syntax and production gate remain unchanged. See the
+[active cards](../phases/next-iteration.md).
 
 ## Allocation and source identity
 

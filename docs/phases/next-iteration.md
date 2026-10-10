@@ -1,15 +1,15 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged; v0.1.12 is published. The
-[version release and retry evidence](../validation/release-lines.md#protected-main-publication-and-retry) verifies
-source-bound allocation, unchanged original admission and released bytes. The registry remains empty and r3 remains
-required. The dedicated project's USD 75 Run cap and USD 100 all-service alert budget retain their
-[cost evidence](../validation/cloud-cost-bootstrap.md). The owner authorized
+**Execution status, 2026-10-10:** PLAN-01, COST-BOOTSTRAP, GATE-01, VER-01 and LINE-02 are merged; v0.2.13 is published.
+The [release-line evidence](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) verifies
+source-bound allocation and original acceptance admission; the preceding VER record preserves verified retry
+observations. The registry remains empty and r3 remains required. The dedicated project's USD 75 Run cap and USD 100
+all-service alert budget retain their [cost evidence](../validation/cloud-cost-bootstrap.md). The owner authorized
 [continued execution](roadmap-execution-authorization.md), companion-reviewed merges and automatic stage delivery. The
-three active cards are LINE-02, TR-LIFECYCLE and TRANSPORT-CONTRACT. No application is deployed; production application
-deployment/promotion still requires human intervention. Read the [versioned roadmap](../roadmap/README.md) for
-current-state evidence, architecture, dependency diagrams, release envelopes, deployment and named decision gates. This
-document owns phase operation and exactly three detailed next PR cards. Use the separate
+three active cards are TR-LIFECYCLE, TRANSPORT-CONTRACT and TRANSPORT-BIND. No application is deployed; production
+application deployment/promotion still requires human intervention. Read the [versioned roadmap](../roadmap/README.md)
+for current-state evidence, architecture, dependency diagrams, release envelopes, deployment and named decision gates.
+This document owns phase operation and exactly three detailed next PR cards. Use the separate
 [acceptance](../agents/acceptance-author.md), [implementation](../agents/implementer.md),
 [review](../agents/reviewer.md) and [release](../agents/release-operator.md) role instructions for ownership boundaries.
 
@@ -39,46 +39,7 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — LINE-02: Activate the approved v0.2 release line
-
-**Outcome:** the first source-bound v0.2.x publication using VER-01's shared allocator, without changing product
-behavior or activating a successor suite. The global first-parent ordinal remains the patch component.
-
-**Prerequisites:** GATE-01 and VER-01 merged with successful exact-source publication and immutable retry evidence;
-fresh protected main; the owner's adopted roadmap/version policy. Do not combine activation with allocator changes.
-
-### Owned scope and read-only boundaries
-
-Change only the approved minor-line field in root `release-policy.json` from `0.1` to `0.2` and targeted current-policy
-notes in release/roadmap documentation. Product, tests, dependencies, workflow, publisher implementation, acceptance
-registry/genesis, existing tags/assets and infrastructure remain read-only. Persist the verified VER completion and
-rotate this three-card window, including the observed lifecycle prerequisite and its dependency diagram. An unexpected
-allocator defect returns to a separate repair card before activation.
-
-### Required behavior and validation
-
-1. Read the reviewed policy at exact base; verify VER-01 is implemented and its first main release is published.
-2. Apply only the minor-line change. The source merge itself allocates `0.2.<global source ordinal>`; do not reset
-   patch, guess a future squash SHA, edit package version or allocate an ordinary `1.*` release.
-3. Run policy/format and existing allocation/preparation/publication tests, then normal required CI and unchanged r3
-   acceptance. Existing numeric-latest tests must cover delayed old-line runs. Create no tags during local validation.
-4. Obtain exact-head companion approval, merge as owner through required checks and verify the actual main source,
-   version, release assets and latest selection. Failed publication remains a failed activation outcome until repaired
-   through the same immutable publisher; never overwrite a reservation with different bytes.
-
-### Review, rollback and stop
-
-The release reviewer checks the small policy diff, numeric ordering and historical identity compatibility. Companion
-approval and merge authority come from the execution amendment; production deployment remains separately gated. An
-unmerged activation may be discarded. Once the activation is merged, the admitted `0.2` high-water mark applies even if
-publication failed. Repair forward while retaining that line; reverting to `0.1` is rejected. Never delete tags or
-reinterpret an existing reservation.
-
-**Done and stop:** actual first v0.2.x publication is verified and historical releases remain verifiable. Stop before
-TR-LIFECYCLE implementation, the independent transport successor, Fastify migration, docs/CSP activation or hosted work.
-Expand the next card only with current prerequisite evidence.
-
-## PR card 2 — TR-LIFECYCLE: Observe shutdown independently of forced cleanup
+## PR card 1 — TR-LIFECYCLE: Observe shutdown independently of forced cleanup
 
 **Outcome:** bounded signal and lifecycle observations for the isolated API container, distinguishing Docker
 acknowledgment, an observed stopping boundary, admitted-response completion and process exit. A control response alone
@@ -97,7 +58,8 @@ these script paths as governance; do not change classification or mix this work 
 
 Own only `scripts/e2e-controller.mjs`, `scripts/run-e2e.mjs`, independent additions to
 `scripts/e2e-controller.test.mjs`, narrow `docs/testing/lifecycle-controller.md`, the diagnostic validation record and
-necessary current phase links. Retain existing tests. Root owns integration and broad checks.
+necessary current phase links. Reconcile a diagram-sync change only in the existing source-linked runtime diagram,
+keeping lifecycle operations inside the host controller. Retain existing tests. Root owns integration and broad checks.
 
 Product/parser/UI, `tests/acceptance/**`, genesis/transition registry, gate logic, release tooling, dependencies,
 workflows and Compose/Docker configuration are read-only. Preserve existing invocation, report/provenance semantics,
@@ -153,9 +115,11 @@ exact tested images in a fresh owned project with reserved loopback ports, bound
    absence and retain source/image/generation, observation timing, response, exit/OOM/error and cleanup results without
    secrets. Never overwrite full acceptance with diagnostic output.
 
-If no trustworthy stopping predicate emerges, record drain as unresolved operational evidence and obtain an independent
-coordinator/reviewer disposition before candidate authoring. Do not weaken the predicate to get a pass. Any discovered
-product defect becomes a separate implementation finding; this controller card cannot repair it.
+The [actual diagnostic and independent disposition](../validation/lifecycle-controller.md#independent-disposition)
+retain graceful drain as unresolved operational evidence; normal straggler exit is separately observed. Candidate
+authoring remains conditional on this card's reviewed merge and verified main release. Do not weaken the predicate to
+get a pass. Any discovered product defect becomes a separate implementation finding; this controller card cannot repair
+it.
 
 ### Review, rollback, release effect and stop
 
@@ -169,7 +133,7 @@ forward without silently removing required capabilities.
 and protected-main v0.2.x release. Hand off a justified drain predicate or explicit unresolved operational disposition;
 stop before successor authoring/binding, Fastify, docs/CSP, hosting or a product fix. No deployment is implied.
 
-## PR card 3 — TRANSPORT-CONTRACT: Author the independent transport successor
+## PR card 2 — TRANSPORT-CONTRACT: Author the independent transport successor
 
 **Outcome:** an independently reviewed candidate suite and OpenAPI 3.0.3 contract for the Fastify migration. Candidate
 controls are evidence of the test harness; r3 still gates the application until a separately reviewed binding and
@@ -199,8 +163,10 @@ before this candidate can proceed.
 2. Exercise current transport invariants externally: content-type parameters and rejection, unsupported methods and HEAD
    behavior, Allow headers, byte/count limits, admission before buffering, error precedence, cancellation, deadlines,
    connection cleanup and externally provable lifecycle behavior using TR-LIFECYCLE's reviewed predicate. Retain
-   unresolved graceful-drain guarantees as explicit operational evidence. Map existing tests before adding cases; do not
-   duplicate assertions solely to raise a count or bless a framework default.
+   unresolved graceful-drain guarantees as explicit operational evidence. Independently test bounded straggler closure
+   and normal exit through the reviewed controller, with identity checks and negative controls; require fresh shutdown
+   source/configuration review for the migration. Map existing tests before adding cases; do not duplicate assertions
+   solely to raise a count or bless a framework default.
 3. Preserve known-count independent fixtures, useful controlled error cases and no private sample dependency. The
    candidate must detect a missing or skipped mandatory case and incorrect frame/error responses. Add narrowly scoped
    negative controls proving new assertions detect their intended regression.
@@ -233,13 +199,69 @@ before it can proceed. Never rewrite published history or amend the genesis reco
 Fastify implementation, docs/CSP behavior or hosted work. Expand the binding card only after the actual candidate merge
 and independent review identities exist.
 
+## PR card 3 — TRANSPORT-BIND: Bind the actual independently reviewed successor
+
+**Outcome:** register the actual merged transport candidate as the single pending successor. Unchanged application
+behavior continues to require r3 until the next product-affecting implementation; that next implementation must pass the
+successor. This binding ships no framework or documentation route.
+
+**Prerequisites:** verified TR-LIFECYCLE and its explicit lifecycle disposition; TRANSPORT-CONTRACT's candidate-only
+protected-main squash, successful candidate harness/current-r3 CI, published release and current exact-head independent
+approval. Refresh protected main and establish that this is the only pending candidate. No future SHA/tree/review ID may
+be guessed. Read the [transition guide](../testing/acceptance-transition.md).
+
+### Owned scope and immutable boundaries
+
+Append one closed record to `docs/testing/acceptance-transitions.json`; update only supporting Markdown evidence,
+requirement/roadmap status and the next-card window. Suite bytes, candidate contract, genesis, all
+product/configuration, root dependencies, controller, gate/release tooling, workflows, version policy and infrastructure
+are read-only. The trusted classifier permits registry-plus-documentation binding separately from product/governance
+changes.
+
+### Actual identity and authority checks
+
+1. Resolve the candidate's protected-main squash and single parent from Git. Its parent diff must contain only the
+   admitted suite and unique contract. Preserve all prior baseline and transition records.
+2. Obtain the actual suite tree, fixture-manifest and contract SHA-256 from that squash. Record its contract ID/revision
+   and the currently required predecessor. Confirm the full candidate squash tree equals the independently reviewed
+   feature-head tree; do not confuse suite tree with full repository tree.
+3. Record the candidate repository, PR number, actual independent review ID/reviewer, reviewed head and reviewed tree.
+   Let trusted preflight collect the authenticated same-repository merge/review observations. Confirm the approval still
+   represents that reviewer's decisive current decision for that exact head, with reviewer distinct from author.
+4. Verify the new source resolves to binding admission, required predecessor r3 and the intended pending successor.
+   Neither a label, local selector, candidate pass nor the binding itself may activate required product acceptance.
+5. Run existing focused resolver/admission/review tests and mandatory CI, including unchanged current-r3 acceptance.
+   Candidate discovery/oracle/negative controls remain separately visible. Local selection is useful diagnostic
+   evidence, never a substitute for trusted CI review observations or the independent admission digest.
+
+### Review, failure signals and release verification
+
+Require independent acceptance/gate review of every recorded Git/hash/review identity and exact-head companion approval
+of this binding PR. Reject mismatched or invented identities, mixed paths, a second pending candidate, stale/dismissed
+approval, unavailable bounded review history or consumers that disagree about applicability. Correcting a merged
+candidate or changing gate policy requires a separate reviewed recovery card; do not repair tests inside this binding.
+
+After owner merge, verify actual main admission, suite selection, source/image evidence and software publication under
+r3. Record the bound successor and binding commit without claiming its product requirements have passed. The binding
+reserves the next product-affecting change; schedule Fastify only after this exact evidence exists.
+
+### Rollback and stop
+
+An unmerged proposal may be discarded. A merged registry record is append-only and cannot be deleted or rewritten to
+escape its obligation. The current gate has no implicit cancellation/replacement operation; recovery needs separately
+reviewed policy work if a pending binding cannot be implemented. Preserve failed evidence and historical releases.
+
+**Done and stop:** the actual binding, independent approval, mandatory CI and main release are verified, and the next
+product change is demonstrably required to pass the successor. Stop before Fastify implementation, docs/CSP, hosting or
+any acceptance-policy exception. Expand the implementation card with its exact bound identities at that point.
+
 ## Provisional work after the three-card window
 
-Use the [roadmap](../roadmap/README.md) for the remaining ordered packages: actual transport binding; Fastify;
-independent docs/CSP suite and binding; offline Redoc; hosted profiles and trusted launcher; registry handoff;
-reconciliation/backfill; account/cost/access gates; stage verification; production candidate, recovery and first-launch
-authority; production smoke and finalization. Queue-tooling compatibility precedes any live `queue: max` syntax. Keep
-later v1.x/V2 evolution separate from the assessment submission deadline.
+Use the [roadmap](../roadmap/README.md) for the remaining ordered packages: Fastify; independent docs/CSP suite and
+binding; offline Redoc; hosted profiles and trusted launcher; registry handoff; reconciliation/backfill;
+account/cost/access gates; stage verification; production candidate, recovery and first-launch authority; production
+smoke and finalization. Queue-tooling compatibility precedes any live `queue: max` syntax. Keep later v1.x/V2 evolution
+separate from the assessment submission deadline.
 
 Do not expand these into additional detailed PR cards yet. Human-readable planning continues even when the installed
 orchestrator cannot consume the new architecture. Preserve its active generated plan and historical evidence; any future
