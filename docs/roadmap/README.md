@@ -5,15 +5,17 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **PLAN-01, COST-BOOTSTRAP, GATE-01, VER-01 and LINE-02 merged; v0.2.13 publication/latest verified**. The
-[execution record](../validation/roadmap-execution.md) preserves PLAN-01. The
-[cost record](../validation/cloud-cost-bootstrap.md) records PR #9, its reviewed apply and live readback. A dedicated
-project now has a USD 75 Cloud Run cap and USD 100 all-service alert budget; no application service is deployed. The
-[gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) verifies its dormant
-admission and immutable publisher retry. The
-[version record](../validation/release-lines.md#protected-main-publication-and-retry) verifies source-bound allocation.
-r3 remains required. The active cards are TR-LIFECYCLE, TRANSPORT-CONTRACT and TRANSPORT-BIND. Line 0.2 is active;
-[its first publication](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) is verified.
+Status: **TR-LIFECYCLE and TRANSPORT-CONTRACT merged; v0.2.15 publication verified**. The
+[transport evidence](../validation/transport-binding.md) records PR #14 and #15, their actual reviewed source
+identities, required r3 results and the separate 67-case candidate diagnostic. This change proposes the binding of
+transport-v1; its review/merge/publication remain pending. r3 remains required until the next product-affecting change
+activates the bound successor. The next cards are **TRANSPORT-BIND, RUNTIME-POLICY and FASTIFY**.
+
+The [execution record](../validation/roadmap-execution.md),
+[gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
+[version record](../validation/release-lines.md#protected-main-publication-and-retry) preserve earlier publication and
+retry evidence. Line 0.2 is active. The [cost record](../validation/cloud-cost-bootstrap.md) records the dedicated
+project's USD 75 Cloud Run cap and USD 100 all-service alert budget. No application service is deployed.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
 reserves **v1.0.0 for the first verified production deployment**. It is a human-readable planning amendment, not an
@@ -56,6 +58,23 @@ selected it as latest. This activates 0.2 without a product change. The
 [shutdown diagnostic](../validation/lifecycle-controller.md) requires TR-LIFECYCLE before independent transport
 authoring: existing forced-stop success does not establish graceful drain. No successor or application deployment is
 active. The original assessment snapshot below remains historical and does not change with this progression.
+
+### Transport progression amendment — 2026-10-10
+
+TR-LIFECYCLE merged as `c4487bcbc969475e33f76f41995716e5c26d738c`; main run `38044909552` published v0.2.14.
+TRANSPORT-CONTRACT merged as `6c28382d71a014351311e63154ef1c8916b8a229`; main run `38047498564` published v0.2.15.
+[Actual completion evidence](../validation/transport-binding.md) supersedes the earlier next-step wording above. The
+candidate preserves the original 60 cases and adds seven independently authored transport cases, with a local OpenAPI
+3.0.3 contract fixture. This does not serve documentation or introduce Fastify.
+
+Bind that actual candidate before the separate RUNTIME-POLICY governance PR, then implement Fastify as the next product
+change. Current `scripts/policy.mjs` forbids every runtime dependency; combining its relaxation with Fastify would mix
+governance and product. The narrow policy admits one exact stable Fastify pin and ordinary registry lock metadata while
+preserving alternate-channel restrictions and the MP3-parser-package prohibition. The detailed card freezes expectations
+before implementation; neither this roadmap nor the binding changes executable policy or dependencies.
+
+Graceful admitted-response completion remains operationally unresolved. The candidate proves bounded unfinished-upload
+closure and normal exit, and preserves a required fresh shutdown source/configuration review for the migration.
 
 ## Original planning assessment and evidence boundary
 
@@ -212,16 +231,16 @@ Available connectors do not establish current account authorization; earlier acc
 Release envelopes describe milestones, not promises that every release on a line contains every capability. Stable
 work-package IDs survive version/date changes. Only the [next three cards](../phases/next-iteration.md) are detailed.
 
-| Envelope            | Work and required exit                                                                                                                                                                                                                                                |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged and verified. LINE-02 is verified and activates 0.2. Preserve product behavior and artifact releases.                                                                                                          |
-| v0.2.x              | Approved line activation; TR-LIFECYCLE observations/disposition; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
-| v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                                                                 |
-| v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                                                                |
-| Later v0.x          | Production-intended candidate, recovery rehearsal, finalization support and exact first-launch authorization.                                                                                                                                                         |
-| v1.0.0              | Authorized first public launch, verified production identity and smoke; additive finalization of the same source/image pair.                                                                                                                                          |
-| v1.x                | Compatible fixes, usability, maintenance and measured reliability/performance improvements.                                                                                                                                                                           |
-| V2 capability track | Triggered richer UI, processing, service cadence or history/authentication needs. SemVer 2.0.0 requires a justified breaking public contract.                                                                                                                         |
+| Envelope            | Work and required exit                                                                                                                                                                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged and verified. LINE-02 is verified and activates 0.2. Preserve product behavior and artifact releases.                                                                                                                                            |
+| v0.2.x              | Approved line activation; TR-LIFECYCLE observations/disposition; independent OpenAPI/transport successor and merge binding; narrow runtime-dependency policy; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
+| v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                                                                                                   |
+| v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                                                                                                  |
+| Later v0.x          | Production-intended candidate, recovery rehearsal, finalization support and exact first-launch authorization.                                                                                                                                                                                           |
+| v1.0.0              | Authorized first public launch, verified production identity and smoke; additive finalization of the same source/image pair.                                                                                                                                                                            |
+| v1.x                | Compatible fixes, usability, maintenance and measured reliability/performance improvements.                                                                                                                                                                                                             |
+| V2 capability track | Triggered richer UI, processing, service cadence or history/authentication needs. SemVer 2.0.0 requires a justified breaking public contract.                                                                                                                                                           |
 
 Mandatory edges:
 
@@ -230,12 +249,13 @@ Mandatory edges:
 2. PLAN-01 → GATE-01 → independent successor-suite PR → actual merged binding → corresponding implementation.
 3. VER-01 → separate line activation → first actual v0.2.x publication → TR-LIFECYCLE capability and operational
    disposition → independent transport authoring. No graceful-drain pass is inferred from forced stop.
-4. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
-5. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
-6. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
-7. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
+4. Actual transport binding → separate RUNTIME-POLICY governance migration → Fastify product migration.
+5. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
+6. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
+7. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
+8. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
    application deployment; approved exposure follows actual production identity checks.
-8. Production identity and smoke → v1.0.0 finalization.
+9. Production identity and smoke → v1.0.0 finalization.
 
 Canonical planned diagram: [dependency order](diagrams/dependencies.mmd). These new planning diagrams are excluded from
 automatic source-sync by the existing `.mermaidignore`; that does not exempt them from rendering validation. The three
@@ -440,9 +460,9 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances TR-LIFECYCLE, independent transport authoring and
-actual merge binding. GATE-01 and VER-01 publication/retries are verified; each later successor still requires
-independent authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances actual transport binding, a separate narrow
+dependency-policy migration and Fastify implementation. GATE-01 and VER-01 publication/retries are verified; each later
+successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

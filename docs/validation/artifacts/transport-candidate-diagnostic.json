@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "kind": "candidate-only-diagnostic",
+  "productAcceptance": false,
+  "status": "passed",
+  "cleanup": "passed",
+  "project": "mp3-e2e-transport-2a801205e698",
+  "targetKind": "local",
+  "trustedBase": "c4487bcbc969475e33f76f41995716e5c26d738c",
+  "productSource": "495d95710a36ed9b63d76b43381e2f0ac811deb2",
+  "productReportSha256": "e46836744acda2d319d6f907bc972ccfcb7c28097c7229f07f240db42b03521d",
+  "images": {
+    "api": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013",
+    "frontend": "sha256:86366189ac874d86402f8a45b6760a42c125420bd6ee8cd66393637c208f0598"
+  },
+  "productObjects": {
+    "server": "e1d98243db945f7be0451e290832870163e39c26",
+    "frontend": "8a1471cd812ae201546673cac752ddb7209d9679",
+    "package.json": "7e52c5ff7f6d43c5d609cf277df098317edf2f45",
+    "package-lock.json": "cb838cd98312b07bc3c5b83f6f1a13cfc734ba1f",
+    "tsconfig.json": "d3696b5808731b8af2211349d9cde3cf714a3497",
+    ".dockerignore": "a1e67cc10d973be9d8b156c7717bea32d62da96c",
+    "compose.yaml": "eefdef08eb43fdc06357c6523dd3a8fb0bfefcfb"
+  },
+  "candidateRevision": "fa77fbc081b5cc2939b12802bccb2cb15f2dc5a8",
+  "candidateTree": "4758bc423b1d4b7209e7e986ef2a2801a5dd53a8",
+  "suiteTree": "d905d3123623f74b029a94c61ca850e553af2c32",
+  "manifestSha256": "674bb8a49e895b283d828e965f3cd4c6e1567f9b38ec25fdf44dfe452085e3cc",
+  "inventorySha256": "d88d2875a26c614d801e3a396a6096f284096139543a1a901091fd27c2b93555",
+  "inventoryIdentities": [
+    "[\"acceptance.spec.ts\",\"AC-01 accessible upload controls and explicit action\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 MIME case/parameters, identity encoding and irrelevant extension\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-cbr exact independent count with application/octet-stream\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-cbr exact independent count with audio/mpeg\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-padded exact independent count with application/octet-stream\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-padded exact independent count with audio/mpeg\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-vbr exact independent count with application/octet-stream\"]",
+    "[\"acceptance.spec.ts\",\"AC-02 tone-vbr exact independent count with audio/mpeg\"]",
+    "[\"acceptance.spec.ts\",\"AC-03 real browser file upload traverses the public frontend\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing both-tags\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing id3-large-padding\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing id3v1\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing id3v23\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing id3v24\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing one-frame\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing payload-sync\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing three-frames\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing variable-parameters\"]",
+    "[\"acceptance.spec.ts\",\"AC-04 physical framing xing-physical\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed corrupt-middle is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed empty is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed garbage is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed metadata-only is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed reserved-bitrate is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed reserved-emphasis is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed reserved-layer is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed reserved-sample-rate is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed reserved-version is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed tag-invalid-revision is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed tag-invalid-version is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed tag-nonsynchsafe is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed tag-out-of-bounds is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed tag-reserved-flag is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed trailing-junk is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed truncated-frame is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-05 malformed truncated-header is 400 without partial count\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported and absent MIME plus unsupported encoding are isolated 415 errors\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported ape-tag is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported appended-id3 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported free-format is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported id3-footer is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported id3-revision is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported id3-unsynchronised is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported id3v22 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported layer1 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported layer2 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported mpeg2 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported mpeg25 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-06 unsupported multiple-id3 is 415\"]",
+    "[\"acceptance.spec.ts\",\"AC-07 complete ingress accepts above-one-mib\"]",
+    "[\"acceptance.spec.ts\",\"AC-07 complete ingress accepts six-mib\"]",
+    "[\"acceptance.spec.ts\",\"AC-08 exact 20 MiB succeeds and one byte over returns readable 413\"]",
+    "[\"acceptance.spec.ts\",\"AC-09 actual-byte limit on a chunked body without Content-Length\"]",
+    "[\"acceptance.spec.ts\",\"AC-09 valid chunked body remains accepted without Content-Length\"]",
+    "[\"acceptance.spec.ts\",\"AC-10 both service-local health paths and API routes/methods\"]",
+    "[\"acceptance.spec.ts\",\"AC-11 non-JSON/network errors recover and error text never becomes markup\"]",
+    "[\"acceptance.spec.ts\",\"AC-11 pending state prevents duplicates and later input retries after API error\"]",
+    "[\"acceptance.spec.ts\",\"AC-12 controlled API outage yields 502 and real browser recovery\"]",
+    "[\"acceptance.spec.ts\",\"AC-12 controlled API timeout yields 504 and subsequent upload works\"]",
+    "[\"acceptance.spec.ts\",\"AC-12 incomplete upload abort has no partial success and subsequent upload works\"]",
+    "[\"transport.spec.ts\",\"TC-01 direct API error precedence\"]",
+    "[\"transport.spec.ts\",\"TC-02 exact paths and encoding normalization\"]",
+    "[\"transport.spec.ts\",\"TC-03 Expect validates before body admission\"]",
+    "[\"transport.spec.ts\",\"TC-04 two slots reject early and release after abort completion and error\"]",
+    "[\"transport.spec.ts\",\"TC-05 idle body deadline is readable and releases capacity\"]",
+    "[\"transport.spec.ts\",\"TC-06 active body reaches total deadline and releases capacity\"]",
+    "[\"transport.spec.ts\",\"TC-07 unfinished upload closes and SIGTERM exits normally\"]"
+  ],
+  "contractRevision": "transport-v1",
+  "contractPath": "docs/testing/contracts/transport-v1.md",
+  "contractSha256": "485e76e0aa2f4edd512a60bfcbe462cff460e9ecdc3a5b1284547fa4e58148c0",
+  "limits": {
+    "workBudgetMs": 300000,
+    "cleanupBudgetMs": 30000,
+    "wholeSuiteTimeoutMs": 120000,
+    "noBuild": true,
+    "noPull": true
+  },
+  "acceptance": {
+    "planned": 67,
+    "passed": 67,
+    "failed": 0,
+    "skipped": 0,
+    "status": "passed"
+  },
+  "diagnosticConfigurationSha256": "7d699d979038ffe76d6aace071c460f29799fdd2f9e7a3c3d44983ce08780d7d",
+  "containers": {
+    "api": "83560683915ce5c0576515c569da6059711e0eab6a3242ad2fac2de3e36e9b01",
+    "frontend": "f20dd69cf8761bddc95ea01230627d17c552dffcf556130b2e09947ca0e64030"
+  },
+  "initialLifecycle": {
+    "schemaVersion": 1,
+    "kind": "api-lifecycle-state",
+    "target": {
+      "project": "mp3-e2e-transport-2a801205e698",
+      "service": "api",
+      "containerId": "83560683915ce5c0576515c569da6059711e0eab6a3242ad2fac2de3e36e9b01",
+      "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+    },
+    "generation": {
+      "startedAt": "2026-10-10T10:59:50.965211337Z",
+      "restartCount": 0
+    },
+    "state": {
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "dead": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "hasError": false
+    }
+  },
+  "targetOrigin": "http://127.0.0.1:51367",
+  "signalAcknowledgments": [
+    {
+      "schemaVersion": 1,
+      "kind": "api-signal-acknowledgment",
+      "signal": "SIGTERM",
+      "target": {
+        "project": "mp3-e2e-transport-2a801205e698",
+        "service": "api",
+        "containerId": "83560683915ce5c0576515c569da6059711e0eab6a3242ad2fac2de3e36e9b01",
+        "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+      },
+      "generation": {
+        "startedAt": "2026-10-10T11:00:11.603535264Z",
+        "restartCount": 0
+      }
+    }
+  ],
+  "suiteDurationMs": 61177,
+  "suiteReportedBinding": {
+    "evidenceKind": "application-execution",
+    "suiteRevision": "fa77fbc081b5cc2939b12802bccb2cb15f2dc5a8",
+    "manifestSha256": "674bb8a49e895b283d828e965f3cd4c6e1567f9b38ec25fdf44dfe452085e3cc",
+    "contractRevision": "transport-v1",
+    "targetId": "mp3-e2e-transport-2a801205e698",
+    "targetKind": "local",
+    "targetOrigin": "http://127.0.0.1:51367"
+  },
+  "observedSuiteResultSha256": "26cb11ca4c93d50be896561e171495ce3da123c1e00804291efbe94f742c5111",
+  "suiteResultSha256": "26cb11ca4c93d50be896561e171495ce3da123c1e00804291efbe94f742c5111",
+  "finalLifecycle": {
+    "schemaVersion": 1,
+    "kind": "api-lifecycle-state",
+    "target": {
+      "project": "mp3-e2e-transport-2a801205e698",
+      "service": "api",
+      "containerId": "83560683915ce5c0576515c569da6059711e0eab6a3242ad2fac2de3e36e9b01",
+      "imageId": "sha256:c165bb6b8e14194c0eb9bc807ac78e62ccd9c8722ca1b82dcd2670e73b314013"
+    },
+    "generation": {
+      "startedAt": "2026-10-10T11:01:03.13276676Z",
+      "restartCount": 0
+    },
+    "state": {
+      "running": true,
+      "paused": false,
+      "restarting": false,
+      "dead": false,
+      "exitCode": 0,
+      "oomKilled": false,
+      "hasError": false
+    }
+  },
+  "durationMs": 76135
+}

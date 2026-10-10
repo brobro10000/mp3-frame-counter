@@ -2,18 +2,19 @@
 
 ## Current status — 2026-10-10
 
-GATE-01's dormant successor-admission support is merged through PR #11. Protected-main publication and an immutable
-publisher-only retry passed; the
-[completion evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) records the exact
-source, companion approval and original CI identities. This does not activate a successor. The
-[transition registry](acceptance-transitions.json) contains no entries. **r3 remains the only active acceptance suite**,
-bound by the unchanged [genesis record](baseline.json) to `a0a56d94e5457101cd043b6055ab084782c3e16f`.
+GATE-01's successor-admission support is merged with verified publication/retry in its
+[completion evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry). The independent
+transport-v1 candidate merged through PR #15 and published v0.2.15; see the
+[transport evidence](../validation/transport-binding.md). This change appends its actual merge/tree/hash and review
+identities to the [transition registry](acceptance-transitions.json). Binding review, merge and publication are pending;
+no new product behavior is introduced. **r3 remains required** until the next product-affecting implementation activates
+the bound successor. Its unchanged [genesis record](baseline.json) and historical suite objects remain immutable.
 
 The [execution authorization](../phases/roadmap-execution-authorization.md) permits bounded roadmap work and the normal
 companion-review/owner-merge process. It preserves independent expectations, prerequisite order and the human production
 gate. Read the [independence policy](independence-and-baseline.md) and
-[GATE-01 card](../validation/acceptance-transitions.md#historical-gate-01-card) together with this guide. No successor
-tests or product capability are introduced by the dormant gate.
+[GATE-01 card](../validation/acceptance-transitions.md#historical-gate-01-card) together with this guide. The dormant
+gate introduced no successor tests or product capability; PR #15 separately authored the candidate.
 
 ## Separate candidate, binding and implementation
 

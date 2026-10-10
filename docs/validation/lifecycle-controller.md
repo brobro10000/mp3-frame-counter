@@ -1,5 +1,10 @@
 # Lifecycle controller evidence
 
+**Completion amendment, 2026-10-10:** PR #14 merged at `c4487bcbc969475e33f76f41995716e5c26d738c`; protected-main run
+`38044909552` published v0.2.14. The [completion record](transport-binding.md#tr-lifecycle-publication-prerequisite)
+records the exact release evidence. The independent transport candidate subsequently merged and published in v0.2.15.
+Earlier next-step statements below remain dated history. Graceful admitted-response drain remains explicitly unresolved.
+
 ## Pre-implementation diagnostic — 2026-10-10
 
 This is failed diagnostic evidence supporting the [TR-LIFECYCLE prerequisite](../phases/next-iteration.md). No

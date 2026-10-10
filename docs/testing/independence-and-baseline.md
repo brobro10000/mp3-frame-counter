@@ -1,5 +1,12 @@
 # Independent acceptance baseline and change control
 
+**Transport binding proposal, 2026-10-10:** the independently authored transport-v1 candidate is merged and published in
+v0.2.15. This change records its actual candidate commit and independent approval in the transition registry; binding
+review/merge/publication remain pending. r3 still gates unchanged behavior. See the
+[transport record](../validation/transport-binding.md) and [transition guide](acceptance-transition.md). Earlier empty
+registry statements below describe the historical GATE-01 milestone, not the proposed registry. Candidate, binding and
+product implementation remain separate; frozen suite/contract bytes cannot be changed by this binding.
+
 **Completion amendment, 2026-10-10:** GATE-01 is merged and its publication/retry are verified in the
 [completion record](../validation/acceptance-transitions.md#protected-main-publication-and-retry). The registry remains
 empty and r3 remains required. The working-change and pre-GATE roadmap notes below retain their earlier scope; their
