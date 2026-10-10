@@ -1,8 +1,9 @@
 # Pure hosted evidence contract
 
 Adopted 2026-10-10 for **HOSTED-EVIDENCE**, after PR27 published v0.3.27 from exact protected-main source
-`a98a434570a934831c64a64d3231950f27574b43`. This is a dormant governance interface; implementation and executable
-expectations are pending. The existing [profile protocol](../testing/hosted-profile-policy.md) and
+`a98a434570a934831c64a64d3231950f27574b43`. This dormant governance interface is implemented with independently authored
+expectations; [validation records](../validation/hosted-evidence.md) distinguish local checks from pending integration
+and publication. The existing [profile protocol](../testing/hosted-profile-policy.md) and
 [delivery boundary](hosted-delivery-policy.md) remain authoritative. No schema, source reader, release consumer or
 production permission changes here. Matching supplied facts proves consistency, never their authenticity.
 
@@ -154,8 +155,9 @@ control/discovery/local result kinds; null completed result and fabricated rows.
 Valid nonpassing counterparts must retain partial known rows, blocked empty rows, null observations and actual target
 drift. Pair them with attempted promotion to passed, timestamp reversal, missing post-read, cleanup downgrade, stale
 launch/result substitution and rewritten failed observations. Also require fresh frozen outputs, caller immutability,
-fixed diagnostics, import/call no-I/O and deterministic outcomes without Date.now. These are planned categories only; no
-executable fixtures or test result is claimed. Original publication/local-required-acceptance bytes stay unchanged.
+fixed diagnostics, import/call no-I/O and deterministic outcomes without Date.now. The independent expectations cover
+these categories; the validation record preserves their freeze, initial availability failure, later test-harness
+correction and focused implementation result. Original publication and local-required-acceptance bytes stay unchanged.
 
 ## Ownership, verification and limits
 
@@ -167,7 +169,8 @@ remain unchanged. Tests use synthetic identities and independently constructed e
 The design proposal SHA256 is `42a7862593cc4b7297d6dab6e79d9f149c913b8768d8c04416d37aa3a2040025`; independent design
 review SHA256 is `12f403e156c8f887f0aaf7f4da9f09cf7e492eb8bd1cdfd482540a37d81de958`. These are retained local review
 records, not attestations, executed tests or a human production decision. Root adopted their bounded design under the
-existing execution delegation; executable tests and implementation still require separate review and normal CI.
+existing execution delegation. Independent expectation and implementation reviews are recorded separately; normal CI,
+companion approval and prerequisite publication still apply.
 
 Authenticated publisher handoff, same-content registry proof, provider/configuration projection, freshness/convergence,
 production human-event verification and workflow permissions remain later launcher/consumer work. Preserve the legacy
