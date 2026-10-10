@@ -33,11 +33,18 @@ execution never invokes apt/sudo. Probe the package-local Playwright module with
 defaults and only `about:blank`. Observe the actual browser version and complete page/context/browser close before
 success. No product URL or intentional remote navigation belongs to readiness.
 
-Child keys are limited to PATH, HOME, TMPDIR, LANG, LC_ALL, XDG_RUNTIME_DIR and CI. Construct PATH from the pinned Node
-directory plus `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`; do not inherit arbitrary PATH entries.
-Copy only usable allowed runtime values without mutating the parent; set CI from the validated boolean. Exclude
+Explicit child keys are limited to PATH, HOME, TMPDIR, LANG, LC_ALL, XDG_RUNTIME_DIR and CI. Construct PATH from the
+pinned Node directory plus `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin`; do not inherit arbitrary PATH
+entries. Copy only usable allowed runtime values without mutating the parent; set CI from the validated boolean. Exclude
 credentials, admission, NODE_OPTIONS/NODE_PATH, npm configuration, PLAYWRIGHT overrides, proxies and test controls. Do
 not add XDG_CACHE_HOME: the unchanged later E2E setup uses the normal cache location.
+
+On macOS, the runtime may add `__CF_USER_TEXT_ENCODING`; inert pinned-Node probes observed its fixed three-part hex
+format. Do not inherit that value or put it in evidence. This platform-generated field does not permit arbitrary
+environment propagation. Node also automatically copies host `NODE_V8_COVERAGE` unless a spawn-local own undefined key
+suppresses it; that undefined value is omitted from the actual child environment. Reject an active Node permission model
+before metadata/processes, because Node otherwise synthesizes permission `NODE_OPTIONS`; never disable that security to
+satisfy this helper. Ordinary pinned CI/local invocation has no permission model active.
 
 ## Deadlines and cleanup
 
@@ -72,8 +79,10 @@ a fixed sanitized Error carrying failed `setupResult`; include no raw environmen
 The caller writes `.artifacts/acceptance-browser-setup.json` with `schemaVersion: 1`,
 `kind: acceptance-browser-preparation`, `productAcceptance: false`, exact `sourceRevision` and `entries`. Each attempted
 entry carries `role: candidate|pending|required`, actual `suiteCommit`, `suiteTree`, `manifestSha256` and helper
-`result`. Persist failure before propagating it; never invent an attempt for an earlier npm failure. Print a bounded
-sanitized summary for CI logs. This adds no release-asset schema or workflow change.
+`result`. Initialize the current source's report with empty entries immediately after validated selection, before
+extraction/npm; a failed rerun must not retain an old passing report. Persist failure before propagating it; never
+invent an attempt for an earlier npm failure. Print a bounded sanitized summary for CI logs. This adds no release-asset
+schema or workflow change.
 
 ## Independent verification and limits
 

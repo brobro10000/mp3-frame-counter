@@ -40,6 +40,15 @@ function run(command, args, cwd = root, env = process.env, options = {}) {
   return result;
 }
 
+/** Persist the current source-bound setup record, including its initial empty state; filesystem failures propagate. */
+function writePreparationEvidence() {
+  mkdirSync(join(root, ".artifacts"), { recursive: true });
+  writeFileSync(
+    join(root, ".artifacts/acceptance-browser-setup.json"),
+    `${JSON.stringify(preparation.evidence, null, 2)}\n`,
+  );
+}
+
 /**
  * Prepare one already-selected extraction using original validated authority and the shared deadline. Forward signals
  * only while async preparation is active, then remove listeners. Persist its exact attempted identity/result before
@@ -75,11 +84,7 @@ async function prepareSelected(suiteRoot, baseline, role) {
         result,
       };
       preparation.evidence.entries.push(entry);
-      mkdirSync(join(root, ".artifacts"), { recursive: true });
-      writeFileSync(
-        join(root, ".artifacts/acceptance-browser-setup.json"),
-        `${JSON.stringify(preparation.evidence, null, 2)}\n`,
-      );
+      writePreparationEvidence();
       console.log(`Acceptance browser preparation: ${JSON.stringify(entry)}`);
     }
   }
@@ -112,6 +117,7 @@ try {
         entries: [],
       },
     };
+    writePreparationEvidence();
     const extract = (baseline) => {
       const directory = mkdtempSync(join(tmpdir(), "mp3-acceptance-"));
       temporary.push(directory);

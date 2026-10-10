@@ -69,6 +69,11 @@ application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm
 `make help` lists commands. Stage exact new files before index-based formatting/policy checks. See
 [portable setup](docs/portability.md).
 
+For product phases, the controller prepares each selected suite's locked Chromium before standalone controls, with a
+bounded launch/close check. Only validated Linux CI installs OS prerequisites; local execution does not run apt/sudo.
+Read the [browser preparation contract](docs/testing/acceptance-browser-setup.md) for supported hosts and evidence
+limits.
+
 `npm run check:mermaid` renders all tracked Mermaid diagrams and reports their source locations. The explicit
 `mermaid:install` command downloads the lockfile-selected Chrome for development validation; `npm ci` itself leaves
 install scripts disabled. Browser files and rendered SVGs are ignored and do not enter application runtime images. See

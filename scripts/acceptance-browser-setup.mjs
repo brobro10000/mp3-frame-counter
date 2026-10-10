@@ -9,6 +9,7 @@
  * and launches/closes an about:blank browser through public Playwright APIs. Installers may access the network/cache and
  * Linux CI system packages. Children receive a minimal environment and bounded output/time; only owned process groups
  * may be terminated. Detached browser cleanup is confirmed only by successful public close and clean probe completion.
+ * An active Node permission model fails closed instead of propagating or bypassing its security flags.
  * Failures throw a fixed sanitized Error carrying setupResult; results never establish product acceptance or deployment.
  */
 
@@ -135,11 +136,12 @@ async function readinessProbe(moduleUrl, hardTimeoutMs, launchTimeoutMs) {
   let context;
   let page;
   let browserVersion;
+  const hardDeadline = performance.now() + hardTimeoutMs;
   let timer = setTimeout(() => process.exit(1), hardTimeoutMs);
   const interrupt = () => {
     failed = true;
     clearTimeout(timer);
-    timer = setTimeout(() => process.exit(1), Math.min(1000, hardTimeoutMs));
+    timer = setTimeout(() => process.exit(1), Math.max(1, Math.min(1000, hardDeadline - performance.now())));
   };
   process.once("SIGTERM", interrupt);
   process.once("SIGINT", interrupt);
@@ -240,7 +242,13 @@ function runOwned({ name, executable, args, cwd, env, timeoutMs, signal }) {
       return;
     }
     try {
-      child = spawn(executable, args, { cwd, env, detached: true, stdio: ["ignore", "pipe", "pipe"] });
+      // Node otherwise copies host coverage even with explicit env. Its own undefined key is omitted from envPairs.
+      child = spawn(executable, args, {
+        cwd,
+        env: { ...env, NODE_V8_COVERAGE: undefined },
+        detached: true,
+        stdio: ["ignore", "pipe", "pipe"],
+      });
     } catch {
       finish("confirmed");
       return;
@@ -330,6 +338,7 @@ export async function prepareAcceptanceBrowser(options, adapters = {}) {
     assert(Object.keys(adapters).every((key) => ["run", "platform", "now"].includes(key)));
     if (result.ci === null) fail(result, stage, "authority");
     if (result.platform === null) fail(result, stage, "platform");
+    if (process.permission !== undefined) fail(result, stage, "authority");
     const { suiteRoot, ci, environment, deadline, signal } = options;
     assert(typeof suiteRoot === "string" && isAbsolute(suiteRoot) && !/[\x00-\x1f\x7f]/.test(suiteRoot));
     assert(environment && typeof environment === "object" && !Array.isArray(environment));
