@@ -208,6 +208,7 @@ const trustedRoot = process.env.TRUSTED_ACCEPTANCE_ROOT;
 const trustedMarker = trustedRoot ? readFileSync(join(trustedRoot, "check.mjs"), "utf8") : null;
 appendFileSync(process.env.CONSUMER_COMMAND_LOG,
   JSON.stringify({ command: "npm", args, cwd: process.cwd(), marker, trustedRoot, trustedMarker }) + "\\n");
+if(args[0]==="ci"&&process.env.CONSUMER_FAIL_FIRST_CI==="1")process.exit(29);
 if (args[0] === "ci" && marker) {
   const failure=${JSON.stringify(browserFailure)};
   if(failure?.stage==="npm-ci"&&marker.includes(failure.marker))process.exit(23);
@@ -767,6 +768,30 @@ test("npm failure before setup creates no invented browser evidence for that ext
   assert.deepEqual(
     browserEvidence(f).entries.map((e) => e.role),
     ["candidate"],
+  );
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("a same-source rerun clears old passing browser evidence before its first npm failure", (t) => {
+  const f = fixture(t);
+  requireSuccess(f.invoke(phaseScript));
+  const prior = browserEvidence(f);
+  assert.equal(prior.entries.length, 1);
+  assert.equal(prior.entries[0].result.status, "passed");
+  const commandCount = f.commands().length;
+  const result = f.invoke(phaseScript, { CONSUMER_FAIL_FIRST_CI: "1" });
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0);
+  assert.equal(f.git("rev-parse", "HEAD"), prior.sourceRevision, "The failing rerun must use the exact same source");
+  const attempted = f.commands().slice(commandCount);
+  assert.equal(attempted.length, 1);
+  assert.equal(attempted[0].command, "npm");
+  assert.deepEqual(attempted[0].args, ["ci"]);
+  const current = browserEvidence(f);
+  assert.deepEqual(
+    current.entries,
+    [],
+    "A pre-setup failure must replace stale passing evidence with a fresh empty record",
   );
   assert.deepEqual(readdirSync(f.temporary), []);
 });

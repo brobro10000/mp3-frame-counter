@@ -7,6 +7,7 @@
  * Missing implementation is explicit interface-red, never a successful negative rejection or application acceptance.
  */
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -20,6 +21,7 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { performance } from "node:perf_hooks";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 const helperUrl = new URL("./acceptance-browser-setup.mjs", import.meta.url);
@@ -209,6 +211,7 @@ exports.chromium = { launch:async options=>{
     HTTPS_PROXY: "https://synthetic:secret@invalid.example",
     BASE_URL: "https://invalid.example",
     CONSUMER_COMMAND_LOG: "/must-not-use",
+    __CF_USER_TEXT_ENCODING: "caller-value-must-not-copy",
   };
   const calls = () =>
     existsSync(log) ? readFileSync(log, "utf8").trim().split("\n").filter(Boolean).map(JSON.parse) : [];
@@ -680,7 +683,7 @@ test("real inert package programs prove sanitized launch/close ordering without 
     "Probe cannot introduce sandbox/launch overrides",
   );
   for (const call of calls.filter((c) => c.env))
-    assert.deepEqual(call.env, {
+    requireActualChildEnvironment(call.env, {
       PATH: fixedPath,
       HOME: f.environment.HOME,
       TMPDIR: f.environment.TMPDIR,
@@ -689,6 +692,144 @@ test("real inert package programs prove sanitized launch/close ordering without 
       XDG_RUNTIME_DIR: f.environment.XDG_RUNTIME_DIR,
       CI: "false",
     });
+});
+
+/** Account only for Darwin's runtime-generated key; adapter-visible input stays the original exact seven-key policy. */
+function requireActualChildEnvironment(actual, expected) {
+  const supplied = { ...actual };
+  if (process.platform === "darwin" && Object.hasOwn(supplied, "__CF_USER_TEXT_ENCODING")) {
+    assert.match(supplied.__CF_USER_TEXT_ENCODING, /^0x[0-9A-Fa-f]+:0x[0-9A-Fa-f]+:0x[0-9A-Fa-f]+$/);
+    delete supplied.__CF_USER_TEXT_ENCODING;
+  }
+  assert.deepEqual(supplied, expected);
+}
+
+/** Run one fixture-owned driver with explicit host state; never mutate the test runner's real environment. */
+function inertHost(f, source, { coverage, permission = false } = {}) {
+  const script = join(f.root, "host-driver.mjs");
+  writeFileSync(script, source);
+  const permissionArgs = permission
+    ? ["--permission", `--allow-fs-read=${dirname(fileURLToPath(helperUrl))}`, `--allow-fs-read=${f.root}`]
+    : [];
+  return spawnSync(process.execPath, [...permissionArgs, script], {
+    cwd: f.root,
+    env: {
+      PATH: fixedPath,
+      HOME: f.environment.HOME,
+      TMPDIR: f.environment.TMPDIR,
+      LANG: "C",
+      CI: "false",
+      // An own undefined key prevents the test driver's parent from adding unrelated ambient coverage configuration.
+      NODE_V8_COVERAGE: coverage,
+    },
+    encoding: "utf8",
+    timeout: 10000,
+    maxBuffer: 1024 * 1024,
+  });
+}
+
+test("real pinned-Node setup children suppress host NODE_V8_COVERAGE despite spawn normalization", (t) => {
+  setup();
+  const f = fixture(t);
+  const coverage = join(f.root, "owned-coverage");
+  mkdirSync(coverage);
+  const host = inertHost(
+    f,
+    `
+import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
+import {performance} from "node:perf_hooks";
+import * as module from ${JSON.stringify(helperUrl.href)};
+assert.equal(typeof module.prepareAcceptanceBrowser,"function","Missing helper cannot satisfy this regression");
+assert.equal(process.env.NODE_V8_COVERAGE,${JSON.stringify(coverage)});
+const control=spawnSync(process.execPath,["-e","process.stdout.write(JSON.stringify({coverage:process.env.NODE_V8_COVERAGE}))"],{
+  env:{PATH:${JSON.stringify(fixedPath)},HOME:${JSON.stringify(f.environment.HOME)}},encoding:"utf8",timeout:3000,maxBuffer:4096,
+});
+assert.equal(control.error,undefined); assert.equal(control.status,0);
+assert.equal(JSON.parse(control.stdout).coverage,process.env.NODE_V8_COVERAGE,"Pinned Node must actually demonstrate the inheritance hazard");
+const result=await module.prepareAcceptanceBrowser({
+  suiteRoot:${JSON.stringify(f.suiteRoot)},ci:false,environment:${JSON.stringify(f.environment)},deadline:performance.now()+20000,
+});
+process.stdout.write(JSON.stringify({positiveControl:true,result}));
+`,
+    { coverage },
+  );
+  assert.equal(host.error, undefined);
+  assert.equal(host.status, 0, `${host.stdout}\n${host.stderr}`);
+  const outcome = JSON.parse(host.stdout);
+  assert.equal(outcome.positiveControl, true);
+  record(outcome.result, { passed: true, platform: process.platform });
+  const observed = f.calls().filter((call) => call.env);
+  assert(observed.some((call) => call.kind === "cli") && observed.some((call) => call.kind === "launch"));
+  for (const call of observed) {
+    assert.equal(
+      Object.hasOwn(call.env, "NODE_V8_COVERAGE"),
+      false,
+      "Host coverage must not enter an actual setup child",
+    );
+    requireActualChildEnvironment(call.env, {
+      PATH: fixedPath,
+      HOME: f.environment.HOME,
+      TMPDIR: f.environment.TMPDIR,
+      LANG: "C",
+      LC_ALL: "C",
+      XDG_RUNTIME_DIR: f.environment.XDG_RUNTIME_DIR,
+      CI: "false",
+    });
+  }
+});
+
+test("an actual Node permission model refuses before metadata and any setup adapter operation", (t) => {
+  setup();
+  const f = fixture(t);
+  const missing = join(f.root, "metadata-must-not-be-read");
+  const host = inertHost(
+    f,
+    `
+import assert from "node:assert/strict";
+import {performance} from "node:perf_hooks";
+import * as module from ${JSON.stringify(helperUrl.href)};
+assert.equal(typeof module.prepareAcceptanceBrowser,"function","Missing helper is not permission refusal");
+assert.equal(typeof process.permission,"object");
+assert.equal(process.permission.has("fs.read",${JSON.stringify(f.root)}),true,"Driver must be able to read fixture metadata");
+assert.equal(process.permission.has("child"),false,"Test must not disable the permission boundary");
+const outcomes=[];
+for(const suiteRoot of ${JSON.stringify([f.suiteRoot, missing])}) {
+  let calls=0;
+  const adapters={run:async command=>{
+    calls++;
+    return{exitCode:0,signal:null,stdout:command.name==="probe"?${JSON.stringify(JSON.stringify(readiness))}:"",timedOut:false,aborted:false,cleanup:"confirmed"};
+  }};
+  try {
+    const result=await module.prepareAcceptanceBrowser({suiteRoot,ci:false,environment:${JSON.stringify(f.environment)},deadline:performance.now()+20000},adapters);
+    outcomes.push({status:"returned",result,calls});
+  } catch(error) {
+    assert(error instanceof Error); assert(error.setupResult,"Import or fixture errors are not declared authority refusal");
+    outcomes.push({status:"rejected",result:error.setupResult,calls});
+  }
+}
+process.stdout.write(JSON.stringify({active:true,outcomes}));
+`,
+    { permission: true },
+  );
+  assert.equal(host.error, undefined);
+  assert.equal(host.status, 0, `${host.stdout}\n${host.stderr}`);
+  const evidence = JSON.parse(host.stdout);
+  assert.equal(evidence.active, true);
+  assert.equal(evidence.outcomes.length, 2);
+  for (const outcome of evidence.outcomes) {
+    assert.equal(
+      outcome.status,
+      "rejected",
+      "Active permission model must fail even with valid metadata and inert adapters",
+    );
+    record(outcome.result, { passed: false, platform: process.platform, verifiedMetadata: false });
+    assert.deepEqual(outcome.result.failure, { stage: "input", code: "authority" });
+    assert.equal(outcome.result.cleanup, "not-started");
+    assert.deepEqual(outcome.result.steps, []);
+    assert.equal(outcome.calls, 0);
+  }
+  assert.deepEqual(f.calls(), []);
 });
 
 /** Check only an exact PID created and recorded by this fixture; never enumerate or target ambient host processes. */
