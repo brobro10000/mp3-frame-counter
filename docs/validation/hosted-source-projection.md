@@ -49,8 +49,11 @@ skips, cancellations or todo, in 267,359 ms. Syntax and explicit source formatti
 `d45128769206ecc3862f664624ba3765e1be474aa1744e737a506ab6fc74e81f`. A separate exact-source implementation review found
 no actionable findings; its memo SHA-256 is `4161af822ee83d162ea4fee5ccaffce3548c81345eb4880529df032b9ba732b7`. Root
 read the entire source diff, handoff, review and focused log, and rehashed all eight retained implementation records
-plus current source and frozen tests. Broader checks, current required CI, companion approval and actual-main
-publication remain pending.
+plus current source and frozen tests. At reconciled source `29419a8`, pinned `npm run validate` passed all **564 tooling
+tests**, **20 gate tests** and **19 Mermaid renders**, plus format, workflow lint, policy and portability. Complete log
+SHA-256: `e0d18e55f4f495401a430cb93a84b9fcc31db4d784e428a6693e1cfe04b4d278`. This snapshot predates integration of the
+separate HOSTED-EVIDENCE helper; its 38 tests are not included in this count. Fresh combined main-target CI, companion
+approval and actual-main publication remain pending.
 
 The helper must not select a candidate/pending suite as required, mint credentials, invoke a provider, start acceptance,
 alter a binding or authorize production. Every production application deployment retains human intervention for its
