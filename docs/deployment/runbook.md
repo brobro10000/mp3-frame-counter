@@ -7,6 +7,11 @@ automatic stage delivery. Every production application deployment/promotion stil
 candidate. Software releases continue independently of deployment; no stage or production deployment is currently
 established.
 
+The [source-bound version policy](version-policy.md) supersedes the original fixed-`0.1` allocator described below for
+sources containing an admitted policy. VER-01 introduces line `0.1`; a separate activation is required for `0.2`. Legacy
+source identities and byte-for-byte retries remain intact. The original deployment-before-release wording below is
+historical: software releases continue independently under the current release-only authority.
+
 ## Dedicated project and cost-control prerequisite
 
 Use the [bounded bootstrap](../../infra/cloud/bootstrap/README.md) and its

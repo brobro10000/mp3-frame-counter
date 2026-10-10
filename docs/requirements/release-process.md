@@ -20,6 +20,15 @@ The owner asked whether merging is safe; this is not an instruction for an agent
 or enable auto-merge. Core merge controls and the independently frozen acceptance baseline remain mandatory. Publishing
 from eligible protected-main pushes is the requested automation; PR validation must never publish a release.
 
+## Later source-bound version-policy amendment — 2026-10-10
+
+The owner-adopted roadmap selects [VER-01](../deployment/version-policy.md): ordinary versions become
+`0.<approved minor>.<global first-parent ordinal>` from the exact tested source's root policy. Initial migration selects
+`0.1`; separate LINE-02 activation selects `0.2`. Preserve historical schema-1 identities/bytes, immutable retries and
+all APP-REL provenance requirements. The earlier fixed-`0.1` wording below records the original policy and is superseded
+only for sources with an introduced valid policy. Policy deletion/downgrade cannot restore legacy behavior. Version
+allocation grants no deployment authority; verified production `1.0.0` finalization remains separate future work.
+
 ## Current and deferred requirements
 
 Stable IDs are retained. The table explicitly distinguishes the active release portion from deferred deployment work;

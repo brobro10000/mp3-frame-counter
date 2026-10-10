@@ -1,5 +1,9 @@
 # GitHub releases without deployment
 
+**Current authority:** [continued roadmap execution](../phases/roadmap-execution-authorization.md) resumes hosted work
+with automatic stage and a human production gate. Artifact publication remains independent of deployment. The original
+release-only amendment below is historical scope, not a current prohibition on separately gated hosting work.
+
 The owner explicitly deferred deployment in [SRC-RELEASE-ONLY](../requirements/sources/release-only-request.txt).
 [APP-REL-001–006](../requirements/release-process.md) now require repository releases of tested artifacts. No provider,
 registry, stage or production credentials are needed, and publishing a release does not expose the application.
@@ -39,9 +43,16 @@ cannot bypass the tests. Publication failures stay visible in Actions; the retry
 
 ## Version, retention and retries
 
-Versions use `0.1.<first-parent Git ordinal of tested main source>` and tags use `v<version>`. Full Git history is
-required. This is monotonic on protected linear main; feature-branch ordinals from local preparation remain provisional.
-The root package version stays unchanged. Source ordinals may have gaps, and a new version does not imply deployment.
+Versions use the exact tested source's [policy](version-policy.md): `0.<approved minor>.<global first-parent ordinal>`,
+with tags `v<version>`. VER-01 keeps line `0.1`; LINE-02 separately activates `0.2`. Patch values do not reset. Full
+history and source-policy verification are required, including rejection of post-introduction deletion or downgrade.
+Feature-branch previews remain provisional; root package version stays unchanged. Source ordinals may have gaps, and a
+new version does not imply deployment.
+
+New policy-bound reservations and publication evidence use schema 2 with the source policy digest/line and ordinal.
+Historical schema-1 bytes remain valid for their original pre-policy sources, including post-GATE sources whose
+acceptance-admission evidence is still mandatory. Delayed old-line sources retain their own version and cannot replace a
+newer stable latest release; ordering is numeric across minor lines.
 
 A release stays draft until every expected archive and evidence asset has been verified. The publisher rejects any
 existing tag pointing elsewhere, changed body or conflicting asset. It reuses identical existing content; it never

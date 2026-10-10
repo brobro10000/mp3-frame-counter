@@ -6,6 +6,8 @@
  * After policy introduction, callers must supply the independent product-job admission digest; the report's envelope
  * is verified against that digest, its original producing attempt and a fresh source/base resolver decision. Legacy
  * source histories retain their original schemas and bytes. Publication provenance binds the report as a hashed asset.
+ * Release allocation independently replays source policy history; schema-2 records additionally bind the selected
+ * line, global ordinal and exact policy bytes. Pure material/comparison helpers never establish source authority.
  */
 import assert from "node:assert/strict";
 import { lstatSync, readFileSync, readdirSync } from "node:fs";
@@ -16,13 +18,16 @@ import { requirePreflightWorkflow } from "./acceptance-preflight.mjs";
 import {
   archiveIdentity,
   canonical,
+  compareReleaseVersions,
   configurationFingerprint,
   digest,
   localEvidence,
+  preparationIdentity,
   requireArtifactPath,
+  requireSameReservation,
+  resolveReleaseAllocation,
   sourceConfigurationPaths,
   verifyPreparedDirectory,
-  versionForOrdinal,
 } from "./release-manifest.mjs";
 
 export const preparedAssetNames = [
@@ -119,6 +124,7 @@ export function verifyReleaseSource(root, context, { admission, expectedAdmissio
     "Checkout differs from tested main source",
   );
   git(root, ["merge-base", "--is-ancestor", context.baseRevision, context.sourceRevision]);
+  const allocation = resolveReleaseAllocation(root, context.sourceRevision);
   const introduced = acceptancePolicyIntroduced(root, context.sourceRevision);
   if (!introduced) assert.equal(admission, undefined, "Legacy source cannot carry acceptance admission evidence");
   const accepted = introduced
@@ -132,7 +138,8 @@ export function verifyReleaseSource(root, context, { admission, expectedAdmissio
   );
   return {
     ...accepted,
-    ordinal: Number(git(root, ["rev-list", "--first-parent", "--count", context.sourceRevision]).trim()),
+    allocation,
+    ordinal: allocation.ordinal,
     configuration: configurationFingerprint(
       Object.fromEntries(
         sourceConfigurationPaths.map((path) => [path, git(root, ["show", `${context.sourceRevision}:${path}`], null)]),
@@ -156,8 +163,14 @@ export async function verifyReleaseBundle(root, directory, context, { expectedAd
   assert.equal(manifest.sourceRevision, context.sourceRevision);
   assert.equal(manifest.platform, "linux/amd64", "Release requires the tested Linux AMD64 image pair");
   assert.equal(manifest.preparationRevision, context.sourceRevision, "CI must prepare the exact tested source");
-  assert.equal(manifest.ordinal, source.ordinal, "Release ordinal differs from full source history");
-  assert.equal(manifest.version, versionForOrdinal(source.ordinal));
+  assert.equal(manifest.ordinal, source.allocation.ordinal, "Release ordinal differs from full source history");
+  assert.equal(manifest.version, source.allocation.version, "Release version differs from source allocation");
+  assert.equal(manifest.schemaVersion, source.allocation.policy === null ? 1 : 2, "Release schema differs from source");
+  assert.deepEqual(
+    manifest.identity,
+    preparationIdentity(report, source.allocation, source.configuration),
+    "Reserved identity differs from independently resolved source allocation",
+  );
   assert.deepEqual(manifest.identity.sourceConfiguration, source.configuration, "Source configuration differs");
   assert.deepEqual(localEvidence(report), manifest.identity.evidence, "Archived E2E evidence differs from preparation");
   const evidence = manifest.identity.evidence;
@@ -219,8 +232,9 @@ export function requireObservedChecks(bundle, repository, branch, comparison, ru
 /** Publication is release-only. Preserve prepared-local records and bind their exact bytes in a separate statement. */
 export function publicationMaterial(bundle) {
   const { manifest, origin, assets } = bundle;
+  requireSameReservation(manifest, manifest.identity);
   const record = {
-    schemaVersion: 1,
+    schemaVersion: manifest.schemaVersion,
     status: "release-only-provenance",
     deployed: false,
     deploymentDeferred: true,
@@ -239,8 +253,12 @@ export function publicationMaterial(bundle) {
     provider: null,
     assets: assets.map(({ name, sha256, bytes }) => ({ name, sha256, bytes })),
   };
+  if (manifest.schemaVersion === 2) {
+    record.ordinal = manifest.ordinal;
+    record.releasePolicy = structuredClone(manifest.identity.releasePolicy);
+  }
   const json = `${JSON.stringify(record, null, 2)}\n`;
-  const notes =
+  let notes =
     `# ${manifest.version} — release only\n\n` +
     `Not deployed. Deployment and recovery are deferred; this release publishes tested local container artifacts.\n\n` +
     `Source: ${manifest.sourceRevision}\nPlatform: ${manifest.platform}\n` +
@@ -252,6 +270,11 @@ export function publicationMaterial(bundle) {
     `Publication record SHA-256: ${digest(json)}\n\n` +
     `Verify SHA256SUMS before loading either Docker archive. The preparation manifest retains its historical ` +
     `prepared-local status; publication.json records release-only provenance. No registry image or service was deployed.\n`;
+  if (manifest.schemaVersion === 2) {
+    notes +=
+      `\nRelease policy line: ${record.releasePolicy.line}\nGlobal ordinal: ${record.ordinal}\n` +
+      `Release policy SHA-256: ${record.releasePolicy.sha256}\n`;
+  }
   return { json, notes, binding: digest(canonical(record)) };
 }
 
@@ -273,15 +296,18 @@ export function requireMatchingAsset(actual, expected) {
 }
 
 export function canBeLatest(bundle, branch, releases) {
-  return (
-    branch.commit?.sha === bundle.manifest.sourceRevision &&
-    !releases.some(
-      (release) =>
-        !release.draft &&
-        /^v0\.1\.[1-9]\d*$/.test(release.tag_name) &&
-        Number(release.tag_name.slice(5)) > bundle.manifest.ordinal,
-    )
-  );
+  if (branch.commit?.sha !== bundle.manifest.sourceRevision) return false;
+  try {
+    compareReleaseVersions(bundle.manifest.version, bundle.manifest.version);
+    for (const release of releases) {
+      if (release.draft === true || release.prerelease === true) continue;
+      if (typeof release.tag_name !== "string" || !release.tag_name.startsWith("v")) return false;
+      if (compareReleaseVersions(release.tag_name.slice(1), bundle.manifest.version) > 0) return false;
+    }
+    return true;
+  } catch {
+    return false; // Unrecognized stable metadata cannot authorize replacing latest.
+  }
 }
 
 /** Keep release credentials confined to the post-gate main job, with exact same-run artifact handoff and no installs. */

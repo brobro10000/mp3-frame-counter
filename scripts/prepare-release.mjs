@@ -8,7 +8,7 @@
  * Post-policy reports retain their original preflight admission (CI) or local selection; preparation HEAD cannot
  * replace the tested source/base, and local evidence cannot authorize publication. Historical report bytes stay valid.
  *
- * Creates ignored .artifacts/releases/0.1.<source-first-parent-ordinal>/ with two Docker archives, checksums,
+ * Creates ignored .artifacts/releases/<source-bound-version>/ with two Docker archives, checksums,
  * reservation, manifest and deterministic notes. Version previews remain provisional even when checks pass locally.
  * Creation reserves a new directory atomically. Existing complete identical bundles are checked and reused; a conflict
  * or incomplete prior attempt fails without overwriting its bytes. Export failure retains the incomplete reservation
@@ -31,6 +31,7 @@ import {
   preparationIdentity,
   releaseNotes,
   requireArtifactPath,
+  resolveReleaseAllocation,
   services,
   sourceConfigurationPaths,
   verifyImageInspection,
@@ -71,12 +72,12 @@ try {
   const preparationRevision = git(["rev-parse", "HEAD"]).trim();
   git(["merge-base", "--is-ancestor", evidence.sourceRevision, preparationRevision]);
   git(["cat-file", "-e", `${evidence.sourceRevision}^{commit}`]);
-  const ordinal = Number(git(["rev-list", "--first-parent", "--count", evidence.sourceRevision]).trim());
+  const allocation = resolveReleaseAllocation(root, evidence.sourceRevision);
   verifyPreparationAcceptance(root, report, process.env);
   const sourceFiles = Object.fromEntries(
     sourceConfigurationPaths.map((path) => [path, git(["show", `${evidence.sourceRevision}:${path}`], null)]),
   );
-  const identity = preparationIdentity(report, ordinal, configurationFingerprint(sourceFiles));
+  const identity = preparationIdentity(report, allocation, configurationFingerprint(sourceFiles));
   for (const service of services) {
     const inspected = JSON.parse(
       execFileSync("docker", ["image", "inspect", evidence.images[service]], {

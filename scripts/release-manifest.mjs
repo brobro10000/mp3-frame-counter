@@ -5,9 +5,14 @@
  * records, reject missing/failed/mismatched identities and return consistency results only: they do not observe
  * GitHub/providers, confer authorization or turn prepared-local artifacts into deployable releases. Directory
  * verification reads only the exact recorded archives/metadata and streams SHA-256; it never rewrites a reservation.
+ * Allocation reads exact Git objects and complete first-parent history, ignoring replacement objects and working
+ * edits. The checkout guard additionally requires exact working policy bytes. Invalid selections, incomplete history
+ * and conflicting reservations throw; importing this module performs no I/O. Run the allocation/preparation tests
+ * with `node --test scripts/release-allocation.test.mjs scripts/release-preparation.test.mjs`.
  */
 
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { createReadStream, lstatSync, readFileSync, realpathSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
@@ -126,6 +131,210 @@ export function versionForOrdinal(ordinal) {
   return `0.1.${ordinal}`;
 }
 
+const releasePolicyPath = "release-policy.json";
+const releaseStrategy = "global-first-parent-ordinal";
+const ordinaryObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+
+function requireFields(value, fields, label) {
+  assert(ordinaryObject(value), `Invalid ${label}`);
+  assert.deepEqual(Object.keys(value).sort(), [...fields].sort(), `Invalid ${label} fields`);
+}
+
+function releaseLineMinor(line) {
+  const match = typeof line === "string" && /^0\.([1-9][0-9]*)$/.exec(line);
+  assert(match && match[0] === line, "Invalid release policy line");
+  const minor = Number(match[1]);
+  assert(Number.isSafeInteger(minor), "Unsafe release policy minor");
+  return minor;
+}
+
+function requireReleasePolicy(policy, bound = false) {
+  requireFields(policy, ["schemaVersion", "strategy", "line", ...(bound ? ["sha256"] : [])], "release policy");
+  assert.equal(policy.schemaVersion, 1, "Unsupported release policy schema");
+  assert.equal(policy.strategy, releaseStrategy, "Unsupported release policy strategy");
+  if (bound) requireHash(policy.sha256, "release policy digest");
+  return releaseLineMinor(policy.line);
+}
+
+function releaseGit(root, ...args) {
+  return execFileSync("git", ["--no-replace-objects", ...args], {
+    cwd: root,
+    env: { ...process.env, GIT_NO_LAZY_FETCH: "1", GIT_TERMINAL_PROMPT: "0" },
+    stdio: ["ignore", "pipe", "pipe"],
+    maxBuffer: 16 * 1024 * 1024,
+    timeout: 30_000,
+  });
+}
+
+/** Read only the exact root entry; a symlink/tree establishes presence but is never followed as a policy. */
+function committedReleasePolicy(root, revision) {
+  const entry = releaseGit(root, "ls-tree", "-z", revision, "--", releasePolicyPath).toString("utf8");
+  if (entry === "") return null;
+  const match = /^(\d{6}) (blob|tree|commit) ([a-f0-9]{40})\trelease-policy\.json\0$/.exec(entry);
+  assert(match, "Unreadable release policy tree entry");
+  if (match[2] !== "blob" || !["100644", "100755"].includes(match[1])) return { ordinary: false };
+  return { ordinary: true, bytes: releaseGit(root, "cat-file", "blob", match[3]) };
+}
+
+/** JSON.parse validates grammar; a separate token walk rejects duplicate decoded keys before interpreting values. */
+function uniquePolicyJSON(bytes) {
+  const source = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(bytes);
+  const value = JSON.parse(source);
+  const tokens = source.match(/"(?:[^"\\]|\\[\s\S])*"|[^\s{}\[\]:,]+|[{}\[\]:,]/g);
+  let index = 0;
+  const visit = () => {
+    const token = tokens[index++];
+    if (token === "{") {
+      const keys = new Set();
+      while (tokens[index] !== "}") {
+        const key = JSON.parse(tokens[index++]);
+        assert(!keys.has(key), "Duplicate release policy JSON key");
+        keys.add(key);
+        index++; // Colon; grammar has already been validated.
+        visit();
+        if (tokens[index] !== ",") break;
+        index++;
+      }
+      index++;
+    } else if (token === "[") {
+      while (tokens[index] !== "]") {
+        visit();
+        if (tokens[index] !== ",") break;
+        index++;
+      }
+      index++;
+    }
+  };
+  visit();
+  assert.equal(index, tokens.length, "Invalid release policy JSON tokens");
+  return value;
+}
+
+/**
+ * Resolve a source's line and global ordinal by replaying its complete first-parent history, without writes/network.
+ * Invalid policy data is repairable, but its presence ends legacy fallback. Unsupported declared contracts remain
+ * ancestry barriers. Git integrity errors escape immediately and cannot be mistaken for absent/repairable policy.
+ */
+export function resolveReleaseAllocation(root, sourceRevision) {
+  requireSha(sourceRevision, "release source revision");
+  assert.equal(sourceRevision.length, 40, "Release source revision must be exact");
+  assert.equal(releaseGit(root, "cat-file", "-t", sourceRevision).toString().trim(), "commit");
+  assert.equal(
+    releaseGit(root, "rev-parse", "--is-shallow-repository").toString().trim(),
+    "false",
+    "Release allocation requires complete source history",
+  );
+  const history = releaseGit(root, "rev-list", "--first-parent", "--reverse", sourceRevision)
+    .toString()
+    .trim()
+    .split("\n");
+  assert(history.length > 0 && history.at(-1) === sourceRevision, "Invalid release source history");
+  let introduced = false;
+  let highestMinor = null;
+  let policy = null;
+  for (const [index, revision] of history.entries()) {
+    const headers = releaseGit(root, "cat-file", "commit", revision).toString().split("\n\n", 1)[0].split("\n");
+    const firstParent = headers.find((line) => line.startsWith("parent "))?.slice(7);
+    assert.equal(firstParent, history[index - 1], "Release source history differs from immutable commit parents");
+    const entry = committedReleasePolicy(root, revision);
+    policy = null;
+    if (entry === null) continue;
+    introduced = true;
+    if (!entry.ordinary) continue;
+    let value;
+    try {
+      value = uniquePolicyJSON(entry.bytes);
+    } catch {
+      continue;
+    }
+    if (ordinaryObject(value)) {
+      assert(
+        !(Number.isInteger(value.schemaVersion) && value.schemaVersion !== 1),
+        "Unsupported release policy schema in source history",
+      );
+      assert(
+        !(typeof value.strategy === "string" && value.strategy !== releaseStrategy),
+        "Unsupported release policy strategy in source history",
+      );
+    }
+    let minor;
+    try {
+      minor = requireReleasePolicy(value);
+    } catch {
+      continue;
+    }
+    if (highestMinor === null ? minor !== 1 : minor < highestMinor) continue;
+    highestMinor = minor;
+    policy = { schemaVersion: 1, strategy: releaseStrategy, line: value.line, sha256: digest(entry.bytes) };
+  }
+  assert(!introduced || policy !== null, "Invalid release policy selection at source revision");
+  const ordinal = history.length;
+  versionForOrdinal(ordinal);
+  return { sourceRevision, version: `${policy?.line ?? "0.1"}.${ordinal}`, ordinal, policy };
+}
+
+/** Compare only canonical stable numeric versions; comparison does not authorize selection of a release line. */
+export function compareReleaseVersions(left, right) {
+  const components = (value) => {
+    const match = typeof value === "string" && /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/.exec(value);
+    assert(match && match[0] === value, "Invalid stable release version");
+    const parts = match.slice(1).map(Number);
+    assert(parts.every(Number.isSafeInteger), "Unsafe stable release version");
+    return parts;
+  };
+  const a = components(left);
+  const b = components(right);
+  for (let index = 0; index < a.length; index++) {
+    if (a[index] !== b[index]) return a[index] < b[index] ? -1 : 1;
+  }
+  return 0;
+}
+
+/** Validate HEAD allocation and only the policy path's working presence/type/bytes; unrelated dirty files are allowed. */
+export function requireReleasePolicyCheckout(root, expectedSourceRevision = undefined) {
+  const sourceRevision = releaseGit(root, "rev-parse", "HEAD").toString().trim();
+  if (expectedSourceRevision !== undefined) {
+    requireSha(expectedSourceRevision, "expected release source revision");
+    assert.equal(sourceRevision, expectedSourceRevision, "Release source revision differs from checked-out HEAD");
+  }
+  const allocation = resolveReleaseAllocation(root, sourceRevision);
+  const committed = committedReleasePolicy(root, sourceRevision);
+  const path = join(root, releasePolicyPath);
+  const working = lstatSync(path, { throwIfNoEntry: false });
+  if (committed === null) assert.equal(working, undefined, "Unexpected working release policy");
+  else {
+    assert(working?.isFile(), "Working release policy must be an ordinary file");
+    assert.deepEqual(readFileSync(path), committed.bytes, "Working release policy differs from source revision");
+  }
+  return allocation;
+}
+
+/** Supplied allocations establish consistency only; callers must independently resolve their source's Git history. */
+function requireAllocation(allocation, sourceRevision) {
+  requireFields(allocation, ["sourceRevision", "version", "ordinal", "policy"], "release allocation");
+  requireSha(allocation.sourceRevision, "allocation source revision");
+  assert.equal(allocation.sourceRevision, sourceRevision, "Release allocation source changed");
+  versionForOrdinal(allocation.ordinal);
+  if (allocation.policy !== null) requireReleasePolicy(allocation.policy, true);
+  assert.equal(
+    allocation.version,
+    `${allocation.policy?.line ?? "0.1"}.${allocation.ordinal}`,
+    "Release allocation version changed",
+  );
+}
+
+function requireIdentityVersion(identity) {
+  versionForOrdinal(identity.ordinal);
+  const bound = Object.hasOwn(identity, "releasePolicy");
+  if (bound) requireReleasePolicy(identity.releasePolicy, true);
+  assert.equal(
+    identity.version,
+    `${bound ? identity.releasePolicy.line : "0.1"}.${identity.ordinal}`,
+    "Stale version ordinal or policy",
+  );
+  return bound ? 2 : 1;
+}
+
 /** Verify observed local Docker IDs and platform; registry publication still requires separate observed evidence. */
 export function verifyImageInspection(expected, inspected) {
   requireImage(expected);
@@ -142,8 +351,12 @@ export function configurationFingerprint(files) {
 }
 
 /** Construct the source/artifact reservation identity, excluding the tooling revision so unchanged retries can reuse it. */
-export function preparationIdentity(report, ordinal, sourceConfiguration) {
+export function preparationIdentity(report, allocation, sourceConfiguration) {
   const evidence = localEvidence(report);
+  const legacy = typeof allocation === "number";
+  if (!legacy) requireAllocation(allocation, evidence.sourceRevision);
+  const ordinal = legacy ? allocation : allocation.ordinal;
+  const version = legacy ? versionForOrdinal(ordinal) : allocation.version;
   requireHash(sourceConfiguration?.sha256, "source configuration fingerprint");
   assert.deepEqual(
     sourceConfiguration.files?.map((entry) => entry.path),
@@ -155,13 +368,15 @@ export function preparationIdentity(report, ordinal, sourceConfiguration) {
     digest(canonical(sourceConfiguration.files)),
     "Source configuration changed",
   );
-  return { version: versionForOrdinal(ordinal), ordinal, platform: "linux/amd64", evidence, sourceConfiguration };
+  const identity = { version, ordinal, platform: "linux/amd64", evidence, sourceConfiguration };
+  if (!legacy && allocation.policy !== null) identity.releasePolicy = structuredClone(allocation.policy);
+  return identity;
 }
 
 /** Record exported bytes as prepared locally; unknown registry/provider/approval values never acquire defaults. */
 export function createManifest(identity, preparationRevision, archives) {
   requireSha(preparationRevision, "preparation revision");
-  assert.equal(identity.version, versionForOrdinal(identity.ordinal), "Stale version ordinal");
+  const schemaVersion = requireIdentityVersion(identity);
   const artifacts = {};
   for (const service of services) {
     requireHash(archives[service]?.sha256, "archive checksum");
@@ -178,7 +393,7 @@ export function createManifest(identity, preparationRevision, archives) {
     };
   }
   return {
-    schemaVersion: 1,
+    schemaVersion,
     status: "prepared-local",
     deployable: false,
     versionProvisional: true,
@@ -208,11 +423,11 @@ export function createManifest(identity, preparationRevision, archives) {
 
 /** Reject a reserved version rebound to different source, suite, images, test configuration or source configuration. */
 export function requireSameReservation(existing, identity) {
-  assert.equal(existing?.schemaVersion, 1);
+  assert.equal(existing?.schemaVersion, requireIdentityVersion(identity));
   assert.equal(existing.status, "prepared-local");
   assert.equal(existing.deployable, false);
   assert.equal(existing.versionProvisional, true);
-  assert.equal(existing.version, versionForOrdinal(identity.ordinal), "Stale reserved version ordinal");
+  assert.equal(existing.version, identity.version, "Stale reserved version ordinal");
   assert.equal(existing.ordinal, identity.ordinal, "Reserved source ordinal changed");
   assert.equal(existing.sourceRevision, identity.evidence.sourceRevision, "Reserved source changed");
   assert.equal(existing.platform, identity.platform, "Reserved platform changed");
@@ -254,6 +469,14 @@ export async function archiveIdentity(path) {
 
 /** Generate reproducible local notes from immutable identities; no timestamps, credentials or invented deployment. */
 export function releaseNotes(manifest) {
+  if (manifest.schemaVersion === 2 && manifest.identity.releasePolicy) {
+    const policy = manifest.identity.releasePolicy;
+    return (
+      releaseNotes({ ...manifest, schemaVersion: 1 }) +
+      `\nRelease policy line: ${policy.line}\nGlobal ordinal: ${manifest.ordinal}\n` +
+      `Release policy SHA-256: ${policy.sha256}\n`
+    );
+  }
   return (
     `# ${manifest.version} — local preparation\n\n` +
     `Provisional version; no tag, hosted release or deployment has been created.\n\n` +

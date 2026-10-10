@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "kind": "gate-release-retry-observation",
+  "observedAt": "2026-10-10T08:39:30.580324+00:00",
+  "repository": "brobro10000/mp3-frame-counter",
+  "sourceRevision": "bb8f9fd3cae2c5663af9fa9f891472363bf0abcd",
+  "pullRequest": 11,
+  "review": {
+    "reviewer": "brobro1000",
+    "head": "043ceb2df66df81f7895b180e58c9c6adceae931",
+    "runId": "20261010T082043-6d22c7c4",
+    "reviewId": 5478325011,
+    "verdict": "approve",
+    "automated": true,
+    "reviewedFiles": 41
+  },
+  "ci": {
+    "runId": 38038218010,
+    "originalAttempt": 1,
+    "retryAttempt": 2,
+    "originalPublisherJob": 114173465320,
+    "retryPublisherJob": 114173819150,
+    "originalJobs": [
+      {
+        "id": 114173028552,
+        "name": "validate-foundation",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T08:32:16Z",
+        "completed_at": "2026-10-10T08:34:27Z",
+        "conclusion": "success"
+      },
+      {
+        "id": 114173028706,
+        "name": "validate-product",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T08:32:16Z",
+        "completed_at": "2026-10-10T08:34:16Z",
+        "conclusion": "success"
+      },
+      {
+        "id": 114173418034,
+        "name": "control-plane",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T08:34:30Z",
+        "completed_at": "2026-10-10T08:34:45Z",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "id": 408810693,
+    "tag_name": "v0.1.11",
+    "target_commitish": "bb8f9fd3cae2c5663af9fa9f891472363bf0abcd",
+    "published_at": "2026-10-10T08:35:32Z",
+    "draft": false,
+    "prerelease": false
+  },
+  "admissionSha256": "d02dd37dc8aff659adece59c44cc5a452e4a781012b29dc49d6f55878cd7af8f",
+  "origin": {
+    "attempt": 1,
+    "baseRevision": "cdfd37be7d2f99a20df90b8bb1b42097f7a242ce",
+    "repository": "brobro10000/mp3-frame-counter",
+    "runId": 38038218010,
+    "schemaVersion": 1,
+    "sourceRevision": "bb8f9fd3cae2c5663af9fa9f891472363bf0abcd",
+    "workflow": ".github/workflows/ci.yml",
+    "workflowRevision": "bb8f9fd3cae2c5663af9fa9f891472363bf0abcd"
+  },
+  "artifact": {
+    "id": 11664716422,
+    "name": "release-bb8f9fd3cae2c5663af9fa9f891472363bf0abcd-38038218010-1",
+    "digest": "sha256:c970ac6aae6f8e7d540fe54d24fb30de9384f24bacc29dbb9baf7282f02ee1c7",
+    "size_in_bytes": 231660132,
+    "expires_at": "2026-10-17T08:34:08Z"
+  },
+  "assets": [
+    {
+      "id": 627443149,
+      "name": "api.docker.tar",
+      "size": 170095616,
+      "digest": "sha256:bbe0de2fe7b3751bc00a1b2a562185bc40860ec1dab9bb3433ed6331a9f002cd",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:15Z",
+      "updated_at": "2026-10-10T08:35:22Z"
+    },
+    {
+      "id": 627443483,
+      "name": "ci-origin.json",
+      "size": 348,
+      "digest": "sha256:31bbef5b253f66eddd2b42397b9bf69a50e1775724a5d3855878c41cfd8f353d",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:23Z",
+      "updated_at": "2026-10-10T08:35:23Z"
+    },
+    {
+      "id": 627443507,
+      "name": "e2e-result.json",
+      "size": 3757,
+      "digest": "sha256:3a95334ef750ea7e84dbf7f524dd68686b931d87a3ea914c1bb68888d090a619",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:23Z",
+      "updated_at": "2026-10-10T08:35:24Z"
+    },
+    {
+      "id": 627443536,
+      "name": "frontend.docker.tar",
+      "size": 61552640,
+      "digest": "sha256:1e7bde505bf180c4df300af6ae748206df4399c81364ab6fea839dbe1f25709e",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:24Z",
+      "updated_at": "2026-10-10T08:35:27Z"
+    },
+    {
+      "id": 627443668,
+      "name": "manifest.json",
+      "size": 3641,
+      "digest": "sha256:f6a4612bd8529fb2cfeaca956bd12882198cf910e06505a86495141af15c68d8",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:28Z",
+      "updated_at": "2026-10-10T08:35:28Z"
+    },
+    {
+      "id": 627443762,
+      "name": "publication-notes.md",
+      "size": 982,
+      "digest": "sha256:c683d8a30594ac0f59167f038f53b120318fa681e5556ac1ed2b79ceda86aaa9",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:30Z",
+      "updated_at": "2026-10-10T08:35:30Z"
+    },
+    {
+      "id": 627443733,
+      "name": "publication.json",
+      "size": 3066,
+      "digest": "sha256:0276950d2aa1294194d9bf85aa2f9d67a3a1c48814d372d10cc5b9b2c18f34ea",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:29Z",
+      "updated_at": "2026-10-10T08:35:29Z"
+    },
+    {
+      "id": 627443690,
+      "name": "release-notes.md",
+      "size": 909,
+      "digest": "sha256:3481510a47e42858a6d11c759d5969ce238ac96d982aad272c32b3a45ccba4d3",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:28Z",
+      "updated_at": "2026-10-10T08:35:28Z"
+    },
+    {
+      "id": 627443711,
+      "name": "reservation.json",
+      "size": 2062,
+      "digest": "sha256:6743108188b48ee681477ef5a54d4dc00e46e3e650383d136b1cdb5540e76a3a",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:29Z",
+      "updated_at": "2026-10-10T08:35:29Z"
+    },
+    {
+      "id": 627443117,
+      "name": "SHA256SUMS",
+      "size": 167,
+      "digest": "sha256:8d9c6c6fd9660b083e737cf2a6b62460ee32a82db625f6126d3f67b2e3cb990d",
+      "state": "uploaded",
+      "created_at": "2026-10-10T08:35:14Z",
+      "updated_at": "2026-10-10T08:35:15Z"
+    }
+  ],
+  "downloadVerification": {
+    "SHA256SUMS": {
+      "bytes": 167,
+      "githubDigestVerified": true,
+      "sha256": "8d9c6c6fd9660b083e737cf2a6b62460ee32a82db625f6126d3f67b2e3cb990d"
+    },
+    "ci-origin.json": {
+      "bytes": 348,
+      "githubDigestVerified": true,
+      "sha256": "31bbef5b253f66eddd2b42397b9bf69a50e1775724a5d3855878c41cfd8f353d"
+    },
+    "e2e-result.json": {
+      "bytes": 3757,
+      "githubDigestVerified": true,
+      "sha256": "3a95334ef750ea7e84dbf7f524dd68686b931d87a3ea914c1bb68888d090a619"
+    },
+    "manifest.json": {
+      "bytes": 3641,
+      "githubDigestVerified": true,
+      "sha256": "f6a4612bd8529fb2cfeaca956bd12882198cf910e06505a86495141af15c68d8"
+    },
+    "publication-notes.md": {
+      "bytes": 982,
+      "githubDigestVerified": true,
+      "sha256": "c683d8a30594ac0f59167f038f53b120318fa681e5556ac1ed2b79ceda86aaa9"
+    },
+    "publication.json": {
+      "bytes": 3066,
+      "githubDigestVerified": true,
+      "sha256": "0276950d2aa1294194d9bf85aa2f9d67a3a1c48814d372d10cc5b9b2c18f34ea"
+    },
+    "release-notes.md": {
+      "bytes": 909,
+      "githubDigestVerified": true,
+      "sha256": "3481510a47e42858a6d11c759d5969ce238ac96d982aad272c32b3a45ccba4d3"
+    },
+    "reservation.json": {
+      "bytes": 2062,
+      "githubDigestVerified": true,
+      "sha256": "6743108188b48ee681477ef5a54d4dc00e46e3e650383d136b1cdb5540e76a3a"
+    }
+  },
+  "retry": {
+    "archivesDownloaded": 0,
+    "carriedForwardValidatorRecords": [
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "control-plane",
+        "observedJobId": 114173819567,
+        "originalJobId": 114173418034
+      },
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "validate-foundation",
+        "observedJobId": 114173819306,
+        "originalJobId": 114173028552
+      },
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "validate-product",
+        "observedJobId": 114173833906,
+        "originalJobId": 114173028706
+      }
+    ],
+    "limitations": [
+      "Docker archive bytes were not downloaded or independently rehashed.",
+      "Archive integrity uses GitHub-reported asset metadata only.",
+      "Observed hashes/logs are not signed attestations or release authorization."
+    ],
+    "originalArtifactId": 11664716422,
+    "originalAttempt": 1,
+    "publisherJobId": 114173819150,
+    "releaseId": 408810693,
+    "retryAttempt": 2,
+    "reused": true,
+    "runId": 38038218010,
+    "status": "verified-publisher-only-retry",
+    "tag": "v0.1.11",
+    "unchangedAssets": 10,
+    "unchangedValidatorJobs": 3
+  },
+  "collectorCorrection": "GitHub carried-forward validator records may have new IDs, attempt labels, record creation timestamps and null runner-group ID. Compare unchanged original records and complete non-record execution fields, including every step and original execution timestamps. Publisher log reads now specify the actual attempt.",
+  "limitations": [
+    "Docker archive bytes were not downloaded or independently rehashed.",
+    "Archive integrity uses GitHub-reported asset metadata only.",
+    "Observed hashes/logs are not signed attestations or release authorization."
+  ]
+}

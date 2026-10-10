@@ -14,7 +14,7 @@ import { join } from "node:path";
 import { repositoryFiles } from "./acceptance-baseline.mjs";
 import { detectPhase } from "./phase-policy.mjs";
 import { publicationContext, verifyReleaseBundle, verifyReleaseSource } from "./publish-release-evidence.mjs";
-import { requireArtifactPath, versionForOrdinal } from "./release-manifest.mjs";
+import { requireArtifactPath } from "./release-manifest.mjs";
 
 try {
   assert.equal(process.argv.length, 2, "Release bundle accepts no overrides");
@@ -28,11 +28,11 @@ try {
   } else {
     assert.equal(phase, "integration", "Application release requires both independently tested images");
     const report = readFileSync(requireArtifactPath(root, ".artifacts/e2e-result.json"));
-    const { ordinal } = verifyReleaseSource(root, context, {
+    const { allocation } = verifyReleaseSource(root, context, {
       admission: JSON.parse(report).acceptanceAdmission,
       expectedAdmissionSha256: process.env.GATE_ADMISSION_SHA256,
     });
-    const version = versionForOrdinal(ordinal);
+    const version = allocation.version;
     execFileSync(process.execPath, ["scripts/prepare-release.mjs"], { stdio: "inherit", timeout: 420000 });
     const relativeDirectory = `.artifacts/releases/${version}`;
     const directory = requireArtifactPath(root, relativeDirectory);

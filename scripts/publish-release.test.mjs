@@ -409,3 +409,115 @@ test("workflow policy confines writes/token to main publisher and exact post-gat
     assert.throws(() => requireReleaseWorkflow(invalid));
   }
 });
+
+/** Fixed inputs captured before VER-01: hashes bind the complete legacy JSON/notes, including ordering and newlines. */
+test("ordinal 6 and 7 publication bytes retain their literal pre-allocation schema-1 goldens", () => {
+  const report = {
+    schemaVersion: 1,
+    trackedDiffSha256: digest(""),
+    status: "passed",
+    cleanup: "passed",
+    targetKind: "local",
+    sourceDirty: false,
+    sourceRevision: "1".repeat(40),
+    suiteCommit: "2".repeat(40),
+    suiteTree: "3".repeat(40),
+    manifestSha256: "4".repeat(64),
+    contractRevision: "r3",
+    baselinePublication: "protected-main",
+    project: "mp3-e2e-fixed-publication",
+    configurationSha256: "5".repeat(64),
+    acceptance: { status: "passed", planned: 60, passed: 60, failed: 0, skipped: 0 },
+    images: { api: `sha256:${"a".repeat(64)}`, frontend: `sha256:${"b".repeat(64)}` },
+  };
+  const configuration = configurationFingerprint(
+    Object.fromEntries(sourceConfigurationPaths.map((path) => [path, Buffer.from(`Fixed ${path}\n`)])),
+  );
+  const names = [
+    "SHA256SUMS",
+    "api.docker.tar",
+    "ci-origin.json",
+    "e2e-result.json",
+    "frontend.docker.tar",
+    "manifest.json",
+    "release-notes.md",
+    "reservation.json",
+  ];
+  const expected = [
+    [
+      6,
+      "29895c801037d695fdc8e76fa4715abe4e508ac6f21da0c801f830d7df6cd33f",
+      "cbcb73e92292c07456e85c740a539fbf197d0d7abde5750d75a05f4a0226a3e6",
+      "ecc12417f356faaf6b25aa8e07832af89b4168e7c64dc066fcf3dfac5105a897",
+    ],
+    [
+      7,
+      "9454dbdd48e555c762389bf9606eac49dca72e0ae91d98c94df2ba0be6b9be4f",
+      "b21a52ba683bc45e2db396aac0d85ceb7f5ea14f297421eecf448d3ca13d95ad",
+      "b76566655209e4655e8acea241f11ea2dc6071393e817d466573afa6a8425832",
+    ],
+  ];
+  for (const [ordinal, jsonHash, notesHash, binding] of expected) {
+    const identity = preparationIdentity(report, ordinal, configuration);
+    const manifest = createManifest(identity, report.sourceRevision, {
+      api: { sha256: "6".repeat(64), bytes: 17 },
+      frontend: { sha256: "7".repeat(64), bytes: 19 },
+    });
+    const origin = {
+      schemaVersion: 1,
+      repository: repo,
+      sourceRevision: report.sourceRevision,
+      baseRevision: "8".repeat(40),
+      runId: 42001,
+      attempt: 1,
+      workflow: ".github/workflows/ci.yml",
+      workflowRevision: report.sourceRevision,
+    };
+    const material = publicationMaterial({
+      manifest,
+      origin,
+      assets: names.map((name) => ({ name, sha256: digest(name), bytes: Buffer.byteLength(name) })),
+    });
+    assert.equal(digest(material.json), jsonHash, `Complete JSON bytes changed at ordinal ${ordinal}`);
+    assert.equal(digest(material.notes), notesHash, `Complete notes bytes changed at ordinal ${ordinal}`);
+    assert.equal(material.binding, binding);
+    assert.equal(JSON.parse(material.json).schemaVersion, 1);
+    assert.equal(Object.hasOwn(JSON.parse(material.json), "releasePolicy"), false);
+    assert.equal(Object.hasOwn(JSON.parse(material.json), "ordinal"), false);
+  }
+});
+
+test("stable latest selection compares numeric lines and fails closed on malformed stable metadata", () => {
+  const sourceRevision = "1".repeat(40);
+  const branch = { commit: { sha: sourceRevision } };
+  const bundle = (version, ordinal) => ({ manifest: { sourceRevision, version, ordinal } });
+  const release = (tag_name, extra = {}) => ({ tag_name, draft: false, prerelease: false, ...extra });
+  for (const [version, ordinal, other, expected] of [
+    ["0.1.20", 20, "v0.2.18", false],
+    ["0.2.18", 18, "v0.1.20", true],
+    ["0.2.18", 18, "v0.10.19", false],
+    ["0.10.19", 19, "v0.2.200", true],
+    ["0.2.18", 18, "v0.2.19", false],
+    ["0.2.18", 18, "v0.2.18", true],
+    ["0.10.19", 19, "v1.0.0", false],
+  ])
+    assert.equal(canBeLatest(bundle(version, ordinal), branch, [release(other)]), expected, `${version} vs ${other}`);
+  for (const invalid of [
+    "latest",
+    "0.2.18",
+    "v0.02.18",
+    "v0.2.018",
+    "v0.2.19-rc.1",
+    "v0.2.19+build",
+    "v0.2.9007199254740992",
+    "v0.2",
+    "v0.-2.3",
+    null,
+  ]) {
+    assert.equal(canBeLatest(bundle("0.2.18", 18), branch, [release(invalid)]), false, `Unsafe stable tag ${invalid}`);
+  }
+  for (const ignored of [release("invalid", { draft: true }), release("v1.0.0", { prerelease: true })]) {
+    assert.equal(canBeLatest(bundle("0.2.18", 18), branch, [ignored]), true);
+  }
+  assert.equal(canBeLatest(bundle("0.2.18", 18), { commit: { sha: "2".repeat(40) } }, []), false);
+});

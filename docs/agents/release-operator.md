@@ -3,8 +3,8 @@
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical deployment deferral and documentation-only PLAN-01 language below. Bounded stage automation
 work is authorized; production application deployment remains a human gate. The shipped release-only behavior is not
-evidence of stage deployment. Follow the [GATE-01 guide](../testing/acceptance-transition.md) for the dormant change
-under review; r3 remains active and consumer integration must be verified before merge.
+evidence of stage deployment. Follow the [GATE-01 guide](../testing/acceptance-transition.md) for merged dormant
+support with verified publication and retry; r3 remains active. Preserve that admission when changing release versions.
 
 Purpose: publish one verified repository release under [P5](../phases/05-managed-deployment.md), the
 [release-only process](../deployment/release-only.md) and amended [requirements](../requirements/release-process.md).
