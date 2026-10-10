@@ -922,6 +922,40 @@ test("atomic hosted presence and parsed declaration errors propagate the distinc
   rejected(malformed, malformed.options(), "ERR_ACCEPTANCE_PROFILE_DECLARATION");
 });
 
+test("hosted null-presence boundary: genuinely absent hosted files retain legacy candidate behavior", (t) => {
+  const read = reader();
+  const f = fixture(t);
+  f.candidate();
+  requireFixture(f);
+  assert.deepEqual(read(f.root, f.options()), { required: null, candidate: declarations("r4"), pending: null });
+});
+
+for (const hosted of [["stage"], ["production"], ["stage", "production"]]) {
+  test(`hosted null-presence boundary: present JSON null in ${hosted.join(" and ")} is not absence`, (t) => {
+    reader();
+    const f = fixture(t);
+    f.candidate({
+      edit: ({ json }) => {
+        for (const name of hosted) json(paths[name], null);
+      },
+    });
+    requireFixture(f);
+    rejected(f, f.options(), "ERR_ACCEPTANCE_PROFILE_DECLARATION");
+  });
+}
+
+test("hosted null-presence boundary: malformed hosted bytes retain source-decoding errors", (t) => {
+  reader();
+  for (const name of ["stage", "production"]) {
+    for (const bytes of [Buffer.from([0xc3, 0x28]), Buffer.from("{broken")]) {
+      const f = fixture(t);
+      f.candidate({ edit: ({ put }) => put(paths[name], bytes) });
+      requireFixture(f);
+      rejected(f, f.options(), "ERR_ACCEPTANCE_PROFILE_SOURCE");
+    }
+  }
+});
+
 test("profile predecessor containment uses the immutable immediate predecessor, never the working inventory", (t) => {
   reader();
   const f = fixture(t);
@@ -935,6 +969,34 @@ test("profile predecessor containment uses the immutable immediate predecessor, 
   requireFixture(noPredecessor);
   rejected(noPredecessor, noPredecessor.options());
 });
+
+for (const mismatch of [false, true]) {
+  const outcome = mismatch
+    ? "nonselected predecessor revision mismatch is rejected"
+    : "predecessor own revision may differ from current";
+  test(`predecessor revision boundary: ${outcome}`, (t) => {
+    const read = reader();
+    const f = fixture(t);
+    f.candidate({
+      edit: ({ revision, json }) => json(paths.local, inventory(mismatch ? "another-valid-r4" : revision)),
+    });
+    f.bind();
+    f.advance("implementation");
+    f.candidate({ profiles: true });
+    f.bind();
+    f.advance("implementation");
+    requireFixture(f);
+    const options = f.options();
+    assert.equal(options.selection.resolution.required.contractRevision, "r5");
+    assert.equal(options.selection.resolution.required.predecessor, "profile-r4");
+    assert.equal(options.selection.resolution.candidate, null);
+    assert.equal(options.selection.resolution.pendingBinding, null);
+    // Historical r4 is no longer a selected role; only its authenticated predecessor identity supplies its revision.
+    if (mismatch) rejected(f, options, "ERR_ACCEPTANCE_PROFILE_DECLARATION");
+    else
+      assert.deepEqual(read(f.root, options), { required: declarations("r5", true), candidate: null, pending: null });
+  });
+}
 
 test("profile metadata cannot disappear after a profile-bearing predecessor anywhere on established lineage", (t) => {
   const read = reader();
