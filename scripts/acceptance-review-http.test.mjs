@@ -244,3 +244,22 @@ test("oversized streamed responses stop before consuming an unbounded body despi
   assert(pulled <= 4, "The adapter must bound actual bytes while reading, allowing limited stream prefetch");
   assert.equal(canceled, true, "Stop and cancel the response stream when its byte budget is exceeded");
 });
+
+test("same-repository review history accepts fixed bounded pagination parameters", async () => {
+  const path = `${prefix}/pulls/7/reviews?per_page=100&page=2`;
+  const calls = [];
+  const value = [{ id: 101, state: "APPROVED" }];
+  const request = createGithubReviewRequest({
+    repository,
+    token,
+    fetchImpl: async (input, options) => {
+      calls.push({ url: new URL(input), options });
+      return new Response(JSON.stringify(value));
+    },
+  });
+  assert.deepEqual(await request("GET", path), value);
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].url.href, `https://api.github.com${path}`);
+  assert.equal(calls[0].options.method, "GET");
+  assert.equal(calls[0].options.redirect, "error");
+});

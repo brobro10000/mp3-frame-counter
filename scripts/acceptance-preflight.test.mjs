@@ -176,6 +176,9 @@ function apiFixture() {
     },
     [`${prefix}/git/commits/${reviewedHead}`]: { sha: reviewedHead, tree: { sha: reviewedTree } },
   };
+  records[`${prefix}/pulls/12/reviews?per_page=100&page=1`] = [
+    structuredClone(records[`${prefix}/pulls/12/reviews/34`]),
+  ];
   const calls = [];
   const request = async (method, path) => {
     calls.push({ method, path });
@@ -344,4 +347,151 @@ test("API failure cannot become a missing or default-approved observation", asyn
       },
     }),
   );
+});
+
+/** Review history is separate API evidence; an exact old review may still say APPROVED after a later decision. */
+function historyReview(f, id, state, submittedAt, overrides = {}) {
+  return {
+    id,
+    state,
+    commit_id: f.binding.review.reviewedHead,
+    user: { login: f.binding.review.reviewer },
+    ...(submittedAt === undefined ? {} : { submitted_at: submittedAt }),
+    ...overrides,
+  };
+}
+
+function reviewPages(f, pages) {
+  for (const path of Object.keys(f.records)) {
+    if (path.startsWith(`${f.prefix}/pulls/12/reviews?`)) delete f.records[path];
+  }
+  for (const [index, page] of pages.entries()) {
+    f.records[`${f.prefix}/pulls/12/reviews?per_page=100&page=${index + 1}`] = structuredClone(page);
+  }
+}
+
+function paginationFixture() {
+  const f = apiFixture();
+  const approval = structuredClone(f.records[`${f.prefix}/pulls/12/reviews/34`]);
+  approval.id = 10001;
+  f.binding.review.reviewId = approval.id;
+  f.expected.reviewId = approval.id;
+  f.records[`${f.prefix}/pulls/12/reviews/${approval.id}`] = approval;
+  const older = (count) =>
+    Array.from({ length: count }, (_, index) =>
+      historyReview(f, index + 1, "COMMENTED", new Date(Date.UTC(2026, 9, 10, 8, 0, index)).toISOString(), {
+        user: { login: "another-reviewer" },
+      }),
+    );
+  return { ...f, approval, older };
+}
+
+test("a later same-head change request or dismissal invalidates the recorded old approval", async () => {
+  for (const state of ["CHANGES_REQUESTED", "DISMISSED"]) {
+    const f = apiFixture();
+    reviewPages(f, [
+      [f.records[`${f.prefix}/pulls/12/reviews/34`], historyReview(f, 35, state, "2026-10-10T12:01:00Z")],
+    ]);
+    await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+  }
+});
+
+test("a replacement decision on a later review page cannot be missed", async () => {
+  const f = paginationFixture();
+  reviewPages(f, [
+    [...f.older(99), f.approval],
+    [historyReview(f, 10002, "CHANGES_REQUESTED", "2026-10-10T12:01:00Z")],
+  ]);
+  await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+  assert(f.calls.some((call) => call.path.endsWith("reviews?per_page=100&page=2")));
+});
+
+test("later comments and pending drafts do not replace the submitted approval decision", async () => {
+  const f = apiFixture();
+  reviewPages(f, [
+    [
+      f.records[`${f.prefix}/pulls/12/reviews/34`],
+      historyReview(f, 35, "COMMENTED", "2026-10-10T12:01:00Z"),
+      historyReview(f, 36, "PENDING", undefined),
+    ],
+  ]);
+  assert.deepEqual(await collectBindingObservations([f.binding], { repository: f.repository, request: f.request }), [
+    f.expected,
+  ]);
+});
+
+test("a newer submitted approval requires its own exact recorded review identity", async () => {
+  const f = apiFixture();
+  const newer = historyReview(f, 35, "APPROVED", "2026-10-10T12:01:00Z");
+  reviewPages(f, [[f.records[`${f.prefix}/pulls/12/reviews/34`], newer]]);
+  await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+  f.binding.review.reviewId = 35;
+  f.expected.reviewId = 35;
+  f.records[`${f.prefix}/pulls/12/reviews/35`] = newer;
+  assert.deepEqual(await collectBindingObservations([f.binding], { repository: f.repository, request: f.request }), [
+    f.expected,
+  ]);
+});
+
+test("malformed, duplicate, unordered or incomplete review inventories fail closed", async () => {
+  for (const kind of [
+    "not-array",
+    "duplicate",
+    "unordered",
+    "unknown-state",
+    "missing-time",
+    "invalid-time",
+    "full-cap",
+  ]) {
+    const f = paginationFixture();
+    let pages = [[f.approval]];
+    if (kind === "not-array") pages = [{ reviews: [f.approval] }];
+    if (kind === "duplicate") pages = [[f.approval, structuredClone(f.approval)]];
+    if (kind === "unordered") pages = [[f.approval, ...f.older(1)]];
+    if (kind === "unknown-state") pages[0].push(historyReview(f, 10002, "UNKNOWN", "2026-10-10T12:01:00Z"));
+    if (kind === "missing-time") pages[0].push(historyReview(f, 10002, "CHANGES_REQUESTED", undefined));
+    if (kind === "invalid-time") pages[0].push(historyReview(f, 10002, "CHANGES_REQUESTED", "not-a-timestamp"));
+    if (kind === "full-cap") {
+      const older = f.older(1000);
+      pages = Array.from({ length: 10 }, (_, index) => older.slice(index * 100, (index + 1) * 100));
+    }
+    reviewPages(f, pages);
+    await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+    if (kind === "full-cap") {
+      assert.equal(f.calls.filter((call) => call.path.includes("/reviews?per_page=100&page=")).length, 10);
+    }
+  }
+});
+
+test("the exact-review endpoint and review-history identity must agree", async () => {
+  const f = apiFixture();
+  const inconsistent = structuredClone(f.records[`${f.prefix}/pulls/12/reviews/34`]);
+  inconsistent.user.login = "another-reviewer";
+  reviewPages(f, [[inconsistent]]);
+  await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+});
+
+test("complete multi-page history admits only its latest exact reviewed approval", async () => {
+  const f = paginationFixture();
+  reviewPages(f, [f.older(100), [f.approval]]);
+  assert.deepEqual(await collectBindingObservations([f.binding], { repository: f.repository, request: f.request }), [
+    f.expected,
+  ]);
+  assert.deepEqual(
+    f.calls.filter((call) => call.path.includes("/reviews?per_page=100&page=")).map((call) => call.path),
+    [`${f.prefix}/pulls/12/reviews?per_page=100&page=1`, `${f.prefix}/pulls/12/reviews?per_page=100&page=2`],
+  );
+});
+
+test("later decisive review for another head invalidates the old head approval", async () => {
+  for (const state of ["APPROVED", "CHANGES_REQUESTED"]) {
+    const f = apiFixture();
+    reviewPages(f, [
+      [
+        f.records[`${f.prefix}/pulls/12/reviews/34`],
+        historyReview(f, 35, state, "2026-10-10T12:01:00Z", { commit_id: "9".repeat(40) }),
+      ],
+    ]);
+    await assert.rejects(collectBindingObservations([f.binding], { repository: f.repository, request: f.request }));
+  }
 });
