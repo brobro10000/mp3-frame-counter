@@ -119,7 +119,9 @@ export function verifyReleaseSource(root, context, { admission, expectedAdmissio
     "Checkout differs from tested main source",
   );
   git(root, ["merge-base", "--is-ancestor", context.baseRevision, context.sourceRevision]);
-  const accepted = acceptancePolicyIntroduced(root, context.sourceRevision)
+  const introduced = acceptancePolicyIntroduced(root, context.sourceRevision);
+  if (!introduced) assert.equal(admission, undefined, "Legacy source cannot carry acceptance admission evidence");
+  const accepted = introduced
     ? releaseAdmission(root, context, admission, expectedAdmissionSha256)
     : { baseline: verifyBaseline(root, context.baseRevision) };
   const { baseline } = accepted;
