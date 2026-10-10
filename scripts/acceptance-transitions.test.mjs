@@ -705,3 +705,59 @@ for (const kind of [
     reject(f, source, f.binding);
   });
 }
+
+// Reserve only the adopted roadmap's policy path. GATE classifies it; VER-01 will validate schema and allocation.
+test("standalone root release policy addition is governance and leaves current acceptance unchanged", (t) => {
+  const f = fixture(t);
+  const base = f.bootstrap();
+  f.json("release-policy.json", { schemaVersion: 1, strategy: "global-first-parent-ordinal", line: "0.1" });
+  const source = f.commit("standalone release policy introduction");
+  const result = f.resolve(source, base);
+  assert.equal(result.admission, "governance");
+  requireIdentity(result.required, f.genesis);
+  assert.equal(result.candidate, null);
+  assert.equal(result.pendingBinding, null);
+  assert.equal(result.activationCommit, null);
+});
+
+test("standalone root release policy change remains governance rather than product activation", (t) => {
+  const f = fixture(t);
+  f.bootstrap();
+  f.json("release-policy.json", { schemaVersion: 1, strategy: "global-first-parent-ordinal", line: "0.1" });
+  const base = f.commit("existing exact root release policy path");
+  f.json("release-policy.json", { schemaVersion: 1, strategy: "global-first-parent-ordinal", line: "0.2" });
+  const source = f.commit("standalone release line selection");
+  const result = f.resolve(source, base);
+  assert.equal(result.admission, "governance");
+  requireIdentity(result.required, f.genesis);
+  assert.equal(result.activationCommit, null);
+});
+
+test("release policy addition or change cannot be mixed with product-affecting implementation", (t) => {
+  for (const existing of [false, true]) {
+    const f = fixture(t);
+    let base = f.bootstrap();
+    if (existing) {
+      f.json("release-policy.json", { schemaVersion: 1, strategy: "global-first-parent-ordinal", line: "0.1" });
+      base = f.commit("existing release policy before mixed proposal");
+    }
+    f.json("release-policy.json", {
+      schemaVersion: 1,
+      strategy: "global-first-parent-ordinal",
+      line: existing ? "0.2" : "0.1",
+    });
+    f.put("server/src/parser.ts", "// Product change cannot select its own release governance.\n");
+    const source = f.commit("forbidden mixed release policy and product change");
+    reject(f, source, base);
+  }
+});
+
+test("the exact release policy reservation does not admit arbitrary root or infrastructure JSON", (t) => {
+  for (const path of ["another-policy.json", "infra/release-policy.json"]) {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    f.json(path, { schemaVersion: 1, strategy: "global-first-parent-ordinal", line: "0.1" });
+    const source = f.commit("unclassified JSON policy remains forbidden");
+    reject(f, source, base);
+  }
+});
