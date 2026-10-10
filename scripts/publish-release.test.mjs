@@ -14,6 +14,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  realpathSync,
   renameSync,
   rmSync,
   symlinkSync,
@@ -63,7 +64,7 @@ const contextEnv = (source = "1".repeat(40), base = "2".repeat(40)) => ({
 const writeJson = (path, data) => writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`);
 
 async function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), "release-publication-test-"));
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "release-publication-test-")));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const git = (...args) =>
     execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();

@@ -46,7 +46,21 @@ Probe memo SHA256: `3acd48f2fa86f5a40be8ebb67d63d6ce682fa1c62779ee33fd3bcbaa24cc
 reference, not a signed attestation. Receipt emission does not depend on historical retrieval. An authenticated reader
 and its exact-step adapter still require their own reviewed contract and executable controls; no fallback was adopted.
 
+## Implementation run and fixture portability correction
+
+The first implementation run executed all 46 groups: 42 passed and four publisher CLI groups stopped at their positive
+fixture setup with `Wrong independent digest handoff`. The injected verifier compared a temporary `/var` spelling with
+macOS’s canonical `/private/var` working directory. A separate cwd observation confirmed the alias; production
+`process.cwd()` behavior was unchanged. Original log SHA256:
+`e144842fde7d7779f53a0f33bffa4fd2b93cfd2866a00dcf36f5d4c3fdeebc11`.
+
+Root authorized the independent author to canonicalize only the temporary fixture root with `realpathSync`. Root read
+the complete two-line logical diff and verified the new publisher-test hash
+`091d46d868b8b3a8242e3aba3cf1ba2cb0821171513e3cdae6d1873a399d3e2c`; handoff tests remain `5f789832…`. No expected
+digest, refusal decision or implementation changed. The prior frozen bytes and failure remain preserved. Static checks
+passed; the corrected implementation run remains pending.
+
 ## Current limits
 
-No new handoff emitter, actual artifact upload, historical authentication, cloud delivery or production operation is
-verified by this record. Focused implementation results and final CI evidence must be added when actually observed.
+The emitter is implemented with partial focused evidence above. Actual artifact upload, historical authentication, cloud
+delivery and production remain unverified. Final focused and CI evidence must be added when actually observed.
