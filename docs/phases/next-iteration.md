@@ -1,13 +1,10 @@
 # Next iteration: phase instructions and three PR cards
 
-**Later authority:** [continued execution](roadmap-execution-authorization.md) is now authorized. The documentation-only
-stop points below describe PLAN-01's original authoring scope. Continue successive cards after their prerequisite
-evidence and companion-reviewed merges; production deployment/promotion requires human intervention.
-
-Documentation scope authorized on **2026-10-10** by the owner's instruction to persist the approved roadmap. This
-document implements PLAN-01's planning deliverable; it does not execute GATE-01 or VER-01. Commit, push, PR creation,
-merge, publication, account setup and deployment are outside this documentation task. Authoring permission does not
-establish that reviews, checks, merges or future decision gates passed.
+**Execution status, 2026-10-10:** PLAN-01 is merged in PR #8 and v0.1.8 is published; see the
+[dated execution record](../validation/roadmap-execution.md), which preserves the original documentation-only scope. The
+owner authorized [continued execution](roadmap-execution-authorization.md), companion-reviewed merges and automatic
+stage delivery. Exactly three active cards remain below: COST-BOOTSTRAP, GATE-01 and VER-01. Production application
+deployment/promotion requires human intervention; no deployed state is claimed.
 
 Read the [versioned roadmap](../roadmap/README.md) for current-state evidence, architecture, dependency diagrams,
 release envelopes, deployment and named decision gates. This document owns phase operation and exactly three detailed
@@ -34,73 +31,94 @@ semantic `v1.0.0` is reserved for verified production as defined by the roadmap.
    run and their coverage; a checker that skipped untracked files is not evidence for those files.
 6. Record source, suite, configuration, image identities and CI attempt where relevant. Implemented, tested, reviewed,
    merged, published and deployed are separate states. Automated review is not human review.
-7. Hand off at the card's stop point. Expand subsequent work only after its prerequisite evidence exists. The current
-   documentation authorization does not authorize execution of the two future implementation cards below.
+7. Hand off at the card's stop point. Expand subsequent work only after its prerequisite evidence exists. Apply the
+   execution amendment within each bounded card; review/merge authority never substitutes for production approval.
 
 Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,520-byte** limit, r3 format/error
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — PLAN-01: Persist the roadmap and reconcile active guidance
+## PR card 1 — COST-BOOTSTRAP: Codify the dedicated project and monthly controls
 
-**Outcome:** one navigable documentation set separates the released assessment application, historical closure, future
-architecture and production-V1 gates.
+**Outcome:** reviewable IaC for one dedicated billed project, minimal APIs and a USD 100 all-service alert budget, plus
+a separately owned USD 75 Cloud Run spend-cap manifest/reconciler. Stage and production share that cap. No application
+service, registry, workload identity, cloud storage or deployment is introduced by this card.
 
-**Base and prerequisites:** refresh main, recorded by the planning inspection as
-`92807357b6eb74f2915b9b05701889fd70d292c0`; retain dated evidence and unrelated work. The owner has authorized
-documentation authoring. GitHub writes and implementation remain outside this task.
+**Base and prerequisites:** PLAN-01 is merged as `533ddca81153b189d9f53cfc7cc81f24b9421231`; refresh exact main before
+integration. The owner authorized billing activation, IaC and the monthly cost boundary in the
+[execution amendment](roadmap-execution-authorization.md#monthly-cost-boundary). Independent scratch review and
+[local validation](../validation/cloud-cost-bootstrap.md) precede integration. This card follows PLAN-01 independently
+of GATE-01; serialize shared workflow edits with gate work.
 
-### Owned documentation
+### Owned implementation scope
 
-- `docs/roadmap/README.md`: state, architecture, versions, dependencies, deployment, decision gates and source evidence.
-- `docs/phases/next-iteration.md`: these cards and phase operating instructions.
-- `docs/roadmap/diagrams/`: three planned Mermaid sources, each with scope/reference frontmatter; one editable copy.
-- The existing four `docs/agents/` role documents: bounded ownership and future handoff instructions.
-- Targeted dated amendments and links in `docs/phases/README.md`, `docs/testing/independence-and-baseline.md`,
-  `docs/architecture/decisions.md`, `docs/architecture/deployment.md` and `docs/deployment/runbook.md`.
-- Only necessary entrypoint pointers in root `README.md`, `AGENTS.md` and `docs/requirements/README.md`.
+- `infra/cloud/bootstrap/`: Terraform 1.13.3, Google provider 8.6.0 and reviewed provider lockfile; private inputs and
+  state exclusions; project/API/alert-budget declarations; outputs, cap template, reconciler, tests and operating guide.
+- `package.json`: add deterministic cap tests to the existing tooling command.
+- `.github/workflows/ci.yml`: pinned Terraform setup, formatting, backend-disabled lockfile-read-only initialization and
+  provider validation in foundation CI. Preserve required job names and release permissions; grant no cloud credentials.
+- `scripts/policy.mjs`: require the pinned validation-only workflow and cap-test inclusion; reject tracked Terraform
+  caches, state, private inputs, saved plans and `*.private.json` identity records.
+- Targeted roadmap/phase/deployment pointers and `docs/validation/cloud-cost-bootstrap.md` plus the
+  [dated execution record](../validation/roadmap-execution.md).
 
-**Read-only:** product/test code, dependencies, workflows, infrastructure, baseline JSON, original requirement captures,
-historical validation records and generated `agents/**` artifacts. Keep the three implemented architecture diagrams and
-`.mermaidignore` unchanged.
+**Read-only/non-goals:** product source, frozen acceptance and genesis evidence, parser/upload behavior, application
+images, release allocation, historical releases, generated orchestrator artifacts, hosted test profiles and live cloud
+state. No credential creation, live plan/apply, application provisioning or production operation in the PR itself.
 
-### Authoring sequence
+### Required behavior and order
 
-1. Preserve historical wording and add dated current-state amendments instead of rewriting prior observations.
-2. Persist the roadmap, separate phase instructions and separate role instructions; keep later work provisional.
-3. Attribute actionlint's `queue: max` incompatibility to the **previous Codex reproduction**, without claiming a new
-   reproduction in this documentation task.
-4. Link planned diagrams instead of duplicating their editable bodies. Label proposed deployment explicitly.
-5. Trace existing APP requirement IDs; keep new roadmap decisions distinct from the original assessment.
+1. Require operator-selected private project/account inputs and verified USD billing currency. Pin Terraform/provider
+   versions and retain the provider lockfile; never embed personal identities, secrets or host paths.
+2. Terraform creates the dedicated project before API activation and its scoped alerts-only budget. Initial state is
+   local, ignored and private until a later reviewed backend migration after cost-control verification.
+3. Keep fixed USD 100 all-service monthly gross-cost alerts at 50/75/90/100% current spend and forecast 100%. Use
+   default billing IAM email recipients and verify the owner receives them. Add no Pub/Sub/channel infrastructure merely
+   to satisfy the provider schema.
+4. The separate declarative REST reconciler owns exactly one USD 75/month Cloud Run cap for the dedicated project.
+   Default checks are read-only. Explicit initial creation requires complete absence discovery, one POST and observed
+   readback. Persist the exact cap resource identity privately after creation.
+5. Reject missing recorded controls, ambiguity, incomplete discovery, changed scope/amount, unsafe destinations,
+   permission failures, unknown/lifted/enforced state and unfinished reconciliation. Resolve uncertain creation through
+   read-only discovery; never automatically repeat creation, lift/delete a cap or increase a limit.
+6. Keep tokens in process memory, use the fixed Google API origin with redirect refusal, and sanitize errors. Future
+   stage/production identities cannot administer cost controls. `prevent_destroy` and provider `PREVENT` safeguards make
+   teardown a separate human-controlled operation.
+
+The cap pauses new Run usage. Reporting lag, in-flight costs and ancillary services still allow overages; the USD 25
+reserve and all-service alerts are not an enforced invoice ceiling. If cap support or permission is unavailable, stop
+before billable application resources instead of silently substituting an alert budget.
 
 ### Validation and review
 
-Inspect the complete documentation diff, internal references, evidence labels, dependency order and path portability.
-Use installed formatting and Mermaid tooling only. Existing checkers discover Git-tracked files: validate untracked new
-documents explicitly, or use later authorized staging before claiming full checker coverage. Record actual validation
-results without inventing application, deployment or generated-plan evidence.
+Run deterministic injected-adapter tests without cloud credentials, scoped formatting and portability checks, pinned
+Terraform formatting and provider validation. CI initializes with `-backend=false -input=false -lockfile=readonly` and
+performs no plan, apply, authentication or resource access. Preserve full mandatory product acceptance for the eventual
+merge. Local source checks do not prove billing readiness, real API permissions, spend enforcement or a deployment.
 
-Companion review targets the actual documentation diff and exact reviewed tree. If no PR exists, retain the local
-reviewable diff and leave exact-PR companion review pending; do not create a PR or pretend the existing PR review covers
-new content. Reject contradictions about current hosting, immutable evidence, identity or prerequisite order.
-Architecture adoption grants no billing, deployment or merge authority.
+Require independent critical-boundary review and exact-head companion review; fix supported findings and repeat review
+for changed heads. The [validation record](../validation/cloud-cost-bootstrap.md) must distinguish earlier scratch
+results, final integrated checks and actual CI results.
 
 ### Rollback, release effect and stop
 
-Rollback is a documentation revert that preserves history. A later authorized merge can produce another ordinary v0.1.x
-artifact release under existing CI; writing these files does not publish one.
+Before apply, rollback is a source revert. A normal reviewed merge may publish another v0.1.x software release without
+deployment. Live resources, if later created, require the documented guarded decommissioning procedure; ordinary
+`terraform destroy` is intentionally blocked and a source revert must not remove live protection.
 
-**Done:** a bounded documentation-only diff with truthful check coverage and review handoff. **Stop before** GATE-01,
-GitHub writes, implementation, provisioning and deployment. Remaining review/merge evidence stays pending until it
-exists.
+**Done:** bounded source merged after current companion approval and required checks. **Stop before live apply.** The
+coordinator can then perform the already-authorized, separately reviewed private plan for project/API/cost controls,
+verify actual billing and cap readiness, and record that evidence before any billable application resource. Later
+registry, backend, IAM, stage and production work remains outside this card; every production app deployment needs a
+human decision.
 
 ## PR card 2 — GATE-01: Admit independently reviewed successor suites
 
 **Outcome:** backward-compatible acceptance transition support, dormant on merge, with r3 still active.
 
 **Prerequisites:** PLAN-01 adopted; independent gate-design and expected-decision review; explicit authority for this
-trust-policy change. Record the exact trusted base before implementation. This card is future work, not executed by the
-current documentation task.
+trust-policy change. Record the exact trusted base before implementation. Continued execution is authorized, but this
+card is not completed by roadmap adoption or cost-control work.
 
 ### Owned implementation scope
 
@@ -183,8 +201,8 @@ This remains v0.1.x and adds no product capability. Before any successor binding
 needed. After activation, recovery must preserve readable evidence and a coherent policy across all consumers.
 
 **Done:** transition support merged and actual post-merge checks establish readiness for a future independent successor
-PR. **Stop before** adding successor tests or activating a new contract. Merge requires its own authority; the current
-documentation task must not execute any part of this card.
+PR. **Stop before** adding successor tests or activating a new contract. Use the execution amendment's review/merge
+path; its authority does not waive independent expectations or any required check.
 
 ## PR card 3 — VER-01: Support source-bound release lines
 
@@ -205,7 +223,7 @@ Keep the publisher entrypoint unchanged unless a necessary allocator-interface c
 
 **Read-only/non-goals:** package version, product, acceptance source, historical release assets, workflow triggers,
 queue syntax, cloud resources and deployment-finalization implementation. Do not rewrite tags or perform live
-publication tests. This documentation task does not create `release-policy.json` or edit the named scripts.
+publication tests. Keep this implementation separate from the cost-bootstrap and acceptance-migration cards.
 
 ### Required allocation behavior
 
@@ -243,8 +261,8 @@ revert coherently if necessary. Once new-line tags exist, repair forward without
 versions or reservations.
 
 **Done:** release consumers agree, historical releases remain verifiable, and a later line-activation PR is possible.
-**Stop before** line activation, Fastify implementation or production-finalization work. Execution of this card is
-outside the current documentation task.
+**Stop before** line activation, Fastify implementation or production-finalization work. Continued authority applies
+only within this card's scope and prerequisites.
 
 ## Provisional work after the three-card window
 

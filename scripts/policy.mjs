@@ -20,7 +20,7 @@ const workflow = parse(read(".github/workflows/ci.yml"));
 // Keep private inputs and generated caches out of source control; reviewed acceptance fixtures have their own scope.
 const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const forbidden =
-  /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key)$/i;
+  /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts|\.terraform)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key|tfplan|private\.json)$|\.tfstate($|\.)|\.tfvars($|\.)/i;
 assert(
   !files.some((file) => forbidden.test(file) && !/^tests\/acceptance\/fixtures\/[a-z0-9_.-]+\.mp3$/.test(file)),
   "Private inputs or caches must never be tracked",
@@ -50,10 +50,26 @@ assert(
 );
 const validation = jobs["validate-foundation"];
 assert.equal(validation.if, undefined);
+const bootstrapValidation =
+  [
+    "terraform -chdir=infra/cloud/bootstrap fmt -check",
+    "terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly",
+    "terraform -chdir=infra/cloud/bootstrap validate -no-color",
+  ].join("\n") + "\n";
 assert.deepEqual(
   validation.steps.filter((step) => step.run).map((step) => step.run),
-  ["npm ci", "npm run mermaid:install", "aa-exec --profile=chrome npm run validate"],
+  ["npm ci", bootstrapValidation, "npm run mermaid:install", "aa-exec --profile=chrome npm run validate"],
 );
+// Cost bootstrap validation is mandatory but deliberately has no cloud identity or mutation command.
+assert.equal(validation.env, undefined);
+const terraformSetup = validation.steps.find((step) => step.uses?.startsWith("hashicorp/setup-terraform@"));
+assert.equal(terraformSetup?.uses, "hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e");
+assert.deepEqual(terraformSetup.with, { terraform_version: "1.13.3", terraform_wrapper: false });
+assert.equal(terraformSetup.if, undefined);
+assert.equal(terraformSetup.env, undefined);
+const terraformValidation = validation.steps.find((step) => step.run === bootstrapValidation);
+assert.equal(terraformValidation.if, undefined);
+assert.equal(terraformValidation.env, undefined);
 const product = jobs["validate-product"];
 assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
 assert.deepEqual(
@@ -102,6 +118,7 @@ assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
 assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");
