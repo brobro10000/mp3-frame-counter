@@ -2,9 +2,10 @@
 
 ## Current status — 2026-10-10
 
-GATE-01 implements dormant successor-admission support in this change. Local integration passed; final CI, exact-head
-companion review and merge remain pending; this document records neither approval nor protected-main activation. The
-[implementation evidence](../validation/acceptance-transitions.md) records actual checks. The
+GATE-01's dormant successor-admission support is merged through PR #11. Protected-main publication and an immutable
+publisher-only retry passed; the
+[completion evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) records the exact
+source, companion approval and original CI identities. This does not activate a successor. The
 [transition registry](acceptance-transitions.json) contains no entries. **r3 remains the only active acceptance suite**,
 bound by the unchanged [genesis record](baseline.json) to `a0a56d94e5457101cd043b6055ab084782c3e16f`.
 
