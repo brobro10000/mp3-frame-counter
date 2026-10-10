@@ -92,12 +92,82 @@ function parseRegistry(raw) {
   return value;
 }
 
+const packageName = /^(?:@[A-Za-z0-9][A-Za-z0-9._-]*\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/;
+const dependencyFields = ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"];
+
+/** Require dependency maps to describe registry/remote inputs rather than executable local paths or workspaces. */
+function requireDependencySources(value, root = false) {
+  assert(value && typeof value === "object" && !Array.isArray(value), "Invalid package metadata");
+  if (root) assert(!Object.hasOwn(value, "workspaces"), "Root workspace installation is unsupported");
+  for (const field of dependencyFields) {
+    if (value[field] === undefined) continue;
+    const declarations = value[field];
+    assert(declarations && typeof declarations === "object" && !Array.isArray(declarations), `Invalid ${field}`);
+    for (const [name, source] of Object.entries(declarations)) {
+      assert(packageName.test(name), "Invalid dependency package name");
+      assert(typeof source === "string" && source.length > 0 && source.trim() === source, "Invalid dependency source");
+      assert(!/[\x00-\x1f\x7f\\]/.test(source), "Unsafe dependency source");
+      assert(
+        !/^(?:git\+)?(?:file|link|workspace)\s*:/i.test(source),
+        "Local and workspace dependencies are unsupported",
+      );
+      assert(!/^(?:[./]|~[\/\\]|[A-Za-z]:[\/\\])/.test(source), "Local dependency paths are unsupported");
+    }
+  }
+}
+
+/** Validate a committed npm v3 graph before treating every lock change, including dev tooling, as product input. */
+function requireRootLock(raw, packageRaw) {
+  assert(raw, "Root package lock cannot be deleted");
+  const lock = JSON.parse(raw);
+  const pkg = JSON.parse(packageRaw);
+  assert(lock && typeof lock === "object" && !Array.isArray(lock), "Invalid root package lock");
+  assert.equal(lock.lockfileVersion, 3, "Only npm v3 root lock graphs are supported");
+  assert(lock.packages && typeof lock.packages === "object" && !Array.isArray(lock.packages), "Missing lock packages");
+  assert(Object.hasOwn(lock.packages, ""), "Root lock package metadata is required");
+  requireDependencySources(pkg, true);
+  const root = lock.packages[""];
+  requireDependencySources(root, true);
+  for (const field of ["name", "version"]) {
+    assert.equal(lock[field], pkg[field], `Root lock ${field} differs from package`);
+    assert.equal(root[field], pkg[field], `Root lock package ${field} differs from package`);
+  }
+  for (const field of dependencyFields) {
+    assert.deepEqual(root[field] ?? {}, pkg[field] ?? {}, `Root lock ${field} differs from package`);
+  }
+  for (const [path, entry] of Object.entries(lock.packages)) {
+    requireDependencySources(entry, path === "");
+    assert(!Object.hasOwn(entry, "link"), "Local package links are unsupported");
+    if (path === "") continue;
+    const segments = path.split("/node_modules/");
+    assert(segments[0].startsWith("node_modules/"), "Locked package must be inside node_modules");
+    segments[0] = segments[0].slice("node_modules/".length);
+    assert(
+      segments.every((segment) => packageName.test(segment)),
+      "Unsafe locked package path",
+    );
+    assert(typeof entry.version === "string" && entry.version.length > 0, "Locked package version is required");
+    if (entry.resolved !== undefined) {
+      assert(
+        typeof entry.resolved === "string" && !/[\x00-\x20\x7f\\]/.test(entry.resolved),
+        "Invalid locked resolution",
+      );
+      const source = new URL(entry.resolved);
+      assert(
+        ["https:", "http:", "git:", "git+https:", "git+http:", "ssh:", "git+ssh:"].includes(source.protocol) &&
+          source.hostname,
+        "Locked resolution must identify a remote package source",
+      );
+    } else assert.equal(entry.inBundle, true, "Non-bundled locked package requires a remote resolution");
+  }
+}
+
 /** Classify package commands individually: install hooks and unknown commands remain governance inputs. */
 function packageKinds(before, after) {
   const oldPackage = before ? JSON.parse(before) : {};
   const newPackage = after ? JSON.parse(after) : {};
   for (const pkg of [oldPackage, newPackage]) {
-    assert(pkg && typeof pkg === "object" && !Array.isArray(pkg), "Invalid root package");
+    requireDependencySources(pkg, true);
     if (pkg.scripts !== undefined) {
       assert(pkg.scripts && typeof pkg.scripts === "object" && !Array.isArray(pkg.scripts), "Invalid package scripts");
       assert(
@@ -148,7 +218,6 @@ function pathKind(path) {
     /^\.github\/(?:workflows\/[^/]+\.ya?ml|dependabot\.ya?ml)$/.test(path) ||
     [
       "Makefile",
-      "package-lock.json",
       ".npmrc",
       ".nvmrc",
       ".gitignore",
@@ -308,6 +377,13 @@ export function resolveAcceptance(root, options) {
           files.has(path) ? read(revision, path) : null,
         ))
           kinds.add(kind);
+        if (files.has("package-lock.json")) {
+          requireRootLock(regular(revision, "package-lock.json"), regular(revision, path));
+        }
+      } else if (path === "package-lock.json") {
+        assert(files.has(path), "Root package lock cannot be deleted");
+        requireRootLock(regular(revision, path), regular(revision, "package.json"));
+        kinds.add("product");
       } else kinds.add(pathKind(path));
     }
     assert(!kinds.has("immutable"), "Genesis metadata and contract paths are immutable");
