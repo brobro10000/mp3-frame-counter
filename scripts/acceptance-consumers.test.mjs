@@ -1,9 +1,10 @@
 /**
  * Independent integration expectations for real phase/E2E CLI consumers and the release-workflow handoff validator.
  * Run `node --test scripts/acceptance-consumers.test.mjs` with pinned Node after consumer fixes are available.
- * Temporary Git histories use real archives and replacement refs. Synthetic npm only records requests; synthetic Docker
- * fails at its first boundary. Node network entry points are disabled, no real package installation or Docker runs,
- * and no account environment is inherited. Fixtures are removed even when an assertion fails.
+ * Temporary Git histories use real archives and replacement refs. Synthetic npm records requests and materializes inert
+ * package-local browser fixtures; synthetic Docker fails at its first boundary. The parent disables network entry
+ * points. Sanitized browser children intentionally receive no NODE_OPTIONS and run only fixture-owned inert programs.
+ * No real package/browser installation, network, apt, Docker or account environment is used. Fixtures always clean up.
  * These controls establish consumer selection/provenance behavior, never application acceptance or deployment.
  */
 import assert from "node:assert/strict";
@@ -36,6 +37,101 @@ const replacementMarker = "// REPLACEMENT unreviewed suite; never executed.\n";
 const phaseScript = fileURLToPath(new URL("./run-ci-phase.mjs", import.meta.url));
 const e2eScript = fileURLToPath(new URL("./run-e2e.mjs", import.meta.url));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const browserVersion = "156.0.8078.4";
+
+/** Independent synthetic lock; fake npm never downloads these declared packages or authenticates registry bytes. */
+function browserPackage() {
+  const pkg = {
+    name: "synthetic-consumer-suite",
+    version: "1.0.0",
+    private: true,
+    scripts: { check: "node check.mjs" },
+    devDependencies: { "@playwright/test": "1.64.0" },
+  };
+  const packages = { "": { ...pkg } };
+  for (const [name, child] of [
+    ["@playwright/test", "playwright"],
+    ["playwright", "playwright-core"],
+    ["playwright-core", null],
+  ]) {
+    packages[`node_modules/${name}`] = {
+      version: "1.64.0",
+      resolved: `https://registry.npmjs.org/${name}/-/${name.split("/").at(-1)}-1.64.0.tgz`,
+      integrity: `sha512-${Buffer.alloc(64, 7).toString("base64")}`,
+      dev: true,
+      ...(child ? { dependencies: { [child]: "1.64.0" } } : {}),
+    };
+  }
+  return { pkg, lock: { name: pkg.name, version: pkg.version, lockfileVersion: 3, requires: true, packages } };
+}
+
+/** Serialized into fake npm, this writes inert package-local commands with fixture paths embedded, never env selectors. */
+function materializeBrowserFixture(root, log, marker, failure, observedVersion) {
+  const { mkdirSync, writeFileSync, readFileSync } = require("node:fs");
+  const { dirname, join } = require("node:path");
+  const put = (path, bytes) => {
+    mkdirSync(dirname(join(root, path)), { recursive: true });
+    writeFileSync(join(root, path), bytes);
+  };
+  const lock = JSON.parse(readFileSync(join(root, "package-lock.json"), "utf8"));
+  for (const name of ["@playwright/test", "playwright", "playwright-core"]) {
+    const entry = lock.packages[`node_modules/${name}`];
+    put(
+      `node_modules/${name}/package.json`,
+      JSON.stringify({
+        name,
+        version: entry.version,
+        main: "index.js",
+        ...(entry.dependencies ? { dependencies: entry.dependencies } : {}),
+        exports: {
+          ".": { import: "./index.mjs", require: "./index.js", default: "./index.js" },
+          "./package.json": "./package.json",
+        },
+        bin: { [name === "playwright-core" ? "playwright-core" : "playwright"]: "cli.js" },
+      }),
+    );
+  }
+  put(
+    "node_modules/playwright-core/browsers.json",
+    JSON.stringify({
+      browsers: [
+        { name: "chromium", revision: "1248", browserVersion: observedVersion, installByDefault: true },
+        { name: "chromium-headless-shell", revision: "1248", browserVersion: observedVersion, installByDefault: true },
+      ],
+    }),
+  );
+  const prefix = `
+const {appendFileSync}=require("node:fs");
+const write=(name,extra={})=>appendFileSync(${JSON.stringify(log)},JSON.stringify({command:"browser",args:[name],cwd:process.cwd(),marker:${JSON.stringify(marker)},...extra})+"\\n");
+const failure=${JSON.stringify(failure)};
+const selected=${JSON.stringify(marker)}.includes(failure?.marker??"NEVER");
+`;
+  const cli = `${prefix}
+write(process.argv[2],{args:process.argv.slice(2),env:process.env});
+if(selected&&failure.stage===process.argv[2])process.exit(23);
+`;
+  for (const name of ["@playwright/test", "playwright", "playwright-core"]) put(`node_modules/${name}/cli.js`, cli);
+  put(
+    "node_modules/playwright/index.js",
+    `${prefix}
+const page={url:()=>"about:blank",goto:async url=>{if(url!=="about:blank")throw Error("Foreign target");},close:async()=>write("page-close")};
+const context={newPage:async()=>page,close:async()=>write("context-close")};
+exports.chromium={launch:async options=>{
+  write("launch",{options:options??{},env:process.env});
+  if(selected&&failure.stage==="probe")throw Error("Synthetic probe rejection");
+  return{version:()=>${JSON.stringify(observedVersion)},newContext:async()=>context,newPage:async()=>page,close:async()=>write("browser-close")};
+}};
+`,
+  );
+  put("node_modules/playwright/index.mjs", 'import api from "./index.js"; export const chromium=api.chromium;\n');
+  for (const [name, target] of [
+    ["@playwright/test", "../../playwright"],
+    ["playwright-core", "../playwright"],
+  ]) {
+    put(`node_modules/${name}/index.js`, `module.exports=require(${JSON.stringify(`${target}/index.js`)});\n`);
+    put(`node_modules/${name}/index.mjs`, `export {chromium} from ${JSON.stringify(`${target}/index.mjs`)};\n`);
+  }
+}
 
 /** Independent canonical JSON oracle for the fixture's synthetic trusted preflight output. */
 function canonical(value) {
@@ -49,7 +145,10 @@ function canonical(value) {
   return JSON.stringify(value);
 }
 
-function fixture(t, { policy = true } = {}) {
+function fixture(
+  t,
+  { policy = true, browserFailure = null, productPhase = "integration", expireAfterCandidate = false } = {},
+) {
   const workspace = realpathSync(mkdtempSync(join(tmpdir(), "mp3-acceptance-consumers-")));
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
   const root = join(workspace, "checkout");
@@ -71,6 +170,18 @@ const net = require("node:net"); net.connect = deny; net.createConnection = deny
 require("node:tls").connect = deny;
 require("node:dgram").createSocket = deny;
 require("node:module").syncBuiltinESMExports();
+${
+  expireAfterCandidate
+    ? `
+// Test-only monotonic clock: expire only after the candidate check has actually begun. No production env knob exists.
+const fs=require("node:fs");
+Object.defineProperty(require("node:perf_hooks").performance,"now",{value:()=>{
+  const rows=fs.existsSync(${JSON.stringify(log)})?fs.readFileSync(${JSON.stringify(log)},"utf8").trim().split("\\n").filter(Boolean).map(JSON.parse):[];
+  return rows.some(c=>c.command==="npm"&&c.args.join(" ")==="run check"&&c.marker?.includes("CANDIDATE"))?361001:1000;
+}});
+`
+    : ""
+}
 `,
   );
   const env = {
@@ -97,6 +208,13 @@ const trustedRoot = process.env.TRUSTED_ACCEPTANCE_ROOT;
 const trustedMarker = trustedRoot ? readFileSync(join(trustedRoot, "check.mjs"), "utf8") : null;
 appendFileSync(process.env.CONSUMER_COMMAND_LOG,
   JSON.stringify({ command: "npm", args, cwd: process.cwd(), marker, trustedRoot, trustedMarker }) + "\\n");
+if(args[0]==="ci"&&process.env.CONSUMER_FAIL_FIRST_CI==="1")process.exit(29);
+if (args[0] === "ci" && marker) {
+  const failure=${JSON.stringify(browserFailure)};
+  if(failure?.stage==="npm-ci"&&marker.includes(failure.marker))process.exit(23);
+  (${materializeBrowserFixture.toString()})(process.cwd(), ${JSON.stringify(log)}, marker,
+    ${JSON.stringify(browserFailure)}, ${JSON.stringify(browserVersion)});
+}
 if (args[0] === "run" && args[1] === "check" && marker?.includes("CANDIDATE")
   && process.env.CONSUMER_FAIL_CANDIDATE === "1") process.exit(23);
 `,
@@ -151,7 +269,9 @@ process.exit(47);
   });
   put("README.md", "Synthetic consumer fixture.\n");
   commit("foundation");
-  json("tests/acceptance/package.json", { private: true, scripts: { check: "node check.mjs" } });
+  const browser = browserPackage();
+  json("tests/acceptance/package.json", browser.pkg);
+  json("tests/acceptance/package-lock.json", browser.lock);
   put(markerPath, requiredMarker);
   json(manifestPath, { contractRevision: "r3", independentCount: 3 });
   put("docs/testing/acceptance-contract.md", "# Immutable synthetic r3 contract\n");
@@ -166,8 +286,10 @@ process.exit(47);
   };
   json("docs/testing/baseline.json", genesis);
   put("server/src/parser.ts", "// Synthetic product marker; never executed.\n");
-  put("server/Dockerfile", "# Synthetic runtime marker; never built.\n");
-  put("compose.yaml", "services: {}\n");
+  if (productPhase === "integration") {
+    put("server/Dockerfile", "# Synthetic runtime marker; never built.\n");
+    put("compose.yaml", "services: {}\n");
+  }
   const product = commit("product after independent genesis");
   if (policy) json(registryPath, { schemaVersion: 1, transitions: [] });
   const source = policy ? commit("dormant transition policy") : product;
@@ -188,6 +310,42 @@ process.exit(47);
     put("docs/testing/contracts/transport-r4.md", "# Independent candidate contract\n");
     const revision = commit("independent candidate only");
     env.CI_BASE_REF = source;
+    return revision;
+  };
+  const bind = (suiteCommit) => {
+    const reviewedTree = git("rev-parse", `${suiteCommit}^{tree}`);
+    const reviewedHead = git(
+      "-c",
+      "user.name=Independent Consumer Fixture",
+      "-c",
+      "user.email=consumer@example.invalid",
+      "commit-tree",
+      reviewedTree,
+      "-p",
+      source,
+      "-m",
+      "Synthetic feature head before squash",
+    );
+    const entry = {
+      id: "transport-r4",
+      predecessor: "r3",
+      contractRevision: "r4",
+      contractPath: "docs/testing/contracts/transport-r4.md",
+      contractSha256: sha256(readFileSync(join(root, "docs/testing/contracts/transport-r4.md"))),
+      suiteCommit,
+      suiteTree: git("rev-parse", `${suiteCommit}:tests/acceptance`),
+      manifestSha256: sha256(readFileSync(join(root, manifestPath))),
+      review: { repository, pullRequest: 3, reviewId: 7, reviewer: "independent-fixture", reviewedHead, reviewedTree },
+    };
+    json(registryPath, { schemaVersion: 1, transitions: [entry] });
+    const revision = commit("Synthetic historical binding; never external approval");
+    env.CI_BASE_REF = revision;
+    return { revision, entry };
+  };
+  const activate = (binding) => {
+    put("server/src/parser.ts", "// Changed synthetic product marker; never executed.\n");
+    const revision = commit("Synthetic first successor implementation");
+    env.CI_BASE_REF = binding.revision;
     return revision;
   };
   const extractRequired = () => {
@@ -275,6 +433,8 @@ process.exit(47);
     product,
     source,
     candidate,
+    bind,
+    activate,
     extractRequired,
     ci,
   };
@@ -400,5 +560,256 @@ test("workflow policy requires exact independent admission path and digest hando
       mutate(invalid.jobs["validate-product"].steps.find((step) => step.run === command));
       assert.throws(() => requireReleaseWorkflow(invalid), `Untrusted or absent consumer handoff: ${command}`);
     }
+  }
+});
+
+/** Assert operation order at one extraction; a successful fake check cannot conceal missing or late preparation. */
+function requireBrowserOrder(commands, marker, { ci = false } = {}) {
+  const selected = commands.filter((c) => c.marker === marker);
+  const sequence = selected.map((c) => (c.command === "npm" ? `npm ${c.args.join(" ")}` : c.args[0]));
+  assert.equal(sequence[0], "npm ci");
+  assert.equal(sequence.at(-1), "npm run check");
+  const preparation = sequence.filter((name) => ["install-deps", "install", "launch", "browser-close"].includes(name));
+  assert.deepEqual(
+    preparation,
+    ci ? ["install-deps", "install", "launch", "browser-close"] : ["install", "launch", "browser-close"],
+  );
+  assert(sequence.indexOf("browser-close") < sequence.indexOf("npm run check"));
+  const cwd = selected[0].cwd;
+  assert(selected.every((c) => c.cwd === cwd));
+  assert.equal(existsSync(cwd), false, "Selected extraction is removed only after its setup/check work ends");
+}
+
+/** Read the frozen setup-only evidence schema; these synthetic records are never real CI or product acceptance. */
+function browserEvidence(f) {
+  const value = JSON.parse(readFileSync(join(f.root, ".artifacts/acceptance-browser-setup.json"), "utf8"));
+  assert.deepEqual(Object.keys(value).sort(), [
+    "entries",
+    "kind",
+    "productAcceptance",
+    "schemaVersion",
+    "sourceRevision",
+  ]);
+  assert.equal(value.schemaVersion, 1);
+  assert.equal(value.kind, "acceptance-browser-preparation");
+  assert.equal(value.productAcceptance, false);
+  assert.equal(value.sourceRevision, f.git("rev-parse", "HEAD"));
+  for (const entry of value.entries) {
+    assert.deepEqual(Object.keys(entry).sort(), ["manifestSha256", "result", "role", "suiteCommit", "suiteTree"]);
+    assert(["candidate", "pending", "required"].includes(entry.role));
+    assert.equal(entry.suiteTree, f.git("--no-replace-objects", "rev-parse", `${entry.suiteCommit}:tests/acceptance`));
+    const raw = f.git("--no-replace-objects", "show", `${entry.suiteCommit}:${manifestPath}`);
+    assert.equal(entry.manifestSha256, sha256(`${raw}\n`));
+    assert.equal(entry.result.kind, "acceptance-browser-setup");
+    assert.equal(entry.result.productAcceptance, false);
+    assert(["passed", "failed"].includes(entry.result.status));
+  }
+  return value;
+}
+
+test("real phase runner prepares candidate then required suites before checks and root scripts", (t) => {
+  const f = fixture(t);
+  const candidate = f.candidate();
+  requireSuccess(f.invoke(phaseScript));
+  const commands = f.commands();
+  requireBrowserOrder(commands, candidateMarker);
+  requireBrowserOrder(commands, requiredMarker);
+  const rootStart = commands.findIndex((c) => c.cwd === f.root);
+  assert(rootStart > commands.findLastIndex((c) => c.command === "browser"));
+  assert.deepEqual(
+    commands.slice(rootStart).map((c) => c.args),
+    [
+      ["run", "test:unit"],
+      ["run", "build"],
+      ["run", "test:e2e"],
+    ],
+  );
+  const evidence = browserEvidence(f);
+  assert.deepEqual(
+    evidence.entries.map((e) => [e.role, e.suiteCommit]),
+    [
+      ["candidate", candidate],
+      ["required", f.genesis.suiteCommit],
+    ],
+  );
+  assert(evidence.entries.every((e) => e.result.status === "passed"));
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("real phase runner preserves pending setup and prepares only the successor after activation", (t) => {
+  for (const activated of [false, true]) {
+    const f = fixture(t);
+    const candidate = f.candidate();
+    const binding = f.bind(candidate);
+    if (activated) f.activate(binding);
+    requireSuccess(f.invoke(phaseScript));
+    requireBrowserOrder(f.commands(), candidateMarker);
+    if (!activated) requireBrowserOrder(f.commands(), requiredMarker);
+    else assert(!f.commands().some((c) => c.marker === requiredMarker));
+    const evidence = browserEvidence(f);
+    assert.deepEqual(
+      evidence.entries.map((e) => [e.role, e.suiteCommit]),
+      activated
+        ? [["required", candidate]]
+        : [
+            ["pending", candidate],
+            ["required", f.genesis.suiteCommit],
+          ],
+    );
+    const rootE2E = f.commands().find((c) => c.command === "npm" && c.args.join(" ") === "run test:e2e");
+    assert.equal(rootE2E.trustedMarker, activated ? candidateMarker : requiredMarker);
+    assert.deepEqual(readdirSync(f.temporary), []);
+  }
+});
+
+test("parser phase also prepares its selected required suite without inventing an E2E command", (t) => {
+  const f = fixture(t, { productPhase: "parser" });
+  requireSuccess(f.invoke(phaseScript));
+  requireBrowserOrder(f.commands(), requiredMarker);
+  assert.deepEqual(
+    f
+      .commands()
+      .filter((c) => c.cwd === f.root)
+      .map((c) => c.args),
+    [
+      ["run", "test:unit"],
+      ["run", "build"],
+    ],
+  );
+  assert.deepEqual(
+    browserEvidence(f).entries.map((e) => e.role),
+    ["required"],
+  );
+});
+
+test("validated CI reaches the Linux-only OS setup branch through the real consumer context", (t) => {
+  const f = fixture(t);
+  const ci = f.ci();
+  requireSuccess(f.invoke(phaseScript, ci.env));
+  requireBrowserOrder(f.commands(), requiredMarker, { ci: process.platform === "linux" });
+  const evidence = browserEvidence(f);
+  assert.equal(evidence.entries[0].result.ci, true);
+  const installs = f.commands().filter((c) => c.command === "browser");
+  assert(
+    installs.every(
+      (c) => !c.env || (!Object.hasOwn(c.env, "GATE_ADMISSION_PATH") && !Object.hasOwn(c.env, "GITHUB_SHA")),
+    ),
+  );
+});
+
+test("candidate and required install/probe failures stop later checks and retain only attempted setup evidence", (t) => {
+  for (const marker of ["CANDIDATE", "REQUIRED"])
+    for (const stage of ["install", "probe"]) {
+      const f = fixture(t, { browserFailure: { marker, stage } });
+      if (marker === "CANDIDATE") f.candidate();
+      const result = f.invoke(phaseScript);
+      assert.equal(result.error, undefined);
+      assert.notEqual(result.status, 0, "Injected setup failure must reach the real runner");
+      assert(!f.commands().some((c) => c.command === "npm" && c.args.join(" ") === "run check"));
+      assert(!f.commands().some((c) => c.cwd === f.root));
+      const evidence = browserEvidence(f);
+      assert.equal(evidence.entries.length, 1);
+      assert.equal(evidence.entries[0].role, marker === "CANDIDATE" ? "candidate" : "required");
+      assert.equal(evidence.entries[0].result.status, "failed");
+      if (marker === "CANDIDATE") {
+        const candidate = JSON.parse(readFileSync(join(f.root, ".artifacts/acceptance-candidate.json"), "utf8"));
+        assert.equal(candidate.status, "failed");
+        assert.equal(candidate.productAcceptance, false);
+      }
+      assert.deepEqual(readdirSync(f.temporary), []);
+    }
+});
+
+test("successful readiness cannot conceal a later standalone check failure", (t) => {
+  const f = fixture(t);
+  f.candidate();
+  const result = f.invoke(phaseScript, { CONSUMER_FAIL_CANDIDATE: "1" });
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0);
+  requireBrowserOrder(f.commands(), candidateMarker);
+  assert(!f.commands().some((c) => c.marker === requiredMarker || c.cwd === f.root));
+  const evidence = browserEvidence(f);
+  assert.equal(evidence.entries.length, 1);
+  assert.equal(evidence.entries[0].result.status, "passed");
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("actual runner shares the first preparation deadline through intervening candidate checks", (t) => {
+  const f = fixture(t, { expireAfterCandidate: true });
+  f.candidate();
+  const result = f.invoke(phaseScript);
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0, "A fresh per-suite deadline would wrongly pass");
+  requireBrowserOrder(f.commands(), candidateMarker);
+  assert(
+    !f
+      .commands()
+      .some((c) => c.marker === requiredMarker && (c.command === "browser" || c.args.join(" ") === "run check")),
+  );
+  assert(!f.commands().some((c) => c.cwd === f.root));
+  const evidence = browserEvidence(f);
+  assert.deepEqual(
+    evidence.entries.map((e) => e.role),
+    ["candidate", "required"],
+  );
+  assert.equal(evidence.entries[0].result.status, "passed");
+  assert.equal(evidence.entries[1].result.failure.code, "deadline");
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("npm failure before setup creates no invented browser evidence for that extraction", (t) => {
+  const f = fixture(t, { browserFailure: { marker: "REQUIRED", stage: "npm-ci" } });
+  f.candidate();
+  const result = f.invoke(phaseScript);
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0);
+  requireBrowserOrder(f.commands(), candidateMarker);
+  assert(!f.commands().some((c) => c.marker === requiredMarker && c.command === "browser"));
+  assert.deepEqual(
+    browserEvidence(f).entries.map((e) => e.role),
+    ["candidate"],
+  );
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("a same-source rerun clears old passing browser evidence before its first npm failure", (t) => {
+  const f = fixture(t);
+  requireSuccess(f.invoke(phaseScript));
+  const prior = browserEvidence(f);
+  assert.equal(prior.entries.length, 1);
+  assert.equal(prior.entries[0].result.status, "passed");
+  const commandCount = f.commands().length;
+  const result = f.invoke(phaseScript, { CONSUMER_FAIL_FIRST_CI: "1" });
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0);
+  assert.equal(f.git("rev-parse", "HEAD"), prior.sourceRevision, "The failing rerun must use the exact same source");
+  const attempted = f.commands().slice(commandCount);
+  assert.equal(attempted.length, 1);
+  assert.equal(attempted[0].command, "npm");
+  assert.deepEqual(attempted[0].args, ["ci"]);
+  const current = browserEvidence(f);
+  assert.deepEqual(
+    current.entries,
+    [],
+    "A pre-setup failure must replace stale passing evidence with a fresh empty record",
+  );
+  assert.deepEqual(readdirSync(f.temporary), []);
+});
+
+test("historical foundation and acceptance phases gain no browser installation privilege", (t) => {
+  for (const phase of ["foundation", "acceptance"]) {
+    const f = fixture(t);
+    const revision = phase === "acceptance" ? f.genesis.suiteCommit : f.git("rev-parse", `${f.genesis.suiteCommit}^`);
+    f.git("checkout", "--quiet", "--detach", revision);
+    f.env.CI_BASE_REF = revision;
+    requireSuccess(f.invoke(phaseScript));
+    assert(!f.commands().some((c) => c.command === "browser"));
+    assert.equal(existsSync(join(f.root, ".artifacts/acceptance-browser-setup.json")), false);
+    if (phase === "acceptance")
+      assert.deepEqual(
+        f.commands().map((c) => c.args),
+        [["ci"], ["run", "check"]],
+      );
+    else assert.deepEqual(f.commands(), []);
   }
 });

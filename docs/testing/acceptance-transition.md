@@ -3,14 +3,13 @@
 ## Current status — 2026-10-10
 
 The independent transport-v1 candidate merged in PR #15 and was bound by PR #16 at
-`5645b0501ca403750a2d894d6a492afa4b42185b`. Protected-main run `38048679076` published v0.2.16 with authenticated
-candidate-review observations and the intended required/pending selection; see the
-[binding completion evidence](../validation/transport-binding.md#protected-main-binding-publication). The
-[registry](acceptance-transitions.json) contains one immutable pending binding. **r3 remains required** until the next
-product-affecting implementation activates transport-v1. Governance-only RUNTIME-POLICY merged in PR #17 and published
-v0.2.17 without installing Fastify, changing suite bytes or activating the successor; see its
-[completion evidence](../validation/runtime-dependency-policy.md#protected-main-completion). Fastify is now the next
-product card and must pass the bound successor. The [genesis record](baseline.json) remains unchanged. Earlier gate
+`5645b0501ca403750a2d894d6a492afa4b42185b`; the immutable [registry](acceptance-transitions.json) preserves that
+binding. PR #19 activated it at `f4fb747df8890511edde7878064bb9af79823138`. Protected-main run `38054409309` passed all
+67 required transport cases and published v0.2.19; see the
+[activation completion](../validation/fastify-transport.md#protected-main-completion). **transport-v1 is required for
+descendants; no candidate or binding is pending.** The [genesis record](baseline.json), historical suite objects and
+[binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain unchanged.
+DOCS-HARNESS must precede the independently authored docs candidate and its separate actual binding. Earlier gate
 [publication/retry evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) retains its
 original scope.
 

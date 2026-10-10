@@ -1,5 +1,9 @@
 # Runtime dependency policy: independent expectations
 
+**Later product amendment — 2026-10-10:** PR #19/v0.2.19 released exact Fastify 5.12.5 and activated transport-v1. See
+the [migration completion](../validation/fastify-transport.md#protected-main-completion); the policy/test-first
+observations below retain their original pre-product scope and do not establish the later product result themselves.
+
 **Completion amendment — 2026-10-10:** PR #17 merged as `3e1851eaddb558f6c38eedc88334605212a7a153` and main run
 `38050747378` published v0.2.17. The
 [completion evidence](../validation/runtime-dependency-policy.md#protected-main-completion) records actual companion

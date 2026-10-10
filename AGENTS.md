@@ -31,11 +31,11 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
 - Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
 - P2 executable baseline and independent review precede product code; implementers cannot modify frozen tests or gates.
-- Preserve raw uploads, the inclusive 20971520-byte limit and pure physical-frame parser during the Fastify migration.
-- Fastify is the authorized current transport migration; docs/OpenAPI serving and Redoc remain separate successor work.
+- Preserve raw uploads, the inclusive 20971520-byte limit and pure physical-frame parser with the released Fastify transport.
+- Fastify shipped in PR #19/v0.2.19; docs/OpenAPI serving and Redoc remain separate successor work.
 - Use separate non-root NGINX frontend and Node API images, one browser origin and configurable private upstream.
 - No retained uploads, runtime parser library, database, object storage, accounts or speculative infrastructure.
-- Use only the approved exact Fastify runtime dependency; this migration does not authorize unrelated frameworks.
+- Use only the approved exact Fastify runtime dependency; its adoption does not authorize unrelated frameworks.
 - Use one root application npm lockfile and one standalone acceptance lockfile; no workspaces.
 - Apply the active release-only criteria in APP-REL-001 through APP-REL-006; hosted criteria are deferred.
 - Local release preparation archives exact tested images only; never treat its provisional version or manifest as deployed.
@@ -61,10 +61,10 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
   snapshots; ordinary CI remains authoritative for execution evidence. Regeneration needs a separately scoped migration.
 - Keep exactly three detailed next PR cards; later work stays provisional. GATE-01 precedes successor suites,
   VER-01 precedes release-line activation, and compatible tooling precedes live extended-queue syntax.
-- Preserve immutable r3 genesis evidence. GATE-01 introduced verified dormant admission; review its guide in
-  docs/testing/acceptance-transition.md. PR #16 binds transport-v1 as the single pending successor; r3 remains required
-  after governance-only RUNTIME-POLICY in PR #17/v0.2.17. The next Fastify product change must pass the bound successor.
-  Its authorized framework migration supersedes the historical native-HTTP choice while preserving public behavior.
+- Preserve immutable r3 genesis evidence. Review docs/testing/acceptance-transition.md: PR #19/v0.2.19 activated the
+  transport-v1 suite bound by PR #16. It is required for descendants; no successor is pending. DOCS-HARNESS precedes
+  independent docs/CSP candidate authoring and actual binding. The released framework migration supersedes the
+  historical native-HTTP choice while preserving public behavior.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.
 - Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.

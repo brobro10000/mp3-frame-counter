@@ -1,12 +1,18 @@
 # MVP execution status and project progression
 
+**Later roadmap progression — 2026-10-10:** [PR #19/v0.2.19](fastify-transport.md#protected-main-completion) released
+Fastify and activated the independently bound transport-v1 suite. Main run `38054409309` passed 82 unit tests and 67
+external cases. The [roadmap](../roadmap/README.md) and [three-card window](../phases/next-iteration.md) track
+subsequent work. No application service is deployed; human intervention remains required for production. The P1–P5
+observations below preserve the original release-only milestone rather than describing the latest source.
+
 Observed on **2026-10-10, America/New_York**, after product merge and first repository publication. P1/P2 are merged,
 the unchanged independent baseline remains bound to `a0a56d94e5457101cd043b6055ab084782c3e16f`, and PR #5 merged as
 `ce50762b404e6b37ee10171fabd98db9aa06b265`. Protected-main CI published `v0.1.6`; an identical publisher retry passed.
 The [V1 closure](v1-closure.md) binds all active phase/release criteria to exact evidence. **Deployment remains
 deferred**.
 
-## Latest recorded application verification
+## Historical V1 application verification
 
 [Main run 38023037504, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38023037504/attempts/1)
 passed foundation, product and `control-plane` at `ce50762b`. It recorded **75 application unit tests, 60/60

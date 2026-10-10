@@ -1,12 +1,12 @@
 # Fastify transport migration evidence
 
-**Status — 2026-10-10:** Fastify implementation passes focused checks and all **67 local image-bound transport cases**
-following the committed internal expectations. Independent source/dependency review found no actionable blocker. A
-supplemental two-upload resource observation passed within the existing container budget. Final CI, companion approval,
-merge and publication remain pending. No deployment or production readiness is claimed.
+**Status — 2026-10-10:** PR #19 is merged and **v0.2.19 publication is verified**. Protected-main CI passed 82 unit
+tests and all 67 transport cases; transport-v1 is now required with no pending successor. The
+[completion record](#protected-main-completion) supersedes the earlier pending wording below. Local test-first,
+resource, failed-run and source-review observations remain historical. No deployment or production readiness is claimed.
 
 The
-[FASTIFY card](../phases/next-iteration.md#pr-card-1--fastify-migrate-transport-under-the-bound-compatibility-contract)
+[FASTIFY card](https://github.com/brobro10000/mp3-frame-counter/blob/f4fb747df8890511edde7878064bb9af79823138/docs/phases/next-iteration.md#pr-card-1--fastify-migrate-transport-under-the-bound-compatibility-contract)
 follows actual RUNTIME-POLICY merge `3e1851eaddb558f6c38eedc88334605212a7a153` and verified v0.2.17 publication. The
 [binding evidence](transport-binding.md) records the independently authored transport-v1 suite and exact review. This
 next product change must activate that bound successor; it cannot choose r3 or edit acceptance to obtain a pass. Trace
@@ -167,3 +167,45 @@ condition from a startup/inspection deadline. Its original failed report remains
 preceded manual cleanup, and absence was verified. The second probe used a dedicated ordinary bridge, a bounded startup
 allowance and cleanup checks that remain valid after network teardown; the product image and workload expectations did
 not change. These probe repairs do not establish a unique cause for the first failure.
+
+## Protected-main completion
+
+[PR #19](https://github.com/brobro10000/mp3-frame-counter/pull/19) merged as `f4fb747df8890511edde7878064bb9af79823138`
+at **2026-10-10 13:05:41 UTC**, with sole parent `17b389e71fadb869150982e4b459e52b37d664b2`. Its tree
+`9f61ce7116c5d5bc28c8952b9925f5f65b4f3121` equals the tree of reviewed head `bc0830ca3bf8fe2151a12c5f3eba6582bbc8cf83`.
+The final companion reviewed all 23 changed files, reported no findings and passed its documentation check. Automated
+reviewer `brobro1000` submitted
+[approval 5479042121](https://github.com/brobro10000/mp3-frame-counter/pull/19#pullrequestreview-5479042121) for that
+head; owner `brobro10000` performed the ordinary protected squash merge after fresh mandatory checks. This was
+automated, not human, code review. An intermediate diagram-sync edit was corrected before final CI and review;
+superseded runs were not substituted for the final head's result.
+
+Final PR run `38053525087`, attempt 1, and actual
+[main run 38054409309](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38054409309), attempt 1, passed
+foundation, product and control-plane checks: **425 tooling tests, 20 gate tests, 82 unit tests, 19 Mermaid renders and
+67 external transport cases**, with no failures, skips or retries and passed E2E cleanup. Main publication job
+`114220477868` published [v0.2.19](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.19), release
+`408960297`, at **13:10:05 UTC**, with ten assets.
+
+Trusted main admission classifies this source as `implementation`, requires transport-v1, records activation
+`f4fb747df8890511edde7878064bb9af79823138` and binding `5645b0501ca403750a2d894d6a492afa4b42185b`, and has no candidate
+or pending binding. The canonical admission SHA-256 is
+`f8d8c2259ca3f7faecf7dc69e6199694e89857826ec2d6e634a528ae63db9b34`. The required suite remains commit
+`6c28382d71a014351311e63154ef1c8916b8a229`, tree `d905d3123623f74b029a94c61ca850e553af2c32`, with manifest SHA-256
+`674bb8a49e895b283d828e965f3cd4c6e1567f9b38ec25fdf44dfe452085e3cc`. No frozen acceptance or gate bytes changed.
+
+Actual main tested/released image identities:
+
+- API: `sha256:d31496885ab865c77855f89815bc182ac5c68e1f8ea637ba99cf228097903bee`.
+- Frontend: `sha256:d27373eca513b3f9a76340cd38ba6c26a5ad586780215b87165b64cc4a14012f`.
+
+The ignored `.artifacts/fastify-main-publication/` capture retains CI logs, raw metadata and independent verification.
+Root and a separate verifier cross-checked source/run/attempt, reviewed-tree equivalence, admission hash and selection,
+result counts, image agreement and reservation/publication provenance. Eight metadata assets were downloaded and
+independently rehashed against GitHub-reported digests. The two Docker archives were not downloaded or independently
+rehashed; their integrity was checked through published metadata only. No extra publication retry was requested. These
+observations are not signed attestations, hosted verification or proof of graceful admitted-response drain.
+
+The next bounded work is DOCS-HARNESS, followed by independent DOCS-CONTRACT and actual DOCS-BIND. Required transport
+acceptance persists for later descendants; each future source still needs its own validation. No browser documentation,
+registry transfer, stage service or production deployment is established by this release.

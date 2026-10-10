@@ -18,11 +18,11 @@ limits and the boundary for the next iteration.
 assessment snapshot and plan the prerequisites for Fastify, API documentation and a conditional hosted release. The
 roadmap is documentation, not deployed functionality; `v1.0.0` is reserved for verified production.
 
-**Transport migration, 2026-10-10:** this working revision introduces Fastify under the independently bound
-[transport-v1 contract](docs/testing/contracts/transport-v1.md). The
-[migration evidence](docs/validation/fastify-transport.md) records 67 passing local image-bound cases and separates them
-from pending CI, companion review and publication. Main's verified preceding release is v0.2.18; docs rendering and
-application hosting remain later work.
+**Transport release, 2026-10-10:** PR #19 introduced Fastify under the independently bound
+[transport-v1 contract](docs/testing/contracts/transport-v1.md). Protected-main CI passed **82 unit tests and 67
+external cases** and published [v0.2.19](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.19). The
+[completion evidence](docs/validation/fastify-transport.md#protected-main-completion) records exact source, automated
+companion approval, images and publication. Documentation rendering and application hosting remain later work.
 
 ## Local application
 
@@ -69,6 +69,11 @@ application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm
 `make help` lists commands. Stage exact new files before index-based formatting/policy checks. See
 [portable setup](docs/portability.md).
 
+For product phases, the controller prepares each selected suite's locked Chromium before standalone controls, with a
+bounded launch/close check. Only validated Linux CI installs OS prerequisites; local execution does not run apt/sudo.
+Read the [browser preparation contract](docs/testing/acceptance-browser-setup.md) for supported hosts and evidence
+limits.
+
 `npm run check:mermaid` renders all tracked Mermaid diagrams and reports their source locations. The explicit
 `mermaid:install` command downloads the lockfile-selected Chrome for development validation; `npm ci` itself leaves
 install scripts disabled. Browser files and rendered SVGs are ignored and do not enter application runtime images. See
@@ -77,10 +82,10 @@ install scripts disabled. Browser files and rendered SVGs are ignored and do not
 Acceptance source is independently authored. The immutable [r3 genesis](docs/testing/baseline.json) records P2's actual
 protected-main commit `a0a56d9`; its original evidence remains preserved. The
 [transition policy](docs/testing/acceptance-transition.md) binds separately reviewed successor suites to actual merged
-Git objects. This product change requires the bound transport-v1 suite, including the original 60 cases and seven new
-transport cases. Product implementers cannot change expected outcomes or select an older suite to pass. The CI
-controller extracts the required Git tree outside the application checkout and verifies ancestry and every frozen byte.
-Zero tests, skipped cases and failed checks fail closed.
+Git objects. transport-v1 is now required, including the original 60 cases and seven new transport cases. Product
+implementers cannot change expected outcomes or select an older suite to pass. The CI controller extracts the required
+Git tree outside the application checkout and verifies ancestry and every frozen byte. Zero tests, skipped cases and
+failed checks fail closed.
 
 For a small local upload with an independently known count:
 

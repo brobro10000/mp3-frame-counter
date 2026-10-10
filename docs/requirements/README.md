@@ -9,6 +9,10 @@ before planning or reviewing future work, then read the [V1 contract and choices
 a human gate for production deployment. That amendment supersedes the documentation-only and deployment-deferral
 instructions below without changing historical evidence.
 
+**Current implementation:** [PR #19/v0.2.19](../validation/fastify-transport.md#protected-main-completion) released
+Fastify with all 67 required transport cases. The active [three-card window](../phases/next-iteration.md) advances
+browser preparation, independent docs/CSP expectations and binding. No application service is deployed.
+
 **Later planning amendment, 2026-10-10:** PR #7 closure is merged at `92807357` and v0.1.7 is published. The owner
 adopted the [versioned roadmap](../roadmap/README.md) and [next three cards](../phases/next-iteration.md) for
 documentation. They trace stable APP IDs without rewriting original captures or frozen evidence. Assessment submission
@@ -19,7 +23,7 @@ The assessment and planning baseline are captured. The owner subsequently author
 [execution record](../phases/execution-authorization.md) and phase evidence for current status. Requirement capture
 alone never establishes implementation or deployment completion.
 
-For the current result, use the [V1 closure record](../validation/v1-closure.md) and
+For the historical V1 milestone, use the [V1 closure record](../validation/v1-closure.md) and
 [execution status](../validation/execution-status.md). PR #5 merged at `ce50762b`; protected-main CI passed the
 unchanged independent suite and published `v0.1.6` with verified assets. An identical publisher-only retry succeeded.
 The baseline remains bound to P2's protected-main commit `a0a56d9`. Deployment stays deferred under SRC-RELEASE-ONLY.

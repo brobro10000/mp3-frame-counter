@@ -1,5 +1,10 @@
 # Transport candidate and proposed binding evidence
 
+**Later activation amendment — 2026-10-10:** PR #19/v0.2.19 activated transport-v1 at
+`f4fb747df8890511edde7878064bb9af79823138`; no successor is pending. The
+[migration completion](fastify-transport.md#protected-main-completion) supersedes the pending-state wording below.
+Preserve the following binding-only observations as historical evidence for PR #16.
+
 **Completion amendment — 2026-10-10:** PR #16 merged the actual binding and published v0.2.16. **r3 remains required**;
 transport-v1 is the single pending successor for the next product change. The candidate's 67-case local diagnostic does
 not replace current required acceptance. The earlier proposed-binding wording below is dated history, resolved by the

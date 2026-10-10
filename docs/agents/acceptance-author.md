@@ -2,10 +2,11 @@
 
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
-implementation. Follow the [transition guide](../testing/acceptance-transition.md): transport-v1 is merged and bound
-through PR #16/v0.2.16, with r3 still required until the next product change. RUNTIME-POLICY completed in PR #17/v0.2.17;
-Fastify must activate the bound transport successor. Author the docs successor only after that activation and the separate
-DOCS-HARNESS browser prerequisite are verified. Candidate authoring does not itself activate a contract.
+implementation. Follow the [transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1,
+with 67 required external cases and no pending successor. Its
+[completion evidence](../validation/fastify-transport.md#protected-main-completion) verifies protected-main publication.
+Author the docs successor only after the separate DOCS-HARNESS browser prerequisite is verified. Candidate authoring does
+not itself activate a contract.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),
