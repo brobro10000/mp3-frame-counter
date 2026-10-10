@@ -58,30 +58,33 @@ assert(
 );
 const validation = jobs["validate-foundation"];
 assert.equal(validation.if, undefined);
-const bootstrapValidation =
+const cloudValidation =
   [
     "terraform -chdir=infra/cloud/bootstrap fmt -check",
     "terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly",
     "terraform -chdir=infra/cloud/bootstrap validate -no-color",
+    "terraform -chdir=infra/cloud/access fmt -check",
+    "terraform -chdir=infra/cloud/access init -backend=false -input=false -lockfile=readonly",
+    "terraform -chdir=infra/cloud/access validate -no-color",
   ].join("\n") + "\n";
 assert.deepEqual(
   validation.steps.filter((step) => step.run).map((step) => step.run),
   [
     validation.steps.find((step) => step.id === "acceptance-preflight").run,
     "npm ci",
-    bootstrapValidation,
+    cloudValidation,
     "npm run mermaid:install",
     "aa-exec --profile=chrome npm run validate",
   ],
 );
-// Cost bootstrap validation is mandatory but deliberately has no cloud identity or mutation command.
+// Both cloud roots require credential-free schema checks; access tests use mocked plans without cloud mutations.
 assert.equal(validation.env, undefined);
 const terraformSetup = validation.steps.find((step) => step.uses?.startsWith("hashicorp/setup-terraform@"));
 assert.equal(terraformSetup?.uses, "hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e");
 assert.deepEqual(terraformSetup.with, { terraform_version: "1.13.3", terraform_wrapper: false });
 assert.equal(terraformSetup.if, undefined);
 assert.equal(terraformSetup.env, undefined);
-const terraformValidation = validation.steps.find((step) => step.run === bootstrapValidation);
+const terraformValidation = validation.steps.find((step) => step.run === cloudValidation);
 assert.equal(terraformValidation.if, undefined);
 assert.equal(terraformValidation.env, undefined);
 const product = jobs["validate-product"];
@@ -139,6 +142,7 @@ assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
 assert(
   pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
   "Missing mandatory docs-tool-policy tests",

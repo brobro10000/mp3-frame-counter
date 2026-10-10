@@ -5,21 +5,23 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status, 2026-10-10: **HOSTED-CONTRACT is published as
-[v0.3.28](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.28)**. Docs-v1 remains required with all 72
-local cases. Offline Redoc shipped in v0.2.24; the profile protocol and immutable declaration reader shipped in v0.2.25
-and v0.2.26. The independently authored hosted successor merged in PR #28 and published after passing main CI. Its
-separate binding remains under verification; neither candidate controls nor binding establish application hosting.
+Status, 2026-10-10: **HOSTED-BIND is published as
+[v0.3.29](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.29)**. Docs-v1 remains required with all 72
+local cases; hosted-v1 is bound and pending a genuine product change. Offline Redoc shipped in v0.2.24; the profile
+protocol and immutable declaration reader shipped in v0.2.25 and v0.2.26. The independently authored hosted successor
+and its binding merged and published after passing main CI. Candidate controls and binding do not establish hosting.
 
-The next [three-card window](../phases/next-iteration.md) is **HOSTED-BIND**, **HOSTED-EVIDENCE** and
-**HOSTED-SOURCE-PROJECTION**. The binding records actual reviewed merge identities; separate dormant helpers validate
-hosted evidence and retain original required declaration bytes. The
+The next [three-card window](../phases/next-iteration.md) is **HOSTED-EVIDENCE**, **HOSTED-SOURCE-PROJECTION** and
+**ACCESS-FOUNDATION**. HOSTED-BIND published in v0.3.29. The binding records actual reviewed merge identities; separate
+dormant helpers validate hosted evidence and retain original required declaration bytes. The
 [pure evidence validator](../deployment/hosted-evidence.md) has passed its local independent tests;
 [PR/main verification](../validation/hosted-evidence.md) remains separate. The
 [binding record](../validation/hosted-binding.md) separates prerequisite evidence from pending checks. Later launcher,
-registry, access/runtime IaC and workflow changes remain provisional. Merge approved PRs promptly, then immediately
-reconcile dependents onto actual main and refresh checks/review. Disjoint agent lanes continue toward v1; every
-production application deployment retains human intervention.
+image transfer, federation, remote-state migration, runtime IaC and workflow changes remain provisional. The
+[access-foundation contract](../deployment/cloud-access-foundation.md) separately bounds protected state, registry and
+identity source plus its post-review operational checks. Merge approved PRs promptly, then immediately reconcile
+dependents onto actual main and refresh checks/review. Disjoint agent lanes continue toward v1; every production
+application deployment retains human intervention.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
