@@ -59,6 +59,8 @@ of GATE-01; serialize shared workflow edits with gate work.
   provider validation in foundation CI. Preserve required job names and release permissions; grant no cloud credentials.
 - `scripts/policy.mjs`: require the pinned validation-only workflow and cap-test inclusion; reject tracked Terraform
   caches, state, private inputs, saved plans and `*.private.json` identity records.
+- `docs/architecture/diagrams/release.mmd`: keep the source-linked release view aligned with mandatory Terraform
+  validation, including review of any diagram-assistant commit before merge.
 - Targeted roadmap/phase/deployment pointers and `docs/validation/cloud-cost-bootstrap.md` plus the
   [dated execution record](../validation/roadmap-execution.md).
 
