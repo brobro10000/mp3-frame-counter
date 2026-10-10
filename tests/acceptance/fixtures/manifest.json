@@ -1,5 +1,5 @@
 {
-  "contractRevision": "transport-v1",
+  "contractRevision": "docs-v1",
   "license": "CC0-1.0",
   "expectationSource": "Independent construction and recorded MediaInfo/FFprobe oracle; never product output.",
   "fixtures": [

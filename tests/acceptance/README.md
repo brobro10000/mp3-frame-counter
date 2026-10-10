@@ -1,23 +1,23 @@
 # Independent acceptance package
 
-This package contains candidate contract `transport-v1`: all 60 original r3 AC-01–AC-12 cases plus seven transport
-cases. Candidate authoring does not activate it; immutable r3 remains required until separate binding/implementation. It
-receives external URLs and independently characterized fixtures; it never imports application code, mounts product
-sources, reads private samples or uses a Docker socket. The application and acceptance package have separate lockfiles.
-There are no npm workspaces.
+This package contains the independent `docs-v1` candidate: all 67 preserved transport-v1 cases plus five public docs
+cases. Transport-v1 remains required until separate reviewed docs binding and product activation. The package receives
+external URLs and independently characterized fixtures; it never imports product implementation, reads private samples
+or uses a Docker socket. Application and acceptance lockfiles remain separate, without workspaces.
 
-Use the repository's pinned Node 24.20.0/npm 11.19.0. From the repository root:
+Use pinned Node 24.20.0/npm 11.19.0. From the repository root:
 
 ```sh
 npm --prefix tests/acceptance ci
-npm --prefix tests/acceptance run check
 npm --prefix tests/acceptance run browser:install
+npm --prefix tests/acceptance run check
 ```
 
-`check` type-checks TypeScript, reconstructs all fixed fixtures and checks their hashes, runs intentional negative
-controls, checks the local OpenAPI fixture and enforces the exact 67-case Playwright inventory. It does not contact an
-application or prove real E2E success. Browser installation downloads the Chromium revision selected by the exact
-Playwright lockfile.
+The package-local `.npmrc` disables lifecycle scripts even when CI extracts the suite outside the repository. `check`
+type-checks TypeScript and its imported JS interfaces, reconstructs the original fixtures, checks OpenAPI, runs original
+transport and new actual-browser falsification controls, then enforces the complete 72-case discovery inventory. It
+never contacts the application or establishes product acceptance. `browser:install` acquires only pinned Playwright's
+Chromium; CI prepares and proves the selected suite's browser independently before `check`.
 
 The trusted host controller starts the actual two application services and supplies:
 
@@ -47,9 +47,10 @@ operations; it has no shell or Docker access through that interface. TC-07 binds
 target/generation to the SIGTERM acknowledgment and every later state read. The controller, not a caller-supplied
 selector, binds its fixed container to the tested images.
 
-Browser traffic is confined to the approved frontend origin. The guard forwards each real request once with redirects
-disabled and relays the actual response unchanged; foreign origins and redirects fail. Delayed requests still traverse
-this guard. No successful upload response is invented.
+Browser traffic is confined to the approved frontend origin. The unchanged original upload tests retain their forwarding
+guard. Additive docs cases use calibrated native CDP blocking, preserve real same-origin redirects/responses, and reject
+attempted foreign HTTP assets even when blocked. Their fresh contexts observe CSP/page errors through actual response
+expansion, screenshot and a 200 ms retained-document interval. No successful product response is invented.
 
 The real API is stopped and paused in AC-12 and receives SIGTERM in TC-07, with restoration in `finally` blocks. The
 outer controller must also restore or remove its resources after interruption. A failed restoration is a failed run. The
@@ -71,9 +72,10 @@ weaken it to make product changes pass; amendments need separate review and a ne
 ## Successor evidence and utility commands
 
 The [transport contract](../../docs/testing/contracts/transport-v1.md) maps new cases and fixes observation windows. The
-OpenAPI fixture is local JSON, not a served documentation endpoint or comprehensive OpenAPI validator. No product
-parser, new media oracle, external reference or dependency was added. Original fixture entries and their recipes remain
-unchanged; only the candidate manifest's contract revision changes.
+OpenAPI fixture is local JSON, not a served documentation endpoint or comprehensive OpenAPI validator. Transport-v1
+added no product parser, new media oracle, external reference or dependency. This candidate adds only the reviewed test
+packages. Original fixture entries and their recipes remain unchanged; only the candidate manifest's contract revision
+changes.
 
 From this package directory, the pinned Node runtime can run these standalone utilities:
 
@@ -96,3 +98,26 @@ in `finally`; lifecycle observation additionally requires actual socket closure 
 exit and a matching target/generation within eight seconds of requesting SIGTERM. No-op acknowledgments, forced exit 137
 and stale generations fail. Graceful completion after signal-handler entry remains unproved and needs fresh independent
 source/configuration/operational review during migration; there is no skipped drain case.
+
+## Documentation candidate controls
+
+The [docs contract](../../docs/testing/contracts/docs-v1.md) states the public routes, safe YAML semantics, adopted
+local Redoc derivative, sole public header ownership and finite observation limits. Five docs cases retain all old
+identities; only the current manifest/inventory contract revision and additive wiring change. The original transport
+OpenAPI bytes remain unchanged. Root/schema scope and provenance are detailed in
+[docs fixtures](fixtures/docs/README.md).
+
+`node scripts/docs-controls.mjs` starts one bounded child and normal Chromium against owned ephemeral loopback fixtures.
+It uses the same public YAML/header/artifact/browser predicates as docs.spec.ts. Guard calibration includes real owned
+receipts, separate CSP/guard negatives and redirect/beacon paths. Controls exercise real rendering plus decorative
+shells, CSP and foreign assets, schema/reference errors and fresh report accounting. It writes uniquely identified
+evidence under `.artifacts/docs-controls/`, with a source digest and exact planned/executed control IDs. Failed attempts
+remain failed. The parent enforces a four-minute/output bound and first requests graceful child cleanup on overrun. The
+child closes its browser and every owned fixture; a bounded hard-kill fallback remains failed with cleanup unverified.
+An induced termination control proves the graceful path closes the browser and both fixture listeners while retaining
+failed status. There are no install steps, retries, skips or remote fixture assets in the command.
+
+The new `.mjs` helpers document their own inputs/side effects/failure boundary. Their imported interfaces participate in
+TypeScript checking; they use public Node, YAML and Playwright APIs. The old application reporter and launcher enforce
+the complete 72-case inventory. Candidate control reports are a separate kind and cannot establish application
+acceptance.

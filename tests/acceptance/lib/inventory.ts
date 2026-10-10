@@ -9,7 +9,7 @@ export const inventory = JSON.parse(readFileSync(new URL("../fixtures/inventory.
   contractRevision: string;
   cases: { file: string; title: string }[];
 };
-export const CONTRACT = "transport-v1";
+export const CONTRACT = "docs-v1";
 export const identity = (entry: { file: string; title: string }) => `${entry.file} :: ${entry.title}`;
 export interface Execution {
   file: string;
