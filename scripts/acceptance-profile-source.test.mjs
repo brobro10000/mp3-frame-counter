@@ -7,6 +7,7 @@
  * Every rejection checks public availability first, so a missing implementation cannot impersonate intended refusal.
  * r17.1: absent hosted inventories become null and fail declaration validation; absent non-genesis local inventory,
  * nonregular/unreadable bytes, malformed UTF-8/JSON and provenance/context/lineage failures are source errors.
+ * r17.3: exact genesis includes immutable historical metadata beyond six core identity fields; it grants no new review.
  * Fixtures write only owned temporary trees, bound child lifetimes and remove all owned files after each test.
  */
 import assert from "node:assert/strict";
@@ -120,7 +121,7 @@ function declarations(revision, profiles = false, local = [localCase]) {
  * Methods advance only fixture commits and never query a remote. Malformed declaration bytes remain valid Git blobs,
  * permitting tests to isolate reader checks from the independently existing acceptance resolver.
  */
-function fixture(t, { policy = true, genesisInventory = false } = {}) {
+function fixture(t, { policy = true, genesisInventory = false, historicalGenesisMetadata = false } = {}) {
   const workspace = realpathSync(mkdtempSync(join(tmpdir(), "mp3-profile-source-")));
   t.after(() => rmSync(workspace, { recursive: true, force: true }));
   const root = join(workspace, "checkout");
@@ -166,6 +167,16 @@ function fixture(t, { policy = true, genesisInventory = false } = {}) {
     suiteTree: git("rev-parse", `${genesisCommit}:tests/acceptance`),
     manifestSha256: hash(rawGit("show", `${genesisCommit}:${manifestPath}`)),
     publicationStatus: "protected-main",
+    ...(historicalGenesisMetadata
+      ? {
+          review: {
+            kind: "independent-agent",
+            coverage: "historical-synthetic-coverage",
+            isolation: "historical-synthetic-isolation",
+          },
+          shippingPrerequisite: "Preserve this synthetic genesis and verify ancestry before shipping.",
+        }
+      : {}),
   };
   json("docs/testing/baseline.json", genesis);
   put("server/src/parser.ts", "// Inert product marker; never read or executed as application code.\n");
@@ -491,6 +502,97 @@ test("exact genesis absence preserves pre-policy local null-base and introduced-
       assert.deepEqual(result, { required: null, candidate: null, pending: null });
       frozen(result);
     } else rejected(f, { ...options, baseRevision: null });
+  }
+});
+
+test("immutable historical genesis metadata remains compatible with legacy, local and CI selections", (t) => {
+  const read = reader();
+  for (const policy of [false, true]) {
+    for (const genesisInventory of [false, true]) {
+      const f = fixture(t, { policy, genesisInventory, historicalGenesisMetadata: true });
+      requireFixture(f);
+      const expected = { required: genesisInventory ? declarations("r3") : null, candidate: null, pending: null };
+      for (const kind of policy ? ["local", "ci"] : ["local"]) {
+        const options = f.options(kind);
+        const before = clone(options);
+        assert.deepEqual(read(f.root, options), expected);
+        assert.deepEqual(options, before, "Historical metadata must not be stripped or rewritten");
+      }
+      if (!policy) assert.deepEqual(read(f.root, { ...f.options(), baseRevision: null }), expected);
+    }
+  }
+});
+
+test("descendants retain entire historical genesis without treating its review as successor-binding authority", (t) => {
+  const read = reader();
+  const f = fixture(t, { historicalGenesisMetadata: true });
+  f.inventoryRequired();
+  requireFixture(f);
+  for (const kind of ["local", "ci"]) {
+    const options = f.options(kind);
+    const before = clone(options);
+    assert.deepEqual(options.selection.resolution.genesis, f.genesis);
+    assert.deepEqual(read(f.root, options), { required: declarations("r4"), candidate: null, pending: null });
+    assert.deepEqual(options, before);
+  }
+  f.candidate({ profiles: true });
+  f.bind();
+  requireFixture(f);
+  const valid = f.options("ci");
+  assert.deepEqual(read(f.root, valid), {
+    required: declarations("r4"),
+    candidate: null,
+    pending: declarations("r5", true),
+  });
+  const missingCurrentReview = clone(valid);
+  missingCurrentReview.selection.admission.record.observedReviews = [];
+  missingCurrentReview.selection.admission.sha256 = hash(canonical(missingCurrentReview.selection.admission.record));
+  rejected(f, missingCurrentReview);
+});
+
+test("self-consistent copied genesis metadata changes still fail the immutable baseline comparison", (t) => {
+  const read = reader();
+  for (const kind of ["legacy", "local", "ci"]) {
+    const f = fixture(t, { policy: kind !== "legacy", historicalGenesisMetadata: true });
+    if (kind !== "legacy") f.inventoryRequired();
+    requireFixture(f);
+    const valid = f.options(kind);
+    assert.deepEqual(read(f.root, valid), {
+      required: kind === "legacy" ? null : declarations("r4"),
+      candidate: null,
+      pending: null,
+    });
+    for (const edit of [
+      (genesis) => {
+        genesis.review.kind = "invented-review-authority";
+      },
+      (genesis) => {
+        genesis.review.coverage = "different-historical-coverage";
+      },
+      (genesis) => {
+        delete genesis.review;
+      },
+      (genesis) => {
+        genesis.shippingPrerequisite = "Different immutable shipping requirement.";
+      },
+      (genesis) => {
+        delete genesis.shippingPrerequisite;
+      },
+    ]) {
+      const changed = clone(valid);
+      // Change every copied genesis consistently; caller-envelope disagreement must not be the only rejection reason.
+      const copies =
+        kind === "legacy"
+          ? [changed.selection.baseline]
+          : [
+              changed.selection.resolution.genesis,
+              changed.selection.localSelection?.resolution.genesis,
+              changed.selection.admission?.record.resolution.genesis,
+            ].filter(Boolean);
+      for (const genesis of new Set(copies)) edit(genesis);
+      if (kind === "ci") changed.selection.admission.sha256 = hash(canonical(changed.selection.admission.record));
+      rejected(f, changed);
+    }
   }
 });
 
