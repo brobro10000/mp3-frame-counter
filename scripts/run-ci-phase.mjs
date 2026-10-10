@@ -9,6 +9,8 @@
  * pre-product genesis or admitted successor, extracts it outside the product tree and runs its locked `check`.
  * A pending candidate runs separate discovery/oracle/negative controls and writes candidate-only evidence; it cannot
  * satisfy required product acceptance. Post-policy CI uses the trusted preflight record/digest; local runs claim no CI.
+ * Immutable declarations for every selected role are checked before extraction or installation. They cannot select
+ * hosted execution or replace original admission authority; malformed declarations fail before suite code runs.
  * Each selected product-phase extraction prepares its pinned browser after npm ci and before check, sharing one
  * 360-second deadline. Sanitized attempted setup evidence is written even on failure; readiness is not acceptance.
  * Parser work additionally runs root test:unit and build; integration additionally runs root test:e2e with the
@@ -25,6 +27,7 @@ import { join } from "node:path";
 import { performance } from "node:perf_hooks";
 import { git, repositoryFiles, suitePath } from "./acceptance-baseline.mjs";
 import { prepareAcceptanceBrowser } from "./acceptance-browser-setup.mjs";
+import { readAcceptanceProfileSource } from "./acceptance-profile-source.mjs";
 import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import { requireMonotonicPhase, requiredRootScripts } from "./phase-policy.mjs";
 
@@ -105,6 +108,13 @@ try {
   let requiredBaseline;
   if (["parser", "integration"].includes(phase)) {
     const selection = runtimeAcceptance(root, process.env);
+    // Retain the producing context; only historical local calls may have omitted their optional base.
+    const context = selection.admission?.record.context ?? selection.localSelection;
+    readAcceptanceProfileSource(root, {
+      selection,
+      sourceRevision: context?.sourceRevision ?? git(root, ["--no-replace-objects", "rev-parse", "HEAD"]).trim(),
+      baseRevision: context?.baseRevision ?? baseRef ?? null,
+    });
     requiredBaseline = selection.baseline;
     preparation = {
       ci: process.env.CI === "true",
