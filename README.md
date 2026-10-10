@@ -31,7 +31,9 @@ origin. Protected-main CI passed 120 units and all 72 required docs-v1 external 
 [v0.3.28](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.28), containing the independent hosted
 acceptance candidate. Its separate binding is under verification; stage and production execution remain future work.
 Read the [current phase record](docs/phases/next-iteration.md) and [binding evidence](docs/validation/hosted-binding.md)
-for current prerequisites. No application service is deployed.
+for current prerequisites. The [dormant hosted evidence validator](docs/deployment/hosted-evidence.md) has passed local
+checks; [its validation record](docs/validation/hosted-evidence.md) separates those results from pending CI and
+publication. No application service is deployed.
 
 ## Local application
 
