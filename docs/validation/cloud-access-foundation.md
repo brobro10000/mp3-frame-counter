@@ -68,12 +68,11 @@ private/cache paths are ignored and all five source/lock files remain eligible f
 implementation and frozen tests are unchanged by this correction. Full repository validation and final review remain
 pending.
 
-
 ## Complete local validation
 
 Pinned Node 24.20.0 `npm run validate` exited zero with **564 tooling tests**, **20 gate tests** and **19/19 Mermaid
 renders**, plus formatting, workflow lint, repository policy and portability checks. Tooling includes the 19 access
-expectation groups. This run used the implementation/integration tree based on `ea4d1e4` and actual main `62e4cd4`;
-it excludes changes still on the separate hosted-evidence/source-projection branches. Complete log SHA-256:
-`a74afe103105db072e5d10cee6623d8bea61f24af02be5859455061b20c3751d`. The final evidence text receives an explicit
-format check. Remote CI, companion approval, actual-main publication and live plan/apply remain pending.
+expectation groups. This run used the implementation/integration tree based on `ea4d1e4` and actual main `62e4cd4`; it
+excludes changes still on the separate hosted-evidence/source-projection branches. Complete log SHA-256:
+`a74afe103105db072e5d10cee6623d8bea61f24af02be5859455061b20c3751d`. The final evidence text receives an explicit format
+check. Remote CI, companion approval, actual-main publication and live plan/apply remain pending.
