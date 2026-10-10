@@ -5,6 +5,9 @@
  * record with verifyAcceptanceAdmission(root, { record, expectedContext, expectedSha256 }); it returns a freshly
  * resolved acceptance decision using the original source/base and observations. Object keys are sorted recursively
  * for the SHA-256 input; array order remains significant. Caller-owned inputs are cloned rather than retained.
+ * acceptancePolicyIntroduced(root, sourceRevision) detects historical policy introduction on that exact source's
+ * complete first-parent history, including when the registry was subsequently deleted. It never reads working-tree
+ * policy; shallow histories cannot establish policy absence and are rejected.
  *
  * This module performs read-only Git queries through the existing baseline/resolver helpers. It has no environment,
  * CLI, file-write, credential or network behavior. Invalid schemas, mismatched contexts/digests, changed source trees
@@ -31,6 +34,33 @@ const contextFields = [
   "attempt",
 ];
 const recordFields = ["schemaVersion", "kind", "context", "observedReviews", "resolution"];
+
+/** Detect policy history without treating deletion or an older source checkout as permission to change authority. */
+export function acceptancePolicyIntroduced(root, sourceRevision) {
+  assert(typeof sourceRevision === "string" && commitPattern.test(sourceRevision), "Invalid policy source revision");
+  assert.equal(
+    git(root, ["--no-replace-objects", "rev-parse", "--is-shallow-repository"]).trim(),
+    "false",
+    "Acceptance policy detection requires full history",
+  );
+  assert.equal(
+    git(root, ["--no-replace-objects", "cat-file", "-t", sourceRevision]).trim(),
+    "commit",
+    "Policy source must identify an exact commit",
+  );
+  return (
+    git(root, [
+      "--no-replace-objects",
+      "rev-list",
+      "--first-parent",
+      "--full-history",
+      "--max-count=1",
+      sourceRevision,
+      "--",
+      "docs/testing/acceptance-transitions.json",
+    ]).trim() !== ""
+  );
+}
 
 /** Validate closed plain records before reading their fields; accessor and hidden properties are not JSON evidence. */
 function requireRecord(value, fields, label, optional = []) {
