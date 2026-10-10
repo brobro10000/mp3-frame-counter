@@ -558,6 +558,8 @@ function policyFixture(t, sourcePackage = JSON.parse(readFileSync(join(repositor
   ])
     put(path, readFileSync(join(repository, path), "utf8"));
   const pkg = snapshot(sourcePackage);
+  // This independent CLI control builds a development-only lock, regardless of installed application runtime inputs.
+  delete pkg.dependencies;
   const lock = {
     name: pkg.name,
     version: pkg.version,
