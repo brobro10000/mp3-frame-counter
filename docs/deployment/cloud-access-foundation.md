@@ -60,3 +60,34 @@ outside the Run cap; the alerts are not an invoice ceiling. Keep state, variable
 Require actual resource/IAM readback and a no-change plan. An existing unrelated resource or unexpected action blocks
 apply. Do not remove protections to make teardown pass: planned teardown needs an explicitly reviewed retention and
 protection amendment. Do not create a production service or run an application candidate to finish this package.
+
+## Protected GCS backend amendment — 2026-10-10
+
+The separate ACCESS-BACKEND package selects one empty `backend "gcs" {}` directly inside the existing Terraform block in
+`versions.tf`. This supersedes the initial local-backend source choice only after the amendment is independently tested,
+reviewed and published. The remaining four files, 23 resources, IAM grants, outputs, provider pins and destruction
+safeguards stay unchanged. No bucket, prefix, credential or backend override is committed.
+
+An independent test author first amends the existing source guard to require exactly that empty block in that file and
+position, with one literal `gcs` label. Every other backend occurrence remains forbidden. Preserve all prior resource,
+IAM, lifecycle and native mocked-plan expectations. Add valid-counterpart refusal controls for absence, duplication,
+another backend type, relocation, nonempty bucket/prefix/credentials/unknown arguments and nested content. Freeze the
+reviewed amendment before a separate implementer changes `versions.tf`. Existing credential-free CI continues using
+`init -backend=false` and isolated native mock tests; it must not initialize a real backend.
+
+A GCS backend requires its bucket to exist. First setup therefore uses the published initial access root from PR #32 and
+private local state, with current cost controls and a reviewed create-only plan. Do not initialize a new empty GCS state
+owner to bypass that order. After actual resource/IAM readback, the published backend amendment may be copied into the
+same owned working directory, retaining its existing state and protected backup.
+
+Root supplies only the trusted operations bucket and an unused access-state prefix through a private backend-config
+file. Confirm exact bucket protections, operator access and absence of unrelated destination state before migrating. Use
+short-lived external authentication and `terraform init -migrate-state -lockfile=readonly` with that private config; do
+not place credentials in backend options, automatically force-copy, or apply from two state owners. Verify matching
+state lineage and all resources, explain any serial change, observe the stored object/version and backend locking, and
+require a refreshed no-change plan before treating migration as complete. Retain private recovery copies. An uncertain
+migration stops further apply until both local and remote state have been reconciled.
+
+This package authorizes no new resource, grant, workflow, production operation or runtime deployment. Backend source
+tests prove the declaration and preserved mock semantics; only the later recorded migration/readback proves live state
+custody. Ordinary destruction and lock removal remain outside this amendment.

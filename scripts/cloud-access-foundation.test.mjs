@@ -5,6 +5,7 @@
  * Effects: isolated temporary copies, provider initialization/download, mocked plan-only tests, then recursive cleanup.
  * Failure: missing source/tools, unsupported source syntax, invalid plans, ineffective mutation controls or cleanup fail.
  * Native mocks establish configuration semantics, not real IAM propagation, deletion protection or cloud readiness.
+ * ACCESS-BACKEND requires one empty GCS declaration; init -backend=false keeps mocks separate from live state migration.
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -172,15 +173,25 @@ function sourceContract(source) {
       "Forbidden block",
     );
   }
+  assert.equal(nodes.filter((node) => node.name === "terraform").length, 1, "Expected one Terraform block");
+  const terraform = one(nodes, "terraform");
+  assert.equal(terraform.file, "versions.tf", "Backend declaration belongs in versions.tf");
+  const backend = one(terraform.children, "backend", ["gcs"]);
+  assert.equal(backend.kind, "block");
+  assert.deepEqual(backend.children, [], "Backend configuration must remain empty");
   const visit = (node) => {
-    assert(!["provisioner", "connection", "dynamic", "backend", "cloud"].includes(node.name), "Forbidden nested block");
+    assert(!["provisioner", "connection", "dynamic", "cloud"].includes(node.name), "Forbidden nested block");
+    if (node.name === "backend") assert.equal(node, backend, "Backend declaration outside the sole approved position");
     assert(node.name !== "ignore_changes", "Ignored configuration changes are outside the foundation");
     for (const child of node.children ?? []) visit(child);
   };
   nodes.forEach(visit);
   for (const text of Object.values(source)) rejectFileReads(text);
-  const terraform = one(nodes, "terraform");
-  assert.deepEqual(terraform.children.map((node) => node.name).sort(), ["required_providers", "required_version"]);
+  assert.deepEqual(terraform.children.map((node) => node.name).sort(), [
+    "backend",
+    "required_providers",
+    "required_version",
+  ]);
   assert.equal(expression(terraform, "required_version"), '"= 1.13.3"');
   const providers = one(terraform.children, "required_providers");
   assert.equal(providers.children.length, 1);
@@ -594,6 +605,59 @@ test("structural file guard refuses file hash reads while preserving pure string
 });
 test("only the five source files, pinned provider, explicit input surface and literal lifecycle guards are admitted", () => {
   sourceContract(sourceFiles());
+});
+test("backend controls require the sole empty GCS block in versions.tf before initialization", () => {
+  // Literal contract fixture: this exercises the amended guard before the backend source implementation exists.
+  // Only in-memory source copies change; none of these structural controls invokes Terraform or initializes state.
+  const settings = `required_version = "= 1.13.3"
+required_providers {
+  google = {
+    source = "hashicorp/google"
+    version = "8.6.0"
+  }
+}`;
+  const provider = `provider "google" {
+  project = var.project_id
+  billing_project = var.project_id
+  region = var.region
+  user_project_override = true
+}`;
+  const versions = (declaration) => `terraform {\n${settings}\n${declaration}\n}\n${provider}\n`;
+  const valid = { ...sourceFiles(), "versions.tf": versions('backend "gcs" {}') };
+  assert.doesNotThrow(() => sourceContract(valid), "Valid empty backend counterpart must pass first");
+  for (const [label, declaration] of [
+    ["absent", ""],
+    ["wrong type", 'backend "local" {}'],
+    ["missing label", "backend {}"],
+    ["additional label", 'backend "gcs" "extra" {}'],
+    ["attribute instead of block", "backend = {}"],
+    ["duplicate", 'backend "gcs" {}\nbackend "gcs" {}'],
+    ["bucket", 'backend "gcs" { bucket = "synthetic-bucket" }'],
+    ["prefix", 'backend "gcs" { prefix = "synthetic-prefix" }'],
+    ["credential", 'backend "gcs" { credentials = "synthetic-not-a-token" }'],
+    ["unknown argument", 'backend "gcs" { unexpected = false }'],
+    ["nested content", 'backend "gcs" { nested {} }'],
+    ["nested in other block", 'locals { backend "gcs" {} }'],
+  ])
+    assert.throws(
+      () => sourceContract({ ...valid, "versions.tf": versions(declaration) }),
+      { code: "ERR_ASSERTION" },
+      label,
+    );
+  for (const addition of ['backend "gcs" {}', 'locals { backend "gcs" {} }', 'terraform { backend "gcs" {} }'])
+    assert.throws(() => sourceContract({ ...valid, "main.tf": `${valid["main.tf"]}\n${addition}\n` }), {
+      code: "ERR_ASSERTION",
+    });
+  assert.throws(
+    () =>
+      sourceContract({
+        ...valid,
+        "versions.tf": `${provider}\n`,
+        "main.tf": `${valid["main.tf"]}\nterraform {\n${settings}\nbackend "gcs" {}\n}\n`,
+      }),
+    { code: "ERR_ASSERTION" },
+    "Moving the otherwise valid Terraform block into another existing source file must fail",
+  );
 });
 for (const [label, check] of [
   ["exact resource and API boundary", apiContract],
