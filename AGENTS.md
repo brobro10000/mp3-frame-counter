@@ -68,6 +68,8 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Use the current three-card window as the source of active scope rather than historical next-step prose. Keep
   independent acceptance/governance expectations separate from their implementation, and preserve actual main ancestry
   when reconciling stacked PRs. Refresh checks and companion review after head/base changes; merge in dependency order.
+- Merge approved PRs promptly after checks and prerequisites pass; immediately update direct dependents onto actual
+  merged main and refresh their checks/review. Avoid accumulating completed stack layers.
 - Apply stacked PRs and disjoint subagent domains throughout the remaining version progression to v1. Parallel authoring
   does not remove prerequisite publication, immutable binding or every production deployment's human gate.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
