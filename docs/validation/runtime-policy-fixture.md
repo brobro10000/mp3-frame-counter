@@ -1,8 +1,9 @@
 # Runtime policy fixture isolation
 
-**Status — 2026-10-10:** the minimal governance test-fixture correction passes all 27 focused groups locally. Required
-CI, companion approval, merge and publication remain pending. The runtime policy itself, product, dependencies and
-frozen acceptance are unchanged; r3 remains required and transport-v1 remains pending.
+**Status — 2026-10-10:** the minimal governance test-fixture correction merged in PR #18 after exact-head companion
+approval. Protected-main CI published **v0.2.18**. The runtime policy itself, product, dependencies and frozen
+acceptance are unchanged; r3 remains required and transport-v1 remains pending. Earlier local observations below retain
+their original scope; the completion section records subsequent verification.
 
 ## Failure and independent regression
 
@@ -54,3 +55,38 @@ tests or external operations. Root inspected the diff, actual red/green counts a
 gate tests** and **425 tooling tests**, with no failures, skips or cancellations. The ignored log is
 `.artifacts/runtime-fixture-validate.log`. This tooling-only correction leaves product and acceptance bytes unchanged;
 normal PR/main application validation and exact-head companion approval remain required before publication.
+
+## Protected-main completion
+
+[PR #18](https://github.com/brobro10000/mp3-frame-counter/pull/18) reached reviewed head
+`0edc3113a970df8126d12907b4c5aef963acc52e` on base `3e1851eaddb558f6c38eedc88334605212a7a153`. Required PR run
+`38052332769`, attempt 1, passed on synthetic source `3623cfe11b6d457cc2368a896f5ce22214b5047a`: 425 tooling tests, 20
+gate tests, 75 unit tests, 60 required r3 cases and 19 Mermaid renders. Pending transport-v1 discovery remained separate
+candidate evidence; it did not replace product acceptance.
+
+Actual Docker companion run `20261010T123503-444c5022` reviewed **2/2 files**, reported no findings and passed its
+documentation gate. The coordinator read the complete report and matching receipt, then verified the posted
+[automated approval](https://github.com/brobro10000/mp3-frame-counter/pull/18#pullrequestreview-5478964547) from
+`brobro1000` against that exact head. The companion used source and captured CI evidence, not independent execution of
+the local red/green logs; this was not human review.
+
+Owner `brobro10000` merged normally at **2026-10-10T12:40:12Z**, producing `17b389e71fadb869150982e4b459e52b37d664b2`.
+Its sole parent is the recorded base, and tree `e7d1c11f29c89ee61b737fd554165875fce494eb` matches the reviewed head. No
+override or bypass was used.
+
+[Main run 38052804356](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38052804356), attempt 1, passed
+foundation, product, control-plane and publication. The E2E record has 60/60 required r3 cases and successful cleanup.
+Admission digest `f10eb1695cba997e2f364536cfd132ee8930688d513ef97089c2a59faddc9859` binds the actual source, trusted
+base and run; its decision is governance, with transport-v1 pending at binding `5645b050…` and no activation.
+
+[v0.2.18](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.18), release ID **408946585**, published at
+**2026-10-10T12:43:36Z** from that exact merged source with ten assets. Publisher job `114215717652` retained same-run
+provenance. All eight downloaded metadata assets were rehashed against GitHub's SHA-256 digests; neither image archive
+was downloaded or independently rehashed. The recorded tested images are:
+
+- API: `sha256:b2966c174ff44401537411fd16a01695a1ded18ce3cdd5b2a3b77c9fcc84cdfd`.
+- Frontend: `sha256:e8014471e10816d6d80a889a2ab0faadb43d542640e7f51541255eef5471ec53`.
+
+Ignored observations are retained under `.artifacts/runtime-fixture-main-publication/`. No extra publisher retry or
+deployment was performed. The prerequisite is complete; the separate Fastify implementation must still pass the bound
+successor and obtain its own exact-head review and publication evidence.

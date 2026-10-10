@@ -39,5 +39,8 @@
     "puppeteer": "25.13.0",
     "typescript": "7.0.2",
     "yaml": "2.9.1"
+  },
+  "dependencies": {
+    "fastify": "5.12.5"
   }
 }

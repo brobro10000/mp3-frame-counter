@@ -3,10 +3,10 @@ title: Local runtime and independent acceptance boundary
 query: >-
   Show Docker wrapping exactly two independently built application images as
   Compose containers. Nest NGINX and its static assets inside the frontend
-  container, and the HTTP handler plus parser inside one Node process in the API
-  container. Put both containers inside Docker's Compose network. Keep browser
-  JavaScript, the host controller and extracted Playwright/Chromium runner
-  outside Docker. Distinguish published loopback host port from internal
+  container, and Fastify transport plus parser inside one Node process in the
+  API container. Put both containers inside Docker's Compose network. Keep
+  browser JavaScript, the host controller and extracted Playwright/Chromium
+  runner outside Docker. Distinguish published loopback host port from internal
   frontend port 8080 and private API port 3000, with a separate test-only
   loopback binding for direct API diagnostics. Show source-defined runtime
   users, read-only filesystems, temporary mounts and bounded in-process parsing.
@@ -22,7 +22,7 @@ references:
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
   - 'File: /scripts/e2e-controller.mjs'
-generationTime: '2026-10-10T10:13:57.088Z'
+generationTime: '2026-10-10T12:49:47.573Z'
 ---
 flowchart LR
     B["User browser<br/>app.js executes here"]
@@ -33,7 +33,7 @@ flowchart LR
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
-                A["node:http :3000<br/>bounded upload buffer"]
+                A["Fastify on Node :3000<br/>admission and bounded stream collection"]
                 P["Pure TypeScript parser<br/>compiled JavaScript function"]
                 A -->|"Complete bytes, at most 20 MiB"| P
             end

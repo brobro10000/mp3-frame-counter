@@ -1,7 +1,7 @@
 # MP3 frame counter
 
 Count complete physical MPEG-1 Layer III frames from a browser. The application sends raw bytes to `POST /file-upload`
-and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX frontend and native Node HTTP API run in
+and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX frontend and Fastify API on Node run in
 separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
 not decode audio or use a runtime parsing library.
 
@@ -17,6 +17,12 @@ limits and the boundary for the next iteration.
 [versioned roadmap](docs/roadmap/README.md) and [next three PR cards](docs/phases/next-iteration.md) preserve this
 assessment snapshot and plan the prerequisites for Fastify, API documentation and a conditional hosted release. The
 roadmap is documentation, not deployed functionality; `v1.0.0` is reserved for verified production.
+
+**Transport migration, 2026-10-10:** this working revision introduces Fastify under the independently bound
+[transport-v1 contract](docs/testing/contracts/transport-v1.md). The
+[migration evidence](docs/validation/fastify-transport.md) records 67 passing local image-bound cases and separates them
+from pending CI, companion review and publication. Main's verified preceding release is v0.2.18; docs rendering and
+application hosting remain later work.
 
 ## Local application
 
@@ -68,11 +74,13 @@ application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm
 install scripts disabled. Browser files and rendered SVGs are ignored and do not enter application runtime images. See
 [Mermaid validation](docs/validation/mermaid.md) for setup, results and the separate GitHub diagram-sync boundary.
 
-Acceptance source is independently authored and frozen by [baseline identity](docs/testing/baseline.json). Product
-implementers may read it but cannot change expected outcomes to pass. The CI controller extracts the recorded Git tree
-outside the application checkout. The independent author bound the unchanged suite to P2’s actual protected-main commit
-`a0a56d9` after PR #4 merged. Shipping CI verifies that ancestry and every frozen byte. Zero tests, skipped cases and
-failed checks fail closed.
+Acceptance source is independently authored. The immutable [r3 genesis](docs/testing/baseline.json) records P2's actual
+protected-main commit `a0a56d9`; its original evidence remains preserved. The
+[transition policy](docs/testing/acceptance-transition.md) binds separately reviewed successor suites to actual merged
+Git objects. This product change requires the bound transport-v1 suite, including the original 60 cases and seven new
+transport cases. Product implementers cannot change expected outcomes or select an older suite to pass. The CI
+controller extracts the required Git tree outside the application checkout and verifies ancestry and every frozen byte.
+Zero tests, skipped cases and failed checks fail closed.
 
 For a small local upload with an independently known count:
 

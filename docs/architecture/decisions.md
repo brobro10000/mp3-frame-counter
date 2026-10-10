@@ -1,5 +1,20 @@
 # Decisions, proposals and blockers
 
+## DEC-15 — Fastify transport implementation amendment, 2026-10-10
+
+The [roadmap execution authorization](../phases/roadmap-execution-authorization.md) permits the bounded Fastify
+migration following actual transport binding and RUNTIME-POLICY publication. This revision introduces exact Fastify
+5.12.5 with ordered admission, a custom bounded stream parser and the unchanged physical-frame parser inside the same
+API container. A narrow raw refusal bridge preserves pathname/method/Expect precedence; successful uploads execute
+through Fastify. The upload contract, resource limits, frontend, proxy and two-image topology remain unchanged. The
+independent bound transport-v1 suite is required by this product change and descendants; its expectations cannot be
+relaxed here.
+
+Read the [migration evidence](../validation/fastify-transport.md) for observed checks and remaining review/publication
+work. This is implementation authority and source behavior, not a deployment or graceful-drain proof. Packaging adds
+only the locked production graph; docs/Redoc and hosted delivery remain separate cards. Preserve DEC-05/DEC-14 and the
+generated system specification as historical contracts; this dated amendment records the adopted architecture change.
+
 ## DEC-14 — Versioned roadmap planning amendment, 2026-10-10
 
 The owner adopted the [versioned roadmap](../roadmap/README.md) for PLAN-01 documentation. PR #7 merged at `92807357`

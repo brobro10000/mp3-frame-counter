@@ -5,12 +5,15 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **TRANSPORT-BIND merged; v0.2.16 publication verified**. The
-[transport evidence](../validation/transport-binding.md#protected-main-binding-publication) records PR #14–16, their
-actual reviewed source identities, required r3 results, separate 67-case candidate diagnostic and actual binding.
-transport-v1 is the single pending successor. r3 remains required for governance-only RUNTIME-POLICY; the next product
-change activates transport-v1 persistently. The next cards are **RUNTIME-POLICY, FASTIFY and DOCS-CONTRACT**.
-Independent runtime-policy expectations are being established before its helper implementation.
+Status: **RUNTIME-POLICY and its fixture correction merged; v0.2.18 publication verified**. The
+[runtime-policy evidence](../validation/runtime-dependency-policy.md#protected-main-completion) records actual
+independent expectations, companion approval, merge, main CI and publication. The published application still uses the
+native transport; the narrow policy permits a later exact Fastify declaration. r3 remains required on main with
+transport-v1 pending. The next product change must pass that bound successor. The next cards are **FASTIFY, DOCS-HARNESS
+and DOCS-CONTRACT**; internal startup/ownership expectations precede transport implementation. The
+[fixture completion](../validation/runtime-policy-fixture.md#protected-main-completion) records PR #18's subsequent
+governance-only release. Fastify's [local evidence](../validation/fastify-transport.md) does not establish its
+publication.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -88,6 +91,20 @@ application has activated and passed transport-v1 on protected main.
 Later prerequisites remain provisional: selected documentation-tool permission before adding renderer dependencies;
 closed IaC path classes before cloud configuration changes; and a reviewed delivery-policy extension before automatic
 stage jobs or human-triggered production operations. They do not expand the current runtime-policy scope.
+
+### Runtime policy and browser prerequisite amendment — 2026-10-10
+
+RUNTIME-POLICY merged as `3e1851eaddb558f6c38eedc88334605212a7a153`; main run `38050747378` published v0.2.17. The
+[completion record](../validation/runtime-dependency-policy.md#protected-main-completion) preserves corrected
+independent test-first evidence, exact-head automated approval and unchanged r3/pending transport selection. The earlier
+runtime-policy prerequisite is complete. No framework installation or transport migration is established by that
+release.
+
+Read-only controller inspection identified DOCS-HARNESS before docs candidate authoring: candidate/pending and required
+`npm run check` commands precede the current E2E browser installation. The separate Mermaid job uses another browser.
+The selected default is a bounded governance prerequisite that prepares the extracted suite's pinned browser and proves
+basic launch on fresh Linux CI before both check branches. This capability is proposed, not executed. It does not prove
+Redoc rendering, CSP feasibility or the sensitivity of future browser predicates; those remain DOCS-01/DOCS-CONTRACT.
 
 ## Original planning assessment and evidence boundary
 
@@ -263,7 +280,8 @@ Mandatory edges:
 3. VER-01 → separate line activation → first actual v0.2.x publication → TR-LIFECYCLE capability and operational
    disposition → independent transport authoring. No graceful-drain pass is inferred from forced stop.
 4. Actual transport binding → separate RUNTIME-POLICY governance migration → Fastify product migration.
-5. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
+5. Verified Fastify transport activation → DOCS-HARNESS browser preparation → DOCS-CONTRACT and independent browser
+   acceptance → actual docs binding → Redoc serving/CSP activation.
 6. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
 7. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
 8. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
@@ -473,10 +491,10 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances RUNTIME-POLICY, Fastify implementation and independent
-docs/CSP candidate authoring. The transport binding is complete. GATE-01 and VER-01 publication/retries are verified;
-each later successor still requires independent authoring, actual merge binding and corresponding implementation
-evidence.
+[active three-card window](../phases/next-iteration.md) advances Fastify implementation, the DOCS-HARNESS browser
+prerequisite and independent docs/CSP candidate authoring. The transport binding and runtime policy are complete.
+GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual
+merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

@@ -7,9 +7,10 @@ The independent transport-v1 candidate merged in PR #15 and was bound by PR #16 
 candidate-review observations and the intended required/pending selection; see the
 [binding completion evidence](../validation/transport-binding.md#protected-main-binding-publication). The
 [registry](acceptance-transitions.json) contains one immutable pending binding. **r3 remains required** until the next
-product-affecting implementation activates transport-v1. The intervening RUNTIME-POLICY card is governance-only; it
-cannot install Fastify, change suite bytes or activate the successor. The [genesis record](baseline.json) remains
-unchanged. Earlier gate
+product-affecting implementation activates transport-v1. Governance-only RUNTIME-POLICY merged in PR #17 and published
+v0.2.17 without installing Fastify, changing suite bytes or activating the successor; see its
+[completion evidence](../validation/runtime-dependency-policy.md#protected-main-completion). Fastify is now the next
+product card and must pass the bound successor. The [genesis record](baseline.json) remains unchanged. Earlier gate
 [publication/retry evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) retains its
 original scope.
 
