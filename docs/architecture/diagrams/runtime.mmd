@@ -11,7 +11,8 @@ query: >-
   loopback binding for direct API diagnostics. Show source-defined runtime
   users, read-only filesystems, temporary mounts and bounded in-process parsing.
   Do not imply a third parser/test container, Node frontend runtime or cloud
-  deployment.
+  deployment. Keep fixed API lifecycle readback and SIGTERM inside the host
+  controller; command acknowledgment does not prove graceful drain.
 references:
   - 'File: /compose.yaml'
   - 'File: /frontend/Dockerfile'
@@ -20,6 +21,7 @@ references:
   - 'File: /server/src/http.ts'
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
+  - 'File: /scripts/e2e-controller.mjs'
 generationTime: '2026-10-10T10:13:57.088Z'
 ---
 flowchart LR
@@ -43,18 +45,10 @@ flowchart LR
     T["Host process: Playwright and Chromium<br/>frozen suite in a temporary directory"] -->|"BASE_URL: browser and HTTP<br/>isolated test host port"| F
     T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| A
     O["Reviewed fixture manifest and expectations"] --> T
-    C["Host or CI controller<br/>owns Docker operations"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
+    C["Host or CI controller<br/>owns Docker operations<br/>fixed API state and SIGTERM<br/>acknowledgment is not drain proof"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
     C -.->|"Runs suite against exact image pair"| T
     T -.->|"Authenticated fault requests"| C
-    subgraph LIFECYCLE["API Lifecycle Management"]
-        L1["createApiLifecycle"]
-        L2["lifecycle.state()"]
-        L3["lifecycle.signalTerm()"]
-    end
-    L1 --> L2
-    L1 --> L3
     style DOCKER fill:#f1f5f9,stroke:#334155,stroke-width:2px
     style FRONT fill:#e0f2fe,stroke:#0369a1,stroke-width:2px
     style BACK fill:#dcfce7,stroke:#15803d,stroke-width:2px
     style NODE fill:#f0fdf4,stroke:#15803d,stroke-dasharray:5 5
-    style LIFECYCLE fill:#fef3c7,stroke:#d97706,stroke-width:2px

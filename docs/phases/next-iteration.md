@@ -58,7 +58,8 @@ these script paths as governance; do not change classification or mix this work 
 
 Own only `scripts/e2e-controller.mjs`, `scripts/run-e2e.mjs`, independent additions to
 `scripts/e2e-controller.test.mjs`, narrow `docs/testing/lifecycle-controller.md`, the diagnostic validation record and
-necessary current phase links. Retain existing tests. Root owns integration and broad checks.
+necessary current phase links. Reconcile a diagram-sync change only in the existing source-linked runtime diagram,
+keeping lifecycle operations inside the host controller. Retain existing tests. Root owns integration and broad checks.
 
 Product/parser/UI, `tests/acceptance/**`, genesis/transition registry, gate logic, release tooling, dependencies,
 workflows and Compose/Docker configuration are read-only. Preserve existing invocation, report/provenance semantics,
