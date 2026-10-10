@@ -5,12 +5,15 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **RUNTIME-POLICY merged; v0.2.17 publication verified**. The
+Status: **RUNTIME-POLICY and its fixture correction merged; v0.2.18 publication verified**. The
 [runtime-policy evidence](../validation/runtime-dependency-policy.md#protected-main-completion) records actual
 independent expectations, companion approval, merge, main CI and publication. The published application still uses the
 native transport; the narrow policy permits a later exact Fastify declaration. r3 remains required on main with
 transport-v1 pending. The next product change must pass that bound successor. The next cards are **FASTIFY, DOCS-HARNESS
-and DOCS-CONTRACT**; internal startup/ownership expectations precede transport implementation.
+and DOCS-CONTRACT**; internal startup/ownership expectations precede transport implementation. The
+[fixture completion](../validation/runtime-policy-fixture.md#protected-main-completion) records PR #18's subsequent
+governance-only release. Fastify's [local evidence](../validation/fastify-transport.md) does not establish its
+publication.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and

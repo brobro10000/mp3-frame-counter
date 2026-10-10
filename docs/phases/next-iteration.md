@@ -4,7 +4,9 @@
 run `38050747378` published **v0.2.17** with unchanged r3 acceptance and transport-v1 still bound and pending. The
 [runtime-policy completion](../validation/runtime-dependency-policy.md#protected-main-completion) records actual review,
 approval, merge, main checks and publication. The dependency policy permits the planned exact Fastify pin; Fastify is
-not installed in the published application.
+not installed in the published application. The separate fixture correction in PR #18 subsequently merged as
+`17b389e71fadb869150982e4b459e52b37d664b2`; main run `38052804356` published v0.2.18 under the same required/pending
+selection. See the [fixture completion record](../validation/runtime-policy-fixture.md#protected-main-completion).
 
 The three active cards are **FASTIFY → DOCS-HARNESS → DOCS-CONTRACT**. Internal Fastify startup/ownership expectations
 were committed before transport implementation; see the [migration record](../validation/fastify-transport.md). A

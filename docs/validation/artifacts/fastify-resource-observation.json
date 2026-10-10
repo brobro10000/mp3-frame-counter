@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "kind": "supplemental-resource-observation",
+  "acceptance": false,
+  "sourceCommit": "b0c707c0020fc8d13eb71a4366e14733c90fc0ba",
+  "suiteCommit": "6c28382d71a014351311e63154ef1c8916b8a229",
+  "imageId": "sha256:903dd4b19b97b0941ab9c951848863bc2adf08567f96ec0f8e5d7f36cf5f338f",
+  "fixture": {
+    "id": "one-frame",
+    "bytes": 384,
+    "sha256": "a0c133863e989efb35706adc8b03b075216340ad28bea7ac5869f222667dccfc",
+    "frameCount": 1,
+    "constructorSha256": "d984f0ff90b07ffd6b3686c6e49ea080074487b6419bdf3f03cb655e475f6794"
+  },
+  "workload": {
+    "simultaneousUploads": 2,
+    "bytesPerUpload": 20971392,
+    "expectedFrames": 54613
+  },
+  "status": "passed",
+  "cleanup": {
+    "clientsClosed": true,
+    "containerRemoved": true,
+    "networkRemoved": true,
+    "fixtureDirectoryRemoved": true
+  },
+  "errors": [],
+  "limitations": [
+    "Observed cgroup peak includes the API and short cat measurement processes; it is not an API-only RSS measurement.",
+    "Container healthchecks are disabled; readiness HTTP requests run from the host, with no in-container health workload.",
+    "A dedicated bridge allows loopback publication; outbound routing is available, but this probe makes no external requests.",
+    "Two near-limit valid uploads are one bounded observation, not throughput, sustained stress or universal headroom proof.",
+    "This supplemental result cannot replace required acceptance, source review or hosted resource measurements."
+  ],
+  "runtime": {
+    "user": "1000:1000",
+    "memoryBytes": 268435456,
+    "memorySwapBytes": 536870912,
+    "nanoCpus": 1000000000,
+    "pids": 64,
+    "readOnly": true,
+    "tmpfs": {
+      "/tmp": "size=8m,mode=1777"
+    },
+    "capDrop": ["ALL"],
+    "securityOpt": ["no-new-privileges:true"],
+    "internalNetwork": false,
+    "healthcheckDisabled": true,
+    "hostBinding": "127.0.0.1:ephemeral"
+  },
+  "before": {
+    "currentBytes": 69390336,
+    "peakBytes": 69390336,
+    "swapCurrentBytes": 0
+  },
+  "held": {
+    "currentBytes": 120852480,
+    "peakBytes": 127467520,
+    "swapCurrentBytes": 0
+  },
+  "completedUploads": 2,
+  "busyRefusal": {
+    "status": 503,
+    "continueCount": 0
+  },
+  "after": {
+    "currentBytes": 120889344,
+    "peakBytes": 127467520,
+    "swapCurrentBytes": 0
+  },
+  "observedHeadroomBytes": 140967936,
+  "workCompleted": true,
+  "exitState": {
+    "running": false,
+    "exitCode": 0,
+    "oomKilled": false,
+    "hasError": false
+  },
+  "elapsedMs": 2124
+}

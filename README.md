@@ -20,9 +20,9 @@ roadmap is documentation, not deployed functionality; `v1.0.0` is reserved for v
 
 **Transport migration, 2026-10-10:** this working revision introduces Fastify under the independently bound
 [transport-v1 contract](docs/testing/contracts/transport-v1.md). The
-[migration evidence](docs/validation/fastify-transport.md) distinguishes local implementation from required image
-acceptance, review and publication. Main's verified preceding release is v0.2.17; docs rendering and application hosting
-remain later work.
+[migration evidence](docs/validation/fastify-transport.md) records 67 passing local image-bound cases and separates them
+from pending CI, companion review and publication. Main's verified preceding release is v0.2.18; docs rendering and
+application hosting remain later work.
 
 ## Local application
 
