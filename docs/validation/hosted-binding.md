@@ -160,3 +160,12 @@ This document condenses retained audits, without rerunning their commands during
 `5edc3d8aed392b72078570fd54717e03a15f4cc43f13af0cf03a24980dcde38a`. Their raw local captures are not added as release
 assets or signed attestations. Root owns subsequent publication evidence and completion amendments; this draft does not
 mark HOSTED-BIND complete.
+
+## Local binding check
+
+Pinned Node 24.20.0 resolved proposal commit `159fba46d93796134d0010c460303e041f86ce15` against actual candidate main,
+using the retained authenticated review observation. It returned binding admission, docs-v1 required, hosted-v1 pending
+and no candidate. The prior registry entries are unchanged, and the suite, baseline and contracts have no diff.
+Formatting, policy, portability and `git diff --check` passed. This local replay supplies no GitHub Actions authority;
+normal mandatory PR checks must validate the final proposal independently. No local application test was repeated for
+this registry/documentation-only change.
