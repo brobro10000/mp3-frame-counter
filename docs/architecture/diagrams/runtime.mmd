@@ -17,7 +17,7 @@ references:
 flowchart LR
     B["Browser"]
     subgraph LOCAL["Local Compose: two non-root application containers"]
-        F["Frontend: static HTML and NGINX :8080"]
+        F["Frontend: static HTML and NGINX (listener pending sync)"]
         A["API: node:http :3000, bounded upload buffer"]
         P["Pure in-process TypeScript frame counter"]
         F -->|"Raw POST /file-upload"| A
