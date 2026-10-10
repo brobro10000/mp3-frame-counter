@@ -360,13 +360,22 @@ export async function faultServer(token, action) {
   };
 }
 
-/** Run without a shell; timeout/cancellation terminates the complete spawned process group on macOS/Linux. */
-export async function command(executable, args, { cwd, env = process.env, timeoutMs = 30_000, signal, onOutput } = {}) {
+/**
+ * Run without a shell; timeout/cancellation terminates the complete spawned process group on macOS/Linux.
+ * Output is trimmed by default. Private lifecycle callers preserve stdout to validate its original UTF-8 byte bounds.
+ */
+export async function command(
+  executable,
+  args,
+  { cwd, env = process.env, timeoutMs = 30_000, signal, onOutput, preserveStdout = false } = {},
+) {
   assert(timeoutMs > 0 && Number.isFinite(timeoutMs), "A positive command deadline is required");
+  assert.equal(typeof preserveStdout, "boolean", "preserveStdout must be a boolean");
   if (signal?.aborted) throw new Error("E2E lifecycle interrupted");
   return await new Promise((resolve, reject) => {
     const child = spawn(executable, args, { cwd, env, detached: true, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
+    const stdoutChunks = [];
     let outputBytes = 0;
     let failure;
     let escalation;
@@ -397,7 +406,10 @@ export async function command(executable, args, { cwd, env = process.env, timeou
           return;
         }
         const value = chunk.toString();
-        if (stream === child.stdout) stdout += value;
+        if (stream === child.stdout) {
+          if (preserveStdout) stdoutChunks.push(chunk);
+          else stdout += value;
+        }
         onOutput?.(value);
       });
     child.once("error", (error) => {
@@ -417,7 +429,7 @@ export async function command(executable, args, { cwd, env = process.env, timeou
       signal?.removeEventListener("abort", abort);
       if (failure) reject(failure);
       else if (code !== 0) reject(new Error(`${executable} failed with exit ${code}`));
-      else resolve(stdout.trim());
+      else resolve(preserveStdout ? Buffer.concat(stdoutChunks).toString("utf8") : stdout.trim());
     });
   });
 }

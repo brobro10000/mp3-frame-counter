@@ -64,3 +64,24 @@ A separate ignored diagnostic defines independent drain and straggler predicates
 passed**, including rejection of no-op acknowledgment, premature held-response loss, absent deadline, exit 137, stale
 generation and cleanup substituted for exit evidence. These fixture decisions neither execute Docker nor prove product
 behavior. Actual adapter checks and exact-image observations must be recorded separately below.
+
+## Integration review corrections — 2026-10-10
+
+At `4f65a25d94a2d7d4db5a63bdbe255f6eb08929fd`, local `npm run validate` passed formatting, workflow, policy,
+portability, 19 Mermaid renders, 20 terminal-gate cases and 395 tooling cases. `npm run check:phase` passed the
+standalone harness, 75 unit cases, build and all 60 frozen external cases with cleanup. Those results did not reveal an
+integration gap found by independent source review: `command()` trimmed stdout before the new adapter measured raw
+Docker-output byte limits.
+
+The independent author added three command-to-adapter regression groups. The actual red run reported **36 cases: 34
+passed and two failed**; its retained log SHA-256 is `dd03dcfff49b82993174475e8e79aba1998fb506db4731cec7df724b95c0109b`.
+Expectations were committed at `1d10dab` before correction. The revised contract adds private `preserveStdout: true`
+behavior for lifecycle calls while preserving existing callers' trimming. Final validation after that correction is
+recorded separately.
+
+Independent diagnostic review also found that an HTTP 200 for an unsent held body could be mislabeled as an unavailable
+stopping boundary. The shared diagnostic classifier now keeps that demonstrated partial-success case failed. Its
+expanded **14/14 synthetic decisions passed**, including both the failure case and a genuinely unresolved boundary with
+normal exit. Diagnostic SHA-256 is `53ede3d03ec8eee0f12fedc9ae32e2a51a476774a441dd856d0838a938070bc1`; control log
+SHA-256 is `77cdc146de4ee079aa37c52de61238d6e2539e40e48705333bff7779458c344c`. These are retained local operator
+artifacts, not portable CI acceptance or evidence of a successful real shutdown.

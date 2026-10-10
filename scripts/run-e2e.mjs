@@ -265,7 +265,7 @@ try {
         project,
         containerId: apiId,
         imageId: report.images.api,
-        runDocker: (args) => run("docker", args, { timeoutMs: 5000 }),
+        runDocker: (args) => run("docker", args, { timeoutMs: 5000, preserveStdout: true }),
       });
       fault = await faultServer(token, async (action) => {
         try {
