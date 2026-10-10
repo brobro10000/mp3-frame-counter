@@ -58,7 +58,9 @@ resource "google_billing_budget" "application_total" {
   billing_account = var.billing_account_id
   display_name    = "mp3-application-monthly-100-alert"
   deletion_policy = "PREVENT"
-  ownership_scope = "ALL_USERS"
+
+  # The API omits its default ownership scope on readback; unspecified has the same meaning as ALL_USERS.
+  # Leave it unset so provider 8.6.0 does not propose a perpetual no-op ownership update after refresh.
 
   budget_filter {
     projects               = ["projects/${google_project.application.number}"]
