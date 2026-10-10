@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MP3 frame counter transport compatibility contract",
+    "version": "transport-v1",
+    "description": "Local specification fixture for independent review. Documentation serving, Redoc and CSP are outside this successor."
+  },
+  "paths": {
+    "/file-upload": {
+      "post": {
+        "operationId": "countFrames",
+        "description": "Raw binary file, never multipart or JSON. Media type comparison is case-insensitive and parameters are tolerated. Content-Encoding is absent or a single case-insensitive identity token. Enforce the inclusive 20971520-byte limit against actual bytes even without Content-Length. A trustworthy larger Content-Length may reject before admission. Path then method then media/encoding precede body collection, empty validation and parser. Count complete physical frames including complete Xing/Info/VBRI-bearing frames; never trust metadata frame totals. The preserved r3 supported MPEG/tag subset applies. Unknown paths return 404; HEAD has 405 headers and no body. Invalid wire framing may be rejected before API JSON handling.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "audio/mpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "417": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]*$"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Exact independently verified physical MPEG-1 Layer III frame count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrameCount"
+                }
+              }
+            }
+          }
+        },
+        "x-max-body-bytes": 20971520,
+        "x-active-upload-limit": 2
+      },
+      "get": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "Unsupported method. HEAD returns JSON Content-Type and Allow headers, with no response body.",
+        "responses": {
+          "405": {
+            "description": "HEAD is unsupported and has no response body.",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["application/json", "application/json; charset=utf-8"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "serviceHealth",
+        "description": "Service-local liveness only; no dependency or release identity claim.",
+        "responses": {
+          "200": {
+            "description": "Healthy service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "Unsupported method. HEAD returns JSON Content-Type and Allow headers, with no response body.",
+        "responses": {
+          "405": {
+            "description": "HEAD is unsupported and has no response body.",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["GET"]
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["application/json", "application/json; charset=utf-8"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["GET"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FrameCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frameCount"],
+        "properties": {
+          "frameCount": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"]
+          }
+        }
+      }
+    }
+  },
+  "x-controlled-proxy-responses": {
+    "502": {
+      "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    },
+    "504": {
+      "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    }
+  },
+  "x-transport-requirements": {
+    "idleBodyMilliseconds": 10000,
+    "totalBodyMilliseconds": 30000,
+    "shutdownIntentMilliseconds": 5000,
+    "description": "Expect 100-continue is sent only after route/header validation and slot admission. Busy uploads receive readable 503 plus Retry-After before any body; unsupported expectations receive 417. Deadlines receive readable 408 and release capacity. Allocation, retention, exact configuration and graceful drain require independent source/resource/operational review. OpenAPI cannot prove timing, byte enforcement, connection cleanup or memory bounds."
+  }
+}
