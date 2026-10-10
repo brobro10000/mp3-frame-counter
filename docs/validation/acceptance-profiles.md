@@ -176,5 +176,5 @@ Docker companion run `20261010T201558-9c5b0eb5` reviewed every changed file and 
 required concise internal documentation for `caseReference`, `inventory` and `mappings`. It established no correctness
 or design defect and no unresolved human decision. Report SHA-256 is
 `675a4beb04b44cd25297a08c4f55c832fa4cdc0d4ec358f09f0a6d5a3289e1a4`. Root read the complete report and matching receipt;
-no approval was published. The correction adds only behavioral comments to those functions, preserving executable
-tokens and all tests. Fresh exact-head CI and companion review remain mandatory before merge.
+no approval was published. The correction adds only behavioral comments to those functions, preserving executable tokens
+and all tests. Fresh exact-head CI and companion review remain mandatory before merge.
