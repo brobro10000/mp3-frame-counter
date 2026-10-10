@@ -9,12 +9,12 @@ established.
 
 ## Dedicated project and cost-control prerequisite
 
-Use the [bounded bootstrap](../../infra/cloud/bootstrap/README.md) and
-[COST-BOOTSTRAP card](../phases/next-iteration.md#pr-card-1--cost-bootstrap-codify-the-dedicated-project-and-monthly-controls)
-before billable application resources. Its source creates one dedicated project, required APIs and a USD 100 monthly
-all-service alert budget, then a separately owned USD 75 monthly Cloud Run spend cap shared by stage/production. Project
-creation must precede its scoped budget. Initial Terraform state remains ignored and private on the operator machine
-until a reviewed backend migration after live cost-control verification.
+Use the [bounded bootstrap](../../infra/cloud/bootstrap/README.md) and its
+[completed COST-BOOTSTRAP evidence](../validation/cloud-cost-bootstrap.md) before billable application resources. Its
+source creates one dedicated project, required APIs and a USD 100 monthly all-service alert budget, then a separately
+owned USD 75 monthly Cloud Run spend cap shared by stage/production. Project creation must precede its scoped budget.
+Initial Terraform state remains ignored and private on the operator machine until a reviewed backend migration after
+live cost-control verification.
 
 The initial reviewed apply created seven Terraform resources. The separate cap was created once and verified again using
 its recorded identity: USD 75, one project, Cloud Run only, `CONFIGURED` and no pending reconciliation. The USD 100
@@ -41,8 +41,10 @@ pair-switch procedure. Ordinary v0.x artifact publication continues without depl
 finalization workflow are implemented by this documentation amendment.
 
 The cost-bootstrap foundation checks use pinned Terraform formatting, backend-disabled lockfile-read-only provider
-initialization and validation without credentials, plan or apply. Their integrated CI result is pending. Hosted delivery
-workflows, registry handoff, stage acceptance and production approval/promotion remain later work.
+initialization and validation without credentials, plan or apply. These checks passed in
+[PR #9's main run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38033869422); see the
+[dated validation record](../validation/cloud-cost-bootstrap.md). Hosted delivery workflows, registry handoff, stage
+acceptance and production approval/promotion remain later work.
 
 ## Historical Render procedure and release-only baseline
 

@@ -81,3 +81,17 @@ the base above. Its companion
 exact head `3b1bf0b7a49b7eb6b543d71dcda355318b1efaff`; owner `brobro10000` merged without bypass. This predecessor
 release is observed metadata; its archive bytes were not downloaded or rehashed here. GATE-01 publication remains
 pending.
+
+## First companion review and documentation correction — 2026-10-10
+
+[PR #11 CI run 38036374535](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38036374535) passed for head
+`de938711baf7afd0588d793f108f10ea117e74b4`, including both trusted bootstrap steps. Companion run
+`20261010T080456-e4b70f4a` reviewed all 39 changed paths and returned `request_changes`: the roadmap retained an undated
+claim that bootstrap declarations were unapplied, and the runbook linked to the retired COST-BOOTSTRAP card. No blocking
+runtime defect was identified; that is a review result, not a guarantee of correctness.
+
+The correction links the completed bootstrap observations consistently, preserves mandatory live cap rechecks and
+replaces the runbook's stale CI-pending wording with its dated successful run. It adds no fourth active card. The
+original report and receipt remain in the companion's durable records; no approval was published for that head.
+Formatting and changed-link checks passed locally. Fresh CI and exact-head companion review remain required for this
+documentation correction, followed by actual main publication and publisher-only retry verification.

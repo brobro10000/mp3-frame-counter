@@ -178,8 +178,9 @@ automatically. Use no keep-alive traffic and retain live/prior-good/candidate ar
 COST-BOOTSTRAP implements that prerequisite in [bounded IaC](../../infra/cloud/bootstrap/README.md), separately from the
 application and acceptance migration. Terraform owns the dedicated project, APIs and USD 100 alert budget; the fixed USD
 75 cap uses a narrowly scoped REST reconciler while pinned provider 8.6.0 lacks native cap support. Initial state stays
-private/local until a reviewed backend migration. These declarations have not been applied; verify the actual cap
-identity, scope, amount and readiness before adding billable application resources.
+private/local until a reviewed backend migration. The reviewed apply and exact-identity cap readback are recorded in
+[bootstrap validation](../validation/cloud-cost-bootstrap.md). Repeat the actual cap identity, scope, amount and
+readiness check before adding billable application resources; the prior observation is not a standing readiness claim.
 
 Retain the [historical paid Render proposal](../architecture/deployment.md) as an alternative. Vercel Functions'
 documented 4.5 MB limit fails the unchanged upload path. A future Vercel frontend needs separately verified routing to
