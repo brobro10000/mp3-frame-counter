@@ -1,5 +1,9 @@
 # Managed deployment evaluation
 
+**Deferred by the later [release-only amendment](../requirements/release-process.md).** This research applies when
+deployment resumes. GitHub releases currently require neither a provider nor stage/production rollout. Observations
+below retain their original research-time scope; see [later preflight evidence](../validation/deployment-preflight.md).
+
 Status: **documented research and conditional proposal**, retrieved **2026-10-09**. No provider selection is approved,
 no new service exists and no hosted upload was tested. Scope is three concrete paths only. The recommendation is to
 advance **Render: one frontend web service plus one private API service per environment**, subject to the fit/access/

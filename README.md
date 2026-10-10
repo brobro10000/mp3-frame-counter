@@ -7,8 +7,8 @@ not decode audio or use a runtime parsing library.
 
 The [five-phase implementation](docs/phases/README.md) is authorized. The integrated local application passed all **60
 independent acceptance cases** and **75 parser/API unit tests**. See the
-[tested revision and evidence](docs/validation/p4-integration.md). Managed deployment is **not complete**; acceptance
-publication on protected main, provider setup and release verification remain outstanding. The
+[tested revision and evidence](docs/validation/p4-integration.md). The current goal is **releases without deployment**;
+acceptance publication on protected main and the first automatic GitHub release remain outstanding. The
 [execution status](docs/validation/execution-status.md) records each boundary and the remaining actions.
 
 ## Local application
@@ -91,15 +91,18 @@ missing, skipped, cancelled or failed mandatory dependencies; an earlier phase s
 `npm run verify:github` audits live repository controls and exact revision checks read-only. Main success also retains a
 source archive for seven days; this archive is not a deployed service.
 
-[APP-REL-001–006](docs/requirements/release-process.md) require actual candidate acceptance, exact artifact promotion,
-production smoke, automatic release/version records and observed recovery. The conditional Render path and unresolved
-fit/access gates are recorded in [provider evaluation](docs/architecture/deployment.md) and the
-[release runbook](docs/deployment/runbook.md). Deployment is not complete until those observations exist.
+[APP-REL-001–006](docs/requirements/release-process.md) now separate repository releases from deferred deployment. After
+an application-bearing push to protected `main` passes all mandatory checks, CI publishes a versioned private GitHub
+release containing the exact tested frontend/API image archives, checksums and provenance. The release explicitly
+records that nothing was deployed. See the [release-only process](docs/deployment/release-only.md) for gates and
+retries. Provider setup, stage/production rollout, hosted smoke and recovery remain future work under the
+[deployment runbook](docs/deployment/runbook.md).
 
 After a complete clean-source acceptance run, `make prepare-release` verifies and archives the **exact tested local
 images** into ignored `.artifacts/releases/`, with checksums, a provisional version, manifest and notes. It requires a
 clean committed checkout, full Git history and the retained images; it does not rebuild, publish or deploy. See
-[release preparation](docs/deployment/preparation.md) for inputs, retry behavior and the remaining remote gates.
+[release preparation](docs/deployment/preparation.md) for inputs and retry behavior. CI publication adds stricter
+protected-main and successful-run checks to that local preparation boundary.
 
 The [owner-only review exception](docs/repository-controls.md) preserves core PR, CI and conversation protections.
 GitHub does not allow authors to approve their own PRs. An agent needs explicit instruction to merge or invoke the owner

@@ -2,7 +2,8 @@
 
 ## Verified intent
 
-Implement and verify the MP3 browser application and automated managed release in five ordered phases.
+Implement and verify the MP3 browser application and automated GitHub releases in five ordered phases.
+The later owner amendment defers deployment; read docs/requirements/release-process.md.
 
 ## Primary users
 
@@ -11,13 +12,13 @@ Implement and verify the MP3 browser application and automated managed release i
 ## Desired outcomes
 
 - Accurate physical MPEG-1 Layer III frame counts and useful accessible errors.
-- Independent acceptance, reproducible local containers and verified automated managed delivery.
+- Independent acceptance, reproducible local containers and releases of exact tested images without deployment.
 
 ## Constraints
 
 - Owner authorized execution of P1 through P5 and required shell/UI actions on 2026-10-09; read docs/phases/execution-authorization.md.
 - Read docs/requirements/README.md, docs/mvp.md, docs/architecture/decisions.md and docs/phases/README.md before work.
-- Read docs/validation/execution-status.md for observed outcomes; local P4 pass does not establish managed release.
+- Read docs/validation/execution-status.md for observed outcomes; local P4 pass does not establish GitHub publication or deployment.
 - The planning baseline is merged at 0c9f538; preserve original foundation and source/archive bytes.
 - Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
 - Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
@@ -26,9 +27,10 @@ Implement and verify the MP3 browser application and automated managed release i
 - Use separate non-root NGINX frontend and Node API images, one browser origin and configurable private upstream.
 - No retained uploads, runtime parser library, database, object storage, accounts, frameworks or speculative infrastructure.
 - Use one root application npm lockfile and one standalone acceptance lockfile; no workspaces.
-- Keep APP-REL-001 through APP-REL-006 required for first MVP; automated deployment and recovery require actual evidence.
+- Apply the active release-only criteria in APP-REL-001 through APP-REL-006; hosted criteria are deferred.
 - Local release preparation archives exact tested images only; never treat its provisional version or manifest as deployed.
-- Verify account, provider fit, charges, artifacts and production checks before declaring the release complete.
+- Verify protected-main CI, exact artifacts and GitHub publication before declaring a repository release complete.
+- Provider fit, charges, production approval and hosted checks apply only when deployment is explicitly resumed.
 - Preserve core no-bypass GitHub controls and owner-only review exception; no fabricated approvals or silent control changes.
 - Do not merge, exercise an owner review override or enable auto-merge without explicit instruction; production approval binds the tested release identity.
 - Keep tracked paths portable; never commit secrets, personal system details, MP3 inputs, caches or private plugin implementation.
@@ -39,7 +41,8 @@ Implement and verify the MP3 browser application and automated managed release i
 
 ## Authority and workflow
 
-- Treat `agents/specs/mvp.md` as the authority for product scope and acceptance behavior.
+- Treat `agents/specs/mvp.md` as the baseline for product scope and acceptance behavior. The later owner amendment in
+  `docs/requirements/release-process.md` supersedes its deployment-before-release criteria for this milestone.
 - Treat `agents/specs/system.md` as the authority for system boundaries, immutable architecture decisions,
   invariants, failure behavior, and validation. Treat `agents/architecture/` as generated views; never edit those
   views or substitute an active technology decision during phase work.

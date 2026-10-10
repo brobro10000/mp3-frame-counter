@@ -45,3 +45,15 @@ external cases and 75 unit cases passed. Local P5 preparation is assigned to the
 (`scripts/release-manifest.mjs`, `scripts/prepare-release.mjs`, their focused tests and preparation evidence); root owns
 command wiring and central status. A separate reviewer checks release identity and failure handling before execution.
 Provider actions, successful release publication and recovery remain distinct unexecuted work.
+
+## Later amendment: releases without deployment
+
+On 2026-10-09 the owner deferred deployment and requested releases without deploying; the exact instruction is retained
+as [SRC-RELEASE-ONLY](../requirements/sources/release-only-request.txt). This narrows the active P5 completion boundary
+to protected-main validation and GitHub publication of the exact tested artifacts. It does not authorize merges, review
+overrides, auto-merge, provider actions or a manual release from a feature branch.
+
+The independent foundation/gate author owns the main-only publisher, workflow and focused tests. Root owns command
+wiring, requirements/status integration and the PR handoff. A separate reviewer examines release identity, least
+privilege and retry behavior. Frozen acceptance expectations remain unchanged. Deployment criteria and prior
+observations remain recorded as deferred work, without claiming their completion.

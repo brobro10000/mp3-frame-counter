@@ -1,5 +1,9 @@
 # Release and recovery runbook
 
+**Future deployment procedure:** the later [release-only amendment](../requirements/release-process.md) defers these
+provider, candidate and production actions. Use the [release-only process](release-only.md) for current GitHub releases.
+Publishing a repository release does not execute this runbook or establish hosted verification.
+
 Status: **local application verified; managed release pending**, supporting APP-REL-001–006 and APP-V1-012,014,015. The
 [P4 evidence](../validation/p4-integration.md) records actual local execution. Provider deployment, promotion and
 recovery commands/workflows do not yet exist. The [provider evaluation](../architecture/deployment.md) and

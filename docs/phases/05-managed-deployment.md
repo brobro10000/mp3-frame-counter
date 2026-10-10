@@ -1,54 +1,41 @@
-# P5 — Managed deployment and release
+# P5 — Repository releases without deployment
 
-Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
-follow. Trace: APP-V1-012,014,015,016; APP-REL-001–006; R-04,06,07,08,11.
+Status: authorized by the later [release-only owner amendment](../requirements/release-process.md), SRC-RELEASE-ONLY.
+The stable filename preserves existing links. This amendment supersedes the phase's original deployment prerequisite.
+Trace: APP-V1-012,015,016 and active APP-REL-001–006; APP-V1-014 and hosted APP-V1-015 are deferred.
 
-Current evidence: [local P4 integration passed](../validation/p4-integration.md);
-[provider-independent release preparation](../deployment/preparation.md) is available. P5 is incomplete: no managed
-candidate, production release or recovery has been observed. See the
-[execution status](../validation/execution-status.md) for unresolved prerequisites and the next steps.
+## Objective and prerequisites
 
-## Objective
+Publish a private GitHub release of the exact frontend/API images tested on protected `main`, with an automatic
+version/tag, checksums, source/configuration and acceptance provenance. The release must explicitly say no deployment
+occurred. P1/P2 must merge first, the independent owner must bind the unchanged suite to its actual protected-main
+commit, and all mandatory checks must pass for the exact integrated source. Local acceptance alone cannot satisfy this.
 
-Implement the approved provider path and exercise candidate verification, exact-release approval, promotion/smoke and
-recovery.
+## Ownership and execution
 
-## Prerequisites
+The independent foundation/gate author owns workflow and publisher logic; root integrates command wiring and current
+requirements/status. A separate reviewer checks identities, permissions, retry behavior and actual validation results.
+Product implementers cannot change the frozen suite or weaken gates. Read the
+[release-only process](../deployment/release-only.md) for the workflow, assets and failure handling, and
+[local preparation](../deployment/preparation.md) for its narrower provider-independent boundary. Keep historical
+reports and generated planning contracts intact.
 
-Separate P5 authorization and reviewed P4 handoff; provider fit, account, region, budget and scoped authentication
-approval before cloud-specific work. Resolve undocumented ingress behavior via authoritative evidence or explicitly
-authorized bounded candidate probes. Production approval remains a later exact-release gate.
+## Required exit evidence
 
-## Owned paths and read-only dependencies
+Record exact main source, successful mandatory run, unchanged baseline identity, tested image identities, archive
+hashes, version/tag and private release URL. Verify all assets before publishing the draft; refuse conflicting existing
+content. An identical retry reuses the release without replacing assets. Never rebuild during publication or present a
+local prepared manifest as publication evidence. Retain visible failures and prior releases; older runs must not
+downgrade which release is marked latest. See [current execution status](../validation/execution-status.md) for observed
+boundaries.
 
-Minimal provider configuration, ordinary documented deployment scripts/Make wrappers, trusted release workflows, runbook
-and sanitized release evidence. Provider resource changes only within explicit approved scope. No generic adapter
-platform, product redesign or acceptance baseline edits.
+## Deferred deployment follow-up
 
-Read-only inputs: Approved image pair, contract/suite revision/fixture hash, versioning and retention decisions,
-repository controls and release requirements. Candidate and production environment bindings must remain distinct.
+Provider/account/region/budget setup, registry publication, stage/production service creation, managed TLS acceptance,
+exact production approval, pair promotion, smoke and recovery remain unexecuted future scope under the
+[deployment runbook](../deployment/runbook.md). They do not block this repository release milestone. Publishing a
+release does not authorize or trigger them.
 
-## Proposed commands, not P0 observations
-
-Future `make deploy-candidate`, `make verify-candidate`, trusted external acceptance including exact 20 MiB; after
-separate exact-release approval, `make promote RELEASE_ID=...` and small smoke. Authorized candidate recovery rehearsal
-and explicit `make rollback RELEASE_ID=...` or first-release abort only within approved scope.
-
-## Acceptance evidence and human review
-
-Actual provider fit/resource/buffering review, candidate URL and paired identities, full applicable unchanged suite,
-source/configuration bindings, exact approval, production identities/smoke, automatic version/tag/private release after
-success and observed recovery rehearsal. Keep failures visible and artifacts recoverable.
-
-Review focus: All APP-REL-001–006, least privilege, no racing deploy paths, no rebuild masquerading as promotion,
-non-atomic pair ordering/overlap, manual approval limitations, controlled probes and scoped cleanup/spend controls.
-
-## Non-goals and stop conditions
-
-Stop if account/budget/fit, candidate acceptance, identity or approval is missing. No production action from planning
-approval or PR review exception. No public exposure beyond authorized scope, automatic merge, speculative services or
-test weakening. End with release/PR evidence handoff and explicit remaining limitations.
-
-Read [phase rules](README.md) and the [release-operator role](../agents/release-operator.md) and
-[reviewer](../agents/reviewer.md). A reviewable PR handoff does not authorize its merge; locally validated, CI-passed,
-reviewed, merged and deployed remain distinct states.
+No automatic merge, review override, speculative infrastructure, test weakening or fabricated release evidence. A
+reviewable PR handoff does not authorize its merge. Read [phase rules](README.md), the
+[release-operator role](../agents/release-operator.md) and [reviewer role](../agents/reviewer.md).

@@ -13,6 +13,7 @@ import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 import { mandatoryJobs } from "./ci-gate.mjs";
 import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
+import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
 
 const read = (path) => readFileSync(path, "utf8");
 const workflow = parse(read(".github/workflows/ci.yml"));
@@ -34,7 +35,11 @@ assert.deepEqual(workflow.permissions, { contents: "read" });
 assert.equal(workflow.concurrency["cancel-in-progress"], "${{ github.event_name == 'pull_request' }}");
 // The terminal gate must cover every mandatory job and still run when an upstream dependency fails or skips.
 const jobs = workflow.jobs;
-assert.deepEqual(Object.keys(jobs).sort(), ["control-plane", "deliver-foundation", ...mandatoryJobs].sort());
+assert.deepEqual(
+  Object.keys(jobs).sort(),
+  ["control-plane", "deliver-foundation", "publish-release", ...mandatoryJobs].sort(),
+);
+requireReleaseWorkflow(workflow);
 const gate = jobs["control-plane"];
 assert.equal(gate.name, "control-plane");
 assert.equal(gate.if, "${{ always() }}");
@@ -53,19 +58,22 @@ const product = jobs["validate-product"];
 assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
 assert.deepEqual(
   product.steps.filter((step) => step.run).map((step) => step.run),
-  ["npm ci", "node scripts/run-ci-phase.mjs"],
+  ["npm ci", "node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"],
 );
 assert.equal(product.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
 assert.equal(product.env?.CI_BASE_REF, "${{ github.event.pull_request.base.sha || github.event.before }}");
 const delivery = jobs["deliver-foundation"];
-assert.deepEqual(delivery.needs, ["control-plane"]);
-assert.equal(delivery.if, "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}");
+assert.deepEqual(delivery.needs, ["control-plane", "validate-product"]);
+assert.equal(
+  delivery.if,
+  "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready != 'true' }}",
+);
 assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
-// Enforce a bounded, read-only hosted workflow without mutable Action references or failure suppression.
+// Enforce bounded hosted jobs and immutable Actions; the separately checked publisher alone receives write permission.
 for (const [name, job] of Object.entries(jobs)) {
   assert.equal(job["runs-on"], "ubuntu-24.04");
   assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= (name === "validate-product" ? 30 : 10));
-  assert.equal(job.permissions, undefined);
+  if (name !== "publish-release") assert.equal(job.permissions, undefined);
   assert.equal(job["continue-on-error"], undefined);
   assert.equal(job.strategy, undefined);
   for (const step of job.steps) {

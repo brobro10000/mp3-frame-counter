@@ -1,8 +1,9 @@
 # Local release preparation
 
 This provider-independent step supports APP-REL-003/004 without claiming a deployed release. It exports an already
-tested pair and prepares versioned evidence locally. Provider setup, protected-main eligibility, candidate acceptance,
-exact production approval, publication, deployed smoke and recovery remain separate required work.
+tested pair and prepares versioned evidence locally. [CI publication](release-only.md) separately requires
+protected-main eligibility and successful exact-source checks. Provider setup, candidate acceptance, production
+approval, hosted smoke and recovery are deferred under the [latest owner amendment](../requirements/release-process.md).
 
 ## Commands and prerequisites
 
@@ -86,7 +87,8 @@ consistency rules; an operator must independently obtain authentic evidence and 
 not modify the local manifest's `deployable: false`, perform promotion or establish deployment. There is deliberately no
 placeholder successful deployment workflow or CLI action.
 
-Before APP-REL-001–006 can be completed, land the independent baseline separately on protected main, validate the actual
-merged product revision, establish provider/account/region/budget/scoped access and observed registry digests, execute
-the full candidate suite, obtain exact production approval, then observe deployment, smoke, release publication and
-recovery. See the [release runbook](runbook.md) and [preflight evidence](../validation/deployment-preflight.md).
+For the active release-only milestone, land the independent baseline separately on protected main, validate the actual
+merged product revision and observe its automatic GitHub release with exact tested archives. The stricter publication
+workflow is described in the [release-only process](release-only.md). Future deployment still requires provider fit,
+access and budget, registry identities, full candidate acceptance, exact production approval, hosted smoke and recovery;
+see the [deferred deployment runbook](runbook.md). Local preparation establishes none of those remote observations.

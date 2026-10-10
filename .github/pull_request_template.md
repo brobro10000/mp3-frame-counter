@@ -10,8 +10,9 @@ items. For foundation-only work, reference its existing phase requirements and e
 deferred.
 
 For first application MVP work, account for `APP-REL-001` through `APP-REL-006` in
-`docs/requirements/release-process.md`. Link version/tag/release, deployment checks and recovery evidence as available;
-leave unexecuted criteria pending and do not claim MVP completion until all required criteria are verified.
+`docs/requirements/release-process.md`. Link tested artifacts, version/tag/release and retry evidence as available.
+Deployment is deferred under SRC-RELEASE-ONLY; distinguish published releases from local preparation and hosted success.
+Leave unexecuted active criteria pending and do not claim completion until they are verified.
 
 ## Validation
 

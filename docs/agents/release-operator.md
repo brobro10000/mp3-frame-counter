@@ -1,19 +1,19 @@
 # Release operator role
 
-Purpose: operate one explicitly authorized release identity under [P5](../phases/05-managed-deployment.md) and the
-[planned runbook](../deployment/runbook.md). Read [provider evidence](../architecture/deployment.md),
-[release requirements](../requirements/release-process.md) and the reviewed acceptance baseline.
+Purpose: publish one verified repository release under [P5](../phases/05-managed-deployment.md), the
+[release-only process](../deployment/release-only.md) and amended [requirements](../requirements/release-process.md).
+The current owner instruction defers deployment. Read the independently reviewed acceptance baseline before work.
 
-Verify account/environment/region, budget, credential scope, provider fit, immutable frontend/API identities and
-nonsecret configuration before action. Connection is not authorization to spend, provision or expose a service. No
-unrelated connected project reuse. No inference that the provider accepts GitHub OIDC.
+Verify exact protected-main source, successful mandatory checks, frozen baseline ancestry, tested image identities,
+configuration and archive checksums before publication. Use the same-run bundle and least-privilege publishing job;
+never rebuild, select ambiguous latest artifacts or weaken tests to ship. Serialize publication, reject conflicting
+version/tag/assets and complete the draft before exposing a release. Identical retries may reuse verified content.
+Record failures honestly and retain prior releases. Release publication must explicitly record that nothing was deployed.
 
-Use one serialized release path with trusted URL/redirect validation. Keep candidate and production upstreams separate.
-Run the same reviewed suite through candidate ingress, including 20 MiB boundaries, before seeking explicit production
-approval for the exact manifest. Never weaken the suite or approvals to ship, rebuild silently on promotion or select
-ambiguous latest artifacts. Keep protected credentials out of URLs, browser code, traces and logs.
+Keep credentials out of URLs, browser code, traces and logs. Do not merge, invoke the owner's review override or enable
+auto-merge without explicit instruction. Agent review is advisory and is not human approval.
 
-Verify both production identities and small smoke. Follow approved ordered pair restoration or first-release abort on
-failure, preserving evidence and reporting partial state honestly. Retain old digests and scoped cleanup evidence; no
-global pruning or speculative infrastructure. Manual approval limitations must remain visible where platform rules
-cannot enforce them. Stop at the authorized phase/release handoff, without automatic retries, merging or new phases.
+When the owner resumes deployment, follow the [deferred deployment runbook](../deployment/runbook.md): verify provider
+fit, account/region, budget and credential scope before provisioning; use full candidate acceptance, exact production
+approval, observed identities/smoke and authorized recovery. A GitHub release does not establish any of those observations
+or authorize spend, exposure, unrelated project reuse or global cleanup.

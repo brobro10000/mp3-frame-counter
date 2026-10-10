@@ -22,6 +22,19 @@ means deployed or human-approved code. See [source precedence](../requirements/R
 | DEC-11 | Implemented and reviewed     | Trusted-baseline and fail-closed CI controls are implemented and independently reviewed. P4 ran the full unchanged local suite; shipping CI still requires the separately merged test-only baseline on its trusted base.                    | independence-and-baseline.md; P1/P2/P4 evidence           |
 | DEC-12 | Proposed, approval gate      | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release.                         | runbook.md; P5                                            |
 
+## DEC-13 — Release-only milestone (latest owner amendment)
+
+On 2026-10-09 the owner instructed: releases without deployment.
+[SRC-RELEASE-ONLY](../requirements/sources/release-only-request.txt) supersedes the hosted-release scope of DEC-03/06
+and defers DEC-10/12 provider actions. The unchanged application and independent acceptance contract still apply. P5 now
+publishes the exact tested images as a versioned private GitHub release after protected-main CI. Provider setup,
+stage/production rollout, hosted verification and recovery are future work, not current merge/release gates. No merge,
+review override or deployment authority follows from this amendment.
+
+Earlier decisions and risk rows retain the original managed-deployment plan; apply their cloud criteria only when that
+work resumes. Read the [amended release requirements](../requirements/release-process.md) for the current completion
+gate.
+
 Source captures stay byte-for-byte immutable. Prior foundation evidence remains in `agents/history/foundation/` and
 `agents/outputs/`. The old V1 draft is checksummed in `agents/history/v1-draft/`; its approved-form fields and
 validation results do not apply to this proposal. No schema-v2 architecture migration or alternate execution-state
@@ -45,8 +58,8 @@ revision `2adf71b447bfee9b78e9bdfc2b29566af894d0fe`. Managed candidate fault acc
 
 Provider fit/access/budget is a separate P5 gate and does not block independent requirements, foundation or local work.
 Local resource/admission/timeout budgets were selected and measured before P4 completion; see its integration record.
-Managed-host verification remains required. Deployment budgets and production approval cannot be inferred from the
-user's acceptance of a planning revision.
+Managed-host verification remains required before any future deployment. Deployment budgets and production approval
+cannot be inferred from the user's acceptance of a planning revision.
 
 ## Compact risk register
 
@@ -71,7 +84,7 @@ This supersedes the earlier P0-only and per-phase permission wording. Agent revi
 DEC-07 was resolved through fresh schema-v1 inputs and installed direct validators; no archived execution plan was
 reused. DEC-08 was resolved by independent acceptance authorship/review before the local freeze. P1/P2 exact-head CI
 passed and P3/P4 were reviewed and locally validated. Separate merges, final trusted-main baseline binding and the
-managed release remain outstanding.
+repository release remain outstanding; deployment is deferred by DEC-13.
 
 The phase scope remains narrow even though all phases are authorized:
 

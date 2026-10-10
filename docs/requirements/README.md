@@ -9,15 +9,16 @@ The assessment and planning baseline are captured. The owner subsequently author
 alone never establishes implementation or deployment completion.
 
 For the current result, use the [execution status](../validation/execution-status.md): the local application has passed
-the complete independent suite; protected-main publication and managed release remain outstanding. Each registry links
-its verified local evidence separately from those release requirements.
+the complete independent suite; protected-main baseline publication and the first GitHub release remain outstanding.
+Deployment is deferred by the latest owner instruction, SRC-RELEASE-ONLY. Each registry links its verified local
+evidence separately from those release requirements.
 
 ## Contents
 
 | Reference                                                                                  | Purpose                                                                                    |
 | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | [assessment.md](assessment.md)                                                             | Stable requirement IDs, source references, acceptance evidence, status and open decisions. |
-| [release-process.md](release-process.md)                                                   | Required deployment, versioning, releases and recovery for the first application MVP.      |
+| [release-process.md](release-process.md)                                                   | Active GitHub release criteria and explicitly deferred deployment criteria.                |
 | [V1 MVP contract](../mvp.md)                                                               | APP-V1 requirement IDs, exact application choices and the phased delivery boundary.        |
 | [Unified decisions](../architecture/decisions.md)                                          | Source precedence, requirement mappings and remaining decisions.                           |
 | [sources/assessment.html](sources/assessment.html)                                         | Original supplied assessment HTML fragment, preserved byte for byte.                       |
@@ -27,6 +28,7 @@ its verified local evidence separately from those release requirements.
 | [sources/unified-planning-brief.original.txt](sources/unified-planning-brief.original.txt) | Latest supplied consolidated planning brief; apply explicit user-confirmed reconciliation. |
 | [samples/README.md](samples/README.md)                                                     | Sample identity, local path, integrity checks and expected-result status.                  |
 | [repository controls](../repository-controls.md)                                           | Current GitHub policy, including the later owner-authorized review exception.              |
+| [sources/release-only-request.txt](sources/release-only-request.txt)                       | Latest owner instruction separating releases from deployment.                              |
 
 The local sample is `samples/assessment-sample.mp3`. It is ignored by Git and excluded from source artifacts, so a fresh
 clone will contain its metadata but not the MP3 bytes.
@@ -36,17 +38,19 @@ clone will contain its metadata but not the MP3 bytes.
 The supplied source documents were archived here on **2026-10-09**. This is the intake date, not a claim about when the
 candidate originally received the assessment. Preserve source bytes; do not reformat the HTML or replace originals.
 
-| Source ID            | File                                          | Scope                                                                                                                     |
-| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| SRC-ASSESSMENT       | `sources/assessment.html`                     | Original application contract, evaluation criteria, guidance, submission expectations and time target.                    |
-| SRC-FOUNDATION       | `sources/foundation-request.txt`              | Earlier authorized foundation work, implementation boundaries and initial repository policy.                              |
-| SRC-RELEASE-DECISION | `sources/release-process-request.txt`         | Later user instruction on 2026-10-09 requiring the release cycle in the first application MVP.                            |
-| SRC-V1-BRIEF         | `sources/v1-planning-brief.original.txt`      | Supplied V1 brief, captured on 2026-10-09; the user explicitly authorized planning and document creation.                 |
-| SRC-UNIFIED-BRIEF    | `sources/unified-planning-brief.original.txt` | Latest planning requirements, captured 2026-10-09; user confirmed preserving merged foundation and owner review override. |
+| Source ID            | File                                          | Scope                                                                                                                         |
+| -------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| SRC-ASSESSMENT       | `sources/assessment.html`                     | Original application contract, evaluation criteria, guidance, submission expectations and time target.                        |
+| SRC-FOUNDATION       | `sources/foundation-request.txt`              | Earlier authorized foundation work, implementation boundaries and initial repository policy.                                  |
+| SRC-RELEASE-DECISION | `sources/release-process-request.txt`         | Later user instruction on 2026-10-09 requiring the release cycle in the first application MVP.                                |
+| SRC-V1-BRIEF         | `sources/v1-planning-brief.original.txt`      | Supplied V1 brief, captured on 2026-10-09; the user explicitly authorized planning and document creation.                     |
+| SRC-UNIFIED-BRIEF    | `sources/unified-planning-brief.original.txt` | Latest planning requirements, captured 2026-10-09; user confirmed preserving merged foundation and owner review override.     |
+| SRC-RELEASE-ONLY     | `sources/release-only-request.txt`            | Later owner instruction on 2026-10-09: releases without deployment; supersedes hosted completion criteria for this milestone. |
 
 SHA-256 checksums:
 
 ```text
+9af4e7552b9e60535af446cf8d692c8759326fe5d8ca4ee3a3c716325e2b67ef  sources/release-only-request.txt
 4a9df0982d20fdae6c561ee44f21a46f1ae20d11190940625ccf6543d0ed9a66  sources/assessment.html
 e5e73a562bc008a383a2ed024b259c9fb71dbb28d43dac06f778ed5fa18617c2  sources/foundation-request.txt
 2e8d9b87727c6662ad3675b1097edcaae512eb5629226ca2718c4277a3839cad  sources/release-process-request.txt
@@ -67,9 +71,10 @@ Later explicit user instructions take precedence. The user explicitly confirmed 
 preserving the already-merged foundation and owner-only PR review override. Its contrary no-prior-execution/no-bypass
 sentences do not override those confirmed facts. The original V1 brief remains a historical draft; no-cloud,
 manual-browser-only, three-phase and one-lockfile-without-exception choices are superseded. APP-REL-001–006 remain
-required alongside managed deployment and explicit production approval.
+required under their amended release-only criteria. SRC-RELEASE-ONLY now defers managed deployment, candidate checks,
+production approval and hosted recovery; it preserves product acceptance and merge controls.
 
-Use the assessment and release amendment for their stable requirements, the unified brief for current planning scope,
+Use the assessment and latest release amendment for stable requirements, the unified brief for unchanged product scope,
 [docs/mvp.md](../mvp.md) for the normalized human-readable proposal, and [decisions](../architecture/decisions.md) for
 edge proposals and blockers. Implementation authorization comes from the later explicit owner instruction. The previous
 draft's generated contracts are archived under `agents/history/v1-draft/`; original foundation contracts remain under

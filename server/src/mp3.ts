@@ -88,6 +88,15 @@ function frameLength(bytes: Buffer, offset: number): number {
   return length;
 }
 
+/**
+ * Count physical MPEG frames, including complete frames carrying Xing/Info/VBRI metadata. Separate ID3 tags do not count.
+ * The assessment does not specify how to count metadata-bearing MPEG frames; acceptance contract r3 includes them.
+ * MediaInfo 26.10 reports 6,089 audio frames for the supplied sample, excluding its leading Xing metadata frame.
+ * That Xing frame has a valid MPEG header and occupies 208 bytes, so this parser correctly counts 6,090 physical frames.
+ * The preceding 44-byte ID3 tag is skipped. See docs/validation/sample-baseline.md for independent byte/packet evidence
+ * and the versioned MediaInfo source explaining its convention. Neither count is an unexplained off-by-one error.
+ * Always walk actual frame boundaries; never trust a Xing-declared total or apply a sample-specific +1 correction.
+ */
 export function countMp3Frames(bytes: Buffer): number {
   let offset = firstFrameOffset(bytes);
   let count = 0;
@@ -106,6 +115,7 @@ export function countMp3Frames(bytes: Buffer): number {
       throw new Mp3ParseError("unsupported", "Additional or unsupported metadata appears at a frame boundary.");
     }
     offset += frameLength(bytes, offset);
+    // A complete metadata-bearing MPEG frame contributes one, just like any other complete physical frame.
     count += 1;
   }
   if (count === 0) throw new Mp3ParseError("malformed", "The input contains no complete MPEG-1 Layer III frame.");

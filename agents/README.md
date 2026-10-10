@@ -20,6 +20,9 @@ state, replay old outputs, weaken its allowlist or shorten real E2E into a false
 `agents/execution/mvp-plan.yaml` records dependencies, requirements, independent owners and declared checks. Real phase
 outcomes are recorded in `docs/validation/` and actual CI runs. Metadata validation is distinct from phase completion.
 The current metadata is a pre-execution control-plane snapshot; no completed-phase plugin claim has been recorded.
+The later [release-only owner amendment](../docs/requirements/release-process.md) supersedes its managed-deployment
+completion requirement for this milestone. Preserve this generated snapshot and consult the amended human requirements
+and P5 document; do not fabricate regenerated or completed plugin evidence.
 
 P2 must establish independently authored fixtures and an executable suite before product code. Under squash-only
 merges, the production freeze must identify the separately merged acceptance-only commit on `main`; a feature-branch
