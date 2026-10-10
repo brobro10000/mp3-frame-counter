@@ -25,9 +25,10 @@ flowchart TD
     PLAN --> COST["Cost and access approval"]
     REGISTRY --> STAGE["Stage deployment and acceptance"]
     COST --> STAGE
-    STAGE --> CANDIDATE["Production candidate and recovery proof"]
-    CANDIDATE --> LAUNCH["Exact first-launch authorization"]
-    LAUNCH --> SMOKE["Production identity and smoke"]
+    STAGE --> CANDIDATE["Nonproduction verification of production configuration and recovery"]
+    CANDIDATE --> LAUNCH["Human approval before production deployment"]
+    LAUNCH --> DEPLOY["Deploy exact approved production image pair"]
+    DEPLOY --> SMOKE["Production identity and smoke"]
     SMOKE --> V1["Finalize v1.0.0"]
     PLAN --> RECON["Publication reconciliation and backfill"]
     RECON --> STAGE

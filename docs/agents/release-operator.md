@@ -44,7 +44,9 @@ and environment identities, then run the required stage profile. Never use PR-su
 credentials to unapproved origins. Production-intended configuration needs candidate verification and an approved
 recovery path.
 
-Owner `brobro10000` resolves billing, identity, sensitive access and exact first public exposure; request assistance for
+Verify production-intended configuration in nonproduction, then obtain human approval before any production application
+deployment, including authenticated candidates. Owner `brobro10000` resolves billing, identity, sensitive access and
+exact production deployment/exposure; request assistance for
 interactive authentication or consent without placing secrets in evidence. Preserve scoped credentials and no retained
 uploads. Promotion and rollback are serialized, separately authorized operations. Only observed production identity and
 passing smoke permit additive `v1.0.0` finalization by the same publisher; preserve the original candidate provenance.

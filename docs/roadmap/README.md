@@ -182,7 +182,8 @@ Mandatory edges:
 3. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
 4. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
 5. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
-6. Stage acceptance plus production-intended candidate verification and launch authority → production exposure.
+6. Stage acceptance plus production-intended configuration verified in nonproduction and human approval → production
+   application deployment; approved exposure follows actual production identity checks.
 7. Production identity and smoke → v1.0.0 finalization.
 
 Canonical planned diagram: [dependency order](diagrams/dependencies.mmd). These new planning diagrams are excluded from
@@ -281,10 +282,13 @@ gate. Never include private audio, sensitive headers or secret-bearing traces in
    OCI manifest digests; bind all three.
 5. Deploy both digests as one stage revision; verify startup, configuration and environment identity.
 6. Hold the stage target stable and run mandatory acceptance. Unexplained identity changes invalidate evidence.
-7. Verify the same images with production-intended configuration. Before first launch keep production authenticated;
-   record the deliberate public-access difference and all other configuration differences.
-8. Obtain exact first-exposure authority binding source, images, configuration, acceptance, service and recovery policy.
-9. Apply approved access/traffic changes, verify convergence and run production identity/smoke checks.
+7. Verify the same images with production-intended configuration in nonproduction. Record environment-specific
+   differences, the intended access policy and recovery evidence without deploying the application to production.
+8. Obtain human approval binding source, images, configuration, acceptance, production service, exposure and recovery
+   policy. This gate precedes every production application deployment, including an authenticated candidate.
+9. Deploy the approved pair to production, initially authenticated. Verify actual configuration and identity, then apply
+   the human-approved access/traffic changes, verify convergence and run production smoke. Changed inputs invalidate
+   approval and require a new human decision.
 10. Finalize v1.0.0 additively on the same source/artifacts. Preserve candidate manifests and original not-deployed
     facts.
 
@@ -341,7 +345,7 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | COST-01       | Conditional Cloud Run targeting allowances; eligibility, billing and overage consent unknown.                               | Owner; cloud resources/hosting.                         |
 | ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                     | Owner + deployment operator; setup/exposure.            |
 | HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                 | Acceptance author + deployment operator; stage exit.    |
-| LAUNCH-01     | Exact first-launch approval and tested recovery; later automatic promotion needs an adopted policy.                         | Owner; production exposure.                             |
+| LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.             | Owner; production deployment and exposure.              |
 | SUBMISSION-01 | Preserve v0.1.7 handoff; confirm actual deadline/submission separately.                                                     | Owner; external assessment submission only.             |
 
 The coordinator owns scope/integration and serialized Git operations; independent acceptance authors own expectations;
@@ -349,12 +353,13 @@ the companion reviews; GitHub controls merge eligibility; the existing publisher
 deployment operator consumes verified artifacts. Keep these responsibilities separate without introducing another bot or
 version writer. Reviewers identify automated review honestly. See the [role documents](../agents/reviewer.md).
 
-The owner facilitates OAuth, MFA/passkeys/CAPTCHA, terms, billing consent, identity conflicts and first public exposure.
-Use the owner's GitHub or Google identity, never brobro1000 as cloud owner. No secrets in chat, URLs, logs or tracked
-files. Plan supported connector/API/CLI setup as: verify identity/scope, obtain account/cost consent, select dedicated
-resources, establish registry and least-privilege identities, configure stage, verify routing/limits, configure
-production without accidental exposure, and verify bindings. Record resource IDs, ownership, cleanup and recovery so
-setup is repeatable/idempotent. No unrelated project reuse or account-wide changes.
+The owner facilitates OAuth, MFA/passkeys/CAPTCHA, terms, billing consent, identity conflicts and each production
+deployment/promotion. First public exposure must also be included in that exact-candidate approval. Use the owner's
+GitHub or Google identity, never brobro1000 as cloud owner. No secrets in chat, URLs, logs or tracked files. Plan
+supported connector/API/CLI setup as: verify identity/scope, obtain account/cost consent, select dedicated resources,
+establish registry and least-privilege identities, configure stage, verify routing/limits, configure production without
+accidental exposure, and verify bindings. Record resource IDs, ownership, cleanup and recovery so setup is
+repeatable/idempotent. No unrelated project reuse or account-wide changes.
 
 Prefer short-lived repository/branch/environment-bound federation; separate bootstrap administrator permissions from
 routine deployment and PR jobs. Current account access is unverified. If an enforced private-repository environment

@@ -2,10 +2,11 @@
 
 **Planning supersession, 2026-10-10:** follow the
 [roadmap's stage-to-production design](../roadmap/README.md#stage-to-production-delivery) for the conditional Cloud Run
-path. It uses one revision containing both images per environment, authenticated prelaunch verification, exact launch
-authority, observed smoke and additive v1.0.0 finalization. The Render-specific ordering below remains historical
-alternative guidance; it is not the Cloud Run pair-switch procedure. Ordinary v0.x artifact publication continues
-without deployment. No provider commands or finalization workflow are implemented by this documentation amendment.
+path. It uses one revision containing both images per environment, human approval before production application
+deployment, authenticated production identity verification, approved exposure, authority, observed smoke and additive
+v1.0.0 finalization. The Render-specific ordering below remains historical alternative guidance; it is not the Cloud Run
+pair-switch procedure. Ordinary v0.x artifact publication continues without deployment. No provider commands or
+finalization workflow are implemented by this documentation amendment.
 
 **Future deployment procedure:** the later [release-only amendment](../requirements/release-process.md) defers these
 provider, candidate and production actions. Use the [release-only process](release-only.md) for current GitHub releases.
