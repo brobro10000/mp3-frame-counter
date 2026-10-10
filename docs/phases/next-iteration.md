@@ -1,10 +1,9 @@
 # Next iteration: phase instructions and three PR cards
 
-**Current state, 2026-10-10:** HOSTED-CONTRACT is merged and published as
-[v0.3.28](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.28), from exact main source
-`4c2733ea2efa469b8e4718d8763b234ab92876e4`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
-descendants and reverts. This dated amendment supersedes earlier pending-docs statements in entrypoint/role guidance;
-those statements describe the preceding work. No application service is deployed.
+**Current state, 2026-10-10:** HOSTED-EVIDENCE published
+[v0.3.30](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.30) from protected main
+`bccea9eb285e467f98b028f4d7f5a895ec83ebd7`. Docs-v1 remains required; hosted-v1 remains bound and pending. No
+application service is deployed. The window below supersedes earlier next-step wording.
 
 <a id="pr-card-3--profile-declarations-validate-immutable-acceptance-profile-declarations"></a>
 
@@ -15,10 +14,9 @@ remains in its immutable source. Main run 38084476141 passed and published v0.2.
 [completion evidence](#profile-declarations-protected-main-completion) verifies that prerequisite. The direct dependent
 was immediately reconciled onto actual merged main while publication was verified in parallel.
 
-The next three-card window is **HOSTED-BIND**, **HOSTED-EVIDENCE** and **HOSTED-SOURCE-PROJECTION**. PR27's
-delivery-policy prerequisite has published v0.3.27. The candidate is published; actual reviewed binding, dormant
-evidence validation and required-profile source projection remain separate. Later launcher, registry, access/runtime IaC
-and workflow changes stay provisional.
+The next three-card window is **HOSTED-SOURCE-PROJECTION**, **ACCESS-FOUNDATION** and **PUBLISHER-HANDOFF**. The first
+two are under review in PRs #31 and #32. The third adds a publisher receipt and immutable Actions artifact; launcher,
+registry transfer, federation, backend migration and runtime delivery remain separate future scope.
 
 Merge an approved PR as soon as its required checks and prerequisites pass. Immediately reconcile and retarget its
 direct dependents onto the actual merged main, then refresh their checks and companion review. Avoid accumulating
@@ -235,96 +233,65 @@ candidate merge or control pass establishes hosted application acceptance.
 <a id="pr-card-2--hosted-bind-bind-the-actual-reviewed-candidate"></a>
 <a id="pr-card-3--hosted-bind-bind-the-actual-reviewed-candidate"></a>
 
-### HOSTED-BIND prerequisite completion — 2026-10-10
+<a id="hosted-bind-prerequisite-completion--2026-10-10"></a>
 
-[PR #29](https://github.com/brobro10000/mp3-frame-counter/pull/29) merged as `62e4cd456fcafab54a1ac4080805f2ebfa51d853`
-at 22:25:18Z, with sole parent `4c2733ea2efa469b8e4718d8763b234ab92876e4` and tree
-`572b54d2427eb7b3bfe2b8ac96aab7c6da200856`, identical to reviewed head `0f4a85a5c423c03af368e34da9c758ae19c3f487`.
-Companion `brobro1000` posted
-[automated approval 5481012150](https://github.com/brobro10000/mp3-frame-counter/pull/29#pullrequestreview-5481012150);
-owner `brobro10000` merged after required checks without bypass. The card below remains its historical scope.
+### HOSTED-BIND protected-main completion
 
-[Main CI 38091357730, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38091357730) passed all
-mandatory jobs and publication. It passed 545 tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and 72
-required docs-v1 local cases with scoped cleanup. Hosted-v1 remains pending: its 95 controls and 72/22/3 discovery were
-separate non-acceptance checks. Original job-output admission SHA-256
-`60c6e8a052e89a3c9e19ae73f5808453b5b92faed606037efaec48108b8b2c3e` agrees across product, control and publisher.
+[PR #29](https://github.com/brobro10000/mp3-frame-counter/pull/29) merged normally at **22:25:18Z** on 2026-10-10 as
+`62e4cd456fcafab54a1ac4080805f2ebfa51d853`, with sole parent `4c2733ea2efa469b8e4718d8763b234ab92876e4` and tree
+`572b54d2427eb7b3bfe2b8ac96aab7c6da200856`, identical to the reviewed head. Companion run `20261010T221531-5e9e5da3`
+produced
+[automated approval 5481012150](https://github.com/brobro10000/mp3-frame-counter/pull/29#pullrequestreview-5481012150)
+for `0f4a85a5c423c03af368e34da9c758ae19c3f487`; all mandatory checks passed in PR run 38090256159. Owner `brobro10000`
+merged without bypass. PR #30 was immediately reconciled onto this actual squash as first parent, retargeted to main and
+pushed for fresh CI; inherited source bytes were preserved.
 
-[v0.3.29](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.29), release **409245406**, published at
-**22:32:21Z** with ten assets and `deployed: false`. Root replayed original source/base/run/admission and verified
-required docs-v1, pending hosted-v1, source/configuration/image identities and all eight metadata asset hashes. Archives
-were compared as metadata only; neither was downloaded or rehashed. Verification SHA-256:
-`42801b1aadeb82ee20083517349ec0b1050dad532d524c1040c51d7b6940cb1c`. Root also read the independent CI audit, rehashed 18
-records and matched 230 exact citations; audit SHA-256:
-`8df2520ac44e4a7b1c85249ae4b2ba9faa15bfef2d0356127fedd23748fe74fb`. These local diagnostic hashes are not signed
-attestations; the linked original CI and publication establish the external prerequisite. No hosted deployment occurred.
+The
+[completed binding scope](https://github.com/brobro10000/mp3-frame-counter/blob/62e4cd456fcafab54a1ac4080805f2ebfa51d853/docs/phases/next-iteration.md#pr-card-1--hosted-bind-bind-the-actual-reviewed-candidate)
+and [binding identities](../validation/hosted-binding.md) remain available.
+[Main run 38091357730, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38091357730) passed and
+published [v0.3.29](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.29), release **409245406**, at
+**22:32:21Z** with ten assets and `deployed: false`. Root verified original source/base/run/admission, required docs-v1,
+pending hosted-v1, all 72 required local cases, source/configuration/image identities and all eight metadata hashes. The
+two image archives were compared as metadata only; neither was downloaded or rehashed. Verification SHA-256:
+`42801b1aadeb82ee20083517349ec0b1050dad532d524c1040c51d7b6940cb1c`. Hosted-v1 remains pending until a genuine product
+change; no application deployment is established.
 
-## PR card 1 — HOSTED-BIND: Bind the actual reviewed candidate
-
-**Outcome:** append the exact actual `hosted-v1` successor identity and reviewed merge facts. Docs-v1 remains required
-until a genuine subsequent product change activates the bound successor. Binding is not deployment or acceptance.
-
-**Prerequisites:** HOSTED-CONTRACT actually merged and published, exact independent companion review for its final
-head/tree, verified candidate-only parent diff and preserved local expectations. Read the actual GitHub/main evidence; a
-feature head, branch name, guessed squash or stale approval cannot establish binding.
-
-**Owned paths:** append one entry in `docs/testing/acceptance-transitions.json`; add `docs/validation/hosted-binding.md`
-and update narrowly related phase/roadmap/transition-role pointers. Keep all prior registry entries, baseline, contracts
-and suite bytes unchanged. No product, gate, dependency, workflow or IaC change.
-
-**Binding procedure:** record actual protected-main candidate commit, complete suite tree, fixture manifest hash,
-contract revision/path/hash, immediate predecessor and the observed exact reviewed-head/tree/reviewer/review identity.
-Verify original source/base context and authenticated observations through the existing resolver; local selection is not
-CI authority. Confirm no second candidate/pending entry and no suite/product files in this binding diff.
-
-**Validation/review:** current complete docs-v1 application acceptance plus separately labeled pending-suite discovery
-and controls; complete declaration provenance and predecessor containment; unchanged publisher/retry schema and normal
-mandatory CI. Independent binding review plus fresh companion approval precede owner merge. Revalidate actual merged
-admission, main CI and software publication before documenting completion.
-
-**Rollback and stop:** preserve append-only bound history; do not remove a record to regain older acceptance. A later
-runtime IaC/configuration change is product and activates the successor; governance-only launcher/access work can merge
-without pretending to activate it. Descendants/reverts retain the successor once active. Stop before actual deployment
-or production approval; stage and production evidence still need their separate trusted launcher and human boundaries.
+Root read the independent main-CI audit, rehashed its 18 records and matched all 230 exact log citations. The original
+run passed 545 tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and 72 required local cases with cleanup.
+Pending hosted controls passed 95/95 with separate 72/22/3 discovery. Audit SHA-256:
+`8df2520ac44e4a7b1c85249ae4b2ba9faa15bfef2d0356127fedd23748fe74fb`. This audit downloaded no release assets; root's
+separate verification above covers the eight metadata assets and original admission replay. Original job-output
+admission SHA-256 `60c6e8a052e89a3c9e19ae73f5808453b5b92faed606037efaec48108b8b2c3e` agrees across product, control and
+publisher. These retained local diagnostic hashes are not signed attestations.
 
 <a id="pr-card-3--hosted-evidence-validate-separate-hosted-results-and-envelopes"></a>
 
-## PR card 2 — HOSTED-EVIDENCE: Validate separate hosted results and envelopes
+### HOSTED-EVIDENCE protected-main completion
 
-**Outcome:** dormant pure validation of the existing HostedSuiteResultV1 and HostedAcceptanceV1, against independently
-authenticated expected values. A valid failed/blocked record stays nonpassing. No resolver, source reader, launcher,
-provider operation or release/deployment gate is replaced or activated.
+[PR #30](https://github.com/brobro10000/mp3-frame-counter/pull/30) merged at **22:53:36Z** as
+`bccea9eb285e467f98b028f4d7f5a895ec83ebd7`, sole parent `62e4cd456fcafab54a1ac4080805f2ebfa51d853`, tree
+`9e7bf6491ecef7cd2bdfcbcaddec887ea163b36c`, equal to reviewed head `f408e3f09f8c7da83c86eb68907f11a69e0a44e4`. Companion
+run `20261010T224711-e8ea7e4b` posted
+[automated approval 5481096891](https://github.com/brobro10000/mp3-frame-counter/pull/30#pullrequestreview-5481096891);
+owner `brobro10000` merged normally after all required checks. PR #31 was immediately reconciled onto actual main.
 
-**Prerequisites and order:** actual PR27/v0.3.27 publication and the independently reviewed exact API contract authored
-in [the helper contract](../deployment/hosted-evidence.md). Independent synthetic expectations and implementation may
-proceed while HOSTED-CONTRACT and HOSTED-BIND validate. Reconcile onto actual protected main and verify HOSTED-BIND
-publication before merging this dependent. Pending/candidate identities cannot authorize real hosted execution.
+[Main CI 38093092935, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38093092935) passed: 583
+tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and all 72 required local cases with cleanup. Original
+admission digest `bbe1e7faae434433436d078db80089182d9cf16c46b17e3791370574fe8b563e` agrees across producer, control and
+publisher. Hosted-v1 controls/discovery remain separate from acceptance.
 
-**Exclusive ownership:** an independent author writes only `scripts/hosted-evidence.test.mjs`; after those expectations
-are reviewed and frozen, a separate implementer writes only `scripts/hosted-evidence.mjs`. Root adds that exact test
-file to `package.json`'s existing tooling command, owns the API document, narrowly related phase/roadmap/README pointers
-and `docs/validation/hosted-evidence.md`. No package dependency or lockfile update. All suite/contract/registry,
-product, existing gate/reader, workflow, publisher, preparation, retry and infrastructure files remain read-only.
+[v0.3.30](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.30), release **409257045**, published at
+**23:00:37Z** with ten assets and `deployed: false`. Root verified original context/admission, required docs-v1, pending
+hosted-v1, configuration/image/reservation identities and all eight metadata hashes. Archives were metadata-only; none
+were downloaded. Verification SHA256: `11da07a45055c209b6cffdb48fcdbf4408309efd9d748dd79c162ab4f922449c`. Root read the
+independent audit, rehashed 18 records and matched 233 citations; audit SHA256:
+`d1a72a97b758f5c0d21bd7271b2ac1bc733762511a789fade62d672cfa791303`. These are local diagnostic hashes, not signed
+attestations. The
+[completed card](https://github.com/brobro10000/mp3-frame-counter/blob/bccea9eb285e467f98b028f4d7f5a895ec83ebd7/docs/phases/next-iteration.md#pr-card-2--hosted-evidence-validate-separate-hosted-results-and-envelopes)
+remains in its immutable source. No hosted deployment is established.
 
-**Independent expectations first:** literal synthetic unequal profile inventories, complete passing stage/production,
-partial failed and empty blocked records, all closed fields/types/identities, exact inventory and original row custody,
-unknown/duplicate/skipped/retried rows, swapped image roles/digest representations, declaration/predecessor mismatches,
-missing outputs, wrapper/status matrix, exact cleanup aggregation, missing/drifted/reversed observations and stale
-launch identity. Verify fresh frozen copies, immutability, deterministic sanitized rejection and no I/O. Preserve red
-evidence and use valid positive counterparts; do not create expected hashes from the implementation being tested.
-
-**Validation and review:** focused independent tests, full tooling/gate/policy/format/portability checks and normal
-mandatory CI with unchanged required product acceptance plus any separately resolved pending controls. Independent
-expectation and implementation review, then fresh exact-head Docker companion approval before normal owner merge.
-
-**Rollback and release:** ordinary 0.3 software publication; no deployment. A coherent revert of unused dormant helpers
-may restore their prior absence, but cannot remove binding history, lower the release line or reinterpret old artifacts.
-
-**Done and stop:** exact validators and all consumers in this card agree with the adopted closed contract; current CI
-and actual-main publication are verified. Stop before adding a trusted launcher, registering cloud resources, wiring
-automatic stage delivery or performing any production operation.
-
-## PR card 3 — HOSTED-SOURCE-PROJECTION: Retain required declaration bytes for hosted consumers
+## PR card 1 — HOSTED-SOURCE-PROJECTION: Retain required declaration bytes for hosted consumers
 
 **Outcome:** one additive export in the existing immutable source reader supplies original declaration inputs and raw
 hashes for the already selected required suite. It neither selects a different suite nor authenticates publisher or
@@ -378,12 +345,102 @@ existing reader behavior and immutable history. Stop before the launcher, regist
 production operation. Later hosted eligibility still requires actual successor activation and authenticated release
 data.
 
+## PR card 2 — ACCESS-FOUNDATION: Prepare protected state, registry and scoped identities
+
+**Outcome:** a source-reviewed, reusable access root for the dedicated project, with no application service or automated
+cloud entrypoint. Follow the exact
+[resource and operational contract](https://github.com/brobro10000/mp3-frame-counter/blob/5edfe5b0370006456201c48b088696e5387a0ea7/docs/deployment/cloud-access-foundation.md).
+This is a disjoint infrastructure domain; it does not change the application or activate hosted acceptance.
+
+**Prerequisites/order:** existing cost bootstrap and HOSTED-DELIVERY-POLICY reservations; reviewed independent
+configuration expectations before Terraform implementation. Author and review this independent domain while helper PRs
+validate. Its source prerequisites are the published cost bootstrap and delivery-policy reservation; dormant helper
+publication is not needed for these access-only resources. Reconcile onto actual main before merge. Fresh cost readback,
+private saved-plan review and observed resource identities are additional prerequisites to live use after merge.
+
+**Owned paths:** only the five reserved `infra/cloud/access/` files, independent
+`scripts/cloud-access-foundation.test.mjs`, its `package.json` test registration, narrow existing CI validation wiring
+and matching `scripts/policy.mjs` assertions, this contract, `docs/validation/cloud-access-foundation.md` and focused
+entrypoint/phase/roadmap documentation. Root owns shared CI/package/policy and Git operations. An independent author
+owns tests; a separate implementer owns Terraform files after expectations are reviewed and frozen.
+
+**Exact scope:** Terraform 1.13.3/google 8.6.0; five additional APIs, three protected state buckets, one regional Docker
+registry, seven fixed service identities and seven resource-scoped IAM members. All project/region input is explicit or
+validated; no secrets. Start with private local state; a later reviewed same-file backend amendment migrates it after
+actual bucket creation/readback. Retain both Terraform and provider destruction guards. No expiry rules, public access,
+project-level IAM, keys, broad token creator, WIF, runtime resources or cost-control mutation.
+
+**Independent expectations first:** credential-free mocked-provider plans assert complete resource scope, role/principal
+and target tuples, bucket/registry protection, no runtime permissions and safe outputs. Positive fixtures use synthetic
+identities; invalid inputs and isolated negative controls prove that dangerous IAM/protection/extra-resource changes
+fail. Preserve actual missing-source red. Distinguish configuration behavior, structural lifecycle checks and real
+provider behavior; mocks cannot prove IAM propagation or live deployment.
+
+**Validation/review:** pinned format, read-only locked initialization, schema validation and focused mock tests; full
+mandatory tooling/policy checks and unchanged product acceptance. Independent expectation and implementation review,
+then fresh exact-head companion approval before owner merge. Verify actual protected-main artifact publication. CI gains
+no cloud credential, new required job, permission, deployment trigger or acceptance-classification exception.
+
+**Authorized operational follow-through:** after publication, root reads back the USD 75 shared Run cap and USD 100
+all-service alert budget, reviews the exact private create-only plan and applies only the adopted resources. Reject
+unexpected existing resources/actions. Verify actual identities/IAM and a no-change plan; retain restricted state and
+recovery copies. These operations remain separate evidence from source tests. Every production application deployment
+still needs actual human intervention for its exact candidate.
+
+**Rollback and stop:** before apply, coherent source revert; afterward retain state, costs and destruction guards until
+reviewed decommissioning. Do not force destroy or abandon management. Stop before federation activation, remote-state
+migration, first service creation, image transfer or application deployment. Those follow-up packages require their own
+bounded source review and operational checks.
+
+## PR card 3 — PUBLISHER-HANDOFF: Emit an authenticated publisher receipt
+
+**Outcome:** after verified software publication, emit a bounded immutable Actions artifact and fixed successful-step
+receipt binding its exact ID, archive digest and raw handoff hash. Same-run job outputs expose validated locators.
+Historical acquisition and stage deployment remain separate; no self-hashed file becomes authority by itself.
+
+**Prerequisites:** verified v0.3.30 publication; owner roadmap authority; independent review of the
+[closed handoff contract](../deployment/publisher-handoff.md), followed by independently authored expectations before
+implementation. This governance work can proceed beside ACCESS-FOUNDATION and requires no cloud resource or token.
+
+**Owned executable paths:** new `scripts/publisher-handoff.mjs` and `.test.mjs`; existing `scripts/publish-release.mjs`,
+`scripts/publish-release-evidence.mjs` (workflow guard only unless a small shared validator is justified),
+`scripts/publish-release.test.mjs`, `.github/workflows/ci.yml` and one tooling registration in `package.json`.
+Independent author owns tests/expected decisions; separate implementer owns the emitter/receipt/guard/workflow changes.
+Root owns narrow phase, contract, validation and release-process prose. Serialize shared workflow/publisher edits.
+
+**Read-only:** ten existing release assets and their generation functions, reservation/bundle/preparation schemas,
+acceptance source/bindings/resolver, product, dependencies, infrastructure, release triggers and mandatory job
+identities. No deployment consumer, registry transfer, OIDC permission, cloud call or new workflow job.
+
+**Required behavior:** follow the closed two-API contract and fixed receipt CLI. Bind original admission context/digest
+separately from a later publisher attempt; retain observed numeric repository/asset identities. Write the fixed private
+handoff only after successful publication. Upload only that file with the pinned action, no overwrite, requested 90-day
+retention; bind exact uploader outputs in the fixed receipt step. Missing/failed receipt gives no usable handoff. A
+failed handoff never rolls back a published release or rewrites its bytes. Retry may emit a new attempt-specific handoff
+only after the existing release and original bundle are reverified.
+
+**Test first:** independent literal records and synthetic GitHub observations cover closed schema/purity, original vs
+publisher attempts, raw vs canonical hashes, all ten asset identities, publication ordering/failures, exact fixed CLI
+file/context/output custody, workflow/permission wiring and collision/retry failures. Preserve a real missing-API red;
+review expectations before separate implementation. Historical step-log/API compatibility and archive acquisition are
+explicit future-reader tests, not claimed passing behavior here.
+
+**Validation and review:** focused publisher/handoff tests, then complete tooling, workflow/policy/format/portability
+and ordinary mandatory product acceptance. Exact-head companion approval precedes owner merge. Verify actual main
+publication still has ten original assets; observe the additional Actions artifact/receipt/job outputs separately. A
+source or mock pass is not a live producer or historical-authentication pass.
+
+**Rollback and stop:** an emitter/upload failure leaves the software release intact and blocks delivery. Preserve failed
+receipts and immutable artifacts; no deletion/overwrite fallback. Stop before historical downloader, registry, stage,
+production, reconciliation/backfill or release-finalization implementation. Production retains human intervention.
+
 ## Provisional work after the three-card window
 
 Expand only when prerequisite evidence exists: trusted launcher execution and coherent promotion-consumer migration;
 exact tested-image registry transfer; publication reconciliation/backfill before handoff expiry; narrowly scoped
-access/registry/state IaC; runtime pair/configuration IaC; active post-publisher stage workflow and observed stage
-acceptance/recovery; production gate/finalization support. These packages remain provisional, with no guessed PRs/SHAs.
+access-root remote-state migration and federation/service IAM; runtime pair/configuration IaC; active post-publisher
+stage workflow and observed stage acceptance/recovery; production gate/finalization support. These packages remain
+provisional, with no guessed PRs/SHAs.
 
 Use sibling/stacked branches for disjoint authoring, then reconcile actual squash ancestry and obtain fresh
 checks/review for each main-target PR. Serialize shared policy, bindings, Git operations and environment changes. A
