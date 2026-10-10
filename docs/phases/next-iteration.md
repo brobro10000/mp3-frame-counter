@@ -23,7 +23,9 @@ merge. Later launcher, image transfer, federation, runtime IaC and workflow chan
 
 Merge an approved PR as soon as its required checks and prerequisites pass. Immediately reconcile and retarget its
 direct dependents onto the actual merged main, then refresh their checks and companion review. Avoid accumulating
-completed layers; keep parallel work limited to independent domains and necessary prerequisites.
+completed layers; keep parallel work limited to independent domains and necessary prerequisites. Refresh the PR base
+metadata to `main` before pushing the reconciled head, even when its base branch already has that name. Verify its base
+SHA matches actual main so a fresh CI event cannot retain an older base with a newer merge parent.
 
 Software releases remain independent of deployment. The [cost evidence](../validation/cloud-cost-bootstrap.md) preserves
 the USD 75 shared Run cap and USD 100 project alert budget. Every production application deployment, including

@@ -76,3 +76,18 @@ expectation groups. This run used the implementation/integration tree based on `
 excludes changes still on the separate hosted-evidence/source-projection branches. Complete log SHA-256:
 `a74afe103105db072e5d10cee6623d8bea61f24af02be5859455061b20c3751d`. The final evidence text receives an explicit format
 check. Remote CI, companion approval, actual-main publication and live plan/apply remain pending.
+
+## Actual-main reconciliation and preflight refusal
+
+At head `5edfe5b`, [PR CI 38093294194](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38093294194) passed
+the mandatory checks. After PR #31 merged as `2289a80f6a0f35bab819d7057ac3b2029f09c10f`, root immediately reconciled
+this branch onto that actual first parent without changing access configuration or independent tests.
+[Run 38093965059](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38093965059) then refused admission
+before any head-owned command: its PR event still named base `bccea9e`, while synthetic merge `19ff47f` had parents
+`2289a80` and `a4ab428`. The mismatch was confirmed through GitHub commit/PR metadata; no guard was changed.
+
+Explicitly updating the PR base to `main` refreshed GitHub's base SHA to `2289a80`, even though the branch name was
+already `main`. This documentation commit creates a fresh synchronize event after that correction; the failed event is
+preserved rather than retried with its stale payload. Failed log SHA-256:
+`1ddfb37efb2a1f995c87b6e0423ee53ee5708f42968a7901c67e036b07d8769c`. Fresh CI and exact-head companion review remain
+required before merge. No cloud action occurred.
