@@ -761,3 +761,228 @@ test("the exact release policy reservation does not admit arbitrary root or infr
     reject(f, source, base);
   }
 });
+
+// These literal reservations are independent expectations, not imported classifier output. Synthetic file contents
+// exercise admission only; no Terraform is interpreted and no provider or application is invoked.
+const hostedAccessPaths = [
+  "infra/cloud/access/versions.tf",
+  "infra/cloud/access/variables.tf",
+  "infra/cloud/access/main.tf",
+  "infra/cloud/access/outputs.tf",
+  "infra/cloud/access/.terraform.lock.hcl",
+];
+const hostedRuntimePaths = [
+  "infra/cloud/runtime/versions.tf",
+  "infra/cloud/runtime/variables.tf",
+  "infra/cloud/runtime/main.tf",
+  "infra/cloud/runtime/outputs.tf",
+  "infra/cloud/runtime/.terraform.lock.hcl",
+];
+
+test("hosted IaC paths: dormant governance preserves genesis and an existing pending binding", (t) => {
+  const f = fixture(t);
+  const legacy = f.resolve(f.product, f.genesis.suiteCommit);
+  requireIdentity(legacy.required, f.genesis);
+  assert.equal(legacy.admission, "legacy");
+  const bootstrap = f.bootstrap();
+  assert.equal(f.resolve(bootstrap, f.product).admission, "bootstrap");
+  f.put("scripts/hosted-policy.mjs", "// Synthetic dormant governance marker; never executed.\n");
+  const governance = f.commit("ordinary governance needs no IaC or successor files");
+  const dormant = f.resolve(governance, bootstrap);
+  assert.equal(dormant.admission, "governance");
+  requireIdentity(dormant.required, f.genesis);
+  assert.equal(dormant.candidate, null);
+  assert.equal(dormant.pendingBinding, null);
+  assert.equal(dormant.activationCommit, null);
+  const candidate = f.candidate();
+  const binding = f.bind(candidate);
+  const admitted = f.resolve(binding, candidate.record.suiteCommit, [candidate.observation]);
+  assert.equal(admitted.admission, "binding");
+  f.put("scripts/hosted-policy.mjs", "// Updated dormant governance marker; never executed.\n");
+  const source = f.commit("governance preserves pending successor");
+  const pending = f.resolve(source, binding);
+  assert.equal(pending.admission, "governance");
+  requireIdentity(pending.required, f.genesis);
+  requireIdentity(pending.pendingBinding, candidate.record);
+  assert.equal(pending.candidate, null);
+  assert.equal(pending.bindingCommit, binding);
+  assert.equal(pending.activationCommit, null);
+});
+
+test("hosted IaC paths: each access literal adds and changes governance without activating a pending suite", (t) => {
+  for (const path of hostedAccessPaths) {
+    const f = boundFixture(t);
+    assert.equal(
+      f.resolve(f.binding, f.candidateState.record.suiteCommit, [f.candidateState.observation]).admission,
+      "binding",
+    );
+    let base = f.binding;
+    for (const change of ["addition", "change"]) {
+      f.put(path, `# Synthetic access ${change}; never interpreted.\n`);
+      const source = f.commit(`${change} exact access path ${path}`);
+      const result = f.resolve(source, base);
+      assert.equal(result.admission, "governance", path);
+      requireIdentity(result.required, f.genesis);
+      requireIdentity(result.pendingBinding, f.candidateState.record);
+      assert.equal(result.candidate, null);
+      assert.equal(result.bindingCommit, f.binding);
+      assert.equal(result.activationCommit, null);
+      base = source;
+    }
+  }
+});
+
+test("hosted IaC paths: each runtime literal activates once and preserves required acceptance on descendants", (t) => {
+  for (const path of hostedRuntimePaths) {
+    const f = boundFixture(t);
+    assert.equal(
+      f.resolve(f.binding, f.candidateState.record.suiteCommit, [f.candidateState.observation]).admission,
+      "binding",
+    );
+    f.put(path, "# Synthetic initial runtime configuration; never interpreted.\n");
+    const activation = f.commit(`add exact runtime path ${path}`);
+    let result = f.resolve(activation, f.binding);
+    assert.equal(result.admission, "implementation", path);
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.pendingBinding, null);
+    assert.equal(result.candidate, null);
+    assert.equal(result.bindingCommit, f.binding);
+    assert.equal(result.activationCommit, activation);
+    f.put(path, "# Synthetic changed runtime configuration; never interpreted.\n");
+    const changed = f.commit(`change exact runtime path ${path}`);
+    result = f.resolve(changed, activation);
+    assert.equal(result.admission, "implementation", path);
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, activation);
+    assert.equal(result.pendingBinding, null);
+    f.put("README.md", "Documentation after runtime activation.\n");
+    const descendant = f.commit("runtime successor persists through documentation");
+    result = f.resolve(descendant, changed);
+    assert.equal(result.admission, "documentation");
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, activation);
+
+    const ordinary = fixture(t);
+    const base = ordinary.bootstrap();
+    assert.equal(ordinary.resolve(base, ordinary.product).admission, "bootstrap");
+    ordinary.put(path, "# Synthetic runtime input without a pending successor.\n");
+    const source = ordinary.commit("runtime change still requires the current full suite");
+    result = ordinary.resolve(source, base);
+    assert.equal(result.admission, "implementation", path);
+    requireIdentity(result.required, ordinary.genesis);
+    assert.equal(result.pendingBinding, null);
+    assert.equal(result.activationCommit, null);
+  }
+});
+
+test("hosted IaC paths: mixed runtime and governance is refused while access may accompany governance", (t) => {
+  const allowed = boundFixture(t);
+  allowed.put(hostedAccessPaths[2], "# Synthetic access policy.\n");
+  allowed.put("scripts/hosted-policy.mjs", "// Synthetic governance only.\n");
+  allowed.put("docs/deployment/hosted-policy.md", "# Synthetic policy explanation\n");
+  const source = allowed.commit("access plus governance and documentation");
+  const result = allowed.resolve(source, allowed.binding);
+  assert.equal(result.admission, "governance");
+  requireIdentity(result.required, allowed.genesis);
+  requireIdentity(result.pendingBinding, allowed.candidateState.record);
+  assert.equal(result.activationCommit, null);
+  for (const governancePath of [hostedAccessPaths[2], "scripts/hosted-policy.mjs", ".github/workflows/ci.yml"]) {
+    const f = boundFixture(t);
+    f.put(hostedRuntimePaths[2], "# Synthetic runtime input cannot change admission authority.\n");
+    f.put(governancePath, "# Synthetic governance must remain separate.\n");
+    const mixed = f.commit("forbidden runtime and governance mixture");
+    reject(f, mixed, f.binding);
+  }
+});
+
+test("hosted IaC paths: candidate and binding boundaries remain separate from either IaC class", (t) => {
+  const unbound = fixture(t);
+  const base = unbound.bootstrap();
+  const candidate = unbound.candidate();
+  const current = unbound.resolve(candidate.record.suiteCommit, base);
+  assert.equal(current.admission, "candidate");
+  requireIdentity(current.required, unbound.genesis);
+  requireIdentity(current.candidate, candidate.record);
+  unbound.put(hostedRuntimePaths[2], "# Runtime cannot precede separate binding.\n");
+  const earlyRuntime = unbound.commit("runtime before candidate binding");
+  reject(unbound, earlyRuntime, candidate.record.suiteCommit);
+  for (const path of [hostedAccessPaths[2], hostedRuntimePaths[2]]) {
+    const mixedCandidate = fixture(t);
+    const candidateBase = mixedCandidate.bootstrap();
+    assert.equal(mixedCandidate.resolve(candidateBase, mixedCandidate.product).admission, "bootstrap");
+    const proposed = mixedCandidate.candidate({ mixedPath: path });
+    reject(mixedCandidate, proposed.record.suiteCommit, candidateBase);
+    const mixedBinding = fixture(t);
+    mixedBinding.bootstrap();
+    const independent = mixedBinding.candidate();
+    mixedBinding.put(path, "# IaC cannot accompany binding authority.\n");
+    const binding = mixedBinding.bind(independent);
+    reject(mixedBinding, binding, independent.record.suiteCommit, [independent.observation]);
+  }
+  const pending = boundFixture(t);
+  pending.put(hostedAccessPaths[2], "# Access may change while one successor remains pending.\n");
+  const access = pending.commit("access leaves the existing pending slot occupied");
+  requireIdentity(pending.resolve(access, pending.binding).pendingBinding, pending.candidateState.record);
+  const second = pending.candidate({ id: "docs-r5", revision: "r5", predecessor: "transport-r4" });
+  reject(pending, second.record.suiteCommit, access);
+  const rewritten = boundFixture(t);
+  rewritten.put(hostedAccessPaths[2], "# Access cannot conceal a registry rewrite.\n");
+  rewritten.registry.transitions[0].review.reviewId += 1;
+  rewritten.json(registryPath, rewritten.registry);
+  const rewrite = rewritten.commit("access with a rewritten historical binding");
+  reject(rewritten, rewrite, rewritten.binding);
+});
+
+test("hosted IaC paths: neighboring filenames and directories remain unclassified", (t) => {
+  for (const path of [
+    "infra/cloud/access/backend.tf",
+    "infra/cloud/access/Main.tf",
+    "infra/cloud/access/main.tf.json",
+    "infra/cloud/access/.terraform.lock.hcl.backup",
+    "infra/cloud/access/modules/main.tf",
+    "infra/cloud/runtime/terraform.tfvars",
+    "infra/cloud/runtime/terraform.tfstate",
+    "infra/cloud/runtime/deploy.mjs",
+    "infra/cloud/runtime/config.yaml",
+    "infra/cloud/runtime/other.hcl",
+    "infra/cloud/Runtime/main.tf",
+    "infra/cloud/stage/main.tf",
+    "infra/cloud/main.tf",
+    "infra/cloud-access/main.tf",
+  ]) {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    assert.equal(f.resolve(base, f.product).admission, "bootstrap");
+    f.put(path, "# Unknown input cannot acquire path authority.\n");
+    const source = f.commit(`unknown path ${path}`);
+    reject(f, source, base);
+  }
+});
+
+test("hosted IaC paths: historical replay ignores later files but rejects unknown history and missing objects", (t) => {
+  const f = fixture(t);
+  const legacy = f.resolve(f.product, f.genesis.suiteCommit);
+  requireIdentity(legacy.required, f.genesis);
+  assert.equal(legacy.admission, "legacy");
+  const bootstrap = f.bootstrap();
+  const dormant = f.resolve(bootstrap, f.product);
+  assert.equal(dormant.admission, "bootstrap");
+  for (const path of [...hostedAccessPaths, ...hostedRuntimePaths]) f.put(path, "# Later fixture input.\n");
+  f.commit("later mixed IaC history must not replace an earlier selected source");
+  f.json(manifestPath, { contractRevision: "uncommitted-wrong-suite" });
+  f.json(registryPath, { schemaVersion: 99 });
+  assert.deepEqual(f.resolve(f.product, f.genesis.suiteCommit), legacy);
+  assert.deepEqual(f.resolve(bootstrap, f.product), dormant);
+  reject(f, "f".repeat(40), f.product);
+  reject(f, f.product, "e".repeat(40));
+
+  const unknown = fixture(t);
+  const known = unknown.bootstrap();
+  assert.equal(unknown.resolve(known, unknown.product).admission, "bootstrap");
+  unknown.put("infra/cloud/access/unapproved.tf", "# Never an approved path.\n");
+  const unknownBase = unknown.commit("unknown IaC in committed history");
+  unknown.put("README.md", "Documentation does not authorize unknown history.\n");
+  const descendant = unknown.commit("documentation after unclassified history");
+  reject(unknown, unknownBase, unknownBase);
+  reject(unknown, descendant, unknownBase);
+});
