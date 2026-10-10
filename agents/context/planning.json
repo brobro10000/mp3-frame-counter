@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "release_version": "0.1.0",
+  "compatibility_baseline": "0.0.0",
+  "release_objective": "Complete the five authorized dependency-ordered MP3 MVP phases with independent acceptance and actual managed release evidence.",
+  "phases": [
+    {
+      "id": "phase-01-foundation",
+      "sequence": 1,
+      "objective": "Verify and adapt merged foundation for fail-closed acceptance-first development.",
+      "authority": "Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.",
+      "acceptance_criteria": [
+        "Pinned foundation checks and live repository controls verified.",
+        "Mandatory phase-aware checks and trusted-baseline ownership reviewed."
+      ],
+      "stop_conditions": [
+        "Block P1 on failed foundation validation or unverified repository controls; P2 oracle and P5 cloud access are not P1 prerequisites.",
+        "Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval."
+      ],
+      "task_ids": [
+        "TASK-V1-01"
+      ],
+      "depends_on": [],
+      "parallel_group": null
+    },
+    {
+      "id": "phase-02-independent-acceptance",
+      "sequence": 2,
+      "objective": "Establish independent known-count fixtures and reviewed executable acceptance before product code.",
+      "authority": "Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.",
+      "acceptance_criteria": [
+        "MediaInfo and independent structure reconcile the private sample physical count.",
+        "Harness negative controls, fixture hashes and independent review establish a recorded test-only baseline."
+      ],
+      "stop_conditions": [
+        "Block P2 on unresolved independent counts, invalid fixtures, failed harness controls or missing baseline review.",
+        "Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval."
+      ],
+      "task_ids": [
+        "TASK-V1-02"
+      ],
+      "depends_on": [
+        "phase-01-foundation"
+      ],
+      "parallel_group": null
+    },
+    {
+      "id": "phase-03-parser",
+      "sequence": 3,
+      "objective": "Implement the pure TypeScript physical frame counter against the frozen independent baseline.",
+      "authority": "Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.",
+      "acceptance_criteria": [
+        "Independent expected counts and rejection cases pass unit tests.",
+        "Sample count agrees with the independently reconciled physical expectation; baseline unchanged."
+      ],
+      "stop_conditions": [
+        "Block P3 on baseline drift, unresolved parser count differences, failed build or unit tests.",
+        "Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval."
+      ],
+      "task_ids": [
+        "TASK-V1-03"
+      ],
+      "depends_on": [
+        "phase-02-independent-acceptance"
+      ],
+      "parallel_group": null
+    },
+    {
+      "id": "phase-04-local-product",
+      "sequence": 4,
+      "objective": "Integrate native HTTP, static UI and independently built runtime images with local external acceptance.",
+      "authority": "Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.",
+      "acceptance_criteria": [
+        "Both images build independently and meet non-root resource and content boundaries.",
+        "All applicable AC-01 through AC-12 pass through local frontend including exact20MiB, chunked rejection and recovery."
+      ],
+      "stop_conditions": [
+        "Block P4 on baseline drift, missing image/resource evidence or any failing mandatory local acceptance case.",
+        "Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval."
+      ],
+      "task_ids": [
+        "TASK-V1-04",
+        "TASK-V1-06"
+      ],
+      "depends_on": [
+        "phase-03-parser"
+      ],
+      "parallel_group": null
+    },
+    {
+      "id": "phase-05-managed-release",
+      "sequence": 5,
+      "objective": "Implement and verify automated managed candidate, production release and recovery.",
+      "authority": "Owner explicitly authorized execution of all defined MVP phases on 2026-10-09; preserve evidence gates and actual external prerequisites.",
+      "acceptance_criteria": [
+        "Account, provider fit, budget, environment and supported scoped access established before external operations.",
+        "Exact image pair passes candidate acceptance, approved production verification and automatic version/private release publication.",
+        "Recovery or first-release abort is actually rehearsed and evidence retained."
+      ],
+      "stop_conditions": [
+        "Block P5 on missing account, fit, budget, authorization, exact identities, candidate/production verification, version publication or recovery evidence.",
+        "Preserve original sources, frozen baseline, no-bypass core controls and secrets; no silent weakening or fabricated approval."
+      ],
+      "task_ids": [
+        "TASK-V1-05"
+      ],
+      "depends_on": [
+        "phase-04-local-product"
+      ],
+      "parallel_group": null
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-V1-01",
+      "depends_on": [],
+      "owner": "foundation-reviewer",
+      "writes": [
+        "scripts",
+        ".github",
+        "package.json",
+        "package-lock.json",
+        "docs/validation/p1-foundation.md",
+        "agents/outputs/p1-validation.json"
+      ]
+    },
+    {
+      "id": "TASK-V1-02",
+      "depends_on": [
+        "TASK-V1-01"
+      ],
+      "owner": "acceptance-author",
+      "writes": [
+        "tests/acceptance",
+        "docs/testing",
+        "docs/validation/p2-acceptance.md",
+        "docs/validation/sample-baseline.md",
+        "agents/outputs/p2-validation.json"
+      ]
+    },
+    {
+      "id": "TASK-V1-03",
+      "depends_on": [
+        "TASK-V1-02"
+      ],
+      "owner": "parser-implementer",
+      "writes": [
+        "server/src",
+        "tests/unit",
+        "package.json",
+        "package-lock.json",
+        "tsconfig.json",
+        "docs/validation/p3-parser.md",
+        "agents/outputs/p3-validation.json"
+      ]
+    },
+    {
+      "id": "TASK-V1-04",
+      "depends_on": [
+        "TASK-V1-03"
+      ],
+      "owner": "integration-implementer",
+      "writes": [
+        "server",
+        "frontend",
+        "tests/unit",
+        "compose.yaml",
+        "Makefile",
+        ".dockerignore",
+        "package.json",
+        "package-lock.json",
+        "tsconfig.json",
+        "README.md",
+        "docs/validation/p4-integration.md",
+        "agents/outputs/p4-validation.json"
+      ]
+    },
+    {
+      "id": "TASK-V1-05",
+      "depends_on": [
+        "TASK-V1-04",
+        "TASK-V1-06"
+      ],
+      "owner": "release-operator",
+      "writes": [
+        "deploy",
+        "scripts",
+        ".github",
+        "Makefile",
+        "README.md",
+        "docs/deployment",
+        "docs/validation/p5-deployment.md",
+        "agents/outputs/p5-validation.json"
+      ]
+    },
+    {
+      "id": "TASK-V1-06",
+      "depends_on": [
+        "TASK-V1-03"
+      ],
+      "owner": "independent-gate-reviewer",
+      "writes": [
+        "scripts",
+        ".github"
+      ]
+    }
+  ]
+}

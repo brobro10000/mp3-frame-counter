@@ -1,0 +1,11 @@
+{
+  "producer_plugin": {
+    "name": "mvp-orchestrator",
+    "version": "0.1.0"
+  },
+  "generated_project_schema_version": 1,
+  "minimum_compatible_reader_version": "0.1.0",
+  "current_release": "0.1.0",
+  "evidence_mode": "direct_validation",
+  "migration_history": []
+}

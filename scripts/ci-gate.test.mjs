@@ -10,17 +10,26 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
 
+import { mandatoryJobs } from "./ci-gate.mjs";
+
+const passing = Object.fromEntries(mandatoryJobs.map((name) => [name, { result: "success" }]));
 const cases = [
-  ["success", { "validate-foundation": { result: "success" } }, 0],
-  ...["failure", "cancelled", "skipped", "pending", "neutral", ""].map((result) => [
-    result || "empty result",
-    { "validate-foundation": { result } },
+  ["all mandatory jobs succeed", passing, 0],
+  ...mandatoryJobs.flatMap((name) =>
+    ["failure", "cancelled", "skipped", "pending", "neutral", ""].map((result) => [
+      `${name}: ${result || "empty result"}`,
+      { ...passing, [name]: { result } },
+      1,
+    ]),
+  ),
+  ...mandatoryJobs.map((missing) => [
+    `missing ${missing}`,
+    Object.fromEntries(Object.entries(passing).filter(([name]) => name !== missing)),
     1,
   ]),
-  ["missing job", {}, 1],
-  ["missing result", { "validate-foundation": {} }, 1],
+  ["missing result", { ...passing, "validate-product": {} }, 1],
   ["null", null, 1],
-  ["unexpected job", { "validate-foundation": { result: "success" }, extra: { result: "success" } }, 1],
+  ["unexpected job", { ...passing, extra: { result: "success" } }, 1],
 ];
 
 // Exercise the CLI rather than just the exported function so a broken process exit cannot go unnoticed.

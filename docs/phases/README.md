@@ -1,9 +1,9 @@
-# Proposed phase order
+# MVP phase order
 
-P0 is the current documents/research task and stops for human review. The five future phases below are dependencies, not
-authorization. PR #1's merged foundation remains factual history; none of the new phase exits is claimed complete. No
-separate execution-state machine is maintained in these documents. Generated metadata is
-[blocked pending reviewed inputs](../../agents/README.md).
+P0 planning merged in PR #2 at `0c9f538`. The owner subsequently authorized execution of all five phases, required shell
+commands and UI work, with unattended progress. See the [execution authorization](execution-authorization.md). PR #1's
+merged foundation remains factual history. Each phase still requires its actual dependency checks and evidence;
+authorization alone does not establish completion. See [active orchestrator metadata](../../agents/README.md).
 
 | Phase                                                       | Objective                                                                               | Required exit                                                                         |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
@@ -18,9 +18,11 @@ into P4 local integration plus P5 managed release; managed hosting and independe
 required scope. Exact former documents remain in `agents/history/v1-draft/`; no migration execution is implied.
 
 Read the selected phase, [MVP](../mvp.md), [decisions/risks](../architecture/decisions.md) and appropriate role before
-work. Each phase needs its own explicit instruction, human review of relevant inputs and a final reviewable PR/evidence
-handoff. Locally validated, CI-passed, human-reviewed, merged, candidate-verified, production-approved and deployed are
-separate states. Never automatically merge, start the next phase or reinterpret a missing prerequisite as passed.
+work. The owner's execution instruction covers advancement after the preceding phase is validated and reviewed. Retain a
+reviewable evidence handoff per phase. Locally validated, CI-passed, agent-reviewed, human-reviewed, merged,
+candidate-verified, production-approved and deployed are separate states. Never reinterpret a missing prerequisite as
+passed or fabricate a human approval.
 
-The next proposed scope is **P1 only**, and this planning run does not authorize it. Provider selection/budget may
-remain pending through unrelated local work; it must be resolved before the corresponding P5 cloud action.
+Provider account and budget questions may remain pending through unrelated local work; they must be resolved before the
+corresponding P5 cloud action. Each phase document retains its original planned exit criteria; its P0-only authorization
+and mandatory pause wording is superseded by the later execution instruction.

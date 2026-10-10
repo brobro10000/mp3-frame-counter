@@ -1,8 +1,9 @@
 # Decisions, proposals and blockers
 
-Status: unified planning proposal for review, **2026-10-09**. Evidence labels mean: **observed** from actual read-only
-inspection; **documented** in supplied/official sources; **proposed** for future review; **blocked** pending the named
-input. None means deployed or human-approved code. See [source precedence](../requirements/README.md).
+Status: unified plan with execution authorized on **2026-10-09**; see the
+[later instruction](../phases/execution-authorization.md). Evidence labels mean: **observed** from actual inspection;
+**documented** in supplied/official sources; **proposed** for future review; **blocked** pending the named input. None
+means deployed or human-approved code. See [source precedence](../requirements/README.md).
 
 ## Reconciliation and decision register
 
@@ -55,11 +56,18 @@ be inferred from the user's acceptance of a planning revision.
 | R-10 npm/E2E does not fit plugin's direct Python/60-second boundary | Fake or truncated validation                      | Foundation owner             | Review ordinary CI handoff or bounded evidence adapter separately; no allowlist edits or fabricated receipts.                           | P1 integration decision; P4 execution       |
 | R-11 Secrets, private samples or host paths leak                    | Nonportable CI or disclosure                      | All roles                    | Portable paths, ignored private input, source/hash checks, redacted logs and restricted evidence artifacts.                             | Every phase                                 |
 
-## P1 only: next proposed scope, not authorized now
+## Execution sequencing
+
+The owner has authorized P1–P5 and unattended advancement after each dependency is validated and independently reviewed.
+This supersedes the earlier P0-only and per-phase permission wording. Agent review does not become human approval.
+DEC-07 is being resolved through fresh schema-v1 inputs and installed direct validators; no archived execution plan is
+reused. DEC-08 is resolved by the independent acceptance author and reviewer before test freeze.
+
+The phase scope remains narrow even though all phases are authorized:
 
 Verify the merged repository/branch and live control identities; preserve the two-ruleset owner exception. Reuse pinned
 foundation tooling and meaningful checks. Adapt the obsolete open-foundation-PR audit and plan phase-aware CI/ownership
 boundaries without making future E2E optional. Resolve the plugin/ordinary-CI handoff and review required planning
-inputs before regenerated metadata. Produce one reviewable foundation-adaptation PR/evidence handoff, then stop. No
-parser, HTTP/UI, test suite, fixture generation, runtime containers, cloud setup or automatic P2 advancement belongs to
-P1.
+inputs before regenerated metadata. Produce a reviewable foundation-adaptation evidence handoff before P2. No parser,
+HTTP/UI, test suite, fixture generation, runtime containers or cloud setup belongs to P1 itself. Cloud account creation,
+budget and exact-release evidence remain separate unresolved prerequisites until observed.

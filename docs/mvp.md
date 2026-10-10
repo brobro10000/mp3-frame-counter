@@ -1,8 +1,8 @@
 # V1 MP3 frame counter requirements
 
-Status: **proposed plan for human review, 2026-10-09**. Fixed user requirements below are distinguished from proposed
-edge behavior and operational choices. P0 creates documents only. PR #1's foundation is already merged at `143498a`; no
-parser, API, browser application, acceptance suite or managed deployment exists.
+Status: **execution authorized, 2026-10-09**. Planning PR #2 merged at `0c9f538`, and the owner instructed execution of
+P1–P5. Read the [authorization record](phases/execution-authorization.md) and actual phase evidence before inferring
+completion. Fixed requirements remain distinct from operational choices and independently reviewed edge behavior.
 
 V1 is the first functional product: select an MP3, upload its raw bytes and display its correct MPEG Version 1 Audio
 Layer 3 physical frame count. It also includes an independently reviewed acceptance baseline, reproducible local
@@ -33,7 +33,7 @@ Original assessment and release IDs continue to apply.
 | APP-V1-008 | Thin Make commands and clear setup/test instructions; ordinary users need no private plugin. Each script documents its purpose and operation.                                                                      | APP-EVAL-004; APP-SUB-002,003             | Reproducible reviewer handoff; P1–P5                           |
 | APP-V1-009 | MediaInfo evidence establishes/reconciles independent physical-frame expectations; private assessment bytes remain untracked and are not a CI dependency.                                                          | APP-ASSET-001; APP-REQ-003; APP-GUIDE-001 | Reviewed fixture provenance, hashes and sample evidence; P2/P3 |
 | APP-V1-010 | Built-in Node unit tests and real fail-closed CI, with separate locked Playwright acceptance package as an explicit dependency-boundary exception.                                                                 | APP-EVAL-001,003,004; APP-GUIDE-002       | Harness evidence P2; parser P3; real mandatory E2E P4/P5       |
-| APP-V1-011 | Amended from three to five separately authorized future phases, each stopping for review; preserve actual foundation history and owner-only PR review exception.                                                   | APP-EVAL-007,008; APP-SUB-001             | Phase/PR evidence and live control audit; P1–P5                |
+| APP-V1-011 | Execute five ordered phases under the owner's unattended execution instruction, with independent review and evidence; preserve foundation history, core controls and owner-only review exception.                  | APP-EVAL-007,008; APP-SUB-001             | Phase/PR evidence and live control audit; P1–P5                |
 | APP-V1-012 | Amended from local delivery to managed release; retain all six first-MVP release requirements, including automatic versions, tags/private releases and recovery.                                                   | APP-REL-001–006                           | Actual complete release and recovery evidence; P5              |
 | APP-V1-013 | Independently authored, reviewed executable black-box baseline precedes product code; implementer cannot weaken baseline or gate logic.                                                                            | APP-EVAL-001,003; unified brief §6        | Recorded suite revision, fixture hash and review before P3; P2 |
 | APP-V1-014 | Preserve the 20 MiB contract through managed TLS ingress, frontend and private API; approve provider, access and budget before cloud setup.                                                                        | APP-REL-001,005; unified brief §5         | Dated fit evidence and same full candidate suite; P5           |
@@ -60,7 +60,8 @@ planning date.
 ## Completion boundary
 
 Follow P1 foundation verification/adaptation → P2 independent acceptance baseline → P3 parser → P4 integrated local
-product → P5 managed deployment. P0 ends at human review. Dependencies do not authorize execution or merging.
+product → P5 managed deployment. The later owner instruction authorizes execution across these phases. Dependencies and
+passing tests alone do not authorize an owner review override or establish production approval.
 
 Completion requires applicable AC-01–12 locally and on an identified nonproduction candidate, the source/configuration
 checks black-box tests cannot prove, reconciled supplied-sample evidence, independent image builds, all APP-REL-001–006
