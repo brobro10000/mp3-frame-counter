@@ -470,9 +470,9 @@ function controller(f, extra = {}) {
   return { ...result, commands };
 }
 
-test("profile source exposes the sole reader without a profile selector API", () => {
+test("profile source exposes only the existing reader and additive required projection without a selector API", () => {
   reader();
-  assert.deepEqual(Object.keys(subject), ["readAcceptanceProfileSource"]);
+  assert.deepEqual(Object.keys(subject), ["readAcceptanceProfileSource", "readRequiredAcceptanceProfileProjection"]);
 });
 
 test("independent fixture states agree with the existing resolver through candidate, binding and activation", (t) => {
@@ -1165,4 +1165,570 @@ test("ordinary pre-policy local controller preserves a genuinely omitted base at
     false,
     "The real child environment must omit CI_BASE_REF rather than supply an empty or fabricated base",
   );
+});
+
+/** Adopted HOSTED-SOURCE-PROJECTION API availability never counts as a semantic refusal. */
+function projector() {
+  assert.equal(
+    typeof subject.readRequiredAcceptanceProfileProjection,
+    "function",
+    "Public required-profile projection must exist",
+  );
+  return subject.readRequiredAcceptanceProfileProjection;
+}
+
+/** Assert the same labeled boundary without allowing absent API/setup failures to satisfy a negative case. */
+function projectionRejected(f, options, code = "ERR_ACCEPTANCE_PROFILE_SOURCE") {
+  const project = projector();
+  const before = clone(options);
+  assert.throws(
+    () => project(f.root, options),
+    (error) =>
+      error instanceof TypeError &&
+      error.code === code &&
+      error.message ===
+        (code === "ERR_ACCEPTANCE_PROFILE_SOURCE"
+          ? "Acceptance profile source is invalid or unverifiable"
+          : "Invalid acceptance profile declaration"),
+  );
+  assert.deepEqual(options, before);
+}
+
+/** Hand-authored unsorted metadata and unequal inventories distinguish original input from normalized mappings. */
+function projectionData() {
+  const added = { file: "specs/added.spec.ts", title: "L-02 additive local obligation" };
+  const extraStage = { file: "specs/stage.spec.ts", title: "S-02 another managed ingress obligation" };
+  const inventories = {
+    local: inventory("r5", [added, localCase]),
+    stage: inventory("r5", [extraStage, stageCase]),
+    production: inventory("r5", [productionCase]),
+  };
+  const map = (entry, requirements = ["APP-V1-001", "APP-REL-001"]) => ({ case: clone(entry), requirements });
+  const metadata = {
+    profiles: {
+      production: [map(productionCase)],
+      local: [map(localCase), map(added)],
+      stage: [map(stageCase), map(extraStage)],
+    },
+    contractRevision: "r5",
+    schemaVersion: 1,
+  };
+  const required = {
+    schemaVersion: 1,
+    kind: "acceptance-profile-declarations",
+    mode: "profiles-v1",
+    contractRevision: "r5",
+    profiles: {
+      local: {
+        inventory: clone(inventories.local),
+        mappings: [map(added, ["APP-REL-001", "APP-V1-001"]), map(localCase, ["APP-REL-001", "APP-V1-001"])],
+      },
+      stage: {
+        inventory: clone(inventories.stage),
+        mappings: [map(extraStage, ["APP-REL-001", "APP-V1-001"]), map(stageCase, ["APP-REL-001", "APP-V1-001"])],
+      },
+      production: {
+        inventory: clone(inventories.production),
+        mappings: [map(productionCase, ["APP-REL-001", "APP-V1-001"])],
+      },
+    },
+  };
+  return { metadata, inventories, required };
+}
+
+/** Preserve expected raw bytes before any subject call; compact encoding also reverses object-member order. */
+function projectionFixture(t, { compact = false } = {}) {
+  const f = fixture(t, { historicalGenesisMetadata: true });
+  const predecessor = { cases: [clone(localCase)], contractRevision: "r4" };
+  f.candidate({ edit: ({ put }) => put(paths.local, `${JSON.stringify(predecessor)}\n`) });
+  f.bind();
+  f.advance("implementation");
+  const { metadata, inventories, required } = projectionData();
+  const reverseKeys = (value) =>
+    Array.isArray(value)
+      ? value.map(reverseKeys)
+      : value && typeof value === "object"
+        ? Object.fromEntries(
+            Object.entries(value)
+              .reverse()
+              .map(([key, item]) => [key, reverseKeys(item)]),
+          )
+        : value;
+  const values = { metadata, ...inventories };
+  const raw = Object.fromEntries(
+    Object.entries(values).map(([name, value]) => [
+      name,
+      compact ? JSON.stringify(reverseKeys(value)) : `\n${JSON.stringify(value, null, 2)}\n\n`,
+    ]),
+  );
+  f.candidate({
+    profiles: true,
+    edit: ({ put }) => {
+      for (const [name, bytes] of Object.entries(raw)) put(paths[name], bytes);
+    },
+  });
+  f.bind();
+  f.advance("implementation");
+  requireFixture(f);
+  return {
+    f,
+    raw,
+    expected: {
+      required,
+      declarationInput: {
+        metadata: JSON.parse(raw.metadata),
+        inventories: {
+          local: JSON.parse(raw.local),
+          stage: JSON.parse(raw.stage),
+          production: JSON.parse(raw.production),
+        },
+        selectedContractRevision: "r5",
+        predecessorLocalInventory: predecessor,
+      },
+      profilesSha256: hash(raw.metadata),
+      inventorySha256: { stage: hash(raw.stage), production: hash(raw.production) },
+    },
+  };
+}
+
+/** Every reachable returned container must be fresh across calls and disjoint from caller-owned input. */
+function containers(value, found = new Set()) {
+  if (value && typeof value === "object" && !found.has(value)) {
+    found.add(value);
+    for (const child of Object.values(value)) containers(child, found);
+  }
+  return found;
+}
+
+test("projection fixture originals and handwritten normalized expectations agree with the existing reader", (t) => {
+  const read = reader();
+  for (const compact of [false, true]) {
+    const { f, raw, expected } = projectionFixture(t, { compact });
+    assert.deepEqual(read(f.root, f.options()), { required: expected.required, candidate: null, pending: null });
+    const selected = f.current().resolution.required;
+    for (const name of Object.keys(raw))
+      assert.equal(f.rawGit("show", `${selected.suiteCommit}:${paths[name]}`).toString("utf8"), raw[name]);
+    assert.notDeepEqual(expected.declarationInput.metadata.profiles.local, expected.required.profiles.local.mappings);
+    assert.equal(expected.declarationInput.predecessorLocalInventory.contractRevision, "r4");
+    assert.equal(selected.contractRevision, "r5");
+  }
+});
+
+test("required projection retains exact original inputs and byte hashes for local and original CI selections", (t) => {
+  const project = projector();
+  const { f, expected } = projectionFixture(t);
+  for (const kind of ["local", "ci"]) {
+    const options = f.options(kind);
+    const before = clone(options);
+    const actual = project(f.root, options);
+    assert.deepEqual(actual, expected);
+    assert.deepEqual(Object.keys(actual).sort(), ["declarationInput", "inventorySha256", "profilesSha256", "required"]);
+    assert.deepEqual(Object.keys(actual.declarationInput.metadata), ["profiles", "contractRevision", "schemaVersion"]);
+    assert.deepEqual(Object.keys(actual.declarationInput.predecessorLocalInventory), ["cases", "contractRevision"]);
+    assert.deepEqual(options, before);
+    assert.deepEqual(reader()(f.root, options).required, actual.required);
+  }
+});
+
+test("semantically equal original whitespace and member order produce distinct raw projection hashes", (t) => {
+  const project = projector();
+  const a = projectionFixture(t);
+  const b = projectionFixture(t, { compact: true });
+  const first = project(a.f.root, a.f.options());
+  const second = project(b.f.root, b.f.options());
+  assert.deepEqual(first, a.expected);
+  assert.deepEqual(second, b.expected);
+  assert.deepEqual(first.required, second.required);
+  assert.deepEqual(first.declarationInput, second.declarationInput);
+  assert.notDeepEqual(Object.keys(first.declarationInput.metadata), Object.keys(second.declarationInput.metadata));
+  assert.notEqual(first.profilesSha256, second.profilesSha256);
+  for (const name of ["stage", "production"])
+    assert.notEqual(first.inventorySha256[name], second.inventorySha256[name]);
+});
+
+test("projection returns fresh deeply frozen data without freezing or retaining caller-owned selection objects", (t) => {
+  const project = projector();
+  const { f, expected } = projectionFixture(t);
+  const options = f.options("ci");
+  const before = clone(options);
+  const caller = [...containers(options)].map((value) => [value, Object.isFrozen(value)]);
+  const a = project(f.root, options);
+  const b = project(f.root, options);
+  assert.deepEqual(a, expected);
+  assert.deepEqual(b, expected);
+  frozen(a);
+  frozen(b);
+  const first = containers(a);
+  for (const value of containers(b)) assert(!first.has(value), "Separate calls cannot share returned containers");
+  for (const [value, state] of caller) {
+    assert(!first.has(value), "Output cannot retain a caller-owned container");
+    assert.equal(Object.isFrozen(value), state);
+  }
+  assert.throws(() => a.declarationInput.metadata.profiles.local.reverse(), TypeError);
+  assert.throws(() => (a.inventorySha256.stage = "0".repeat(64)), TypeError);
+  assert.throws(() => a.required.profiles.local.inventory.cases.push(clone(stageCase)), TypeError);
+  assert.deepEqual(options, before);
+  options.selection.admission.record.context.runId = 999;
+  assert.deepEqual(a, expected, "Caller edits cannot alter an already returned projection");
+  assert.deepEqual(project(f.root, f.options("ci")), expected);
+});
+
+test("validated genesis and legacy required declarations return null, including hosted candidate and pending roles", (t) => {
+  const project = projector();
+  for (const policy of [false, true]) {
+    for (const genesisInventory of [false, true]) {
+      const f = fixture(t, { policy, genesisInventory, historicalGenesisMetadata: true });
+      for (const kind of policy ? ["local", "ci"] : ["local"]) assert.equal(project(f.root, f.options(kind)), null);
+      if (!policy) assert.equal(project(f.root, { ...f.options(), baseRevision: null }), null);
+    }
+  }
+  const f = fixture(t);
+  f.inventoryRequired();
+  assert.equal(project(f.root, f.options()), null);
+  f.candidate({ profiles: true });
+  requireFixture(f);
+  assert.equal(reader()(f.root, f.options()).candidate.mode, "profiles-v1");
+  assert.equal(project(f.root, f.options()), null);
+  assert.equal(project(f.root, f.options("ci")), null);
+  f.bind();
+  requireFixture(f);
+  assert.equal(reader()(f.root, f.options("ci")).pending.mode, "profiles-v1");
+  assert.equal(project(f.root, f.options("ci")), null);
+  projectionRejected(f, f.options());
+  f.advance();
+  assert.equal(project(f.root, f.options()), null);
+  f.advance("implementation");
+  assert.equal(project(f.root, f.options()).required.contractRevision, "r5");
+});
+
+test("projection always uses required bytes while valid newer candidate and pending declarations remain distinct", (t) => {
+  const project = projector();
+  const { f, expected } = projectionFixture(t);
+  const retainedLocal = expected.declarationInput.inventories.local.cases;
+  f.candidate({ profiles: true, local: retainedLocal });
+  requireFixture(f);
+  assert.equal(reader()(f.root, f.options()).candidate.contractRevision, "r6");
+  assert.deepEqual(project(f.root, f.options()), expected);
+  f.bind();
+  requireFixture(f);
+  assert.equal(reader()(f.root, f.options("ci")).pending.contractRevision, "r6");
+  assert.deepEqual(project(f.root, f.options("ci")), expected);
+  f.advance();
+  assert.deepEqual(project(f.root, f.options()), expected);
+});
+
+test("projection has closed original-context options and no profile, role, path, ref or older-suite override", (t) => {
+  projector();
+  const { f, expected } = projectionFixture(t);
+  const valid = f.options();
+  assert.deepEqual(projector()(f.root, valid), expected);
+  for (const key of ["selection", "sourceRevision", "baseRevision"]) {
+    const absent = clone(valid);
+    delete absent[key];
+    projectionRejected(f, absent);
+    projectionRejected(f, { ...clone(valid), [key]: undefined });
+  }
+  for (const key of ["profile", "role", "path", "ref", "metadataPath", "suiteCommit", "predecessorLocalInventory"])
+    projectionRejected(f, { ...clone(valid), [key]: "sensitive-fixture-value" });
+  for (const invalid of [null, [], "main", 1]) projectionRejected(f, invalid);
+  projectionRejected(f, { ...clone(valid), sourceRevision: "HEAD" });
+  projectionRejected(f, { ...clone(valid), baseRevision: null });
+  projectionRejected(f, { ...clone(valid), baseRevision: valid.sourceRevision });
+  projectionRejected(f, { ...clone(valid), sourceRevision: f.product });
+  projectionRejected(f, { ...clone(valid), sourceRevision: "f".repeat(40) });
+  const older = clone(valid);
+  older.selection.baseline = clone(f.genesis);
+  older.selection.resolution.required = clone(f.genesis);
+  older.selection.localSelection.resolution.required = clone(f.genesis);
+  projectionRejected(f, older);
+});
+
+test("projection checks original CI context and digest without turning consistency into publisher authentication", (t) => {
+  const project = projector();
+  const { f, expected } = projectionFixture(t);
+  const valid = f.options("ci");
+  assert.deepEqual(project(f.root, valid), expected);
+  for (const field of ["sourceRevision", "sourceTree", "baseRevision", "workflowRevision", "toolingRevision"]) {
+    const changed = clone(valid);
+    changed.selection.admission.record.context[field] = f.product;
+    changed.selection.admission.sha256 = hash(canonical(changed.selection.admission.record));
+    projectionRejected(f, changed);
+  }
+  const badDigest = clone(valid);
+  badDigest.selection.admission.sha256 = "0".repeat(64);
+  projectionRejected(f, badDigest);
+  const mixed = clone(valid);
+  mixed.selection.localSelection = f.options().selection.localSelection;
+  projectionRejected(f, mixed);
+  // This API cannot independently authenticate a self-consistent run claim; the future launcher must do that first.
+  const differentClaim = clone(valid);
+  differentClaim.selection.admission.record.context.runId += 1;
+  differentClaim.selection.admission.sha256 = hash(canonical(differentClaim.selection.admission.record));
+  assert.deepEqual(project(f.root, differentClaim), expected);
+});
+
+test("projection ignores dirty and newer working declarations and disables Git replacement substitution", (t) => {
+  const project = projector();
+  const { f, expected } = projectionFixture(t);
+  const original = f.options("ci");
+  f.candidate({ profiles: true, local: expected.declarationInput.inventories.local.cases });
+  f.put(paths.metadata, "sensitive-fixture-value");
+  f.put(paths.stage, "{not JSON}");
+  assert.deepEqual(project(f.root, original), expected, "Original source/base survives a newer dirty checkout");
+  f.git("reset", "--hard", original.sourceRevision);
+  f.git("checkout", "--quiet", "--detach", original.selection.baseline.suiteCommit);
+  f.put(paths.metadata, "{replacement-sensitive-fixture-value}");
+  const replacement = f.commit("unreviewed replacement declaration");
+  f.git("checkout", "--quiet", "--detach", original.sourceRevision);
+  f.git("replace", original.selection.baseline.suiteCommit, replacement);
+  const visible = execFileSync(
+    "/usr/bin/git",
+    ["show", `${original.selection.baseline.suiteCommit}:${paths.metadata}`],
+    {
+      cwd: f.root,
+      encoding: "utf8",
+    },
+  );
+  assert.match(visible, /replacement-sensitive-fixture-value/);
+  assert.deepEqual(project(f.root, original), expected);
+});
+
+for (const role of ["required", "candidate", "pending"]) {
+  test(`projection atomically rejects malformed ${role} even when a different selected role is valid`, (t) => {
+    projector();
+    for (const malformed of [false, true]) {
+      const f = fixture(t);
+      f.inventoryRequired();
+      f.candidate({
+        profiles: true,
+        edit: ({ put }) => {
+          if (malformed) put(paths.stage, "{malformed");
+        },
+      });
+      if (role !== "candidate") f.bind();
+      if (role === "required") f.advance("implementation");
+      requireFixture(f);
+      const options = f.options(role === "pending" ? "ci" : "local");
+      if (malformed) projectionRejected(f, options);
+      else if (role === "required") assert.equal(projector()(f.root, options).required.contractRevision, "r5");
+      else assert.equal(projector()(f.root, options), null);
+    }
+  });
+}
+
+test("projection cannot return a valid required value before checking malformed newer candidate and pending roles", (t) => {
+  projector();
+  for (const pending of [false, true]) {
+    for (const malformed of [false, true]) {
+      const { f, expected } = projectionFixture(t);
+      f.candidate({
+        profiles: true,
+        local: expected.declarationInput.inventories.local.cases,
+        edit: ({ json }) => {
+          if (malformed) json(paths.metadata, null);
+        },
+      });
+      if (pending) f.bind();
+      requireFixture(f);
+      const options = f.options(pending ? "ci" : "local");
+      if (malformed) projectionRejected(f, options, "ERR_ACCEPTANCE_PROFILE_DECLARATION");
+      else assert.deepEqual(projector()(f.root, options), expected);
+    }
+  }
+});
+
+test("projection preserves null-presence declaration errors and malformed-byte source precedence", (t) => {
+  projector();
+  for (const bytes of [
+    null,
+    "null\n",
+    "{broken",
+    Buffer.from([0xc3, 0x28]),
+    Buffer.from([0xef, 0xbb, 0xbf, 0x7b, 0x7d]),
+  ]) {
+    const f = fixture(t);
+    f.candidate({
+      edit: ({ put }) => {
+        if (bytes !== null) put(paths.stage, bytes);
+      },
+    });
+    requireFixture(f);
+    if (bytes === null) assert.equal(projector()(f.root, f.options()), null);
+    else
+      projectionRejected(
+        f,
+        f.options(),
+        bytes === "null\n" ? "ERR_ACCEPTANCE_PROFILE_DECLARATION" : "ERR_ACCEPTANCE_PROFILE_SOURCE",
+      );
+  }
+  for (const absent of ["stage", "production"]) {
+    const f = fixture(t);
+    f.inventoryRequired();
+    f.candidate({ profiles: true, edit: ({ root }) => rmSync(join(root, paths[absent])) });
+    requireFixture(f);
+    projectionRejected(f, f.options(), "ERR_ACCEPTANCE_PROFILE_DECLARATION");
+  }
+});
+
+test("projection requires regular readable immutable blobs rather than treating missing objects as ineligible", (t) => {
+  projector();
+  for (const kind of ["regular", "symlink", "tree", "missing-object"]) {
+    const f = fixture(t);
+    f.inventoryRequired();
+    f.candidate({
+      profiles: true,
+      edit: ({ root, put }) => {
+        if (kind === "symlink" || kind === "tree") rmSync(join(root, paths.metadata));
+        if (kind === "symlink") symlinkSync("sensitive-fixture-value", join(root, paths.metadata));
+        if (kind === "tree") put(`${paths.metadata}/nested`, "inert");
+      },
+    });
+    const options = f.options();
+    if (kind === "missing-object") {
+      const object = f.git("rev-parse", `${options.selection.resolution.candidate.suiteCommit}:${paths.metadata}`);
+      rmSync(join(f.root, ".git", "objects", object.slice(0, 2), object.slice(2)));
+    }
+    if (kind === "regular") assert.equal(projector()(f.root, options), null);
+    else projectionRejected(f, options);
+  }
+});
+
+test("projection authenticates the nonselected immediate predecessor revision and retained local obligations", (t) => {
+  projector();
+  for (const kind of ["valid", "wrong-revision", "missing-local", "erased-case"]) {
+    const f = fixture(t);
+    f.candidate({
+      missingLocal: kind === "missing-local",
+      edit: ({ json }) => {
+        if (kind === "wrong-revision") json(paths.local, inventory("another-r4"));
+      },
+    });
+    f.bind();
+    f.advance("implementation");
+    f.candidate({ profiles: true, local: kind === "erased-case" ? [stageCase] : [localCase] });
+    f.bind();
+    f.advance("implementation");
+    requireFixture(f);
+    assert.equal(f.current().resolution.candidate, null);
+    assert.equal(f.current().resolution.pendingBinding, null);
+    if (kind === "valid") {
+      const actual = projector()(f.root, f.options());
+      assert.equal(actual.declarationInput.selectedContractRevision, "r5");
+      assert.deepEqual(actual.declarationInput.predecessorLocalInventory, inventory("r4"));
+    } else
+      projectionRejected(
+        f,
+        f.options(),
+        kind === "missing-local" ? "ERR_ACCEPTANCE_PROFILE_SOURCE" : "ERR_ACCEPTANCE_PROFILE_DECLARATION",
+      );
+  }
+});
+
+test("projection refuses both immediate and historical profile downgrade instead of returning legacy null", (t) => {
+  projector();
+  const { f, expected } = projectionFixture(t);
+  assert.deepEqual(projector()(f.root, f.options()), expected);
+  const local = expected.declarationInput.inventories.local.cases;
+  f.candidate({ local });
+  requireFixture(f);
+  projectionRejected(f, f.options());
+  f.bind();
+  f.advance("implementation");
+  f.candidate({ local });
+  f.bind();
+  f.advance("implementation");
+  requireFixture(f);
+  projectionRejected(f, f.options());
+});
+
+test("projection rejects immutable identity and complete-lineage substitutions even when copied consistently", (t) => {
+  projector();
+  const { f, expected } = projectionFixture(t);
+  const valid = f.options();
+  assert.deepEqual(projector()(f.root, valid), expected);
+  for (const [field, value] of Object.entries({
+    suiteCommit: f.product,
+    suiteTree: "a".repeat(40),
+    manifestSha256: "b".repeat(64),
+    contractSha256: "c".repeat(64),
+    contractRevision: "older-revision",
+    contractPath: "docs/testing/contracts/other.md",
+    predecessor: "profile-r5",
+  })) {
+    const changed = clone(valid);
+    for (const identity of [
+      changed.selection.baseline,
+      changed.selection.resolution.required,
+      changed.selection.localSelection.resolution.required,
+    ])
+      identity[field] = value;
+    projectionRejected(f, changed);
+  }
+  const forgedGenesis = clone(valid);
+  forgedGenesis.selection.resolution.genesis.review.coverage = "different-history";
+  forgedGenesis.selection.localSelection.resolution.genesis.review.coverage = "different-history";
+  projectionRejected(f, forgedGenesis);
+});
+
+test("source module initialization performs no process, filesystem, timer or network operations", () => {
+  const program = `
+    import assert from 'node:assert/strict';
+    import { readFileSync } from 'node:fs';
+    import { SourceTextModule, SyntheticModule, createContext } from 'node:vm';
+    const attempts = [];
+    const deny = () => { attempts.push('ambient I/O'); throw Error('Import must not perform I/O'); };
+    const context = createContext({ Buffer, TextDecoder, TextEncoder, URL, structuredClone,
+      process: { env: {}, platform: process.platform }, fetch: deny, setTimeout: deny, setInterval: deny });
+    const modules = new Map();
+    const safe = new Set(['node:assert/strict', 'node:assert', 'node:util', 'node:util/types', 'node:path',
+      'node:path/posix', 'node:path/win32', 'node:url', 'node:buffer', 'node:events', 'node:querystring', 'node:string_decoder']);
+    const pureCrypto = new Set(['createHash', 'createHmac', 'timingSafeEqual', 'getHashes', 'hash']);
+    const proxies = new WeakMap();
+    const denied = value => {
+      if (typeof value === 'function') return deny;
+      if (!value || typeof value !== 'object') return value;
+      if (!proxies.has(value)) proxies.set(value, new Proxy(value, { get: (object, key) => denied(Reflect.get(object, key)) }));
+      return proxies.get(value);
+    };
+    async function load(id) {
+      if (modules.has(id)) return modules.get(id);
+      if (id.startsWith('node:')) {
+        const actual = await import(id);
+        const exports = Object.keys(actual);
+        const module = new SyntheticModule(exports, function() {
+          for (const name of exports) {
+            const value = actual[name];
+            if (safe.has(id) || (id === 'node:crypto' && pureCrypto.has(name))) this.setExport(name, value);
+            else if (id === 'node:crypto' && name === 'default') this.setExport(name, new Proxy(value, {
+              get: (object, key) => pureCrypto.has(key) ? Reflect.get(object, key) : denied(Reflect.get(object, key))
+            }));
+            else this.setExport(name, denied(value));
+          }
+        }, { context, identifier: id });
+        modules.set(id, module);
+        return module;
+      }
+      const module = new SourceTextModule(readFileSync(new URL(id), 'utf8'), {
+        context, identifier: id, initializeImportMeta: meta => { meta.url = id; }, importModuleDynamically: deny
+      });
+      modules.set(id, module);
+      return module;
+    }
+    const root = await load(${JSON.stringify(moduleUrl.href)});
+    await root.link((specifier, parent) => load(specifier.startsWith('node:') ? specifier : new URL(specifier, parent.identifier).href));
+    await root.evaluate();
+    assert.deepEqual(attempts, [], 'Caught I/O attempts remain disallowed');
+    assert.equal(typeof root.namespace.readAcceptanceProfileSource, 'function');
+    process.stdout.write('import-purity: passed\\n');
+  `;
+  const result = spawnSync(process.execPath, ["--experimental-vm-modules", "--input-type=module", "-e", program], {
+    encoding: "utf8",
+    timeout: 10000,
+    maxBuffer: 1024 * 1024,
+    env: { PATH: "/usr/bin:/bin", LANG: "C" },
+  });
+  assert.equal(result.error, undefined);
+  assert.equal(result.signal, null);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(result.stdout, "import-purity: passed\n");
 });

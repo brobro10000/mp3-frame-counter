@@ -4,6 +4,9 @@
  * Import readAcceptanceProfileSource(root, { selection, sourceRevision, baseRevision }) after runtimeAcceptance succeeds.
  * Pass that unchanged selection and its original exact source/base; only an originally omitted pre-policy local base
  * may be null. The synchronous result has deeply frozen required/candidate/pending declarations or explicit nulls.
+ * readRequiredAcceptanceProfileProjection takes the same arguments and returns only required profiles-v1 declarations,
+ * their original parsed inputs and exact blob hashes, or null for validated legacy/null required declarations. Both
+ * exports share one private validated read and validate every selected role before returning fresh frozen data.
  * CI admission and local resolution are replayed for consistency; this does not authenticate the supplied evidence.
  *
  * Import has no I/O. Calls read replacement-disabled Git objects, never working declarations, suite code, credentials
@@ -264,15 +267,19 @@ function suiteReader(source, sourceRevision, genesis) {
         source.entry(identity.suiteCommit, path, true) !== null,
       ]),
     );
-    // Historical inventories may be absent, but any present declaration blob must remain readable and valid JSON.
-    const values = Object.fromEntries(
-      Object.entries(declarationPaths).map(([name, path]) => [
-        name,
-        present[name] ? json(source.blob(identity.suiteCommit, path)) : null,
-      ]),
+    // Capture each original blob once: its parsed value and pre-parse hash belong to this same immutable read.
+    // Historical inventories may be absent, but every present blob must remain readable and valid JSON.
+    const declarations = Object.fromEntries(
+      Object.entries(declarationPaths).map(([name, path]) => {
+        if (!present[name]) return [name, { value: null, sha256: null }];
+        const raw = source.blob(identity.suiteCommit, path);
+        const sha256 = hash(raw);
+        return [name, { value: json(raw), sha256 }];
+      }),
     );
-    const read = (name) => values[name];
-    const result = { present, read };
+    const read = (name) => declarations[name].value;
+    const sha256 = (name) => declarations[name].sha256;
+    const result = { present, read, sha256 };
     verified.set(identity, result);
     return result;
   };
@@ -304,16 +311,17 @@ function declarationsFor(identity, genesis, catalog, readSuite, source) {
   const predecessorLocalInventory = suite.present.metadata ? predecessor.read("local") : null;
   if (suite.present.metadata && predecessorLocalInventory?.contractRevision !== lineage[1].identity.contractRevision)
     invalidDeclaration();
-  return validateAcceptanceProfiles({
+  const declarationInput = {
     metadata: suite.read("metadata"),
     inventories: { local: suite.read("local"), stage: suite.read("stage"), production: suite.read("production") },
     selectedContractRevision: identity.contractRevision,
     predecessorLocalInventory,
-  });
+  };
+  return { declarations: validateAcceptanceProfiles(declarationInput), declarationInput, suite };
 }
 
-/** Validate all selected roles atomically; neither absence nor malformed provenance can become a partial success. */
-export function readAcceptanceProfileSource(root, options) {
+/** Keep normalized declarations and original inputs private until every selected role passes the same validated read. */
+function readValidatedSource(root, options) {
   try {
     assert(typeof root === "string" && root.length > 0 && !/[\x00-\x1f\x7f]/.test(root));
     record(options, ["selection", "sourceRevision", "baseRevision"]);
@@ -326,7 +334,7 @@ export function readAcceptanceProfileSource(root, options) {
     genesisIdentity(source, sourceRevision, baseRevision, genesis);
     const catalog = catalogFor(source, sourceRevision, resolution);
     const readSuite = suiteReader(source, sourceRevision, genesis);
-    return Object.freeze({
+    return {
       required: declarationsFor(
         catalog.get(resolution.required.id ?? genesis.contractRevision),
         genesis,
@@ -342,11 +350,50 @@ export function readAcceptanceProfileSource(root, options) {
         readSuite,
         source,
       ),
-    });
+    };
   } catch (error) {
     if (error instanceof TypeError && error.code === "ERR_ACCEPTANCE_PROFILE_DECLARATION") throw error;
     const failure = new TypeError("Acceptance profile source is invalid or unverifiable");
     failure.code = "ERR_ACCEPTANCE_PROFILE_SOURCE";
     throw failure;
   }
+}
+
+/** Preserve the existing closed role result, including legacy declarations and exact-genesis null compatibility. */
+export function readAcceptanceProfileSource(root, options) {
+  const roles = readValidatedSource(root, options);
+  return Object.freeze({
+    required: roles.required?.declarations ?? null,
+    candidate: roles.candidate?.declarations ?? null,
+    pending: roles.pending?.declarations ?? null,
+  });
+}
+
+/** Copy validated parsed data in original order, freezing only new containers without exposing private cache aliases. */
+function frozenCopy(value) {
+  if (value === null || typeof value !== "object") return value;
+  const copy = Array.isArray(value)
+    ? value.map(frozenCopy)
+    : Object.fromEntries(Object.entries(value).map(([key, child]) => [key, frozenCopy(child)]));
+  return Object.freeze(copy);
+}
+
+/**
+ * Project required hosted declarations from the same closed original-context options accepted by the existing reader.
+ * All selected roles must validate before legacy/null eligibility is considered. Candidate/pending declarations never
+ * substitute for required. Original input order, predecessor revision and exact Git-byte hashes survive independently
+ * of normalized mappings. The fresh frozen result supplies consistency evidence, not publisher or hosted authority.
+ */
+export function readRequiredAcceptanceProfileProjection(root, options) {
+  const { required } = readValidatedSource(root, options);
+  if (required === null || required.declarations.mode !== "profiles-v1") return null;
+  return frozenCopy({
+    required: required.declarations,
+    declarationInput: required.declarationInput,
+    profilesSha256: required.suite.sha256("metadata"),
+    inventorySha256: {
+      stage: required.suite.sha256("stage"),
+      production: required.suite.sha256("production"),
+    },
+  });
 }

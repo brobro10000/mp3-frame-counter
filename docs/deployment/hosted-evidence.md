@@ -75,12 +75,13 @@ and use its selected profile's complete inventory/mappings; do not duplicate its
 predecessor-containment rules. Preserve its independently authenticated predecessor's own revision, not the successor's.
 No hardcoded 22/3/72 maximum or equal-count relation; those are the current immutable inventory counts.
 
-The future launcher already must verify exact source bytes to supply profilesSha256/inventorySha256. It should retain
-those decoded fixed blobs as declarationInput after runtimeAcceptance and readAcceptanceProfileSource have verified
-original source/base and immutable required-suite lineage. Compare the reused pure result with that reader's required
-projection. This is byte projection of an already selected identity, not a second history walk or suite selector. The
-current source reader returns normalized declarations, not raw bytes/hashes; any narrow projection helper needed by the
-future launcher must be separately adopted rather than silently changing that reader in HOSTED-EVIDENCE.
+The [required source projection](../testing/hosted-profile-policy.md#required-profile-projection-amendment--2026-10-10)
+supplies the original decoded declaration values and exact raw-blob hashes after checking immutable source/base and
+suite lineage. A historical release consumer must first authenticate the original publisher context and external
+admission digest with `verifyAcceptanceAdmission`, then pass that unchanged selection/source/base to
+`readRequiredAcceptanceProfileProjection`. A null projection cannot authorize hosted execution. `runtimeAcceptance`
+remains tied to its actual checkout/current CI context; a new hosted run must not impersonate the original publisher.
+This source projection does not authenticate registry transfer, a provider destination or deployment authority.
 
 ## What the caller authenticates; what this validator proves
 
