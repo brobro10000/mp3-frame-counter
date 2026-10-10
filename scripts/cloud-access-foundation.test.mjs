@@ -458,7 +458,7 @@ function registryContract(plan, input) {
   assert.equal(value.deletion_policy, "PREVENT");
   assert.equal(value.cleanup_policy_dry_run, true);
   assert(!(value.cleanup_policies ?? []).some((policy) => policy.action === "DELETE"));
-  assert.deepEqual(value.docker_config, [{ immutable_tags: false }]);
+  assert.deepEqual(value.docker_config, [], "Docker configuration must remain omitted for mutable default tags");
   assert.equal(value.vulnerability_scanning_config.length, 1);
   assert.equal(value.vulnerability_scanning_config[0].enablement_config, "DISABLED");
 }
@@ -673,6 +673,54 @@ for (const [label, check] of [
     check(plans[1].plan, alternate);
   });
 }
+test("registry default normalization has a valid omitted-block counterpart and refuses explicit overrides", () => {
+  // This corrective contract was adopted after real-provider readback; only these isolated fixture copies change.
+  const source = sourceFiles();
+  const valid = {
+    ...source,
+    "main.tf": source["main.tf"].replace(/\n\s*docker_config\s*\{\s*immutable_tags\s*=\s*false\s*\}\n/g, "\n"),
+  };
+  const header = 'resource "google_artifact_registry_repository" "images" {';
+  assert.equal(valid["main.tf"].split(header).length, 2, "Controls require one literal registry fixture target");
+  const plans = mocked(valid, [runBlock("omitted_registry_default", { project_id: defaults.project_id })]);
+  assert.equal(plans.length, 1);
+  complete(plans[0].plan, defaults);
+  for (const [label, declaration, value] of [
+    ["explicit_false", "docker_config { immutable_tags = false }", false],
+    ["explicit_true", "docker_config { immutable_tags = true }", true],
+    ["empty_block", "docker_config {}", null],
+  ]) {
+    const changed = {
+      ...valid,
+      "main.tf": valid["main.tf"].replace(header, `${header}\n  ${declaration}`),
+    };
+    assert.notEqual(changed["main.tf"], valid["main.tf"]);
+    const rejected = mocked(changed, [runBlock(label, { project_id: defaults.project_id })]);
+    assert.equal(rejected.length, 1, `${label} must reach a successful real mock plan`);
+    assert.deepEqual(resources(rejected[0].plan).get("google_artifact_registry_repository.images").docker_config, [
+      { immutable_tags: value },
+    ]);
+    assert.throws(
+      () => registryContract(rejected[0].plan, defaults),
+      (error) =>
+        error.code === "ERR_ASSERTION" &&
+        error.message.startsWith("Docker configuration must remain omitted for mutable default tags"),
+      `${label} must fail the amended Docker-configuration oracle`,
+    );
+  }
+  for (const ignored of ["[docker_config]", "all"]) {
+    const changed = mutateAttribute(
+      valid,
+      "google_artifact_registry_repository.images",
+      ["lifecycle", "prevent_destroy"],
+      `true\n    ignore_changes = ${ignored}`,
+    );
+    assert.throws(() => sourceContract(changed), {
+      code: "ERR_ASSERTION",
+      message: "Ignored configuration changes are outside the foundation",
+    });
+  }
+});
 test("ordinary short and maximum project/repository identifiers have valid counterparts", () => {
   const inputs = [
     { project_id: "abcde1", region: "us-west1", registry_id: "r" },

@@ -91,3 +91,33 @@ migration stops further apply until both local and remote state have been reconc
 This package authorizes no new resource, grant, workflow, production operation or runtime deployment. Backend source
 tests prove the declaration and preserved mock semantics; only the later recorded migration/readback proves live state
 custody. Ordinary destruction and lock removal remain outside this amendment.
+
+## Provider default normalization amendment — 2026-10-10
+
+The first authorized access apply created all 23 planned instances. Its immediate readback plan proposed only adding
+`docker_config { immutable_tags = false }` back to the registry. Provider 8.6.0 omits the empty false configuration in
+its API request and flattens an absent response to an empty list. This recorded failed no-change check is not ignored.
+
+The bounded correction omits the entire optional `docker_config` block and retains the provider/API default of mutable
+tags. Do not use an empty block, `ignore_changes`, a provider upgrade or immutable tags to conceal the difference. An
+independent author must amend the plan oracle to require an empty Docker-configuration list and add meaningful refusal
+controls for explicit overrides before a separate implementer removes the three source lines. Preserve the original
+expectation and observed failure, all IAM/deletion safeguards and the exact 23-resource/five-output boundary.
+
+This extends ACCESS-BACKEND's source scope to `main.tf` only for that default normalization. Before remote migration,
+verify the actual API omits or reports false immutable tags and a fresh reviewed plan has no resource actions. If the
+correction needs any provider mutation, stop and review its exact plan separately. Terraform's original private state
+and the failed readback remain retained. Backend migration, locking and production deployment remain separate gates.
+
+## Additional operational gate: default project identities
+
+The initial authenticated resource/IAM readback matched all seven declared direct IAM grants and all resource identity,
+protection and output checks. Its project-IAM check failed because the default Compute identity has a broad Editor
+grant, alongside additional Google service-agent roles. No pre-apply project-IAM snapshot establishes their provenance.
+The Editor role can inherit bucket access through Google's project-editor convenience bindings.
+
+**ACCESS-IAM-DEFAULTS** must reconcile exact default identities and workload dependencies before remote-state migration
+or automated deployment credentials become trusted. Prefer a separately reviewed IaC correction; preserve owner access,
+necessary service agents and the seven declared resource-scoped grants. Do not delete accounts, enable unrelated APIs,
+remove unknown bindings or treat a current failed audit as passed. This remains outside the
+backend/default-normalization source amendment and does not require a product change.
