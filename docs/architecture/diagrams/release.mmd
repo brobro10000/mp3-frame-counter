@@ -53,7 +53,7 @@ flowchart TD
     G -->|"Yes"| MAIN{"Protected-main push?"}
     MAIN -->|"No: PR"| REVIEW["Checks available for independent review and protected merge"]
     MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, admitted required suite,<br/>original preflight digest, same-run checks and bundle hashes"]
-    VERIFY --> DRAFT["Create or verify exact v0.1.ordinal tag and private draft release"]
+    VERIFY --> DRAFT["Resolve tested source policy and global ordinal<br/>create or verify exact version tag and private draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
     ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]
     VERIFY -.->|"Mismatch"| FAIL["Stop and preserve state; never overwrite conflicting content"]
