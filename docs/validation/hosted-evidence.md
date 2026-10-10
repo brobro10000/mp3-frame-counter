@@ -4,8 +4,8 @@
 
 This 2026-10-10 record covers HOSTED-EVIDENCE under the
 [adopted parsed-data contract](../deployment/hosted-evidence.md). Independent expectations and the implementation are
-reviewed, and all 38 focused groups pass. Full integration checks, companion approval, merge and publication are
-pending. No hosted service or deployment is established.
+reviewed, and all 38 focused groups and local repository checks pass. Exact-head CI, companion approval, merge and
+publication remain pending. No hosted service or deployment is established.
 
 The change owns two new scripts and their explicit `test:tooling` registration. The existing declaration validator is
 reused. Acceptance source, resolver, immutable bindings, workflow permissions, release preparation/publication/retries,
