@@ -87,3 +87,46 @@ These are automated source/evidence reviews, not duplicate test executions or po
 memos in full. Only documentation changed after the complete validation run; focused formatting passed for those
 updates. The implementation and frozen test identities remain unchanged. Mandatory GitHub checks, exact-head companion
 review, actual merge and protected-main publication remain pending.
+
+## Protected-main completion — 2026-10-10
+
+[PR #23](https://github.com/brobro10000/mp3-frame-counter/pull/23) merged as `2ca5a0b2e2eb2c9aa9160e950ec905bae24a1892`,
+sole parent `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6`, at 17:58:32Z. The complete squash tree
+`e75e0e5573e6952d6403edd4d21eb63f32c96af5` equals reviewed head `06e9197040176ee0c4095c02307bbd2d6ad0f1df`. The Docker
+companion's run `20261010T175111-47feb662` reviewed all sixteen paths and reported no findings; its report SHA-256 is
+`122c2c41eeed3a477449bcfb6f437cad1c5f53e29e77a1c0803b6f24fed11102`. Its publisher freshly verified
+[automated approval 5480205129](https://github.com/brobro10000/mp3-frame-counter/pull/23#pullrequestreview-5480205129)
+by `brobro1000` on that exact head at 17:58:06Z. The owner merged normally after required checks and conversation
+review; no protection bypass was used.
+
+PR run 38073069983, attempt 1, passed. Actual protected-main
+[run 38073905847, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38073905847/attempts/1) then
+passed foundation, product, control-plane and publication. It recorded **480 tooling tests, 20 gate tests, 19 Mermaid
+renders, 82 unit tests and 67 required transport cases**, with zero failures/skips/cancellations and scoped cleanup.
+Separate pending docs checks passed **46 controls and 72-case discovery**; these are not docs product acceptance.
+Package-local Linux browser preparation preceded both standalone checks. Trusted admission preceded npm installation and
+retained the original parent through publication.
+
+The producer, control-plane, publisher and independently rehashed admission record agree on digest
+`808a11976d7b98305baf63145ebd298ec60d3e0fa8a552504404e0452b1be00a`: governance, required transport-v1, pending docs-v1,
+no new candidate or product activation. Independent CI audit SHA-256:
+`e16921bcbf05e1b51d651ada0fe45ac68669e039054476b25db12695b01fce3e`. Root read its complete memo, rehashed fifteen
+retained files, matched fifty-four exact citations and parsed both browser records against raw job logs.
+
+The actual publisher created [v0.2.23](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.23), release
+**409114707**, at **18:04:01Z**, with ten assets and `deployed: false`. Its publication binding is
+`e7ad0e4ee175d83d0a7ab980df5543cd94e81e776c7237aaca762f779c6bd40b`. Same-run artifact 11678052114 retained digest
+`a12b7580aa5fede31fbce2373cbcdd946387433f2cf6b977b27ec0ccb9935155` across upload and download. API image identity is
+`sha256:9967e59ef4ab9ccd2430d61497d19973cfb0ec0a6e103e861a4073f02c439fa9`; frontend is
+`sha256:c3efc41ef6f38dc83303f47035a22c818dc28161be806e7dc1f818ecc9dc535a`.
+
+Root separately downloaded and rehashed all eight metadata assets against GitHub's reported sizes/digests, checked exact
+source/base/run/attempt, resolver parity, source configuration, image identities and release policy/reservation
+agreement. Verification-record SHA-256: `13da40a9d846cccf42ef7d0c6401919476e60d231431fe0fd93ac2c9f862acc5`. Image
+archives were not downloaded or rehashed; their checksums are metadata evidence only. No retry, registry transfer or
+deployment was performed. Source-local resolver parity supplements producing-job evidence; it does not grant CI
+authority.
+
+This closes the tool-policy prerequisite. The next separate product change may acquire/build/serve the selected renderer
+only while activating and passing the immutable bound docs-v1 suite. This release itself ships no Redoc application
+route or CSP change. Earlier pending statements above describe their dated pre-merge observations.

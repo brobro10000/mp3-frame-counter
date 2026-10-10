@@ -24,13 +24,18 @@ external cases** and published [v0.2.19](https://github.com/brobro10000/mp3-fram
 [completion evidence](docs/validation/fastify-transport.md#protected-main-completion) records exact source, automated
 companion approval, images and publication. Documentation rendering and application hosting remain later work.
 
+**Documentation implementation, 2026-10-10:** this change adds an offline Redoc reference at `/docs/` and the OpenAPI
+3.0.3 download at `/docs/openapi.yaml`. The selected renderer is packaged in the API image; NGINX applies its scoped
+policy through the same browser origin. The [implementation record](docs/validation/docs-implementation.md) separates
+local verification from pending protected-main activation/publication. Hosting remains future work.
+
 ## Local application
 
 Install Docker with Compose. Both images build from source without host dependencies or generated output:
 
 ```sh
 make up
-# Open http://127.0.0.1:8080
+# Open http://127.0.0.1:8080 and http://127.0.0.1:8080/docs/
 make ps
 make logs
 make down
@@ -66,8 +71,9 @@ or private plugin is required. Do not run the fault suite against production.
 
 `make e2e-check` validates only the standalone harness, fixtures, negative controls and discovery; it is not an
 application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm run build` provide focused checks.
-`make help` lists commands. Stage exact new files before index-based formatting/policy checks. See
-[portable setup](docs/portability.md).
+`npm run test:unit` first performs the normal build so source-based tests use the same generated docs assets as the
+compiled service. Direct `node --test` usage needs a successful prior build. `make help` lists commands. Stage exact new
+files before index-based formatting/policy checks. See [portable setup](docs/portability.md).
 
 For product phases, the controller prepares each selected suite's locked Chromium before standalone controls, with a
 bounded launch/close check. Only validated Linux CI installs OS prerequisites; local execution does not run apt/sudo.
@@ -82,10 +88,11 @@ install scripts disabled. Browser files and rendered SVGs are ignored and do not
 Acceptance source is independently authored. The immutable [r3 genesis](docs/testing/baseline.json) records P2's actual
 protected-main commit `a0a56d9`; its original evidence remains preserved. The
 [transition policy](docs/testing/acceptance-transition.md) binds separately reviewed successor suites to actual merged
-Git objects. transport-v1 is now required, including the original 60 cases and seven new transport cases. Product
-implementers cannot change expected outcomes or select an older suite to pass. The CI controller extracts the required
-Git tree outside the application checkout and verifies ancestry and every frozen byte. Zero tests, skipped cases and
-failed checks fail closed.
+Git objects. The docs implementation must pass the bound docs-v1 successor: all original 67 transport cases plus five
+documentation cases, with persistent applicability after activation. The separate prerequisite release still uses
+transport-v1; its pass is not docs acceptance. Product implementers cannot change expected outcomes or select an older
+suite to pass. The CI controller extracts the required Git tree outside the application checkout and verifies ancestry
+and every frozen byte. Zero tests, skipped cases and failed checks fail closed.
 
 For a small local upload with an independently known count:
 

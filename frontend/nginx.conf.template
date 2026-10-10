@@ -40,6 +40,16 @@ http {
         "-" 1;
     }
 
+    # Classify the original target so query strings and NGINX URI normalization cannot escape the closed docs route.
+    map $request_uri $docs_namespace {
+        default 0;
+        ~^/docs(?:/|\?|$) 1;
+    }
+    map $docs_namespace $public_content_security_policy {
+        default "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'";
+        1 "default-src 'none'; script-src 'self'; style-src 'self' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-QMIg+bpjm3JdElJ388KYke01izlUW0UoNOeKjpMxdgc='; style-src-attr 'none'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'; worker-src 'none'";
+    }
+
     server {
         listen @@PORT@@;
         root /usr/share/nginx/html;
@@ -47,7 +57,60 @@ http {
         add_header Cache-Control "no-store" always;
         add_header X-Content-Type-Options "nosniff" always;
         add_header Referrer-Policy "no-referrer" always;
-        add_header Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'" always;
+        add_header Content-Security-Policy $public_content_security_policy always;
+
+        # Select one docs proxy location, but forward the untouched target for the API's finite raw-path decisions.
+        # This also keeps a contained traversal target from becoming an upload, health or static-page request.
+        if ($docs_namespace) {
+            rewrite ^ /docs/ last;
+        }
+
+        location ^~ /docs/ {
+            # The API decides docs paths/methods immediately, with bounded rejection draining and no body retention.
+            # Keep that precedence for any declared size; request streaming below remains unbuffered.
+            client_max_body_size 0;
+            set $api_upstream "@@API_UPSTREAM@@";
+            proxy_pass http://$api_upstream$request_uri;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header Connection "";
+            # Stream without proxy temporary files; the API answers docs requests before upload body collection.
+            proxy_request_buffering off;
+            proxy_buffering off;
+            proxy_ignore_headers X-Accel-Buffering;
+            proxy_max_temp_file_size 0;
+            proxy_cache off;
+            proxy_store off;
+            proxy_intercept_errors off;
+            proxy_next_upstream off;
+            proxy_connect_timeout 5s;
+            proxy_send_timeout 5s;
+            proxy_read_timeout 5s;
+            # Only NGINX owns public policy; upstream headers cannot duplicate or intersect the selected policy.
+            proxy_hide_header Content-Security-Policy;
+            proxy_hide_header Content-Security-Policy-Report-Only;
+            proxy_hide_header Cache-Control;
+            proxy_hide_header Expires;
+            proxy_hide_header X-Content-Type-Options;
+            proxy_hide_header Referrer-Policy;
+            error_page 413 =413 @docs_too_large;
+            error_page 502 =502 @docs_unavailable;
+            error_page 504 =504 @docs_timeout;
+        }
+
+        # Named errors inherit all four server headers, whose policy still follows the original request namespace.
+        location @docs_too_large {
+            default_type application/json;
+            return 413 '{"error":"The request body exceeds the allowed size."}';
+        }
+        location @docs_unavailable {
+            default_type application/json;
+            return 502 '{"error":"Documentation service is unavailable. Please try again."}';
+        }
+        location @docs_timeout {
+            default_type application/json;
+            return 504 '{"error":"Documentation service timed out. Please try again."}';
+        }
 
         location = /healthz {
             default_type application/json;

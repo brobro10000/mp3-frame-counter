@@ -64,9 +64,13 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Preserve immutable r3 genesis evidence. Review docs/testing/acceptance-transition.md: PR #19/v0.2.19 activated the
   transport-v1 suite bound by PR #16. It remains required. DOCS-HARNESS published in v0.2.20; the independent docs-v1
   candidate published in PR #21/v0.2.21 and was bound by PR #22/v0.2.22. Read the protected-main completion in
-  docs/validation/docs-binding.md. Transport remains required and docs-v1 is pending. The next cards are
-  DOCS-TOOL-POLICY, DOCS-IMPLEMENTATION and HOSTED-PROFILE-POLICY; preserve their order and frozen suite bytes.
-  No docs product capability is shipped yet. Tool-policy publication must precede dependency/build/route/CSP changes.
+  docs/validation/docs-binding.md. DOCS-TOOL-POLICY completed in PR #23/v0.2.23; read the
+  [tool-policy completion](docs/validation/docs-tool-policy.md#protected-main-completion--2026-10-10).
+  That governance release keeps transport required and docs-v1 pending. The three-card window retains completed
+  DOCS-TOOL-POLICY, current DOCS-IMPLEMENTATION and next HOSTED-PROFILE-POLICY; preserve their order and frozen bytes.
+  Docs implementation is in progress and must pass all 72 bound docs-v1 cases. Actual activation, merge and publication
+  remain unverified; once activated, docs-v1 remains required for descendants and reverts. No docs capability is released
+  and no deployment is claimed. Product ownership is separate from the completed tool-policy allowance.
   The released framework migration supersedes the historical native-HTTP choice while preserving public behavior.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.

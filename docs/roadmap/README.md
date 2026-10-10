@@ -5,18 +5,22 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **DOCS-BIND merged; v0.2.22 publication verified; DOCS-TOOL-POLICY in progress**. The
-[binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) records PR #22,
-exact-head automated companion approval, the actual squash and protected-main publication. Main passed 46 pending
-controls/72-case discovery, 82 unit tests and all 67 required transport cases. Transport-v1 remains required and docs-v1
-is the single pending bound successor. No docs product acceptance or deployment is claimed.
+Status: **DOCS-TOOL-POLICY merged; v0.2.23 publication verified; DOCS-IMPLEMENTATION in progress**. The
+[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23,
+exact-head automated companion approval, the actual squash and protected-main run 38073905847, attempt 1. It passed 46
+pending controls/72-case discovery, 82 unit tests and all 67 required transport cases. The governance release keeps
+transport-v1 required and docs-v1 as the single pending bound successor. Docs product acceptance, activation, merge,
+publication and deployment are not established by that prerequisite.
 
-The next three cards are **DOCS-TOOL-POLICY, DOCS-IMPLEMENTATION and HOSTED-PROFILE-POLICY**. The
+The three-card window retains completed **DOCS-TOOL-POLICY**, current **DOCS-IMPLEMENTATION** and next
+**HOSTED-PROFILE-POLICY**. The
 [browser prerequisite](../validation/acceptance-browser-setup.md#protected-main-completion--2026-10-10) published in
 v0.2.20. The independent docs candidate selects local Redoc CE 2.5.4 without a CLI, docs-only CSP and finite retained
 live-document observation; read its [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) for
-limits and authority. The binding is published; tool-policy publication still precedes product
-dependency/build/route/CSP changes. No docs route or renderer is implemented in the released application yet.
+limits and authority. Binding and tool-policy publication are complete; separately owned product work must pass all 72
+bound docs-v1 cases before protected-main activation/publication. Once activated, that requirement persists for
+descendants and reverts. No docs route or renderer is implemented in the released application yet. Hosted-profile work
+still follows actual docs activation/publication.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -503,11 +507,11 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances the selected Redoc tool policy, bound documentation
-implementation and the dormant hosted-profile prerequisite. Browser preparation, the docs/CSP candidate and its binding
-are published. Fastify and its prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified;
-each later successor still requires independent authoring, actual merge binding and corresponding implementation
-evidence.
+[active three-card window](../phases/next-iteration.md) retains the completed Redoc tool policy, current bound
+documentation implementation and next documentation-only hosted-profile decision. Browser preparation, the docs/CSP
+candidate, its binding and selected tool policy are published. Docs implementation remains unverified. Fastify and its
+prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified; each later successor still
+requires independent authoring, actual merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

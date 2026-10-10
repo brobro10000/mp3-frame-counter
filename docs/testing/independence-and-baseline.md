@@ -4,10 +4,14 @@
 DOCS-HARNESS published in v0.2.20, and the independently authored docs-v1 candidate published in PR #21/v0.2.21. PR
 #22/v0.2.22 completed its separate actual binding with transport-v1 as predecessor. Docs-v1 is pending, not activated;
 candidate discovery/controls are not product acceptance. Read the
-[binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) and
-[transition guide](acceptance-transition.md). Tool-policy publication still precedes docs product implementation. The
-dated pending-transport/r3 statements below describe earlier milestones and retain their original evidence; they do not
-select an older suite for current work.
+[binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10),
+[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) and
+[transition guide](acceptance-transition.md). PR #23/v0.2.23 published the tool-policy prerequisite with required
+transport and pending docs unchanged. The separate docs product implementation is in progress and must pass all 72 bound
+docs-v1 cases without changing their bytes. Product acceptance, merge, protected-main activation and publication remain
+unverified; once activated, docs-v1 persists for descendants and reverts. The dated pending-transport/r3 statements
+below describe earlier milestones and retain their original evidence; they do not select an older suite for current
+work.
 
 **Binding completion, 2026-10-10:** PR #16 merged at `5645b0501ca403750a2d894d6a492afa4b42185b`; main run `38048679076`
 published v0.2.16 with authenticated approval evidence. The registry now binds transport-v1 as the single pending

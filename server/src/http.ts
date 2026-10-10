@@ -12,6 +12,8 @@ import type { Socket } from "node:net";
 import type { Readable } from "node:stream";
 import { Mp3ParseError } from "./errors.ts";
 import { countMp3Frames } from "./mp3.ts";
+import { loadDocs } from "./docs.ts";
+import type { DocsResources } from "./docs.ts";
 
 export const MAX_UPLOAD_BYTES = 20_971_520;
 
@@ -264,6 +266,7 @@ export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService
   let stopping = false;
   let startupPromise: Promise<void> | undefined;
   let shutdownPromise: Promise<void> | undefined;
+  let docs: DocsResources | undefined;
   const sockets = new Set<Socket>();
   const continued = new WeakSet<IncomingMessage>();
   const uploads = new WeakMap<IncomingMessage, UploadState>();
@@ -278,6 +281,47 @@ export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService
       const dispatch = (request: IncomingMessage, response: ServerResponse): void => {
         request.socket.setTimeout(0);
         const pathname = (request.url ?? "").split("?", 1)[0];
+        if (pathname === "/docs" || pathname?.startsWith("/docs/")) {
+          response.setHeader("Referrer-Policy", "no-referrer");
+          const resource = docs?.get(pathname);
+          if (pathname !== "/docs" && !resource) {
+            rejectBody(
+              request,
+              response,
+              404,
+              "The requested documentation resource does not exist.",
+              budgets.rejectionDrainMs,
+            );
+          } else if (request.method !== "GET" && request.method !== "HEAD") {
+            response.setHeader("Allow", "GET, HEAD");
+            rejectBody(
+              request,
+              response,
+              405,
+              "Use GET or HEAD for documentation resources.",
+              budgets.rejectionDrainMs,
+            );
+          } else {
+            // Documentation never enters upload hooks or body collection, including GET/HEAD with a declared body.
+            request.on("error", () => {});
+            if (request.headers["transfer-encoding"] || Number(request.headers["content-length"] ?? 0) > 0) {
+              response.setHeader("Connection", "close");
+            }
+            response.setHeader("Cache-Control", "no-store");
+            response.setHeader("X-Content-Type-Options", "nosniff");
+            if (pathname === "/docs") {
+              response.writeHead(308, { Location: "/docs/", "Content-Length": "0" });
+              response.end();
+            } else if (resource) {
+              response.setHeader("Content-Type", resource.contentType);
+              response.setHeader("Content-Length", resource.body.length);
+              if (resource.contentDisposition) response.setHeader("Content-Disposition", resource.contentDisposition);
+              response.writeHead(200);
+              response.end(request.method === "HEAD" ? undefined : resource.body);
+            }
+          }
+          return;
+        }
         if (pathname !== "/file-upload" && pathname !== "/healthz") {
           rejectBody(request, response, 404, "The requested API route does not exist.", budgets.rejectionDrainMs);
           return;
@@ -316,6 +360,11 @@ export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService
         dispatch(request, response);
       });
       server.on("checkExpectation", (request, response) => {
+        const pathname = (request.url ?? "").split("?", 1)[0];
+        if (pathname === "/docs" || pathname?.startsWith("/docs/")) {
+          dispatch(request, response);
+          return;
+        }
         rejectBody(request, response, 417, "The request expectation is not supported.", budgets.rejectionDrainMs);
       });
       server.on("connection", (socket) => {
@@ -418,12 +467,13 @@ export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService
 
   return {
     server: app.server,
-    /** Await framework readiness, propagating bind errors and refusing new startup once shutdown begins. */
+    /** Load the finite docs set before binding, propagating failures and refusing startup once shutdown begins. */
     listen(port, host): Promise<void> {
       if (stopping) return Promise.reject(new Error("The API has begun shutdown and cannot start listening."));
       if (startupPromise) return Promise.reject(new Error("API startup has already been requested."));
       startupPromise = (async () => {
         await app.ready();
+        docs = await loadDocs();
         if (stopping) throw new Error("The API shut down before readiness completed.");
         await app.listen({ port, host });
       })();
