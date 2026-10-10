@@ -86,8 +86,10 @@ docker kill --signal SIGTERM <fixed-api-id>
 
 Inspection requires exactly one object and exact container/image/Compose-project/service identities. Inspect stdout is
 limited to 1 MiB UTF-8. Kill stdout is limited to 1 KiB and, after whitespace trimming, must equal the same container
-ID. Unknown Docker input fields may exist within that bound but cannot enter the response. Both commands retain a
-five-second command limit inside the outer lifecycle budget; this limits the CLI, not application shutdown observation.
+ID. The private runner opts into `command`'s `preserveStdout: true` mode so measurement precedes trimming; other command
+callers retain their existing trimmed output. Unknown Docker input fields may exist within that bound but cannot enter
+the response. Both commands retain a five-second command limit inside the outer lifecycle budget; this limits the CLI,
+not application shutdown observation.
 
 Before signaling, reject paused, stopped, restarting or dead targets, overlapping signals and an already attempted
 process generation. Record the attempt before command execution. After the command, re-inspect and require unchanged

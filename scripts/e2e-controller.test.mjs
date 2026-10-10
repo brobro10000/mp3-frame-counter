@@ -1087,3 +1087,51 @@ test("TR a pending signal callback also blocks old mutations and state reads", a
   assert.equal(state.status, 200);
   assert.deepEqual(await state.json(), stateResponse());
 });
+
+// Independent TR-r2 expectations exercise the actual command helper with disposable Node children. Whitespace must
+// reach the lifecycle adapter intact so its raw UTF-8 limits cannot be bypassed by an intermediate normalization.
+test("TR-r2 command retains default and explicit-false trimmed output compatibility", async () => {
+  const stdout = "\u2003 \r\nknown-output\n\t\u00a0";
+  for (const options of [{}, { preserveStdout: false }]) {
+    const result = await command(process.execPath, ["-e", "process.stdout.write(process.argv[1])", stdout], {
+      timeoutMs: 2000,
+      ...options,
+    });
+    assert.equal(result, "known-output", "Existing command callers retain whitespace trimming");
+  }
+});
+
+test("TR-r2 command preserves exact raw output when explicitly requested", async () => {
+  const stdout = "\u2003 \r\nknown-output\n\t\u00a0";
+  const result = await command(process.execPath, ["-e", "process.stdout.write(process.argv[1])", stdout], {
+    timeoutMs: 2000,
+    preserveStdout: true,
+  });
+  assert.equal(result, stdout, "Preserve leading and trailing multibyte whitespace before byte validation");
+  assert.equal(Buffer.byteLength(result, "utf8"), Buffer.byteLength(stdout, "utf8"));
+});
+
+test("TR-r2 command-backed oversized signal output rejects and latches across generations", async () => {
+  const create = lifecycleFactory();
+  const oversized = "\u2003".repeat(321) + lifecycleTarget.containerId;
+  assert.equal(oversized.trim(), lifecycleTarget.containerId);
+  assert(Buffer.byteLength(oversized, "utf8") > 1024 && oversized.length < 1024);
+  let record = dockerRecord();
+  let kills = 0;
+  const lifecycle = create(
+    lifecycleOptions(async (args) => {
+      const isKill = args[0] === "kill";
+      if (isKill) kills++;
+      const stdout = isKill ? oversized : JSON.stringify([record]);
+      return command(process.execPath, ["-e", "process.stdout.write(process.argv[1])", stdout], {
+        timeoutMs: 2000,
+        preserveStdout: true,
+      });
+    }),
+  );
+  await assert.rejects(lifecycle.signalTerm(), "Raw oversized acknowledgment must not become an accepted trimmed ID");
+  record = dockerRecord(generationB);
+  await assert.rejects(lifecycle.signalTerm(), "Uncertain first delivery blocks a replacement generation too");
+  assert.equal(kills, 1, "The byte-limit failure must not allow another signal attempt");
+  assert.deepEqual(await lifecycle.state(), stateResponse(generationB), "Readback remains available after uncertainty");
+});
