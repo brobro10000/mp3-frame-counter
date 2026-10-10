@@ -17,10 +17,11 @@ query: >-
   Candidate harness checks remain separate from required product E2E; carry the
   preflight digest through the original same-run release bundle. Foundation
   includes credential-free Terraform formatting, initialization and validation;
-  keep these checks inside its mandatory gate, with no cloud apply.
-  Allocate the version from the exact tested source's committed release policy
-  and global first-parent ordinal. Preserve legacy identities and schema-1 bytes;
-  new policy-bound evidence uses schema 2. Compare stable latest versions numerically.
+  keep these checks inside its mandatory gate, with no cloud apply. Allocate the
+  version from the exact tested source's committed release policy and global
+  first-parent ordinal. Preserve legacy identities and schema-1 bytes; new
+  policy-bound evidence uses schema 2. Compare stable latest versions
+  numerically.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /scripts/run-ci-phase.mjs'
@@ -33,7 +34,7 @@ references:
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
   - 'File: /release-policy.json'
-generationTime: '2026-10-10T07:58:36.830Z'
+generationTime: '2026-10-10T09:02:16.338Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -52,7 +53,7 @@ flowchart TD
     G -->|"Yes"| MAIN{"Protected-main push?"}
     MAIN -->|"No: PR"| REVIEW["Checks available for independent review and protected merge"]
     MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, admitted required suite,<br/>original preflight digest, same-run checks and bundle hashes"]
-    VERIFY --> DRAFT["Resolve tested source policy and global ordinal<br/>create or verify exact version tag and private draft release"]
+    VERIFY --> DRAFT["Create or verify exact v0.1.ordinal tag and private draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
     ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]
     VERIFY -.->|"Mismatch"| FAIL["Stop and preserve state; never overwrite conflicting content"]
