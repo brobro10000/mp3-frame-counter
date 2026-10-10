@@ -1,5 +1,5 @@
 /**
- * Exercise the native API through real loopback HTTP/TCP connections. Run `node --test tests/unit/http.test.ts`.
+ * Exercise the API transport through real loopback HTTP/TCP connections. Run `node --test tests/unit/http.test.ts`.
  * Tests use frozen fixture bytes read-only, bind ephemeral ports and restore/close every connection. Short explicit
  * budgets make timeout/abort/shutdown checks bounded; no product output defines a fixture expectation or success mock.
  */
@@ -23,14 +23,15 @@ interface Reply {
   body: Buffer;
 }
 
+/** Start through the readiness boundary; test teardown owns all sockets even when startup rejects. */
 async function start(context: TestContext, budgets: Partial<ApiBudgets> = {}) {
   const service = createApiServer(budgets);
   context.after(() => {
     service.server.closeAllConnections();
     return service.shutdown();
   });
-  service.server.listen(0, "127.0.0.1");
-  await once(service.server, "listening");
+  assert.equal(typeof service.listen, "function", "ApiService.listen readiness boundary must exist");
+  await service.listen(0, "127.0.0.1");
   const port = (service.server.address() as AddressInfo).port;
   return { ...service, port };
 }
@@ -81,6 +82,7 @@ function expectJson(reply: Reply, status: number, expected?: object): void {
   }
 }
 
+/** Hold an admitted body after Continue; a missing acknowledgment fails within the client deadline. */
 async function holdUpload(port: number, length = 1_048_576) {
   const outgoing = request({
     hostname: "127.0.0.1",
@@ -89,13 +91,20 @@ async function holdUpload(port: number, length = 1_048_576) {
     path: "/file-upload",
     headers: { "Content-Type": "audio/mpeg", "Content-Length": String(length), Expect: "100-continue" },
     agent: false,
+    timeout: 5_000,
   });
+  outgoing.once("timeout", () => outgoing.destroy(new Error("Held upload timed out before completion")));
   const reply = collectReply(outgoing);
   // Expected abort cases await this rejection later; attach a handler immediately to avoid an unhandled rejection.
   void reply.catch(() => {});
   const continued = once(outgoing, "continue");
   outgoing.flushHeaders();
-  await continued;
+  await Promise.race([
+    continued,
+    reply.then(() => {
+      throw new Error("Held upload received a final response instead of admission");
+    }),
+  ]);
   return { outgoing, reply };
 }
 
@@ -364,3 +373,190 @@ test("the real process entrypoint rejects an invalid PORT without reflecting its
   assert.match(stderr, /configuration is invalid/);
   assert.ok(!stderr.includes("PRIVATE INVALID VALUE"));
 });
+
+/** Request admission without transmitting a body; any Continue or incomplete response fails the observation. */
+async function refuseBeforeBody(
+  port: number,
+  options: { method?: string; path?: string; headers?: Record<string, string> } = {},
+): Promise<Reply> {
+  const outgoing = request({
+    hostname: "127.0.0.1",
+    port,
+    method: options.method ?? "POST",
+    path: options.path ?? "/file-upload",
+    headers: {
+      "Content-Type": "audio/mpeg",
+      "Content-Length": "1024",
+      Expect: "100-continue",
+      ...options.headers,
+    },
+    agent: false,
+    timeout: 2_000,
+  });
+  let continued = false;
+  outgoing.on("continue", () => {
+    continued = true;
+  });
+  outgoing.once("timeout", () => outgoing.destroy(new Error("Early refusal did not finish")));
+  try {
+    const reply = collectReply(outgoing);
+    outgoing.flushHeaders();
+    const result = await reply;
+    assert.equal(continued, false, "The server must refuse before acknowledging or receiving body bytes");
+    return result;
+  } finally {
+    outgoing.destroy();
+  }
+}
+
+test("readiness rejects an occupied port without opening another listener", { timeout: 5_000 }, async (context) => {
+  const occupied = await start(context);
+  const service = createApiServer();
+  context.after(() => {
+    service.server.closeAllConnections();
+    return service.shutdown();
+  });
+  assert.equal(typeof service.listen, "function", "ApiService.listen readiness boundary must exist");
+  await assert.rejects(service.listen(occupied.port, "127.0.0.1"), { code: "EADDRINUSE" });
+  assert.equal(service.server.listening, false);
+  assert.equal(service.server.address(), null);
+  expectJson(await send(occupied.port, { body: fixtureBytes("one-frame") }), 200, { frameCount: 1 });
+});
+
+test("shutdown before readiness prevents a later listener", { timeout: 5_000 }, async (context) => {
+  const service = createApiServer();
+  context.after(() => {
+    service.server.closeAllConnections();
+    return service.shutdown();
+  });
+  assert.equal(typeof service.listen, "function", "ApiService.listen readiness boundary must exist");
+  const closing = service.shutdown();
+  assert.equal(service.shutdown(), closing);
+  await closing;
+  await assert.rejects(service.listen(0, "127.0.0.1"), Error);
+  assert.equal(service.server.listening, false);
+  assert.equal(service.server.address(), null);
+});
+
+test(
+  "shutdown racing readiness settles both operations with no surviving listener",
+  { timeout: 5_000 },
+  async (context) => {
+    const service = createApiServer();
+    context.after(() => {
+      service.server.closeAllConnections();
+      return service.shutdown();
+    });
+    assert.equal(typeof service.listen, "function", "ApiService.listen readiness boundary must exist");
+    const starting = service.listen(0, "127.0.0.1");
+    const closing = service.shutdown();
+    const [startup, shutdown] = await Promise.allSettled([starting, closing]);
+    assert.equal(shutdown.status, "fulfilled");
+    if (startup.status === "rejected") assert.ok(startup.reason instanceof Error);
+    assert.equal(service.server.listening, false);
+    assert.equal(service.server.address(), null);
+    assert.equal(service.shutdown(), closing);
+  },
+);
+
+test("raw refusal preserves precedence before Continue or body transmission", { timeout: 10_000 }, async (context) => {
+  const { port } = await start(context);
+  for (const [options, status] of [
+    [{ path: "/%66ile-upload", headers: { "Content-Type": "text/plain" } }, 404],
+    [{ method: "PUT", headers: { "Content-Type": "text/plain" } }, 405],
+    [{ headers: { "Content-Type": "text/plain" } }, 415],
+    [{ headers: { "Content-Encoding": "gzip" } }, 415],
+    [{ headers: { Expect: "unsupported-expectation" } }, 417],
+  ] as const) {
+    const reply = await refuseBeforeBody(port, options);
+    expectJson(reply, status);
+    if (status === 405) assert.equal(reply.headers.allow, "POST");
+  }
+});
+
+test(
+  "busy admission refuses Expect before body and preserves both held uploads",
+  { timeout: 5_000 },
+  async (context) => {
+    const { port } = await start(context);
+    const body = fixtureBytes("one-frame");
+    const first = await holdUpload(port, body.length);
+    const held = [first];
+    try {
+      const second = await holdUpload(port, body.length);
+      held.push(second);
+      const reply = await refuseBeforeBody(port);
+      expectJson(reply, 503);
+      assert.equal(reply.headers["retry-after"], "1");
+      first.outgoing.end(body);
+      second.outgoing.end(body);
+      expectJson(await first.reply, 200, { frameCount: 1 });
+      expectJson(await second.reply, 200, { frameCount: 1 });
+    } finally {
+      for (const upload of held) upload.outgoing.destroy();
+    }
+  },
+);
+
+test(
+  "success, parser failure and abort release exactly one slot beside an active anchor",
+  { timeout: 5_000 },
+  async (context) => {
+    const { port, server } = await start(context);
+    const body = fixtureBytes("one-frame");
+    const anchor = await holdUpload(port, body.length);
+    const held: Awaited<ReturnType<typeof holdUpload>>[] = [anchor];
+    try {
+      expectJson(await send(port, { body }), 200, { frameCount: 1 });
+      expectJson(await send(port, { body: fixtureBytes("truncated-frame") }), 400);
+      const received = once(server, "checkContinue", { signal: AbortSignal.timeout(1_000) });
+      void received.catch(() => {});
+      const canceled = await holdUpload(port);
+      held.push(canceled);
+      const [incoming] = await received;
+      const aborted = once(incoming, "aborted", { signal: AbortSignal.timeout(1_000) });
+      canceled.outgoing.destroy();
+      await Promise.all([assert.rejects(canceled.reply), aborted]);
+      const replacement = await holdUpload(port, body.length);
+      held.push(replacement);
+      expectJson(await refuseBeforeBody(port), 503);
+      anchor.outgoing.end(body);
+      replacement.outgoing.end(body);
+      expectJson(await anchor.reply, 200, { frameCount: 1 });
+      expectJson(await replacement.reply, 200, { frameCount: 1 });
+    } finally {
+      for (const upload of held) upload.outgoing.destroy();
+    }
+  },
+);
+
+test(
+  "timeout followed by connection close neither leaks nor over-releases admission",
+  { timeout: 5_000 },
+  async (context) => {
+    const { port } = await start(context, { inactivityTimeoutMs: 250, bodyTimeoutMs: 2_000 });
+    const expired = await holdUpload(port);
+    const held: Awaited<ReturnType<typeof holdUpload>>[] = [expired];
+    try {
+      expired.outgoing.write(fixtureBytes("one-frame"));
+      expectJson(await expired.reply, 408);
+      if (!expired.outgoing.closed) {
+        const closed = once(expired.outgoing, "close", { signal: AbortSignal.timeout(1_000) });
+        expired.outgoing.destroy();
+        await closed;
+      }
+      const body = fixtureBytes("one-frame");
+      const first = await holdUpload(port, body.length);
+      held.push(first);
+      const second = await holdUpload(port, body.length);
+      held.push(second);
+      expectJson(await refuseBeforeBody(port), 503);
+      first.outgoing.end(body);
+      second.outgoing.end(body);
+      expectJson(await first.reply, 200, { frameCount: 1 });
+      expectJson(await second.reply, 200, { frameCount: 1 });
+    } finally {
+      for (const upload of held) upload.outgoing.destroy();
+    }
+  },
+);
