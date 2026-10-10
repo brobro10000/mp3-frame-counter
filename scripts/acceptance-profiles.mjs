@@ -43,6 +43,11 @@ function identifier(value) {
   if (typeof value !== "string" || value.trim() !== value || !/^[A-Za-z0-9][A-Za-z0-9_.-]*$/u.test(value)) invalid();
 }
 
+/**
+ * Copy a closed { file, title } tuple: file uses nonempty identifier path components ending in .spec.ts; title is
+ * nonempty, trimmed and control-free. Preserve exact strings without path normalization. Invalid input throws the
+ * fixed ERR_ACCEPTANCE_PROFILE_DECLARATION TypeError; the supplied record is never mutated.
+ */
 function caseReference(value) {
   record(value, ["file", "title"]);
   if (typeof value.file !== "string" || !value.file.endsWith(".spec.ts")) invalid();
@@ -62,6 +67,11 @@ function tuple(value) {
   return JSON.stringify([value.file, value.title]);
 }
 
+/**
+ * Copy a closed revision/cases inventory in supplied order, requiring a valid revision and nonempty unique tuples.
+ * When selectedRevision is supplied, require exact equality; omission validates the predecessor's own revision syntax.
+ * Invalid shape, revision or duplicate identity throws ERR_ACCEPTANCE_PROFILE_DECLARATION without returning a partial copy.
+ */
 function inventory(value, selectedRevision) {
   record(value, ["contractRevision", "cases"]);
   identifier(value.contractRevision);
@@ -79,6 +89,11 @@ function inventory(value, selectedRevision) {
   return { contractRevision: value.contractRevision, cases };
 }
 
+/**
+ * Copy nonempty case-to-requirement mappings for an already validated completeInventory. Require exactly its tuple set,
+ * one mapping per case, and unique nonempty allowlisted requirement IDs. Return fresh records in inventory order with
+ * requirement IDs sorted; any mismatch throws ERR_ACCEPTANCE_PROFILE_DECLARATION without mutating either input.
+ */
 function mappings(value, completeInventory) {
   nonemptyArray(value);
   const byIdentity = new Map();

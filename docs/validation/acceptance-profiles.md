@@ -162,3 +162,19 @@ reversed exactly those two substitutions and reconstructed the original frozen h
 checker changed. Final pure-test SHA-256 is `e1aeec7dfdeecad50c8114362c1a375f6e04f2bdda1b7b4697c58dd443ded1db`. Root
 captured a fresh pinned 22-group run because the author's rerun had no retained raw log: all 22 passed, without skips or
 cancellations. Its raw-log SHA-256 is `883a4d3c4610594cc4264efc4720f38d97fb4cd1c1b0e70a77470683bb192105`.
+
+## PR validation and companion documentation correction
+
+PR run [38082212984, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38082212984) passed all
+three mandatory jobs for head `32ae32080a40c7ab1fddccc9d585af8f73aee802` and synthetic merge
+`a5c6927e56d574380460d0081a6972993605329f`. It reported 538 tooling tests, 20 gate tests, 120 units, all 72 external
+cases and 19 Mermaid renders passing. The independent audit's 18 captured records were rehashed by root. The logged
+admission digest matched between product and terminal output; raw PR admission was unavailable, so it was not separately
+recomputed. Publication was skipped. This is evidence for that head, not a release or later-head pass.
+
+Docker companion run `20261010T201558-9c5b0eb5` reviewed every changed file and returned `request_changes`: one P3
+required concise internal documentation for `caseReference`, `inventory` and `mappings`. It established no correctness
+or design defect and no unresolved human decision. Report SHA-256 is
+`675a4beb04b44cd25297a08c4f55c832fa4cdc0d4ec358f09f0a6d5a3289e1a4`. Root read the complete report and matching receipt;
+no approval was published. The correction adds only behavioral comments to those functions, preserving executable
+tokens and all tests. Fresh exact-head CI and companion review remain mandatory before merge.
