@@ -455,9 +455,9 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | Gate          | Default and current boundary                                                                                                         | Owner / blocked work                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
-| GATE-REVIEW   | GATE-01 verified; transport-v1 remains required. PR #22/v0.2.22 bound docs-v1 as the single pending successor.                       | Independent gate reviewer + owner; later transitions.       |
+| GATE-REVIEW   | GATE-01 verified; PR #24/v0.2.24 activated docs-v1 with 72 required local cases. No successor is yet bound.                          | Independent gate reviewer + owner; later transitions.       |
 | VERSION-01    | Source-bound minor plus global ordinal implemented and verified; 0.2 activation and first publication verified.                      | Release reviewer + owner; line changes.                     |
-| DOCS-01       | Bound docs-v1 selects Redoc CE 2.5.4 and scoped CSP with finite observation; actual product activation remains pending.              | Acceptance author + security reviewer; docs activation.     |
+| DOCS-01       | Redoc CE 2.5.4 and scoped CSP shipped in v0.2.24 under docs-v1; preserve its finite observation limits.                              | Acceptance author + security reviewer; future docs changes. |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
 | COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations. | Owner + deployment operator; paid resources/hosting.        |
 | ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                              | Owner + deployment operator; setup/exposure.                |
@@ -506,11 +506,11 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) retains the completed Redoc tool policy, current bound
-documentation implementation and next documentation-only hosted-profile decision. Browser preparation, the docs/CSP
-candidate, its binding and selected tool policy are published. Protected-main docs acceptance/publication remain
-unverified. Fastify and its prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified; each
-later successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) covers hosted delivery policy/line activation, the independent
+hosted successor and its separate actual-merge binding. Fastify, offline Redoc/docs-v1 activation and the hosted-profile
+protocol are published. PROFILE-DECLARATIONS remains in exact-head CI/companion verification, with publication pending.
+GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual
+merge binding and corresponding implementation evidence. None of these milestones establishes application hosting.
 
 ## PLAN-01 local verification — 2026-10-10
 

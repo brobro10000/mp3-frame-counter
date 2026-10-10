@@ -90,3 +90,10 @@ final repository checks, then reconcile actual parent publication and obtain fre
 Normal owner merge and verified actual-main software publication complete this card. Frozen acceptance, registry,
 product, dependencies, workflows, publisher and cloud bootstrap remain unchanged; every production application candidate
 continues to require human intervention.
+
+Independent documentation/interface review found one P3: two old current-state pointer blocks in the roadmap still
+called docs-v1 pending and named an obsolete card window. Root corrected those mutable pointers to the verified
+docs-v1/current-window state while preserving dated evidence. Original review SHA-256 is
+`337470cb8d03879ba193f530ececb9f8e2c650be27be47968e72c8a58ec515a1`. All 20 gate tests, workflow lint, exact-source
+policy, tracked formatting and portability checks passed at the governance implementation checkpoint. Main-target checks
+and companion review remain pending.
