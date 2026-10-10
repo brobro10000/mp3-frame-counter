@@ -33,7 +33,7 @@ flowchart LR
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
-                A["node:http :3000<br/>bounded upload buffer"]
+                A["Fastify on Node :3000<br/>admission and bounded stream collection"]
                 P["Pure TypeScript parser<br/>compiled JavaScript function"]
                 A -->|"Complete bytes, at most 20 MiB"| P
             end
