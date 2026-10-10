@@ -408,12 +408,14 @@ signature is `readAcceptanceProfileSource(root, { selection, sourceRevision, bas
 `{ required, candidate, pending }` declaration-result map, with null for an absent role or exact genesis passthrough.
 Validate every present role once before any suite extraction, install or standalone check. Options are closed and
 required; no caller role/profile selector is allowed. Receive the unchanged `runtimeAcceptance` selection and original
-source/base context. Replay its existing CI admission verification or local exact-source/base resolver for consistency;
-this does not create new CI authority. Preserve source/base/run context and observed reviews. Reject forged/stale
-selection, unknown options and missing context; source-reader failures have code `ERR_ACCEPTANCE_PROFILE_SOURCE`, while
-the pure declaration helper's labeled TypeError propagates. Before registry introduction, authenticate exact genesis
-through the already verified baseline plus immutable baseline/contract objects. Review these expected decisions before
-writing tests; never substitute the source for its original trusted base.
+source/base context. Permit explicit `baseRevision: null` only for a pre-policy local call whose original optional base
+was omitted; introduced-policy selections and CI still require their exact original base. Replay its existing CI
+admission verification or local exact-source/base resolver for consistency; this does not create new CI authority.
+Preserve source/base/run context and observed reviews. Reject forged/stale selection, unknown options and missing
+context; source-reader failures have code `ERR_ACCEPTANCE_PROFILE_SOURCE`, while the pure declaration helper's labeled
+TypeError propagates. Before registry introduction, authenticate exact genesis through the already verified baseline
+plus immutable baseline/contract objects. Review these expected decisions before writing tests; never substitute the
+source for its original trusted base.
 
 ### Test-first sequence and focused checks
 
