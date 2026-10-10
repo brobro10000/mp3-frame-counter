@@ -516,8 +516,11 @@ test("both bundle spellings reject nonempty or malformed arrays on package and l
     );
 });
 
-/** Complete governance-only fixture, with real metadata but no copied product/acceptance code or executable hooks. */
-function policyFixture(t) {
+/**
+ * Build a disposable CLI fixture from copied package metadata; optional synthetic input isolates changing source data.
+ * The caller's record remains owned by the caller. No product/acceptance code or executable hooks are copied.
+ */
+function policyFixture(t, sourcePackage = JSON.parse(readFileSync(join(repository, "package.json"), "utf8"))) {
   const root = mkdtempSync(join(tmpdir(), "mp3-runtime-policy-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const env = {
@@ -554,7 +557,9 @@ function policyFixture(t) {
     ".nvmrc",
   ])
     put(path, readFileSync(join(repository, path), "utf8"));
-  const pkg = JSON.parse(readFileSync(join(repository, "package.json"), "utf8"));
+  const pkg = snapshot(sourcePackage);
+  // This independent CLI control builds a development-only lock, regardless of installed application runtime inputs.
+  delete pkg.dependencies;
   const lock = {
     name: pkg.name,
     version: pkg.version,
@@ -611,6 +616,24 @@ function failing(result, reason = undefined) {
 
 test("actual policy CLI accepts a complete dependency-free governance fixture", (t) => {
   passing(policyFixture(t).run());
+});
+
+test("dependency-free CLI fixture is isolated from source runtime declarations without changing source metadata", (t) => {
+  const sourcePackage = JSON.parse(readFileSync(join(repository, "package.json"), "utf8"));
+  sourcePackage.dependencies = { fastify: "5.0.0" };
+  const before = snapshot(sourcePackage);
+  const f = policyFixture(t, sourcePackage);
+  try {
+    passing(f.run());
+    const expectedPackage = snapshot(before);
+    delete expectedPackage.dependencies;
+    assert.deepEqual(f.pkg, expectedPackage, "Synthetic fixture preserves every non-runtime package field");
+    assert.equal(f.lock.packages[""].dependencies, undefined);
+    assert.equal(f.lock.packages[directPath], undefined);
+    assert.deepEqual(f.lock.packages[""].devDependencies, before.devDependencies);
+  } finally {
+    assert.deepEqual(sourcePackage, before, "Fixture construction and CLI execution must not mutate source metadata");
+  }
 });
 
 test("actual policy wiring accepts the allowed pin and rejects a synchronized forbidden runtime graph", (t) => {
