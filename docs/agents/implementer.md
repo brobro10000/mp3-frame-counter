@@ -1,19 +1,16 @@
 # Product implementer role
 
-**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
-supersedes the historical documentation-only PLAN-01 limit below. Execute only the assigned bounded card after its
-prerequisites; authority to proceed does not let an implementer change its own acceptance expectations. Read the
-[transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1 and released Fastify. Its
-67 cases remain required for descendants. DOCS-HARNESS and the independent docs-v1 candidate are published in v0.2.20
-and v0.2.21. The [docs binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10)
-published in PR #22/v0.2.22. The
-[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23/v0.2.23,
-which retains required transport and pending docs-v1. DOCS-IMPLEMENTATION is now in progress under its separate assigned
-product paths. It must pass all 72 bound docs-v1 cases; protected-main acceptance, merge, activation and publication remain
-pending. Once activated, docs-v1 stays required for descendants and reverts. The completed metadata allowance does not
-expand product ownership beyond the current card or permit trust-policy changes.
-The released migration supersedes the historical native-HTTP choice below while preserving its public contract and
-resource protections. Frozen suite/contract/registry and trust-policy code remain outside product implementation ownership.
+**Current authority — 2026-10-10:** the [execution amendment](../phases/roadmap-execution-authorization.md) authorizes
+bounded roadmap work, companion-reviewed normal merges and automatic stage delivery. Every production application
+deployment still requires human intervention for the exact candidate. Use the
+[current state and three-card window](../phases/next-iteration.md), including its protected-main completion evidence,
+for active scope; later amendments supersede historical next-step wording below.
+
+Docs-v1 became required in PR #24/v0.2.24 and preserves all 72 local obligations for descendants and reverts. The
+hosted-profile protocol published in PR #25/v0.2.25; declarations and candidate discovery do not establish hosted
+acceptance. No application service is deployed. Keep frozen suite/contract/registry ownership independent of product
+implementation. Stacked PRs and disjoint agent lanes continue through v1, with ordered merges, actual-source bindings,
+fresh companion review and verified publication before dependent completion claims.
 
 Purpose: implement one explicitly authorized P3 or P4 scope against an already reviewed independent baseline. Read
 [MVP](../mvp.md), [architecture](../architecture/v1.md), [phase plan](../phases/README.md),

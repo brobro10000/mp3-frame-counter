@@ -32,7 +32,7 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
 - P2 executable baseline and independent review precede product code; implementers cannot modify frozen tests or gates.
 - Preserve raw uploads, the inclusive 20971520-byte limit and pure physical-frame parser with the released Fastify transport.
-- Fastify shipped in PR #19/v0.2.19; docs/OpenAPI serving and Redoc remain separate successor work.
+- Fastify shipped in PR #19/v0.2.19; offline Redoc/OpenAPI shipped in PR #24/v0.2.24 with required docs-v1 acceptance.
 - Use separate non-root NGINX frontend and Node API images, one browser origin and configurable private upstream.
 - No retained uploads, runtime parser library, database, object storage, accounts or speculative infrastructure.
 - Use only the approved exact Fastify runtime dependency; its adoption does not authorize unrelated frameworks.
@@ -61,17 +61,15 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
   snapshots; ordinary CI remains authoritative for execution evidence. Regeneration needs a separately scoped migration.
 - Keep exactly three detailed next PR cards; later work stays provisional. GATE-01 precedes successor suites,
   VER-01 precedes release-line activation, and compatible tooling precedes live extended-queue syntax.
-- Preserve immutable r3 genesis evidence. Review docs/testing/acceptance-transition.md: PR #19/v0.2.19 activated the
-  transport-v1 suite bound by PR #16. It remains required. DOCS-HARNESS published in v0.2.20; the independent docs-v1
-  candidate published in PR #21/v0.2.21 and was bound by PR #22/v0.2.22. Read the protected-main completion in
-  docs/validation/docs-binding.md. DOCS-TOOL-POLICY completed in PR #23/v0.2.23; read the
-  [tool-policy completion](docs/validation/docs-tool-policy.md#protected-main-completion--2026-10-10).
-  That governance release keeps transport required and docs-v1 pending. The three-card window retains completed
-  DOCS-TOOL-POLICY, current DOCS-IMPLEMENTATION and next HOSTED-PROFILE-POLICY; preserve their order and frozen bytes.
-  Docs implementation is in progress and must pass all 72 bound docs-v1 cases. Protected-main activation, merge and publication
-  remain unverified; once activated, docs-v1 remains required for descendants and reverts. No docs capability is released
-  and no deployment is claimed. Product ownership is separate from the completed tool-policy allowance.
-  The released framework migration supersedes the historical native-HTTP choice while preserving public behavior.
+- Preserve immutable r3 genesis evidence. Review docs/testing/acceptance-transition.md and the current state in
+  docs/phases/next-iteration.md. PR #24/v0.2.24 activated the bound docs-v1 suite: all 72 local cases remain required for
+  descendants and reverts. PR #25/v0.2.25 published the dormant hosted-profile protocol. Candidate controls, declaration
+  validation and software publication do not establish hosted execution or application deployment.
+- Use the current three-card window as the source of active scope rather than historical next-step prose. Keep
+  independent acceptance/governance expectations separate from their implementation, and preserve actual main ancestry
+  when reconciling stacked PRs. Refresh checks and companion review after head/base changes; merge in dependency order.
+- Apply stacked PRs and disjoint subagent domains throughout the remaining version progression to v1. Parallel authoring
+  does not remove prerequisite publication, immutable binding or every production deployment's human gate.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.
 - Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.

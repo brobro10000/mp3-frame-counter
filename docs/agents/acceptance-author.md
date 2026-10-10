@@ -1,18 +1,16 @@
 # Acceptance author role
 
-**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
-supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
-implementation. Follow the [transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1,
-with 67 required external cases. Its
-[completion evidence](../validation/fastify-transport.md#protected-main-completion) verifies protected-main publication.
-DOCS-HARNESS published in v0.2.20; the independent docs-v1 candidate published in PR #21/v0.2.21. Its
-[separate binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
-PR #22/v0.2.22. The independently specified
-[tool policy](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) completed in PR #23/v0.2.23,
-preserving required transport and pending docs-v1. Keep the frozen suite unchanged during the separate docs product
-implementation now in progress. That change must pass all 72 bound docs-v1 cases; actual protected-main activation and
-publication remain unverified. After activation, the requirement persists for descendants and reverts. Candidate
-controls/discovery and the prerequisite release are not docs product acceptance.
+**Current authority — 2026-10-10:** the [execution amendment](../phases/roadmap-execution-authorization.md) authorizes
+bounded roadmap work, companion-reviewed normal merges and automatic stage delivery. Every production application
+deployment still requires human intervention for the exact candidate. Use the
+[current state and three-card window](../phases/next-iteration.md), including its protected-main completion evidence,
+for active scope; later amendments supersede historical next-step wording below.
+
+Docs-v1 became required in PR #24/v0.2.24 and preserves all 72 local obligations for descendants and reverts. The
+hosted-profile protocol published in PR #25/v0.2.25; declarations and candidate discovery do not establish hosted
+acceptance. No application service is deployed. Keep frozen suite/contract/registry ownership independent of product
+implementation. Stacked PRs and disjoint agent lanes continue through v1, with ordered merges, actual-source bindings,
+fresh companion review and verified publication before dependent completion claims.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),
