@@ -306,6 +306,11 @@ process.exit(47);
     });
   const candidate = () => {
     json(manifestPath, { contractRevision: "r4", independentCount: 3 });
+    // A non-genesis synthetic suite declares its complete inert local inventory; no test body is executed here.
+    json("tests/acceptance/fixtures/inventory.json", {
+      contractRevision: "r4",
+      cases: [{ file: "specs/synthetic.spec.ts", title: "Independent synthetic consumer case" }],
+    });
     put(markerPath, candidateMarker);
     put("docs/testing/contracts/transport-r4.md", "# Independent candidate contract\n");
     const revision = commit("independent candidate only");
