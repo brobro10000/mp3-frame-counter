@@ -4,10 +4,11 @@
 supersedes the historical documentation-only PLAN-01 limit below. Execute only the assigned bounded card after its
 prerequisites; authority to proceed does not let an implementer change its own acceptance expectations. Read the
 [transition guide](../testing/acceptance-transition.md): PR #19/v0.2.19 activated transport-v1 and released Fastify. Its
-67 cases remain required for descendants; no successor is pending. DOCS-HARNESS and independent docs/CSP authoring and
-binding precede later docs product work. The released migration supersedes the historical native-HTTP choice below
-while preserving its public contract and resource protections. Frozen suite/contract/registry and trust-policy code
-remain outside product implementation ownership.
+67 cases remain required for descendants. DOCS-HARNESS and the independent docs-v1 candidate are published in v0.2.20
+and v0.2.21. The [separate docs binding](../validation/docs-binding.md) is proposed here; its review, merge and
+publication remain pending. Actual binding and subsequent DOCS-TOOL-POLICY publication precede docs product work.
+The released migration supersedes the historical native-HTTP choice below while preserving its public contract and
+resource protections. Frozen suite/contract/registry and trust-policy code remain outside product implementation ownership.
 
 Purpose: implement one explicitly authorized P3 or P4 scope against an already reviewed independent baseline. Read
 [MVP](../mvp.md), [architecture](../architecture/v1.md), [phase plan](../phases/README.md),

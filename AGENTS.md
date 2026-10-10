@@ -62,9 +62,11 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
 - Keep exactly three detailed next PR cards; later work stays provisional. GATE-01 precedes successor suites,
   VER-01 precedes release-line activation, and compatible tooling precedes live extended-queue syntax.
 - Preserve immutable r3 genesis evidence. Review docs/testing/acceptance-transition.md: PR #19/v0.2.19 activated the
-  transport-v1 suite bound by PR #16. It is required for descendants; no successor is pending. DOCS-HARNESS precedes
-  independent docs/CSP candidate authoring and actual binding. The released framework migration supersedes the
-  historical native-HTTP choice while preserving public behavior.
+  transport-v1 suite bound by PR #16. It remains required. DOCS-HARNESS published in v0.2.20; the independent docs-v1
+  candidate published in PR #21/v0.2.21. This change proposes its separate binding; binding review/merge/publication
+  remain pending. Read docs/validation/docs-binding.md. The next cards are DOCS-BIND, DOCS-TOOL-POLICY and
+  DOCS-IMPLEMENTATION; preserve that order and frozen candidate bytes. No docs product capability is shipped yet.
+  The released framework migration supersedes the historical native-HTTP choice while preserving public behavior.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.
 - Run `npm run check:mermaid` for diagram changes; all tracked Markdown Mermaid fences and standalone diagrams must render.

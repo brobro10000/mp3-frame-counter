@@ -1,5 +1,13 @@
 # Independent acceptance baseline and change control
 
+**Current-state amendment, 2026-10-10:** PR #19/v0.2.19 activated transport-v1; its 67 external cases remain required.
+DOCS-HARNESS published in v0.2.20, and the independently authored docs-v1 candidate published in PR #21/v0.2.21. This
+change proposes its separate actual binding, with transport-v1 as predecessor. Binding review, merge and publication
+remain pending; candidate discovery/controls are not product acceptance. Read the
+[binding record](../validation/docs-binding.md) and [transition guide](acceptance-transition.md). Actual binding and
+subsequent tool-policy publication precede docs product implementation. The dated pending-transport/r3 statements below
+describe earlier milestones and retain their original evidence; they do not select an older suite for current work.
+
 **Binding completion, 2026-10-10:** PR #16 merged at `5645b0501ca403750a2d894d6a492afa4b42185b`; main run `38048679076`
 published v0.2.16 with authenticated approval evidence. The registry now binds transport-v1 as the single pending
 successor. r3 remains required for intervening governance work; the next product change activates transport-v1

@@ -1,5 +1,10 @@
 # Acceptance browser preparation evidence
 
+**Completion amendment — 2026-10-10:** DOCS-HARNESS is complete at PR #20/v0.2.20. The
+[protected-main completion](#protected-main-completion--2026-10-10) below supersedes earlier pending-CI/review/merge
+statements while preserving their dated scope and failures. Read the [docs candidate record](docs-binding.md) for the
+separate PR #21/v0.2.21 controls; browser readiness is never documentation product acceptance.
+
 **Status — 2026-10-10:** corrected implementation passes focused and full local validation, actual local browser
 readiness, 82 unit tests and all 67 image-bound transport cases. DOCS-HARNESS remains open pending fresh Linux CI,
 companion approval, merge and protected-main publication. No docs rendering, CSP or hosted result is claimed. The
@@ -160,3 +165,44 @@ release diagram to place exact suite selection, locked installation, browser rea
 product build/E2E, and added the helper as a source reference. No executable behavior changed. `npm run check:mermaid`
 rendered all 19 tracked diagrams successfully. The superseded initial PR run `38057257304` was canceled when the bot
 updated the head; canceled work is not passing evidence. Final-head CI and companion review remain required.
+
+## Protected-main completion — 2026-10-10
+
+[PR #20](https://github.com/brobro10000/mp3-frame-counter/pull/20) merged at 14:03:37 UTC as
+`c39de309867d63fc04fe1d12647680b34ee178d5`, sole parent `f4fb747df8890511edde7878064bb9af79823138`. The merged tree
+`bcd85adbc7476c240fc084d307d5e03e19c9b015` equals reviewed head `32edb57ef52dd003daae8cf2e1f1fa3c3a25769c`'s tree.
+Companion run `20261010T135532-bf5f3f5e` approved all 24 changed paths, with no findings and a passing documentation
+gate. The actual
+[automated approval 5479213786](https://github.com/brobro10000/mp3-frame-counter/pull/20#pullrequestreview-5479213786)
+by `brobro1000` was verified before the normal owner squash merge. This is not human review or a protection override.
+
+[Final PR CI 38057332726](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38057332726) tested synthetic
+merge `25919486725e9279cdee1f53fcc215266071381f`. Actual protected-main
+[run 38058120765, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38058120765/attempts/1) then
+passed and published [v0.2.20](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.20), release
+408988920, ten assets, at 14:07:26Z. Both reported 459 tooling tests, 20 gate tests, 82 unit tests, all 67 required
+transport cases and 19 rendered diagrams, with no test failures/skips and passed scoped cleanup.
+
+Main Linux setup recorded `install-deps` in 12.765 seconds, installation in 9.002 seconds and launch probe in 0.861
+seconds: Playwright 1.64.0, Chromium/headless-shell revision 1248 and browser 156.0.8078.4. Close and cleanup completed
+before standalone checks. Readiness remains `productAcceptance: false`. No cache-before inventory proves a cache miss;
+these observations establish actual Ubuntu 24.04 preparation and launch, not newly acquired bytes. Real candidate
+preparation was subsequently observed in PR #21's separate [candidate evidence](docs-binding.md#actual-ci-results).
+
+The v0.2.20 admission remains governance, with transport-v1 required, binding `5645b05`, activation `f4fb747` and no
+candidate/pending binding at that historical source. Root read the embedded admission and verified its digest:
+`aa44e18f58073f2d0e889f489347aedb7b929d2490576494539f9b6aa7a3d10f`. Required suite identities remain unchanged: commit
+`6c28382d71a014351311e63154ef1c8916b8a229`, tree `d905d3123623f74b029a94c61ca850e553af2c32`, manifest
+`674bb8a49e895b283d828e965f3cd4c6e1567f9b38ec25fdf44dfe452085e3cc`.
+
+The release records API image `sha256:85b0eec1702a4a5a27a05dcdf6714e92a3273f42d9bebc55578d9525a56e6072` and frontend
+image `sha256:90d99e9bab3fdf9bb7abadc5ba152fb085bf970adfb8fb14c43da8237f81001e`. Root independently rehashed eight
+metadata assets against GitHub digests and compared source/tag/run/context/suite/images and publication outcome. Zero
+image archives were downloaded/rehashed; no retry or deployment occurred. An initial observer assertion confused
+`release-only-provenance` with the publisher's distinct `released-not-deployed` field; the assertion was corrected
+without changing source or evidence.
+
+Ignored local publication verification SHA-256 is `97439c8b71740895037f9c366a4d1620a5f94aebef569c29be684fd3824ff683`;
+main-CI verification is `467fe91b589695d00438d2eef55263460e76e44bb9bc19d567e88ef975572492`. These retained records are
+not portable published artifacts; the durable run/release links identify repository evidence. DOCS-HARNESS completion
+establishes browser readiness before standalone checks, with no docs route, CSP, hosted service or production claim.
