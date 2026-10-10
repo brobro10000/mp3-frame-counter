@@ -10,7 +10,7 @@ The [binding completion](../validation/docs-binding.md#protected-main-binding-co
 PR #22/v0.2.22; docs-v1 is pending. The separate
 [tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23/v0.2.23
 and its unchanged acceptance selection. Review the current docs product implementation against all 72 bound docs-v1
-cases, exact artifact/CSP requirements and its bounded ownership. Product acceptance, merge, activation and publication
+cases, exact artifact/CSP requirements and its bounded ownership. Protected-main acceptance, merge, activation and publication
 remain unverified; the prerequisite release cannot supply them. Once activated, docs-v1 persists for descendants and
 reverts. Preserve frozen suite, contract and registry bytes; require fresh exact-head companion review and actual main
 publication. No deployment is established by either review or a software release.

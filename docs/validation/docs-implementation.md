@@ -99,3 +99,32 @@ tooling tests**, with zero failures/skips/cancellations. Log SHA-256:
 `ec4a7d3f397d1a535208f946225c33e0ab42923a5cd4e61f6ea793394d66c484`. That run preceded only the narrow ingress/unit
 correction and further evidence prose; affected docs units and real ingress checks were subsequently rerun. Final PR and
 protected-main checks remain required, including full 72-case image-bound acceptance and publication.
+
+## Complete local acceptance — implementation source 46695d2
+
+`npm run check:phase` passed against clean committed source `46695d25ad38f919c66b9b0b750e2f3fb1d4c0d5`, trusted base
+`2ca5a0b2e2eb2c9aa9160e950ec905bae24a1892`. The unchanged resolver selected docs-v1 for implementation with no pending
+successor or candidate. This is explicitly local selection, not a CI admission grant. Standalone independent
+controls/discovery and browser preparation ran separately from application acceptance; the normal build and all **120
+units passed** before the real two-container test.
+
+All **72 external cases passed**, zero failures/skips, including every prior transport case and both desktop/narrow
+actual Redoc response expansion under effective CSP. The served specification, exact local renderer/logo, docs route/
+method/header behavior and unchanged upload-page protection passed through NGINX. Scoped cleanup passed. The finite
+live-document observation retains its contract limits; no hosted or destructive-navigation result is implied.
+
+The actual tested image IDs were API `sha256:f8b39a536f6a1a25a9e2f5fac79b5312e228e54c8408a235b9ce172dca6cbd86` and
+frontend `sha256:bb3d70b12763c04b562f7bd9d8a64d3c778cd36f78efb1afedffb06d1737afd9`; local configuration digest was
+`fcfb3c8c372e4a3056ee92fdda9d55b107f3c7bf2fe4b28e453625affdbac562`.
+
+Phase log SHA-256: `acda65a789a62f88c25d806205fe1b2c9430a14313a763cddb12f07998bb21f0`. Result SHA-256:
+`1771bbee03b3291c6d1408d7d2fd03c0f5032f912fe8967534e38229ab5d57d9`.
+
+The final independent source review preserves the ingress P2 and verified correction, with no remaining actionable
+finding: SHA-256 `6150f5b91c04fc8f2cbbe4c1f904f4f19327d91936bc15b30de6a903ce141eed`. Root read the full memo, correction
+and exact final hashes. Later edits only reconcile this evidence and current guidance; executable product,
+configuration, dependencies and frozen acceptance remain identical to the tested source.
+
+[PR #24](https://github.com/brobro10000/mp3-frame-counter/pull/24) requires fresh mandatory CI and actual Docker
+companion review before an authorized normal owner merge. Protected-main acceptance/activation and publication remain
+pending; none is inferred from these local results. Earlier pending statements above describe their pre-check snapshots.

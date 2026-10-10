@@ -8,7 +8,7 @@ candidate discovery/controls are not product acceptance. Read the
 [tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) and
 [transition guide](acceptance-transition.md). PR #23/v0.2.23 published the tool-policy prerequisite with required
 transport and pending docs unchanged. The separate docs product implementation is in progress and must pass all 72 bound
-docs-v1 cases without changing their bytes. Product acceptance, merge, protected-main activation and publication remain
+docs-v1 cases without changing their bytes. Protected-main acceptance, merge, activation and publication remain
 unverified; once activated, docs-v1 persists for descendants and reverts. The dated pending-transport/r3 statements
 below describe earlier milestones and retain their original evidence; they do not select an older suite for current
 work.

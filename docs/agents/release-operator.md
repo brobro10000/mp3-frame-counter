@@ -8,7 +8,7 @@ after PR #19/v0.2.19. Browser setup and the docs-v1 candidate are published in v
 [docs binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
 PR #22/v0.2.22. The [tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10)
 verifies PR #23/v0.2.23 with transport-v1 required and docs-v1 pending. The separate docs product implementation is in
-progress; it must pass all 72 bound docs-v1 cases against its actual source/images. Product acceptance, activation,
+progress; it must pass all 72 bound docs-v1 cases against its actual source/images. Protected-main acceptance, activation,
 merge and publication are not yet verified. Once activated, docs-v1 remains required for descendants and reverts;
 candidate controls and prerequisite publication cannot substitute for that evidence. Preserve original-base admission,
 exact source/run/suite/image identities and immutable retry evidence. Software publication still does not deploy.

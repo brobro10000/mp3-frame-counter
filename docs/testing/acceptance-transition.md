@@ -13,9 +13,9 @@ evidence. PR #22 bound that candidate at `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960
 [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10). Transport-v1 remains
 required and docs-v1 is the single pending successor in the released application. PR #23/v0.2.23 completed the separate
 [tool-policy prerequisite](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10), with that selection
-unchanged. Docs product implementation is now in progress and must pass all 72 bound docs-v1 cases. Its acceptance,
-merge, protected-main activation and publication are not yet verified. After activation, docs-v1 persists for
-descendants and product reverts; pending controls/discovery cannot establish that product result.
+unchanged. Docs product implementation is now in progress and must pass all 72 bound docs-v1 cases. Its protected-main
+acceptance, merge, activation and publication are not yet verified. After activation, docs-v1 persists for descendants
+and product reverts; pending controls/discovery cannot establish that product result.
 
 The [genesis record](baseline.json), historical suite objects and
 [transport binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain

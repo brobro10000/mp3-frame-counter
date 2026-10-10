@@ -68,7 +68,7 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
   [tool-policy completion](docs/validation/docs-tool-policy.md#protected-main-completion--2026-10-10).
   That governance release keeps transport required and docs-v1 pending. The three-card window retains completed
   DOCS-TOOL-POLICY, current DOCS-IMPLEMENTATION and next HOSTED-PROFILE-POLICY; preserve their order and frozen bytes.
-  Docs implementation is in progress and must pass all 72 bound docs-v1 cases. Actual activation, merge and publication
+  Docs implementation is in progress and must pass all 72 bound docs-v1 cases. Protected-main activation, merge and publication
   remain unverified; once activated, docs-v1 remains required for descendants and reverts. No docs capability is released
   and no deployment is claimed. Product ownership is separate from the completed tool-policy allowance.
   The released framework migration supersedes the historical native-HTTP choice while preserving public behavior.

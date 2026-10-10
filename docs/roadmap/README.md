@@ -509,9 +509,9 @@ scope, recoverable migration and direct validation. A blocked generated operatio
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
 [active three-card window](../phases/next-iteration.md) retains the completed Redoc tool policy, current bound
 documentation implementation and next documentation-only hosted-profile decision. Browser preparation, the docs/CSP
-candidate, its binding and selected tool policy are published. Docs implementation remains unverified. Fastify and its
-prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified; each later successor still
-requires independent authoring, actual merge binding and corresponding implementation evidence.
+candidate, its binding and selected tool policy are published. Protected-main docs acceptance/publication remain
+unverified. Fastify and its prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified; each
+later successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

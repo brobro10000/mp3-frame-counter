@@ -9,8 +9,8 @@ and v0.2.21. The [docs binding](../validation/docs-binding.md#protected-main-bin
 published in PR #22/v0.2.22. The
 [tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23/v0.2.23,
 which retains required transport and pending docs-v1. DOCS-IMPLEMENTATION is now in progress under its separate assigned
-product paths. It must pass all 72 bound docs-v1 cases; no product acceptance, merge, activation or publication is yet
-claimed. Once activated, docs-v1 stays required for descendants and reverts. The completed metadata allowance does not
+product paths. It must pass all 72 bound docs-v1 cases; protected-main acceptance, merge, activation and publication remain
+pending. Once activated, docs-v1 stays required for descendants and reverts. The completed metadata allowance does not
 expand product ownership beyond the current card or permit trust-policy changes.
 The released migration supersedes the historical native-HTTP choice below while preserving its public contract and
 resource protections. Frozen suite/contract/registry and trust-policy code remain outside product implementation ownership.
