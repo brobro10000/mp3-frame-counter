@@ -199,3 +199,18 @@ CI and companion review remain required. Normal-TLS loopback calibration does no
 provider identity, real stage behavior or a complete successful hosted-wrapper execution. Those require the trusted
 launcher and actual environment. Preserve the predecessor's immutable Git objects permanently; this candidate becomes
 required only through separate reviewed binding and activation.
+
+### Inspectable calibration and prerequisite evidence
+
+The [calibration record](fixtures/hosted-calibration/README.md) includes diagnostic source, environment and source
+identity, normal-TLS results and the retained failed interruption report with process/listener observations. It marks
+sanitation and preserves original hashes rather than presenting derivatives as original bytes. These are bounded local
+operator records; they are neither signed attestations nor hosted product acceptance.
+
+The delivery-policy parent is [PR #27](https://github.com/brobro10000/mp3-frame-counter/pull/27), merged at
+`a98a434570a934831c64a64d3231950f27574b43`. Its
+[protected-main run 38087336311, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38087336311/attempts/1)
+passed and published [v0.3.27](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.27), release
+409216997, at 21:29:15Z on 2026-10-10. Root rehashed the eight downloaded metadata assets and verified original
+source/base/run/admission and source/suite/image/configuration consistency. Image archive hashes and sizes were compared
+only as metadata; no archive was downloaded or rehashed. Publication reports `deployed: false`.

@@ -1,0 +1,8 @@
+{
+  "code": 0,
+  "reaped": true,
+  "forced": false,
+  "stopped": false,
+  "bytes": 0,
+  "failures": []
+}

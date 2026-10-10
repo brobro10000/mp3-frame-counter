@@ -1,0 +1,44 @@
+{
+  "kind": "hosted-lifecycle-diagnostic",
+  "productAcceptance": false,
+  "status": "failed",
+  "runtime": {
+    "node": "v24.20.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "driverSha256": "07639b48c06cb47f1c30e7c5678f2416059d12766286f16205125ec7611043fb",
+  "limits": {
+    "setupMs": 60000,
+    "interruptionMs": 45000,
+    "outerCleanupMs": 10000
+  },
+  "readiness": {
+    "observed": false,
+    "atMs": 60043
+  },
+  "checks": [
+    {
+      "id": "actual-chromium-and-new-owned-listener-before-signal",
+      "passed": false
+    },
+    {
+      "id": "copied-source-bytes-unchanged",
+      "passed": true
+    },
+    {
+      "id": "synthetic-control-token-absent-from-retained-reports",
+      "passed": true
+    }
+  ],
+  "observations": {
+    "baselineListeners": []
+  },
+  "failures": [
+    "SETUP_READINESS"
+  ],
+  "outerCleanup": "forced-container-disposal-required",
+  "outputBytesDiscarded": 45,
+  "durationMs": 60249,
+  "evidence": []
+}

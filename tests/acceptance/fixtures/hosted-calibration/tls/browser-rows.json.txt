@@ -1,0 +1,362 @@
+[
+  {
+    "id": "browser-authenticated-header-replacement",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-absent-credential-positive-counterpart",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-untouched-security-headers/strict",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-untouched-security-headers/reverse",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-missing-csp-negative-counterpart",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-original-non-success-body",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-no-navigation/redirect-same",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-no-navigation/redirect-foreign",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-no-fetch/redirect-same",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-no-fetch/redirect-foreign",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-foreign-navigation",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-foreign-fetch",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-foreign-popup",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-foreign-iframe",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-unknown-popup-ownership",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-owned-same-origin-frame",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-worker-refusal-service",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-worker-refusal-dedicated",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-worker-refusal-shared",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-service-worker-live-counterpart",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-websocket-refusal",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-websocket-live-counterpart",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-upload-console-actual400",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-upload-console-wrong-path",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-upload-console-wrong-status",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-upload-console-uncorrelated",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-upload-console-extra",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-response-first",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-console-first",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-inclusive-window",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-mixed-query",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-stale-response",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-stale-console",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-extra-console",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-ambiguous-response",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-ambiguous-console",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-unused-response",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-console-correlation-actual-mixed-query",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-bounded-observer-overflow",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-cancel-paused-during-cleanup",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-real-latch-paused-deadline",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-real-latch-cdp",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-real-latch-cleanup",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-real-latch-late-callback",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-positive",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-positive-narrow",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-wrong-viewport",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-root-positive",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-root-policy-leak",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-missing-renderer",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-bad-style-hash",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-foreign-script",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-wrong-success",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-missing-logo",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-wrong-logo",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-meta-policy",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-late-meta",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-docs-late-error",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-token-free-control-evidence",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  },
+  {
+    "id": "browser-fixture-cleanup",
+    "status": "passed",
+    "cleanup": "passed",
+    "codes": []
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "code": 1,
+  "reaped": true,
+  "forced": false,
+  "stopped": true,
+  "bytes": 0,
+  "failures": [
+    "ASSERTION"
+  ]
+}

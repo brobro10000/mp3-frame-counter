@@ -1,0 +1,368 @@
+{
+  "kind": "hosted-lifecycle-diagnostic",
+  "productAcceptance": false,
+  "status": "passed",
+  "runtime": {
+    "node": "v24.20.0",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "driverSha256": "07639b48c06cb47f1c30e7c5678f2416059d12766286f16205125ec7611043fb",
+  "limits": {
+    "setupMs": 60000,
+    "interruptionMs": 45000,
+    "outerCleanupMs": 10000
+  },
+  "readiness": {
+    "atMs": 4379,
+    "directChild": {
+      "pid": 22,
+      "ppid": 15,
+      "group": 22,
+      "session": 22,
+      "state": "R",
+      "startTicks": "8503834",
+      "executable": "rosetta",
+      "nodeArgument": true,
+      "knownBrowserArgument": false
+    },
+    "chromium": [
+      {
+        "pid": 41,
+        "ppid": 22,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504135",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 43,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504141",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 44,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504142",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 58,
+        "ppid": 43,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504160",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      }
+    ],
+    "listeners": [
+      {
+        "family": "tcp",
+        "local": "0100007F:9A45",
+        "inode": "3144133",
+        "owners": [
+          "22:8503834"
+        ]
+      },
+      {
+        "family": "tcp",
+        "local": "0100007F:AC87",
+        "inode": "3144132",
+        "owners": [
+          "22:8503834"
+        ]
+      }
+    ],
+    "descendants": [
+      {
+        "pid": 22,
+        "ppid": 15,
+        "group": 22,
+        "session": 22,
+        "state": "R",
+        "startTicks": "8503834",
+        "executable": "rosetta",
+        "nodeArgument": true,
+        "knownBrowserArgument": false
+      },
+      {
+        "pid": 41,
+        "ppid": 22,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504135",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 43,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504141",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 44,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504142",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 58,
+        "ppid": 43,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504160",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 62,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504166",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": false
+      }
+    ],
+    "driver": {
+      "pid": 15,
+      "ppid": 7,
+      "group": 7,
+      "session": 1,
+      "state": "S",
+      "startTicks": "8503749",
+      "executable": "rosetta"
+    }
+  },
+  "checks": [
+    {
+      "id": "actual-chromium-and-new-owned-listener-before-signal",
+      "passed": true
+    },
+    {
+      "id": "signal-delivered-to-driver-parent",
+      "passed": true
+    },
+    {
+      "id": "driver-completed-within-interruption-bound",
+      "passed": true
+    },
+    {
+      "id": "nonzero-parent-exit",
+      "passed": true
+    },
+    {
+      "id": "matching-source-run-binding",
+      "passed": true
+    },
+    {
+      "id": "exact-ninety-five-unique-planned-identities",
+      "passed": true
+    },
+    {
+      "id": "partial-records-never-invent-executions",
+      "passed": true
+    },
+    {
+      "id": "interruption-closed-failed-record",
+      "passed": true
+    },
+    {
+      "id": "graceful-direct-child-reaping-not-forced",
+      "passed": true
+    },
+    {
+      "id": "original-direct-child-no-longer-present",
+      "passed": true
+    },
+    {
+      "id": "all-witnessed-descendants-gone",
+      "passed": true
+    },
+    {
+      "id": "all-witnessed-owned-listeners-gone",
+      "passed": true
+    },
+    {
+      "id": "no-output-overflow",
+      "passed": true
+    },
+    {
+      "id": "copied-source-bytes-unchanged",
+      "passed": true
+    },
+    {
+      "id": "synthetic-control-token-absent-from-retained-reports",
+      "passed": true
+    }
+  ],
+  "observations": {
+    "knownBrowserExecutableCount": 2,
+    "baselineListeners": [],
+    "signal": {
+      "target": "driver-parent",
+      "pid": 15,
+      "signal": "SIGTERM",
+      "atMs": 4380
+    },
+    "parentCompletion": {
+      "code": 1,
+      "signal": null,
+      "atMs": 4727
+    },
+    "runId": "c5196e35-f5e9-45a0-9849-21307b1f6c2a",
+    "process": {
+      "code": 1,
+      "reaped": true,
+      "forced": false,
+      "stopped": true,
+      "bytes": 0,
+      "failures": [
+        "ASSERTION"
+      ]
+    },
+    "reportSummary": {
+      "status": "failed",
+      "cleanup": "passed",
+      "terminationRequested": true,
+      "controls": 93,
+      "failures": [
+        "ASSERTION"
+      ],
+      "sourceDigest": "9e6b08d598f03e0bb12712f3ede0f8e39063ef2ce77d3a3b88decece795552a5"
+    },
+    "witnessedDescendants": [
+      {
+        "pid": 22,
+        "ppid": 15,
+        "group": 22,
+        "session": 22,
+        "state": "Z",
+        "startTicks": "8503834",
+        "executable": "unknown",
+        "nodeArgument": false,
+        "knownBrowserArgument": false
+      },
+      {
+        "pid": 30,
+        "ppid": 22,
+        "group": 22,
+        "session": 22,
+        "state": "R",
+        "startTicks": "8503971",
+        "executable": "rosetta",
+        "nodeArgument": true,
+        "knownBrowserArgument": false
+      },
+      {
+        "pid": 41,
+        "ppid": 22,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504135",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 43,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504141",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 44,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504142",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 58,
+        "ppid": 43,
+        "group": 41,
+        "session": 41,
+        "state": "S",
+        "startTicks": "8504160",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": true
+      },
+      {
+        "pid": 62,
+        "ppid": 41,
+        "group": 41,
+        "session": 41,
+        "state": "R",
+        "startTicks": "8504166",
+        "executable": "rosetta",
+        "nodeArgument": false,
+        "knownBrowserArgument": false
+      }
+    ],
+    "survivingWitnessedDescendants": [],
+    "survivingWitnessedListeners": []
+  },
+  "failures": [],
+  "outerCleanup": "no-harness-force-required",
+  "outputBytesDiscarded": 45,
+  "durationMs": 5011,
+  "evidence": [
+    {
+      "path": "process.json",
+      "sha256": "59e13e8f1a928ecdfcb41ddc36f43b477e1e6fbfbfbe63aab9d9e93ec8e22fe4"
+    },
+    {
+      "path": "child-report.json",
+      "sha256": "12166efe2c7d4c239b4a2d190ce642bdcda5760c1957d1e160a99426a8f916f5"
+    },
+    {
+      "path": "report.json",
+      "sha256": "8ecdf043d71fb90aa7f8f139bdbb24fe98812093556320acf6ca473c038934ea"
+    }
+  ]
+}

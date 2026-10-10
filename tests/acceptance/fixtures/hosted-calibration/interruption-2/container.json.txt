@@ -1,0 +1,16 @@
+{
+  "name": "hosted-driver-interruption-6a0d7865db41",
+  "imageId": "sha256:56ddaf0edd4d0e102293ab5b05bd0d0f671b1660cba81347c06d2f35ea1b7ed3",
+  "architecture": "amd64",
+  "os": "linux",
+  "network": "none",
+  "init": true,
+  "mount": "single-diagnostic-directory",
+  "status": "completed",
+  "exitCode": 0,
+  "stdoutBytes": 113,
+  "stderrBytes": 0,
+  "containerPresentBeforeOuterRemoval": false,
+  "containerAbsentAfterward": true,
+  "harnessSha256": "7e77d5e26c598b77a0aa1ff8bd48aded48762d24a4c286eb8e64d5351faaeb32"
+}

@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "kind": "retained-hosted-calibration-evidence",
+  "productAcceptance": false,
+  "recordTreatment": "Raw included JSON is unchanged and stored as .json.txt so Prettier cannot rewrite it; no JSON fields sanitized. One text-fenced source token literal is redacted. Duplicate originals map to one unchanged file.",
+  "records": [
+    {
+      "file": "source-inventory.json.txt",
+      "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+      "bytes": 9661,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/source-inventory.json",
+          "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+          "bytes": 9661
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/source-before.json",
+          "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+          "bytes": 9661
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/source-after.json",
+          "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+          "bytes": 9661
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/source-before.json",
+          "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+          "bytes": 9661
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/source-after.json",
+          "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+          "bytes": 9661
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "root-verification.json.txt",
+      "sha256": "d567faaa048e250da3b5dcd7f4cb70b6bda269f61e5b9e5e295714164b9803c1",
+      "bytes": 3228,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-final-verification.json",
+          "sha256": "d567faaa048e250da3b5dcd7f4cb70b6bda269f61e5b9e5e295714164b9803c1",
+          "bytes": 3228
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "tls/result.json.txt",
+      "sha256": "dad4e17654c96ae4d930eb1bfbba1f5e25a2972deff7bee260321fbaada4420f",
+      "bytes": 1749,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/result.json",
+          "sha256": "dad4e17654c96ae4d930eb1bfbba1f5e25a2972deff7bee260321fbaada4420f",
+          "bytes": 1749
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "tls/browser-rows.json.txt",
+      "sha256": "06812c068297a1d048dae050694d13bd55872345c3fa8f19320ac904d376d484",
+      "bytes": 7233,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/browser-rows.json",
+          "sha256": "06812c068297a1d048dae050694d13bd55872345c3fa8f19320ac904d376d484",
+          "bytes": 7233
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "normal/report.json.txt",
+      "sha256": "345459f4a3152b24d1388828b36b1815eba319fce48123762a53b54597b0894a",
+      "bytes": 21280,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/report.json",
+          "sha256": "345459f4a3152b24d1388828b36b1815eba319fce48123762a53b54597b0894a",
+          "bytes": 21280
+        },
+        {
+          "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/child-report.json",
+          "sha256": "345459f4a3152b24d1388828b36b1815eba319fce48123762a53b54597b0894a",
+          "bytes": 21280
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "normal/process.json.txt",
+      "sha256": "3bc3a54b2cdbe6fd7189edc5820b79e119f56b2e5889fa8ccbb93311f0ea2c4e",
+      "bytes": 105,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/process.json",
+          "sha256": "3bc3a54b2cdbe6fd7189edc5820b79e119f56b2e5889fa8ccbb93311f0ea2c4e",
+          "bytes": 105
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-1/result.json.txt",
+      "sha256": "2c52679e13e10edeeb380a153dcea072fcf52275ba719b286588118fb1604415",
+      "bytes": 955,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/result.json",
+          "sha256": "2c52679e13e10edeeb380a153dcea072fcf52275ba719b286588118fb1604415",
+          "bytes": 955
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-1/container.json.txt",
+      "sha256": "03a06534bf7bac7ea8ca9c77d86cc860b3c9b5a2db5ecfe7751db7665befa5c0",
+      "bytes": 521,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/container.json",
+          "sha256": "03a06534bf7bac7ea8ca9c77d86cc860b3c9b5a2db5ecfe7751db7665befa5c0",
+          "bytes": 521
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-2/result.json.txt",
+      "sha256": "bf9582ae47217b0d396ec2f51ddb89463c8be387c3d6d32119bf96b9e9be17f9",
+      "bytes": 8317,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/result.json",
+          "sha256": "bf9582ae47217b0d396ec2f51ddb89463c8be387c3d6d32119bf96b9e9be17f9",
+          "bytes": 8317
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-2/container.json.txt",
+      "sha256": "06266ce3af5319643e6183f39d2dd4974b1f6ba582609eb818c5b2de978b5357",
+      "bytes": 521,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/container.json",
+          "sha256": "06266ce3af5319643e6183f39d2dd4974b1f6ba582609eb818c5b2de978b5357",
+          "bytes": 521
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-2/process.json.txt",
+      "sha256": "59e13e8f1a928ecdfcb41ddc36f43b477e1e6fbfbfbe63aab9d9e93ec8e22fe4",
+      "bytes": 123,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/process.json",
+          "sha256": "59e13e8f1a928ecdfcb41ddc36f43b477e1e6fbfbfbe63aab9d9e93ec8e22fe4",
+          "bytes": 123
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-2/report.json.txt",
+      "sha256": "8ecdf043d71fb90aa7f8f139bdbb24fe98812093556320acf6ca473c038934ea",
+      "bytes": 22072,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/report.json",
+          "sha256": "8ecdf043d71fb90aa7f8f139bdbb24fe98812093556320acf6ca473c038934ea",
+          "bytes": 22072
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "interruption-2/child-report.json.txt",
+      "sha256": "12166efe2c7d4c239b4a2d190ce642bdcda5760c1957d1e160a99426a8f916f5",
+      "bytes": 22053,
+      "treatment": "unchanged original JSON bytes",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/child-report.json",
+          "sha256": "12166efe2c7d4c239b4a2d190ce642bdcda5760c1957d1e160a99426a8f916f5",
+          "bytes": 22053
+        }
+      ],
+      "sanitizedFields": [],
+      "mediaType": "application/json",
+      "storage": "Raw valid JSON in a .txt file to prevent formatters changing original bytes"
+    },
+    {
+      "file": "diagnostic-sources.md",
+      "sha256": "23de3b23d8b2261ec5a54182f3c1ceb07f55e85d74c40e10897563f60d758403",
+      "bytes": 31970,
+      "treatment": "inert Markdown with original TLS/launcher source, sanitized second interruption source, detector-only diff with two blank context lines normalized by Markdown formatting",
+      "originals": [
+        {
+          "path": ".artifacts/hosted-linux-full/run.mjs",
+          "sha256": "15007bcc112e478a4ca72f0de5891d408d729c92c661cd473d81bc6be724add4",
+          "bytes": 8458
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/run.mjs",
+          "sha256": "eef07c29011737eb48cd2f33de991ee7a1641c001eb9495a468f753f5fe6f59d",
+          "bytes": 12399
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/run.mjs",
+          "sha256": "7e77d5e26c598b77a0aa1ff8bd48aded48762d24a4c286eb8e64d5351faaeb32",
+          "bytes": 13887
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-1/launch.py",
+          "sha256": "348ef371f051582e21cf5affdf8e46f820427bbeae75d2dfa8b58df73a234e66",
+          "bytes": 3033
+        },
+        {
+          "path": ".artifacts/hosted-driver-interruption/attempt-2/launch.py",
+          "sha256": "348ef371f051582e21cf5affdf8e46f820427bbeae75d2dfa8b58df73a234e66",
+          "bytes": 3033
+        }
+      ],
+      "sanitizedFields": [
+        {
+          "original": ".artifacts/hosted-driver-interruption/attempt-2/run.mjs",
+          "line": 239,
+          "change": "One synthetic test-only token literal replaced with a labeled redaction marker; no executed record changed"
+        }
+      ]
+    },
+    {
+      "file": "README.md",
+      "sha256": "4af096a67a9b02ecaffb9e738113d4fa5c8fa99cdec16d11b520c25ccf3a6af7",
+      "bytes": 6429,
+      "treatment": "New packaging explanation derived from the mapped unchanged captures and inspected diagnostic sources",
+      "originals": [],
+      "sanitizedFields": []
+    }
+  ],
+  "sourceBinding": {
+    "sourceInventoryFiles": 75,
+    "reportDigestInputs": 32,
+    "sourceDigest": "9e6b08d598f03e0bb12712f3ede0f8e39063ef2ce77d3a3b88decece795552a5",
+    "digestAlgorithm": "SHA-256 of ordered path + NUL + lowercase SHA-256 entries joined with LF, no trailing LF",
+    "allInputsMatchCopiedSourcesAndCurrentCandidate": true,
+    "currentDifferencesWithin75FileSnapshot": ["README.md"],
+    "driverSha256": "07639b48c06cb47f1c30e7c5678f2416059d12766286f16205125ec7611043fb",
+    "fullCurrentSuiteTreeAttestation": false,
+    "tlsResultEmbedding": "TLS result has no run ID/sourceDigest/container ID. Its source join uses retained source-inventory.json and root-verification.json hashes, not an invented embedded identity."
+  },
+  "supportingReadOnlySources": [
+    {
+      "path": ".artifacts/hosted-driver-interruption/handoff.md",
+      "sha256": "0d5ea43c2f362317d6db273effd28bf777138917af0cfef79cfc40e00bed50ad",
+      "bytes": 5460
+    },
+    {
+      "path": ".artifacts/hosted-interruption-independent-review.md",
+      "sha256": "14a15721a369b6a110b484a4053145a402b507e94c31b1e76d3fa0f3d99499de",
+      "bytes": 8037
+    }
+  ],
+  "omitted": "Raw logs, host launch paths, personal details, credentials, certificates/private keys, dependency copies and duplicate JSON are not included. Omitted originals retain hashes in root-verification or this mapping.",
+  "limits": [
+    "Static packaging and readback only; no rerun.",
+    "TLS source supplies assertions; result JSON retains only fixed row statuses, not raw response/receiver events.",
+    "TLS environment records node/platform/architecture but has no separate container record. Interruption container identity must not be attributed to TLS.",
+    "Interruption attempt 1 failed readiness and is not a successful interruption experiment.",
+    "Observed PID/start-time and listener identities only; no complete transient-process census or forced-fallback proof.",
+    "No hosted wrapper failure-cleanup pair, provider/IAM/audience validation, target acceptance, deployment or production approval."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "kind": "isolated-linux-actual-hosted-adapters",
+  "productAcceptance": false,
+  "node": "v24.20.0",
+  "platform": "linux",
+  "arch": "x64",
+  "elapsedMs": 72532,
+  "rows": [
+    {
+      "id": "actual-node-untrusted-tls-refused",
+      "status": "passed"
+    },
+    {
+      "id": "direct-browser-confirms-untrusted-certificate",
+      "status": "passed"
+    },
+    {
+      "id": "actual-browser-untrusted-tls-refused",
+      "status": "passed"
+    },
+    {
+      "id": "actual-node-trusted-tls-untouched-response",
+      "status": "passed"
+    },
+    {
+      "id": "actual-browser-trusted-tls-untouched-response",
+      "status": "passed"
+    },
+    {
+      "id": "actual-trusted-lease-cleanup",
+      "status": "passed"
+    },
+    {
+      "id": "actual-https-redirect-refused-before-foreign-hop",
+      "status": "passed"
+    },
+    {
+      "id": "actual-https-foreign-navigation-refused",
+      "status": "passed"
+    },
+    {
+      "id": "actual-https-node-redirect-refused",
+      "status": "passed"
+    },
+    {
+      "id": "actual-authenticated-https-positive-receipts",
+      "status": "passed"
+    },
+    {
+      "id": "linux-actual-browser-controls-60",
+      "status": "passed"
+    },
+    {
+      "id": "all-adapters-cleanup",
+      "status": "passed"
+    },
+    {
+      "id": "caller-browser-cleanup",
+      "status": "passed"
+    },
+    {
+      "id": "owned-listeners-cleanup",
+      "status": "passed"
+    },
+    {
+      "id": "private-ca-directory-removed",
+      "status": "passed"
+    }
+  ],
+  "limits": [
+    "Synthetic loopback credentials and certificates only; no Google IAM, token audience or provider identity proof.",
+    "Full candidate discovery/protocol integration and application execution are separate gates."
+  ]
+}
