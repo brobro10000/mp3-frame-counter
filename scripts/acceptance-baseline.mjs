@@ -20,6 +20,8 @@ import { lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { detectPhase } from "./phase-policy.mjs";
 
+export { resolveAcceptance } from "./acceptance-transitions.mjs";
+
 export const baselinePath = "docs/testing/baseline.json";
 export const suitePath = "tests/acceptance";
 export const manifestPath = `${suitePath}/fixtures/manifest.json`;
