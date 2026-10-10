@@ -1,26 +1,19 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** DOCS-BIND merged in [PR #22](https://github.com/brobro10000/mp3-frame-counter/pull/22)
-as `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6`.
-[Main run 38071238087, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38071238087/attempts/1)
-passed and published [v0.2.22](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.22), release
-409093836, at 17:24:22Z. Main passed 46 pending controls/72-case discovery, 82 unit tests and all 67 required transport
-cases with scoped cleanup. Root rehashed eight release metadata assets; image archives were not downloaded/rehashed.
-Read the [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) for exact
-approval, source, admission, image and verification identities.
+**Execution status, 2026-10-10:** DOCS-TOOL-POLICY merged in
+[PR #23](https://github.com/brobro10000/mp3-frame-counter/pull/23) as `2ca5a0b2e2eb2c9aa9160e950ec905bae24a1892`.
+Protected-main run 38073905847, attempt 1, passed and published
+[v0.2.23](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.23), release 409114707, at 18:04:01Z. Read
+its [completion evidence](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) for exact approval,
+source, admission and image identities. Transport remains required and docs-v1 the single pending successor.
 
-Transport-v1 remains required; docs-v1 is the single bound pending successor. No docs product acceptance, root Redoc
-dependency, application documentation routes, product CSP or deployment has shipped. **This change implements only
-DOCS-TOOL-POLICY; its validation, review, merge and publication are recorded separately as they occur.**
-
-The three active cards are **DOCS-TOOL-POLICY → DOCS-IMPLEMENTATION → HOSTED-PROFILE-POLICY**. Actual binding
-publication permits independent tool-policy expectations, then separate implementation. Actual tool-policy publication
-still precedes product work; hosted-profile work follows verified docs activation/publication. Browser preparation
-precedes standalone suite checks but does not prove rendering or CSP. The
-[version record](../validation/release-lines.md#line-02-protected-main-activation--2026-10-10) preserves allocation;
-[cost evidence](../validation/cloud-cost-bootstrap.md) preserves the dedicated USD 75 Run cap and USD 100 project
-budget. Production application deployment/promotion, including authenticated candidates, requires human intervention
-under the [execution amendment](roadmap-execution-authorization.md).
+The bounded three-card window below retains the completed tooling prerequisite, current **DOCS-IMPLEMENTATION** and next
+**HOSTED-PROFILE-POLICY**. Tool-policy publication now permits the separately owned product change; hosted-profile work
+still follows actual docs activation/publication. The current implementation's checks/review/publication are recorded
+separately and must not be inferred from that prerequisite. Software releases remain independent of deployment. The
+[cost evidence](../validation/cloud-cost-bootstrap.md) preserves the USD 75 Run cap and USD 100 project alert budget.
+Production application deployment/promotion, including authenticated candidates, requires human intervention under the
+[execution amendment](roadmap-execution-authorization.md).
 
 The [docs-v1 contract](../testing/contracts/docs-v1.md) and
 [independent DOCS-01 disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) record the selected Redoc
@@ -69,10 +62,10 @@ private sample handling, frozen suite bytes, dated reports and historical genera
 
 ## PR card 1 — DOCS-TOOL-POLICY: Admit the selected Redoc build dependency
 
-**Status:** execution prerequisites are satisfied by PR #22/v0.2.22. Independent expected decisions precede the separate
-implementation; its own validation, review and publication remain to be established in the
-[tool-policy evidence record](../validation/docs-tool-policy.md). The selected arrangement is root development-only
-`redoc` exactly `2.5.4`, with no CLI; this card does not install or declare it.
+**Status:** completed in PR #23/v0.2.23; the
+[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records actual
+evidence. The selected arrangement is root development-only `redoc` exactly `2.5.4`, with no CLI; this card does not
+install or declare it.
 
 ### Outcome and ownership
 
@@ -217,8 +210,9 @@ pass docs-v1 and activate it persistently. Stop before that product work, regist
 
 ## PR card 2 — DOCS-IMPLEMENTATION: Serve the bound offline documentation
 
-**Status:** adopted for planning; product work requires actual DOCS-BIND and DOCS-TOOL-POLICY publications. Root assigns
-a product implementer and owns integration; the independent candidate author receives no product implementation details.
+**Status:** authorized implementation after verified DOCS-BIND and DOCS-TOOL-POLICY publications. Root owns integration;
+disjoint product implementers own build artifacts and runtime/ingress. The independent candidate author receives no
+product implementation details. Read [implementation evidence](../validation/docs-implementation.md).
 
 ### Outcome and immutable authority
 
@@ -244,30 +238,29 @@ than changing it to fit the source. No hosting or production operation belongs t
 
 ### Exact proposed product ownership
 
-| Paths                                                                         | Bounded change                                                                                                                                                                 |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| package.json, package-lock.json                                               | Add only direct dev redoc 2.5.4 and its reviewed lock graph; extend existing build to compile then run the builtin generator. Preserve other scripts/pins and runtime Fastify. |
-| server/src/build-docs.mjs                                                     | New builtin-only deterministic build helper; fixed package-local/input/output paths, no CLI, installed renderer execution, fetch or environment-selected source.               |
-| server/src/docs/openapi.json                                                  | New product-owned OpenAPI 3.0.3 source conforming to the bound semantic contract; no runtime import from acceptance fixtures.                                                  |
-| server/src/docs/index.html, server/src/docs/init.js, server/src/docs/docs.css | New document/template inputs, external initialization and fixed system-font styles.                                                                                            |
-| server/src/docs/redoc-logo-mini.svg, server/src/docs/provenance.json          | Exact reviewed logo bytes and portable source/hash/license attribution; preserve original acquisition facts.                                                                   |
-| server/src/docs.ts, server/src/http.ts                                        | Closed asset/spec routing and narrowly integrated raw-path/method dispatch; preserve upload behavior and lifecycle.                                                            |
-| server/Dockerfile                                                             | Offline generation during the existing build stage, packaged outputs, unchanged production dependency separation and non-root runtime.                                         |
-| frontend/nginx.conf.template                                                  | Explicit docs proxy locations and sole public header ownership, with bounded error handling and unchanged upload-page policy.                                                  |
-| tests/unit/docs.test.ts, tests/unit/docs-build.test.ts                        | Meaningful route/resource and deterministic-transform failure tests; no duplicate generic framework.                                                                           |
+| Paths                                                                         | Bounded change                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| package.json, package-lock.json                                               | Add only direct dev redoc 2.5.4 and its reviewed lock graph; extend existing build to compile then run the builtin generator. Prefix test:unit with npm run build; preserve all other scripts/pins and runtime Fastify. |
+| server/src/build-docs.mjs                                                     | New builtin-only deterministic build helper; fixed package-local/input/output paths, no CLI, installed renderer execution, fetch or environment-selected source.                                                        |
+| server/src/docs/openapi.json                                                  | New product-owned OpenAPI 3.0.3 source conforming to the bound semantic contract; no runtime import from acceptance fixtures.                                                                                           |
+| server/src/docs/index.html, server/src/docs/init.js, server/src/docs/docs.css | New document/template inputs, external initialization and fixed system-font styles.                                                                                                                                     |
+| server/src/docs/redoc-logo-mini.svg, server/src/docs/provenance.json          | Exact reviewed logo bytes and portable source/hash/license attribution; preserve original acquisition facts.                                                                                                            |
+| server/src/docs.ts, server/src/http.ts                                        | Closed asset/spec routing and narrowly integrated raw-path/method dispatch; preserve upload behavior and lifecycle.                                                                                                     |
+| server/Dockerfile                                                             | Offline generation during the existing build stage, packaged outputs, unchanged production dependency separation and non-root runtime.                                                                                  |
+| frontend/nginx.conf.template                                                  | Explicit docs proxy locations and sole public header ownership, with bounded error handling and unchanged upload-page policy.                                                                                           |
+| tests/unit/docs.test.ts, tests/unit/docs-build.test.ts                        | Meaningful route/resource and deterministic-transform failure tests; no duplicate generic framework.                                                                                                                    |
 
 The current root .dockerignore includes server/src/** only; placing the generator and inputs there uses the existing
 Docker COPY boundary without expanding context or policy. Existing TypeScript output remains dist; generation writes its
-bounded artifact set under dist/docs. The generator itself is not copied into dist or the runtime dependency graph.
-Resolve the concrete asset-loading design before integration: existing HTTP unit tests import server/src/http.ts
-directly, while the image runs compiled dist modules. Check actual build/unit ordering and choose a normal product asset
-root that works for both source imports and compiled runtime. A dist-relative assumption can fail source-import tests.
-Do not add a test-only bypass, substitute assets, silent missing-file fallback or changes to old tests; runtime
-readiness must fail closed when required generated assets are missing. Return an unsupported ordering/path prerequisite
-to root. Frontend Dockerfile, Compose, tsconfig, entrypoint, upload UI/parser/tests, root .dockerignore and all
-scripts/** stay read-only. Root may separately own concise docs/validation/docs-implementation.md evidence and related
-current-phase status at adoption; no broad documentation/diagram regeneration is proposed. Any additional path needs
-scope review.
+bounded artifact set under dist/docs. The generator itself is not copied into dist or the runtime dependency graph. The
+reviewed normal asset-loading design uses the same dist/docs output from source and compiled module layouts. Existing
+phase ordering runs units before its standalone build, so root explicitly admits the narrow product-script change
+`test:unit = npm run build && node --test tests/unit/*.test.ts`. Keep that phase order and all old tests unchanged; its
+second build is acceptable deterministic work. Load real assets during asynchronous readiness before listening; missing
+assets fail closed. No test-only bypass, substitute assets, environment selector or missing-file fallback. Frontend
+Dockerfile, Compose, tsconfig, entrypoint, upload UI/parser/tests, root .dockerignore and all scripts/** stay read-only.
+Root may separately own concise docs/validation/docs-implementation.md evidence and related current-phase status at
+adoption; no broad documentation/diagram regeneration is proposed. Any additional path needs scope review.
 
 ### Deterministic artifact generation
 

@@ -7,9 +7,13 @@ application deployment still requires human intervention. The
 [transition guide](../testing/acceptance-transition.md) records transport-v1 activation in PR #19/v0.2.19. It remains
 required for descendants. Browser setup and the independent docs-v1 candidate are published in v0.2.20 and v0.2.21.
 The [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) verifies
-PR #22/v0.2.22; docs-v1 is pending. Review the selected Redoc tool allowance separately from product adoption, including
-independent expected decisions, meaningful red/green, exact pins/channels and unchanged acceptance selection. Preserve
-frozen suite, contract and registry bytes; require fresh exact-head companion review and actual main publication.
+PR #22/v0.2.22; docs-v1 is pending. The separate
+[tool-policy completion](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) records PR #23/v0.2.23
+and its unchanged acceptance selection. Review the current docs product implementation against all 72 bound docs-v1
+cases, exact artifact/CSP requirements and its bounded ownership. Protected-main acceptance, merge, activation and publication
+remain unverified; the prerequisite release cannot supply them. Once activated, docs-v1 persists for descendants and
+reverts. Preserve frozen suite, contract and registry bytes; require fresh exact-head companion review and actual main
+publication. No deployment is established by either review or a software release.
 
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and

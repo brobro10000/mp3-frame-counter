@@ -7,9 +7,12 @@ with 67 required external cases. Its
 [completion evidence](../validation/fastify-transport.md#protected-main-completion) verifies protected-main publication.
 DOCS-HARNESS published in v0.2.20; the independent docs-v1 candidate published in PR #21/v0.2.21. Its
 [separate binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
-PR #22/v0.2.22. Preserve the frozen suite; transport remains required and docs-v1 is pending. Independently reviewed
-tool-policy expectations precede policy implementation and publication, which precedes docs product work. Candidate
-controls and discovery do not activate a contract or establish product acceptance.
+PR #22/v0.2.22. The independently specified
+[tool policy](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10) completed in PR #23/v0.2.23,
+preserving required transport and pending docs-v1. Keep the frozen suite unchanged during the separate docs product
+implementation now in progress. That change must pass all 72 bound docs-v1 cases; actual protected-main activation and
+publication remain unverified. After activation, the requirement persists for descendants and reverts. Candidate
+controls/discovery and the prerequisite release are not docs product acceptance.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),

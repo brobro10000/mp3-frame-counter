@@ -11,14 +11,18 @@ for descendants.** DOCS-HARNESS published in v0.2.20. The independent docs-v1 ca
 `351d2e5b998f882287c4c5e4bb41427d4ad5c41e` in PR #21 and published v0.2.21 with separate 46-control/72-case discovery
 evidence. PR #22 bound that candidate at `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6` and published v0.2.22. See the
 [binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10). Transport-v1 remains
-required and docs-v1 is the single pending successor. Intervening governance retains that selection; the next product
-change must pass docs-v1 and activate it persistently.
+required and docs-v1 is the single pending successor in the released application. PR #23/v0.2.23 completed the separate
+[tool-policy prerequisite](../validation/docs-tool-policy.md#protected-main-completion--2026-10-10), with that selection
+unchanged. Docs product implementation is now in progress and must pass all 72 bound docs-v1 cases. Its protected-main
+acceptance, merge, activation and publication are not yet verified. After activation, docs-v1 persists for descendants
+and product reverts; pending controls/discovery cannot establish that product result.
 
 The [genesis record](baseline.json), historical suite objects and
 [transport binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain
 unchanged. Earlier gate
 [publication/retry evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) retains its
-original scope. DOCS-TOOL-POLICY remains a separate prerequisite after binding and before docs product work.
+original scope. DOCS-TOOL-POLICY's actual publication precedes the current separately scoped docs product work; the
+completed governance change cannot relax its frozen successor or expand product ownership.
 
 The [execution authorization](../phases/roadmap-execution-authorization.md) permits bounded roadmap work and the normal
 companion-review/owner-merge process. It preserves independent expectations, prerequisite order and the human production
