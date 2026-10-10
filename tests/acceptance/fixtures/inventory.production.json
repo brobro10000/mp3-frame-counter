@@ -1,0 +1,17 @@
+{
+  "contractRevision": "hosted-v1",
+  "cases": [
+    {
+      "file": "hosted/production/specs/production-smoke.spec.ts",
+      "title": "HP-01 usable UI completes one small known-count upload"
+    },
+    {
+      "file": "hosted/production/specs/production-smoke.spec.ts",
+      "title": "HP-02 production docs are genuinely rendered and usable"
+    },
+    {
+      "file": "hosted/production/specs/production-smoke.spec.ts",
+      "title": "HP-03 production specification remains available and correct"
+    }
+  ]
+}

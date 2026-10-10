@@ -1,0 +1,93 @@
+{
+  "contractRevision": "hosted-v1",
+  "cases": [
+    {
+      "file": "hosted/stage/specs/stage-ui.spec.ts",
+      "title": "HS-01 accessible UI completes a real small MP3 upload"
+    },
+    {
+      "file": "hosted/stage/specs/stage-ui.spec.ts",
+      "title": "HS-02 upload error permits a subsequent valid browser upload"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-03 CBR count and accepted media survive managed ingress"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-04 VBR physical count survives managed ingress"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-05 padded physical count survives managed ingress"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-06 Xing-bearing physical frames remain counted"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-07 malformed and unsupported uploads retain readable JSON errors"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-08 unsupported media and encoding remain isolated errors"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-09 public upload paths and methods retain their contract"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-10 upload above one MiB retains its complete count"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-11 six MiB upload retains its complete count"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-12 exact twenty MiB upload is accepted"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-13 one byte over the limit yields readable error and recovery"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-14 valid upload without Content-Length is accepted"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-15 actual-byte limit survives upload without Content-Length"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-16 externally aborted upload permits later complete upload"
+    },
+    {
+      "file": "hosted/stage/specs/stage-api.spec.ts",
+      "title": "HS-17 public frontend health remains service-local"
+    },
+    {
+      "file": "hosted/stage/specs/stage-docs.spec.ts",
+      "title": "HS-18 public docs routes assets errors and headers survive ingress"
+    },
+    {
+      "file": "hosted/stage/specs/stage-docs.spec.ts",
+      "title": "HS-19 served specification retains local transport semantics"
+    },
+    {
+      "file": "hosted/stage/specs/stage-docs.spec.ts",
+      "title": "HS-20 desktop docs render and interact under effective CSP"
+    },
+    {
+      "file": "hosted/stage/specs/stage-docs.spec.ts",
+      "title": "HS-21 narrow docs render and interact under effective CSP"
+    },
+    {
+      "file": "hosted/stage/specs/stage-docs.spec.ts",
+      "title": "HS-22 upload-page policy remains isolated from docs exceptions"
+    }
+  ]
+}

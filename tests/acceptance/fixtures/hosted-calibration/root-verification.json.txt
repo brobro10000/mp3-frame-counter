@@ -1,0 +1,86 @@
+{
+  "kind": "owned-linux-candidate-validation",
+  "productAcceptance": false,
+  "sourceFilesMatched": 75,
+  "fullCheck": "passed",
+  "hostedControls": 95,
+  "browserControlsRepeated": 60,
+  "httpsChecks": 15,
+  "tokenInPublicEvidence": false,
+  "files": [
+    {
+      "path": ".artifacts/hosted-linux-full/run.log",
+      "sha256": "0315f127b28c37401259e3b29cf186ef81e92c002d9d7f52ea12716f7b4b041b",
+      "bytes": 11781
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/result.json",
+      "sha256": "dad4e17654c96ae4d930eb1bfbba1f5e25a2972deff7bee260321fbaada4420f",
+      "bytes": 1749
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/browser-rows.json",
+      "sha256": "06812c068297a1d048dae050694d13bd55872345c3fa8f19320ac904d376d484",
+      "bytes": 7233
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/source-inventory.json",
+      "sha256": "f3ba4fd0d1feebc2a69512228a1bcc2407b1a2f02d1fc096924ef84c45f6a6bf",
+      "bytes": 9661
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/run.mjs",
+      "sha256": "15007bcc112e478a4ca72f0de5891d408d729c92c661cd473d81bc6be724add4",
+      "bytes": 8458
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/first-run.log",
+      "sha256": "ff6b08162e26d26158d9852e22776d48f6a80fbe780add251ef19bc819b1fcd8",
+      "bytes": 921
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/second-run.log",
+      "sha256": "671a549b48b3c9a19185fd25db8a208ab36c88726bbc3e63489f9760d55ee387",
+      "bytes": 12673
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/first-source-inventory.json",
+      "sha256": "c8ad8d996221dcb4ddfa85fe958efff8ba0f1fedb4d3c0bf9d0182fd1de2c01c",
+      "bytes": 9661
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/second-source-inventory.json",
+      "sha256": "cdb6c1150fdcf36f5cad75619b9477a72ab87bca62bb9b1e0207d8302c8d3f8d",
+      "bytes": 9661
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/report.json",
+      "sha256": "345459f4a3152b24d1388828b36b1815eba319fce48123762a53b54597b0894a",
+      "bytes": 21280
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/process.json",
+      "sha256": "3bc3a54b2cdbe6fd7189edc5820b79e119f56b2e5889fa8ccbb93311f0ea2c4e",
+      "bytes": 105
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-controls/d95608ff-4f11-4fd1-afc1-ce760ccc7a30/child-report.json",
+      "sha256": "345459f4a3152b24d1388828b36b1815eba319fce48123762a53b54597b0894a",
+      "bytes": 21280
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-stage-discovery.json",
+      "sha256": "14e8dfe38353c35970df890795cecceee42b883e3875bccda97942681107da18",
+      "bytes": 3289
+    },
+    {
+      "path": ".artifacts/hosted-linux-full/suite/.artifacts/hosted-production-discovery.json",
+      "sha256": "29d85ce376b1fa52a23ee0f1b45a1a1b1602111b91125ecd50dbf157a919e742",
+      "bytes": 641
+    }
+  ],
+  "limits": [
+    "Synthetic credentials and normal loopback TLS only. No provider or application acceptance.",
+    "Image archive contents and real cloud IAM were not tested."
+  ]
+}

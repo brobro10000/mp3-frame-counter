@@ -1,0 +1,896 @@
+{
+  "schemaVersion": 1,
+  "kind": "hosted-candidate-controls",
+  "productAcceptance": false,
+  "runId": "c5196e35-f5e9-45a0-9849-21307b1f6c2a",
+  "sources": [
+    {
+      "path": "lib/hosted-types.ts",
+      "sha256": "3d219ab7456210903b4eec710a99de4a50a6aeb664fc92ff6cc9d6f13673c226"
+    },
+    {
+      "path": "lib/hosted-target.ts",
+      "sha256": "b97bdfca793565aca954ceb231bfe8fc913bdd3f77117fdae3505694f0348f08"
+    },
+    {
+      "path": "lib/hosted-http.ts",
+      "sha256": "6d29645004b0636b73f68143765d724206892a69ddf295af0a24478d2ea34bdd"
+    },
+    {
+      "path": "lib/hosted-inventory.ts",
+      "sha256": "0cacb8885ac4e7fe79c05431a6980eadae9b6137e89ecbe0ae7f3b9650febe07"
+    },
+    {
+      "path": "lib/hosted-report.ts",
+      "sha256": "43eed3ca28149cfc44eee61b42120f3f92d8d88af66803dee27e1538c2293a3c"
+    },
+    {
+      "path": "lib/hosted-fixtures.ts",
+      "sha256": "dde594ce7a875055baa2bb8daee925b2e93f22e6ae8993d403a5c4ae37713226"
+    },
+    {
+      "path": "lib/hosted-control-target.ts",
+      "sha256": "b7ecc0209189e1dde8de297bfd5db7908febbc746f17bfccae2d911d4341100a"
+    },
+    {
+      "path": "lib/hosted-protocol-controls.ts",
+      "sha256": "65c22261b0b915205c64de5a2ca1e68f1ec6da1400f653ac191a22a7ad5a79ad"
+    },
+    {
+      "path": "lib/hosted-http-controls.ts",
+      "sha256": "27f44dc45eb0595b2f23f4775bd5f8cd76610cb3c194183090ca778864dc0c03"
+    },
+    {
+      "path": "lib/hosted-browser.ts",
+      "sha256": "ae8fcc9b4559d44bba6dba03a584c57d3a7ef63f5022a527689cd668c47ae55e"
+    },
+    {
+      "path": "lib/hosted-docs.ts",
+      "sha256": "fcff122e98d90e625c04457d1ece3ebab2c161fa63d7b2564dcd197626ec185c"
+    },
+    {
+      "path": "lib/hosted-browser-controls.ts",
+      "sha256": "a3b3c5f7ca12704024bd05f486139e9d0b2b1493ed72daa9742e75587762a8c4"
+    },
+    {
+      "path": "lib/hosted-ui.ts",
+      "sha256": "1c161b278c767adae802f4c07f5eaf38b835f0b0e294d466f47253ec391dc309"
+    },
+    {
+      "path": "lib/hosted-ui-controls.ts",
+      "sha256": "dcde6e918258b68452832983ddb136b8cf96928eeff48480c30249946b534c87"
+    },
+    {
+      "path": "scripts/hosted-controls.ts",
+      "sha256": "07639b48c06cb47f1c30e7c5678f2416059d12766286f16205125ec7611043fb"
+    },
+    {
+      "path": "scripts/hosted-reporter.ts",
+      "sha256": "2abb63dc93c9202340fec1beef0761e432abe07c1c964592e3aa1244779cda97"
+    },
+    {
+      "path": "scripts/run-stage.ts",
+      "sha256": "76ac5cf237e809df936e4596c2faf6b8849e68447df8e18bebd63acf64d1b3c4"
+    },
+    {
+      "path": "scripts/run-production.ts",
+      "sha256": "1e1eb46a7b522044f2880d25baeded75f05d88e45fd644589d1ad0da354c7b74"
+    },
+    {
+      "path": "playwright.stage.config.ts",
+      "sha256": "2b19141e2c448f1fc96cf162eee5ddcc5217899172991bf191a094c96a24f42d"
+    },
+    {
+      "path": "playwright.production.config.ts",
+      "sha256": "75cc75457a3f3e4fed7c4b26e0e4b05bd795238418348a1e0db6d90529d0ea71"
+    },
+    {
+      "path": "lib/assertions.ts",
+      "sha256": "de6fdc4fe26564f1fe3b04dd38682e421335c2dd4d05bd00e2afdaadb299e29a"
+    },
+    {
+      "path": "lib/fixtures.ts",
+      "sha256": "d984f0ff90b07ffd6b3686c6e49ea080074487b6419bdf3f03cb655e475f6794"
+    },
+    {
+      "path": "lib/docs-contract.mjs",
+      "sha256": "39b26328f3cf03a4f9f95adc6b29463d9b7b92c5bc9d3518cd8c9f3e05696ec7"
+    },
+    {
+      "path": "lib/docs-fixture.mjs",
+      "sha256": "194b17ec1a48f7f7c0eb0558a6935c34a7e3cd154b2ec983f0e57f9dfc699096"
+    },
+    {
+      "path": "fixtures/docs/provenance.json",
+      "sha256": "d19899c32f64c61b2fe4fd71dd2c0696a51815a1b4d885401d2ac1921f8ddd6d"
+    },
+    {
+      "path": "fixtures/openapi.json",
+      "sha256": "cfa2ca3c8e1ea9073fb09c8466e90a1bce629cbf38e8ae298971d5da7ead0d83"
+    },
+    {
+      "path": "fixtures/profiles.json",
+      "sha256": "8a6d8f6a6dc270ea818befde5df7bff8d9790328184496ea59ccfbb235b54bd1"
+    },
+    {
+      "path": "fixtures/inventory.stage.json",
+      "sha256": "6fa02ec1314d031964a4613bc8b3a535ff3617259642394f0204f7d122a6e5fc"
+    },
+    {
+      "path": "fixtures/inventory.production.json",
+      "sha256": "3910f814f74999ffa376a891db7fb93b14888513d98707fe13772fb9277045ba"
+    },
+    {
+      "path": "fixtures/manifest.json",
+      "sha256": "130e728e0cf43282b6a4d16108dcc8c3a44bd4e4e8030d7828ddfa00df8f0ae4"
+    },
+    {
+      "path": "package.json",
+      "sha256": "b15f1736a57ee9904b95dd985e3379c4500ee36e8d7a340a983bfa3866bbec7f"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "2029af9c9931fd43d792c57f846586dc2f6108ad845a3e6312b859b98c54a8cb"
+    }
+  ],
+  "sourceDigest": "9e6b08d598f03e0bb12712f3ede0f8e39063ef2ce77d3a3b88decece795552a5",
+  "planned": [
+    "protocol-valid-roles-and-exact-expiry",
+    "protocol-isolated-input-1",
+    "protocol-isolated-input-2",
+    "protocol-isolated-input-3",
+    "protocol-isolated-input-4",
+    "protocol-isolated-input-5",
+    "protocol-isolated-input-6",
+    "protocol-isolated-input-7",
+    "protocol-isolated-input-8",
+    "protocol-isolated-input-9",
+    "protocol-isolated-input-10",
+    "protocol-isolated-input-11",
+    "protocol-isolated-input-12",
+    "protocol-isolated-input-13",
+    "protocol-isolated-input-14",
+    "protocol-isolated-input-15",
+    "protocol-encoding-and-byte-bounds",
+    "protocol-immutable-secret-free-handle",
+    "protocol-real-private-file-clock-and-tree",
+    "protocol-complete-report-stage",
+    "protocol-complete-report-production",
+    "http-real-authenticated-declared-and-chunked",
+    "http-preserves-duplicate-security-headers-and-body",
+    "http-canonical-redirect-observed-without-following",
+    "http-foreign-redirect-receiver-stays-unreached",
+    "http-forbidden-paths-and-header-overrides-send-nothing",
+    "http-json-actual-response-bound",
+    "http-docs-actual-response-bound",
+    "http-abort-observes-incomplete-body-and-recovery",
+    "http-partial-success-is-rejected-before-abort",
+    "http-completed-close-refuses-reuse-with-live-latch",
+    "http-close-drains-owned-inflight-and-refuses-reuse",
+    "http-owned-listener-cleanup",
+    "browser-authenticated-header-replacement",
+    "browser-absent-credential-positive-counterpart",
+    "browser-untouched-security-headers/strict",
+    "browser-untouched-security-headers/reverse",
+    "browser-missing-csp-negative-counterpart",
+    "browser-original-non-success-body",
+    "browser-no-navigation/redirect-same",
+    "browser-no-navigation/redirect-foreign",
+    "browser-no-fetch/redirect-same",
+    "browser-no-fetch/redirect-foreign",
+    "browser-foreign-navigation",
+    "browser-foreign-fetch",
+    "browser-foreign-popup",
+    "browser-foreign-iframe",
+    "browser-unknown-popup-ownership",
+    "browser-owned-same-origin-frame",
+    "browser-worker-refusal-service",
+    "browser-worker-refusal-dedicated",
+    "browser-worker-refusal-shared",
+    "browser-service-worker-live-counterpart",
+    "browser-websocket-refusal",
+    "browser-websocket-live-counterpart",
+    "browser-upload-console-actual400",
+    "browser-upload-console-wrong-path",
+    "browser-upload-console-wrong-status",
+    "browser-upload-console-uncorrelated",
+    "browser-upload-console-extra",
+    "browser-bounded-observer-overflow",
+    "browser-cancel-paused-during-cleanup",
+    "browser-real-latch-paused-deadline",
+    "browser-real-latch-cdp",
+    "browser-real-latch-cleanup",
+    "browser-real-latch-late-callback",
+    "browser-docs-positive",
+    "browser-docs-positive-narrow",
+    "browser-docs-wrong-viewport",
+    "browser-docs-root-positive",
+    "browser-docs-root-policy-leak",
+    "browser-docs-missing-renderer",
+    "browser-docs-bad-style-hash",
+    "browser-docs-foreign-script",
+    "browser-docs-wrong-success",
+    "browser-docs-missing-logo",
+    "browser-docs-wrong-logo",
+    "browser-docs-meta-policy",
+    "browser-docs-late-meta",
+    "browser-docs-late-error",
+    "browser-console-correlation-response-first",
+    "browser-console-correlation-console-first",
+    "browser-console-correlation-inclusive-window",
+    "browser-console-correlation-mixed-query",
+    "browser-console-correlation-stale-response",
+    "browser-console-correlation-stale-console",
+    "browser-console-correlation-extra-console",
+    "browser-console-correlation-ambiguous-response",
+    "browser-console-correlation-ambiguous-console",
+    "browser-console-correlation-unused-response",
+    "browser-console-correlation-actual-mixed-query",
+    "browser-token-free-control-evidence",
+    "browser-fixture-cleanup",
+    "ui-explicit-action-counterpart",
+    "ui-delayed-selection-refused"
+  ],
+  "controls": [
+    {
+      "id": "protocol-valid-roles-and-exact-expiry",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-1",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-2",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-3",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-4",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-5",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-6",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-7",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-8",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-9",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-10",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-11",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-12",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-13",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-14",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-isolated-input-15",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-encoding-and-byte-bounds",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-immutable-secret-free-handle",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-real-private-file-clock-and-tree",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-complete-report-stage",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "protocol-complete-report-production",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-real-authenticated-declared-and-chunked",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-preserves-duplicate-security-headers-and-body",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-canonical-redirect-observed-without-following",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-foreign-redirect-receiver-stays-unreached",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-forbidden-paths-and-header-overrides-send-nothing",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-json-actual-response-bound",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-docs-actual-response-bound",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-abort-observes-incomplete-body-and-recovery",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-partial-success-is-rejected-before-abort",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-completed-close-refuses-reuse-with-live-latch",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-close-drains-owned-inflight-and-refuses-reuse",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "http-owned-listener-cleanup",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-authenticated-header-replacement",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-absent-credential-positive-counterpart",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "ASSERTION"
+      ]
+    },
+    {
+      "id": "browser-untouched-security-headers/strict",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-untouched-security-headers/reverse",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-missing-csp-negative-counterpart",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "ASSERTION"
+      ]
+    },
+    {
+      "id": "browser-original-non-success-body",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-no-navigation/redirect-same",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-no-navigation/redirect-foreign",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-no-fetch/redirect-same",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-no-fetch/redirect-foreign",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-foreign-navigation",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-foreign-fetch",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-foreign-popup",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-foreign-iframe",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-unknown-popup-ownership",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-owned-same-origin-frame",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-worker-refusal-service",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-worker-refusal-dedicated",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-worker-refusal-shared",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-service-worker-live-counterpart",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "ASSERTION"
+      ]
+    },
+    {
+      "id": "browser-websocket-refusal",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-websocket-live-counterpart",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "ASSERTION"
+      ]
+    },
+    {
+      "id": "browser-upload-console-actual400",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-upload-console-wrong-path",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-upload-console-wrong-status",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-upload-console-uncorrelated",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-upload-console-extra",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-console-correlation-response-first",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-console-first",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-inclusive-window",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-mixed-query",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-stale-response",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-stale-console",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-extra-console",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-ambiguous-response",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-ambiguous-console",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-unused-response",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-console-correlation-actual-mixed-query",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-bounded-observer-overflow",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-cancel-paused-during-cleanup",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-real-latch-paused-deadline",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-real-latch-cdp",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-real-latch-cleanup",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-real-latch-late-callback",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-positive",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-positive-narrow",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-wrong-viewport",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-root-positive",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-root-policy-leak",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-missing-renderer",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-bad-style-hash",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-foreign-script",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-wrong-success",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-missing-logo",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-wrong-logo",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-meta-policy",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-late-meta",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-docs-late-error",
+      "status": "failed",
+      "cleanup": "passed",
+      "codes": [
+        "CDP"
+      ]
+    },
+    {
+      "id": "browser-token-free-control-evidence",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    },
+    {
+      "id": "browser-fixture-cleanup",
+      "status": "passed",
+      "cleanup": "passed",
+      "codes": []
+    }
+  ],
+  "status": "failed",
+  "cleanup": "passed",
+  "terminationRequested": true,
+  "failures": [
+    "ASSERTION"
+  ]
+}
