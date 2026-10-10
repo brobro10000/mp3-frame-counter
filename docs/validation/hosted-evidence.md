@@ -72,3 +72,16 @@ for this dormant helper.
 Exact-head CI, companion review, actual protected-main publication and the prerequisite hosted binding remain pending.
 Their results will be recorded when observed. No record accepted by this pure API alone grants promotion or production
 authority. Every production application deployment continues to require human intervention for the exact candidate.
+
+## Prerequisite publication and first companion review
+
+The [HOSTED-BIND completion record](../phases/next-iteration.md#hosted-bind-prerequisite-completion--2026-10-10)
+verifies actual main run 38091357730 and v0.3.29 for `62e4cd456fcafab54a1ac4080805f2ebfa51d853`. The direct dependent
+was immediately reconciled onto that actual squash as first parent and retargeted to main.
+
+PR #30's first companion run `20261010T223343-2c5dfe71` reviewed all nine changed paths at
+`f7d0cf27c24b63cc2348d352823aff2514d96c4e` and found no demonstrated blocking defect. It returned **incomplete** because
+its collected bundle lacked the binding's producing-run and publication references. No approval was published. The
+report SHA-256 is `4e3cd49d882db7af73475cfe6b09a237dc819d7bfbfa47c4ce9e7ccce9624914`. This documentation amendment adds
+the verified original references for a fresh collection; it changes no helper, test or acceptance bytes. Passing PR run
+38091403183 remains evidence for the preceding head only; refreshed required checks and review are mandatory.
