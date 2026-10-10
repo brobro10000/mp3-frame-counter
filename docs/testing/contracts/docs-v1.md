@@ -2,14 +2,17 @@
 
 This additive candidate succeeds transport-v1 only after a separate reviewed binding and product activation. The
 existing 67 cases, transport specification and MP3 fixture identities/recipes remain unchanged. Candidate discovery,
-fixture controls and source checks are not application acceptance. DOCS-01's independently reviewed R6 disposition
-selects the bounded renderer arrangement below; this contract does not activate serving, policy or dependencies in
-product.
+fixture controls and source checks are not application acceptance. This contract does not activate serving, policy or
+dependencies in product.
 
-DOCS-01 disposition, 2026-10-10: independent feasibility established the adopted renderer/artifact hashes and header
-model. Before candidate freeze, the coordinator's R4/R7 scope decision replaced the earlier planning card's page-hiding
-expectation with the finite live-document observation below; destructive teardown was not proved. Historical failed
-arrangements remain in local experiment evidence. The candidate's controls are now reproducible through the pinned
+The [independently authored DOCS-01 disposition](../../../tests/acceptance/fixtures/docs/docs-01-disposition.md), dated
+2026-10-10, condenses the historical security/offline review of the selected renderer, artifact identities and header
+model, with explicit unavailable scratch/source limits. It records the coordinator's bounded engineering adoption under
+ongoing owner delegation; it is not a separate human CSP/scope approval or a new experiment result.
+
+Before candidate freeze, the coordinator's R4/R7 scope decision narrowed the earlier planning card's page-hiding
+expectation to the finite live-document observation below; destructive teardown remains unverified. Historical failed
+arrangements remain in local experiment evidence. The candidate's controls are reproducible through the pinned
 standalone check, separate from product acceptance.
 
 ## Public routes and response decisions

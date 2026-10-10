@@ -16,3 +16,7 @@ predicates.
 See [docs-v1](../../../../docs/testing/contracts/docs-v1.md) for exact original/derived/logo hashes, documented renderer
 options, scoped CSP and finite browser observation. Dynamic CSSOM and data-image allowances are explicit. No published
 or hosted product claim follows from these fixtures; tests preserve the branding/link and responsive sidebar behavior.
+
+The [independently authored DOCS-01 disposition](docs-01-disposition.md) condenses the historical security/offline
+reviews and records the pre-freeze scope narrowing, technical adoption and unavailable scratch/source limits. It does
+not represent a new experiment or separate human CSP/scope approval.
