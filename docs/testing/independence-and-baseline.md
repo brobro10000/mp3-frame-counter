@@ -1,5 +1,10 @@
 # Independent acceptance baseline and change control
 
+**Completion amendment, 2026-10-10:** GATE-01 is merged and its publication/retry are verified in the
+[completion record](../validation/acceptance-transitions.md#protected-main-publication-and-retry). The registry remains
+empty and r3 remains required. The working-change and pre-GATE roadmap notes below retain their earlier scope; their
+pending review and missing-admission statements are superseded by this completion, not by an exception to the gate.
+
 **GATE-01 working-change amendment, 2026-10-10:** dormant transition support is implemented in the current change and
 remains pending final CI, exact-head companion review and merge. Read the
 [acceptance transition guide](acceptance-transition.md) for trusted preflight, bootstrap, candidate/binding separation
@@ -9,11 +14,11 @@ skip the new change's review or activate a successor. Current bounded execution 
 [later owner instruction](../phases/roadmap-execution-authorization.md).
 
 **Roadmap amendment, 2026-10-10:** the [successor design](../roadmap/README.md#acceptance-succession) requires
-[GATE-01](../phases/next-iteration.md#pr-card-1--gate-01-admit-independently-reviewed-successor-suites) before any
-successor-suite PR. Current verification still freezes every r3 path/byte and requires a pre-product suite commit; the
-amendment procedure below is not an existing technical route around those checks. Preserve genesis JSON and historical
-suite objects, use separate test-only proposals and actual merged binding, and keep gate authors independent of product
-implementers. The proposed trusted preflight does not make a head-owned workflow tamper-proof.
+[GATE-01](../validation/acceptance-transitions.md#historical-gate-01-card) before any successor-suite PR. Current
+verification still freezes every r3 path/byte and requires a pre-product suite commit; the amendment procedure below is
+not an existing technical route around those checks. Preserve genesis JSON and historical suite objects, use separate
+test-only proposals and actual merged binding, and keep gate authors independent of product implementers. The proposed
+trusted preflight does not make a head-owned workflow tamper-proof.
 
 The companion brobro1000 can supply an eligible automated GitHub approval under current rules; it is not a human review.
 Historical references to unavailable human approval do not mean an automated review is fabricated or ineligible.

@@ -61,7 +61,7 @@ docs/phases/next-iteration.md. Production deployment/promotion requires human in
   snapshots; ordinary CI remains authoritative for execution evidence. Regeneration needs a separately scoped migration.
 - Keep exactly three detailed next PR cards; later work stays provisional. GATE-01 precedes successor suites,
   VER-01 precedes release-line activation, and compatible tooling precedes live extended-queue syntax.
-- Preserve immutable r3 genesis evidence. GATE-01 adds dormant admission in this change; review its guide in
+- Preserve immutable r3 genesis evidence. GATE-01 introduced verified dormant admission; review its guide in
   docs/testing/acceptance-transition.md. An empty registry does not authorize successor tests or product changes.
 - Keep changes bounded to verified requirements and stop rather than inventing missing product facts.
 - Run deterministic validation for the affected boundary and report commands actually executed.

@@ -2,9 +2,9 @@
 
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
-implementation. Follow the [transition guide](../testing/acceptance-transition.md); GATE-01 is dormant and pending
-integration validation/review, with r3 still active. Do not author a successor or claim activation before its
-prerequisite gate is merged and verified.
+implementation. Follow the [transition guide](../testing/acceptance-transition.md); GATE-01 is merged and its release
+and retry are verified, with dormant support and r3 still active. Author successors only within their bounded cards;
+candidate authoring does not activate a new contract.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),

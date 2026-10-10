@@ -4,8 +4,8 @@
 supersedes the historical documentation-only PLAN-01 limit below and authorizes companion review submission and clean
 owner merges without repeated routine consent. Review the exact current head under the existing protections. Production
 application deployment still requires human intervention. The
-[GATE-01 transition guide](../testing/acceptance-transition.md) describes dormant support pending integration
-validation/review; r3 remains active and no successor is approved here.
+[GATE-01 transition guide](../testing/acceptance-transition.md) describes merged dormant support with verified
+publication and retry; r3 remains active and no successor is approved here.
 
 Purpose: assess contracts, oracle independence, coverage, code and evidence without inventing approval or completion.
 Read [decisions and risks](../architecture/decisions.md), [requirements](../mvp.md), the selected phase and

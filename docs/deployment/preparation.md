@@ -3,7 +3,8 @@
 This provider-independent step supports APP-REL-003/004 without claiming a deployed release. It exports an already
 tested pair and prepares versioned evidence locally. [CI publication](release-only.md) separately requires
 protected-main eligibility and successful exact-source checks. Provider setup, candidate acceptance, production
-approval, hosted smoke and recovery are deferred under the [latest owner amendment](../requirements/release-process.md).
+approval, hosted smoke and recovery remain separate gates under the
+[current execution amendment](../phases/roadmap-execution-authorization.md).
 
 ## Commands and prerequisites
 
@@ -28,10 +29,16 @@ Neither field is silently replaced with the other.
 
 ## Version preview and immutable local reservation
 
-The routine version preview is `0.1.<first-parent Git ordinal of tested source>`. Full history is mandatory. This policy
-can be monotonic on protected linear main once that path exists and has its own verified release checks. A feature
-branch's ordinal remains provisional; it is never published or treated as an eligible main version by this command. The
-root package version and Git refs are unchanged.
+The routine preview uses the tested source's [release policy](version-policy.md):
+`0.<approved minor>.<global first-parent source ordinal>`. VER-01 initially selects `0.1`; a separate reviewed
+activation changes the line. Full history is mandatory. Policy never introduced on that source's history retains legacy
+allocation; policy deletion after introduction fails. The source policy, not tooling HEAD or an override, supplies the
+version. A feature branch's ordinal remains provisional and this command never publishes it. Root package version and
+Git refs are unchanged.
+
+Policy-bound reservations include the exact policy digest/line and use manifest schema 2. Pre-policy schema-1
+identities, notes and retry bytes remain unchanged. Preparation resolves the report's source independently and rejects a
+mismatched policy, schema or source before image inspection/export.
 
 Before any output creation, the script rejects symlinks in `.artifacts`, `releases`, version-directory and report-parent
 components, including links to other directories inside the repository. This keeps archive bytes in their ignored

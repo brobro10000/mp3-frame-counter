@@ -11,8 +11,8 @@ bound by the unchanged [genesis record](baseline.json) to `a0a56d94e5457101cd043
 The [execution authorization](../phases/roadmap-execution-authorization.md) permits bounded roadmap work and the normal
 companion-review/owner-merge process. It preserves independent expectations, prerequisite order and the human production
 gate. Read the [independence policy](independence-and-baseline.md) and
-[GATE-01 card](../phases/next-iteration.md#pr-card-1--gate-01-admit-independently-reviewed-successor-suites) together
-with this guide. No successor tests or product capability are introduced by the dormant gate.
+[GATE-01 card](../validation/acceptance-transitions.md#historical-gate-01-card) together with this guide. No successor
+tests or product capability are introduced by the dormant gate.
 
 ## Separate candidate, binding and implementation
 
