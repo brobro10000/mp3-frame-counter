@@ -6,8 +6,9 @@ Dated 2026-10-10. This is the HOSTED-DELIVERY-POLICY / LINE-03 decision, under t
 for every production application deployment. It grants no target, credential or deploy authority to acceptance metadata.
 The
 [phase card](../phases/next-iteration.md#pr-card-1--hosted-delivery-policy--line-03-open-the-hosted-delivery-release-envelope)
-fixes ownership, independent expectations and completion gates. Dependent publication awaits verified PR #26
-publication.
+fixes ownership, independent expectations and completion gates. PR #26's publication prerequisite is complete at
+[v0.2.26](../phases/next-iteration.md#profile-declarations-protected-main-completion); this policy still requires its
+own exact-head checks, review and actual-main publication.
 
 ## Release line and exact future IaC paths
 

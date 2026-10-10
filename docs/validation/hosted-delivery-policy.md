@@ -125,3 +125,16 @@ Parent PR #26 has now completed main run 38084476141 and published v0.2.26, rele
 metadata assets, verified source/admission/image consistency and read the independent main-CI audit; image archives were
 not downloaded or rehashed. This supersedes the earlier pending-publication checkpoint without changing deployment
 state.
+
+## Companion current-status correction
+
+PR run [38085416755, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38085416755) passed for
+`744773327bdb104c09eed0228fdd3d8f68989fbb`: 545 tooling tests, 20 gates, 120 units, all 72 required local cases with
+cleanup and 19 Mermaid renders. Docker companion run `20261010T205821-25c7d411` found one P3: the appended parent
+completion checkpoint had not updated separate mutable README, roadmap and phase pointers. Root corrected all identified
+current pointers, the active card's base instructions and linked a consolidated
+[parent completion record](../phases/next-iteration.md#profile-declarations-protected-main-completion). Historical
+checkpoints remain preserved. Review report SHA256 is
+`8a024317f5486c9d0236a11770ee54116bb85dc2e0e630773d431ab4db7d9f80`, verified against its execution receipt. No approval
+was posted. This documentation-only correction needs fresh checks and companion review; no executable code, expected
+decision, release policy, cloud resource or deployment state changed.

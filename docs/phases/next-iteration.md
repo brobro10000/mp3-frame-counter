@@ -1,8 +1,8 @@
 # Next iteration: phase instructions and three PR cards
 
-**Current state, 2026-10-10:** HOSTED-PROFILE-POLICY is merged and published as
-[v0.2.25](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.25), from exact main source
-`0a691a1856d8b742975cc2eb310032b800eb41ea`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
+**Current state, 2026-10-10:** PROFILE-DECLARATIONS is merged and published as
+[v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26), from exact main source
+`fd0f35bca1289319ce909a4aff785251c0cd1583`. DOCS-IMPLEMENTATION shipped in v0.2.24; docs-v1 remains required for
 descendants and reverts. This dated amendment supersedes earlier pending-docs statements in entrypoint/role guidance;
 those statements describe the preceding work. No application service is deployed.
 
@@ -11,9 +11,9 @@ those statements describe the preceding work. No application service is deployed
 PR #26's PROFILE-DECLARATIONS implementation merged at `fd0f35bca1289319ce909a4aff785251c0cd1583` after corrected-head
 CI and exact-head companion approval. Its
 [bounded card](https://github.com/brobro10000/mp3-frame-counter/blob/32ae32080a40c7ab1fddccc9d585af8f73aee802/docs/phases/next-iteration.md#pr-card-3--profile-declarations-validate-immutable-acceptance-profile-declarations)
-remains in its immutable source. Independent declarations, original-source provenance and all local behavior remain
-separately verified prerequisites. Main publication is pending; the direct dependent is immediately reconciled onto the
-actual merged main while publication is verified in parallel.
+remains in its immutable source. Main run 38084476141 passed and published v0.2.26; the
+[completion evidence](#profile-declarations-protected-main-completion) verifies that prerequisite. The direct dependent
+was immediately reconciled onto actual merged main while publication was verified in parallel.
 
 The next three-card window is **HOSTED-DELIVERY-POLICY / LINE-03**, **HOSTED-CONTRACT** and **HOSTED-BIND**. The first
 opens the planned 0.3 envelope with only dormant path admission and a finite execution interface. The other two keep
@@ -28,6 +28,26 @@ Software releases remain independent of deployment. The [cost evidence](../valid
 the USD 75 shared Run cap and USD 100 project alert budget. Every production application deployment, including
 authenticated candidates, requires human intervention under the
 [execution amendment](roadmap-execution-authorization.md).
+
+### PROFILE-DECLARATIONS protected-main completion
+
+[PR #26](https://github.com/brobro10000/mp3-frame-counter/pull/26) merged normally at **20:37:33Z** as
+`fd0f35bca1289319ce909a4aff785251c0cd1583`. Its sole parent is `0a691a1856d8b742975cc2eb310032b800eb41ea`; tree
+`d260f17572a4a520610cb33b5b31a12f31efc1ea` equals the reviewed head tree. Companion `brobro1000` posted
+[automated approval 5480724617](https://github.com/brobro10000/mp3-frame-counter/pull/26#pullrequestreview-5480724617)
+for exact head `80e1850224bf3638a0fd4d96fcbedf64a582e9dc`. Owner `brobro10000` merged after all required checks and
+resolved conversations, without bypass.
+
+[Main run 38084476141, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084476141) passed 538
+tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and all 72 required external cases with scoped cleanup.
+Release **409195020**, **v0.2.26**, was published at **20:43:27Z** with ten assets and `deployed: false`. Root verified
+the original admission/source/base/run, suite, image and configuration identities and rehashed all eight metadata
+assets. The two image archives were compared as metadata only; neither was downloaded or rehashed.
+
+Root read and rehashed the independent main-CI audit and its records. Audit SHA256 is
+`c24dd2f5b2fc8bd5288e3990721283e6ddbb9b5e93daf8bad81d2c39060ad8f1`; metadata-verification SHA256 is
+`e4dd9cf473e98cded8b2e1ad3488566b6a283619ae66c458f0c5b33d095bf46a`. These retained local records support the linked
+publication; they are not signed attestations or deployment evidence. The declarations prerequisite is complete.
 
 <a id="pr-card-2--hosted-profile-policy-settle-the-reviewed-profile-protocol"></a>
 
@@ -166,10 +186,10 @@ private sample handling, frozen suite bytes, dated reports and historical genera
 and application ownership. Freeze the hosted launcher/suite boundary once its adapter controls establish feasibility.
 This governance change introduces no cloud resource, hosted execution or active workflow permission.
 
-**Base and prerequisites:** stack on PR #26's actual reviewed implementation head while its CI/review runs. Publication
-requires its actual protected-main release, reconciliation with actual main as first parent, fresh main-target checks
-and companion review. Read the [profile protocol](../testing/hosted-profile-policy.md),
-[execution authority](roadmap-execution-authorization.md) and
+**Base and prerequisites:** PR #26 is now published as v0.2.26. This dependent is reconciled onto actual main
+`fd0f35bca1289319ce909a4aff785251c0cd1583` as first parent, preserving its earlier test-first branch history. Fresh
+main-target checks and companion review remain mandatory. Read the
+[profile protocol](../testing/hosted-profile-policy.md), [execution authority](roadmap-execution-authorization.md) and
 [delivery boundary](../deployment/hosted-delivery-policy.md). An unverified predecessor release is not satisfied by its
 feature branch. Resolve AUTH-ADAPTER before authoring the dependent hosted suite; independent IaC path expectations can
 proceed while that probe runs.

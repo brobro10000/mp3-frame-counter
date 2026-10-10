@@ -5,13 +5,12 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status, 2026-10-10: **DOCS-IMPLEMENTATION and HOSTED-PROFILE-POLICY are published; PROFILE-DECLARATIONS is in
-main-target verification as PR #26**. The latest verified release is
-[v0.2.25](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.25). Its required docs-v1 suite contains
-all 72 local cases and persists for descendants and reverts. Offline Redoc and the served OpenAPI specification shipped
-in v0.2.24; the profile protocol shipped in v0.2.25. The
-[protected-main evidence](../phases/next-iteration.md#hosted-profile-policy-protected-main-completion) records the
-actual sources, runs, automated approvals, images and publication limits. No application service is deployed.
+Status, 2026-10-10: **DOCS-IMPLEMENTATION, HOSTED-PROFILE-POLICY and PROFILE-DECLARATIONS are published**. The latest
+verified release is [v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26). Its required
+docs-v1 suite contains all 72 local cases and persists for descendants and reverts. Offline Redoc and the served OpenAPI
+specification shipped in v0.2.24; the profile protocol shipped in v0.2.25 and its declaration validator in v0.2.26. The
+[protected-main evidence](../phases/next-iteration.md#profile-declarations-protected-main-completion) records the actual
+sources, runs, automated approvals, images and publication limits. No application service is deployed.
 
 The next [three-card window](../phases/next-iteration.md) is **HOSTED-DELIVERY-POLICY / LINE-03**, **HOSTED-CONTRACT**
 and **HOSTED-BIND**. The first opens the planned 0.3 line and reserves exact IaC path ownership without adding resources
@@ -508,9 +507,10 @@ scope, recoverable migration and direct validation. A blocked generated operatio
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
 [active three-card window](../phases/next-iteration.md) covers hosted delivery policy/line activation, the independent
 hosted successor and its separate actual-merge binding. Fastify, offline Redoc/docs-v1 activation and the hosted-profile
-protocol are published. PROFILE-DECLARATIONS remains in exact-head CI/companion verification, with publication pending.
-GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual
-merge binding and corresponding implementation evidence. None of these milestones establishes application hosting.
+protocol are published. PROFILE-DECLARATIONS merged at `fd0f35bca1289319ce909a4aff785251c0cd1583`; main run
+[38084476141](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084476141) published v0.2.26. GATE-01 and
+VER-01 publication/retries are verified; each later successor still requires independent authoring, actual merge binding
+and corresponding implementation evidence. None of these milestones establishes application hosting.
 
 ## PLAN-01 local verification — 2026-10-10
 
