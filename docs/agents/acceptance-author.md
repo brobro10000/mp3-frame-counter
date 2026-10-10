@@ -2,9 +2,10 @@
 
 **Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
 supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
-implementation. Follow the [transition guide](../testing/acceptance-transition.md); GATE-01 is merged and its release
-and retry are verified, with dormant support and r3 still active. Author successors only within their bounded cards;
-candidate authoring does not activate a new contract.
+implementation. Follow the [transition guide](../testing/acceptance-transition.md): transport-v1 is merged and bound
+through PR #16/v0.2.16, with r3 still required until the next product change. RUNTIME-POLICY expectations precede its
+governance-only implementation. Author another successor only after the pending transport successor activates; candidate
+authoring does not itself activate a contract.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),

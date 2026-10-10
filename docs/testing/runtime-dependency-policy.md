@@ -1,5 +1,10 @@
 # Runtime dependency policy: independent expectations
 
+**Implementation amendment — 2026-10-10:** the helper and narrow policy call now pass all 26 corrected focused groups
+locally. The test-first records below remain historical. Required CI, exact-head companion review, merge and publication
+are pending; see the [execution evidence](../validation/runtime-dependency-policy.md). No Fastify installation follows
+from this governance implementation.
+
 **Expectation-authoring status — 2026-10-10:** this contract follows verified TRANSPORT-BIND publication at
 `5645b0501ca403750a2d894d6a492afa4b42185b` (v0.2.16). It defines the separate governance prerequisite for Fastify. The
 helper is not implemented by this test-first change. No runtime dependency, lockfile, product or acceptance byte is

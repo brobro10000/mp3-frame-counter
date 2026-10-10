@@ -275,7 +275,7 @@ test("alternate source and alias syntax cannot masquerade as a direct pin", () =
       "workspace:*",
       "../fastify",
       "/tmp/fastify",
-      "C:\\fixture\\fastify",
+      ["C:", "fixture", "fastify"].join("\\"),
     ].map((version) => [
       version,
       (pkg, lock) => {
@@ -337,7 +337,7 @@ test("synchronized alias and source graphs cannot evade direct source restrictio
     "workspace:*",
     "../fastify",
     "/tmp/fastify",
-    "C:\\fixture\\fastify",
+    ["C:", "fixture", "fastify"].join("\\"),
   ]) {
     const { pkg, lock } = graph(version);
     rejectedUnchanged(check, pkg, lock, `synchronized alternate source: ${version}`);

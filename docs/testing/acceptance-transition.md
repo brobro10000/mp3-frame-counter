@@ -2,13 +2,16 @@
 
 ## Current status — 2026-10-10
 
-GATE-01's successor-admission support is merged with verified publication/retry in its
-[completion evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry). The independent
-transport-v1 candidate merged through PR #15 and published v0.2.15; see the
-[transport evidence](../validation/transport-binding.md). This change appends its actual merge/tree/hash and review
-identities to the [transition registry](acceptance-transitions.json). Binding review, merge and publication are pending;
-no new product behavior is introduced. **r3 remains required** until the next product-affecting implementation activates
-the bound successor. Its unchanged [genesis record](baseline.json) and historical suite objects remain immutable.
+The independent transport-v1 candidate merged in PR #15 and was bound by PR #16 at
+`5645b0501ca403750a2d894d6a492afa4b42185b`. Protected-main run `38048679076` published v0.2.16 with authenticated
+candidate-review observations and the intended required/pending selection; see the
+[binding completion evidence](../validation/transport-binding.md#protected-main-binding-publication). The
+[registry](acceptance-transitions.json) contains one immutable pending binding. **r3 remains required** until the next
+product-affecting implementation activates transport-v1. The intervening RUNTIME-POLICY card is governance-only; it
+cannot install Fastify, change suite bytes or activate the successor. The [genesis record](baseline.json) remains
+unchanged. Earlier gate
+[publication/retry evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) retains its
+original scope.
 
 The [execution authorization](../phases/roadmap-execution-authorization.md) permits bounded roadmap work and the normal
 companion-review/owner-merge process. It preserves independent expectations, prerequisite order and the human production

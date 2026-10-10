@@ -15,6 +15,7 @@ import { mandatoryJobs } from "./ci-gate.mjs";
 import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
 import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
 import { requireReleasePolicyCheckout } from "./release-manifest.mjs";
+import { requireRuntimeDependencyPolicy } from "./runtime-dependency-policy.mjs";
 
 // Validate the actual source and working policy before inspecting unrelated repository files.
 const githubSource = process.env.GITHUB_ACTIONS === "true" ? process.env.GITHUB_SHA : undefined;
@@ -145,7 +146,7 @@ assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node ru
 assert.equal(pkg.packageManager, `npm@${pkg.engines.npm}`);
 assert.equal(execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), pkg.engines.npm);
 assert.deepEqual(lock.packages[""].devDependencies, pkg.devDependencies);
-assert.equal(pkg.dependencies, undefined);
+requireRuntimeDependencyPolicy(pkg, lock);
 assert.equal(pkg.workspaces, undefined, "Use one root package plus the isolated acceptance exception");
 const allowedDevelopmentTools = new Set([
   "prettier",

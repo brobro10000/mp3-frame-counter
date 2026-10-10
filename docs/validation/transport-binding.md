@@ -1,8 +1,9 @@
 # Transport candidate and proposed binding evidence
 
-**Status — 2026-10-10:** the independent transport candidate merged through PR #15 and published as v0.2.15. The binding
-proposed alongside this record is not yet merged or activated. **r3 remains required**; the candidate's 67-case local
-diagnostic does not replace the required 60-case suite. No application deployment is established here.
+**Completion amendment — 2026-10-10:** PR #16 merged the actual binding and published v0.2.16. **r3 remains required**;
+transport-v1 is the single pending successor for the next product change. The candidate's 67-case local diagnostic does
+not replace current required acceptance. The earlier proposed-binding wording below is dated history, resolved by the
+[protected-main binding record](#protected-main-binding-publication). No application deployment is established here.
 
 Read the [transition policy](../testing/acceptance-transition.md),
 [transport contract](../testing/contracts/transport-v1.md) and
@@ -160,3 +161,45 @@ normal exit do not prove successful graceful drain. Preserve the
 source/configuration review during migration. Stronger drain claims require separate independently reviewed observable
 predicates and controls. No deployed stage, production or v1.0.0 completion claim follows from candidate publication or
 this proposed binding.
+
+## Protected-main binding publication
+
+[PR #16](https://github.com/brobro10000/mp3-frame-counter/pull/16) head `a8f765aebe493412e154cd09f430706c902a7789`
+received independent identity and documentation audits without findings. The local committed resolver selected binding
+admission, required r3 and pending transport-v1 using authenticated read-only GitHub observations; missing observations
+were rejected. That diagnostic did not confer CI authority. Existing focused resolver/admission/review/consumer tests
+passed 116/116, with no failures or skips. Formatting, policy, portability, links, scope and 19 Mermaid renders passed.
+
+[PR run 38048053691](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38048053691), attempt 1, passed
+against synthetic merge `67b05f25e7acfb7723274f5bedbf9053753877af`. Its actual trusted preflight authenticated the
+candidate review; CI passed 398 tooling, 20 terminal-gate, 75 unit and 60 required r3 external cases with cleanup, 19
+Mermaid renders and separate candidate controls/discovery. Original product admission digest was
+`38ad2523eed83f58476f5eb406fef18ca78ee25184cf035a3ad654188bb935ee`.
+
+Companion run `20261010T112421-95ad4c0e` completed at 11:29:51Z, reviewing all ten changed paths with `approve`, no
+findings and a passing documentation gate. Review SHA-256 is
+`4ff9c5078f17ca221cc9dbaf116e74c8765f070344521a74acbe184586593178`; snapshot SHA-256 is
+`7a5f44fbea7a0e64e51cdb15790398233b33b344282928ab66b382daa8f1b4a1`. Its
+[automated approval](https://github.com/brobro10000/mp3-frame-counter/pull/16#pullrequestreview-5478785832) by
+`brobro1000` was verified at 11:30:41Z. Fresh owner, exact-head, protection and required-check readback preceded the
+ordinary squash merge by `brobro10000` at 11:30:54Z: `5645b0501ca403750a2d894d6a492afa4b42185b`. No bypass was used.
+
+[Main run 38048679076](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38048679076), attempt 1, passed
+required validation and publisher job `114203754786`. It published
+[v0.2.16](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.16), release `408905986`, at 11:34:37Z,
+with ten assets and the tag at that exact squash. Original admission digest is
+`7ef1973d59e1ca64a7be7f90050ca355589c855f0fad4a74efe5b825c059a6da`. The published report contains the actual PR #15
+approval observation and resolves required r3, no candidate, pending transport-v1, binding commit `5645b050…` and no
+activation. All 60 required cases and cleanup passed. The unchanged policy makes the next product-affecting change
+activate that successor; existing persistent-applicability tests cover implementation and descendants.
+
+Published image IDs are API `sha256:9395bab7815eb755f4271e55c536ed9c45f01b7d705965740c738669d1874e66` and frontend
+`sha256:ef0cd505f69456ba1fb3c4c380b7baf696fa4a993fa77c60de500e23826aba7a`. Eight metadata assets were downloaded and
+rehashed against GitHub digests, all matching. Neither archive was downloaded or rehashed; no extra publisher retry was
+needed for unchanged publisher code. These are software release observations with `deployed: false`.
+
+Sources: ignored `.artifacts/transport-binding-main-publication/observations.json`, its `metadata/` and captured
+publisher logs; `.artifacts/transport-binding-pr-ci.log`, `.artifacts/transport-binding-main-ci.log`, the local binding
+diagnostic/observations and companion report/receipt. Preserve the candidate JSON reports unchanged. The next bounded
+work is governance-only RUNTIME-POLICY, then Fastify under the bound successor; no new contract or framework is
+activated by this completion record.
