@@ -32,8 +32,10 @@ references:
 generationTime: '2026-10-10T07:58:36.830Z'
 ---
 flowchart TD
-    EVENT["Current integrated application: PR or protected-main push"] --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
-    EVENT --> P["Product: verify frozen baseline and run unit/build checks"]
+    EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
+    PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free Terraform formatting, initialization and validation"]
+    EVENT --> PREP["Product trusted-base admission<br/>emit exact source/base decision and digest"]
+    PREP --> P["Product: resolve required suite and run unit/build checks<br/>pending candidate harness controls stay separate"]
     P --> BUILD["Build two independent Docker images<br/>frontend: static assets with NGINX<br/>API: TypeScript build stage to minimal Node runtime"]
     BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium tests their real HTTP boundary"]
     TEST --> KIND{"Successful application main push?"}
@@ -45,7 +47,7 @@ flowchart TD
     G -->|"No"| STOP["Fail checks; no release"]
     G -->|"Yes"| MAIN{"Protected-main push?"}
     MAIN -->|"No: PR"| REVIEW["Checks available for independent review and protected merge"]
-    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, baseline, same-run checks and bundle hashes"]
+    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, admitted required suite,<br/>original preflight digest, same-run checks and bundle hashes"]
     VERIFY --> DRAFT["Create or verify exact v0.1.ordinal tag and private draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
     ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]
@@ -53,5 +55,3 @@ flowchart TD
     DRAFT -.->|"Conflict or interruption"| FAIL
     ASSETS -.->|"Failure"| FAIL
     FAIL -.->|"Retry only with identical source and bytes"| VERIFY
-    P --> PRE["Validate acceptance admission"]
-    PRE --> BUILD
