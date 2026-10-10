@@ -66,6 +66,22 @@ prohibition when its complete positive fixture declares the permitted Fastify pi
 the existing development/workspace/transitive-policy controls passed. The ignored log is
 `.artifacts/runtime-policy-red.log`; no missing fixture or import failure was interpreted as a passing rejection.
 
+### Independent sensitivity correction — 2026-10-10
+
+Review found that invalid name/version/source declarations originally retained an inconsistent installed Fastify graph.
+A validator lacking a dedicated declaration check could reject those inputs only because of that mismatch. Additive
+controls now synchronize invalid versions and sources across the package, lock root, installed version and derived
+tarball URL. Complete forbidden sole-package graphs use their matching installed package and canonical tarball metadata,
+with no orphan Fastify record. Existing mismatch and mixed-dependency cases remain in place.
+
+Review also found that rejection assertions alone could accept a helper that mutates invalid data and then throws.
+Negative fixtures now snapshot their mutable inputs and deep-compare after rejection, preserving fixture prototypes.
+They are not frozen: a mutation-triggered TypeError must not count as correct policy rejection. A separate synthetic
+control demonstrates detection of package and installed-record mutation followed by a throw. Original red evidence
+remains unchanged; the corrected test-only run is recorded separately in `.artifacts/runtime-policy-red-r2.log`. It
+reports **26 groups: 4 passed, 22 failed, no skips or cancellations**. The added mutation-detection control passes; 21
+groups fail at explicit missing-API checks and the allowed-pin CLI group still fails at the old blanket prohibition.
+
 ## Authority and limitations
 
 The implementer may add the helper and its narrow call in `scripts/policy.mjs`; root separately wires the focused test

@@ -42,13 +42,31 @@ function graph(version = undefined) {
   return { pkg, lock };
 }
 
+/** Copy fixture values without freezing or normalizing their types/prototypes; no cyclic or accessor inputs are used. */
+function snapshot(value) {
+  if (!value || typeof value !== "object") return value;
+  if (value instanceof Date) return new Date(value.getTime());
+  if (Array.isArray(value)) return value.map(snapshot);
+  return Object.assign(
+    Object.create(Object.getPrototypeOf(value)),
+    Object.fromEntries(Object.entries(value).map(([key, child]) => [key, snapshot(child)])),
+  );
+}
+
+/** Invalid inputs remain mutable: mutation followed by a throw must fail rather than masquerade as valid rejection. */
+function rejectedUnchanged(check, pkg, lock, label) {
+  const before = snapshot([pkg, lock]);
+  assert.throws(() => check(pkg, lock), undefined, label);
+  assert.deepEqual([pkg, lock], before, `${label}: rejection must preserve input values and prototypes`);
+}
+
 /** Assert a labeled table of independently supplied mutations; every case starts from a fresh valid graph. */
 function rejected(cases, make = () => graph("5.0.0")) {
   const check = predicate();
   for (const [label, mutate] of cases) {
     const { pkg, lock } = make();
     mutate(pkg, lock);
-    assert.throws(() => check(pkg, lock), undefined, label);
+    rejectedUnchanged(check, pkg, lock, label);
   }
 }
 
@@ -140,10 +158,10 @@ test("malformed package, lock, packages and lock-root records fail closed", () =
   const check = predicate();
   for (const invalid of [undefined, null, false, 3, "metadata", [], new Date(0), Object.create({ inherited: true })]) {
     const { pkg, lock } = graph();
-    assert.throws(() => check(invalid, lock));
-    assert.throws(() => check(pkg, invalid));
-    assert.throws(() => check(pkg, { ...lock, packages: invalid }));
-    assert.throws(() => check(pkg, { ...lock, packages: { "": invalid } }));
+    rejectedUnchanged(check, invalid, lock, "malformed package");
+    rejectedUnchanged(check, pkg, invalid, "malformed lock");
+    rejectedUnchanged(check, pkg, { ...lock, packages: invalid }, "malformed packages map");
+    rejectedUnchanged(check, pkg, { ...lock, packages: { "": invalid } }, "malformed lock root");
   }
   rejected([
     ["missing root", (_pkg, lock) => delete lock.packages[""]],
@@ -180,6 +198,21 @@ test("only lowercase Fastify may be a direct runtime key, alone", () => {
       ],
     ]),
   );
+});
+
+test("complete sole-package graphs reject forbidden names without an orphan Fastify or lock mismatch", () => {
+  const check = predicate();
+  for (const name of ["express", "mp3-parser", "music-metadata", "@fixture/parser"]) {
+    const { pkg, lock } = graph();
+    pkg.dependencies = { [name]: "5.0.0" };
+    lock.packages[""].dependencies = { [name]: "5.0.0" };
+    lock.packages[`node_modules/${name}`] = {
+      version: "5.0.0",
+      resolved: `https://registry.npmjs.org/${name}/-/${name.split("/").at(-1)}-5.0.0.tgz`,
+      integrity,
+    };
+    rejectedUnchanged(check, pkg, lock, `complete forbidden graph: ${name}`);
+  }
 });
 
 test("direct pins reject noncanonical syntax, unstable versions and unsafe integers", () => {
@@ -250,6 +283,94 @@ test("alternate source and alias syntax cannot masquerade as a direct pin", () =
       },
     ]),
   );
+});
+
+test("synchronized invalid-version graphs require syntax validation rather than declaration mismatch", () => {
+  const check = predicate();
+  for (const version of [
+    "^5.0.0",
+    "~5.0.0",
+    "*",
+    "latest",
+    ">=5.0.0",
+    "5.0.0 || 6.0.0",
+    "v5.0.0",
+    "=5.0.0",
+    "5",
+    "5.0",
+    "05.0.0",
+    "5.00.0",
+    "5.0.00",
+    "-5.0.0",
+    "+5.0.0",
+    "5.0.0-beta.1",
+    "5.0.0+build.1",
+    " 5.0.0",
+    "5.0.0 ",
+    "5.0.0\n",
+    "5.0.0\r\n",
+    "5.0.0\t",
+    "5.0.0\0",
+    "５.0.0",
+    "9007199254740992.0.0",
+    "0.9007199254740992.0",
+    "0.0.9007199254740992",
+    "1e1.0.0",
+    "",
+  ]) {
+    const { pkg, lock } = graph(version);
+    rejectedUnchanged(check, pkg, lock, `synchronized invalid pin: ${JSON.stringify(version)}`);
+  }
+});
+
+test("synchronized alias and source graphs cannot evade direct source restrictions", () => {
+  const check = predicate();
+  for (const version of [
+    "npm:fastify@5.0.0",
+    "npm:mp3-parser@5.0.0",
+    "https://registry.npmjs.org/fastify/-/fastify-5.0.0.tgz",
+    "git+https://github.com/fixture/fastify.git#v5",
+    "git@github.com:fixture/fastify.git",
+    "github:fixture/fastify",
+    "file:../fastify",
+    "link:../fastify",
+    "workspace:*",
+    "../fastify",
+    "/tmp/fastify",
+    "C:\\fixture\\fastify",
+  ]) {
+    const { pkg, lock } = graph(version);
+    rejectedUnchanged(check, pkg, lock, `synchronized alternate source: ${version}`);
+  }
+});
+
+test("negative-input control distinguishes clean rejection from mutation followed by rejection", () => {
+  const clean = graph("5.0.0");
+  rejectedUnchanged(
+    () => {
+      throw new Error("Synthetic rejection");
+    },
+    clean.pkg,
+    clean.lock,
+    "clean control",
+  );
+  for (const side of ["package", "lock"]) {
+    const { pkg, lock } = graph("5.0.0");
+    assert.throws(
+      () =>
+        rejectedUnchanged(
+          (inputPackage, inputLock) => {
+            if (side === "package") inputPackage.dependencies.fastify = "6.0.0";
+            else inputLock.packages[directPath].version = "6.0.0";
+            throw new Error("Synthetic mutation then rejection");
+          },
+          pkg,
+          lock,
+          `${side} mutation control`,
+        ),
+      /rejection must preserve input values and prototypes/,
+    );
+  }
 });
 
 test("package and lock-root declarations agree after absence/empty normalization only", () => {
