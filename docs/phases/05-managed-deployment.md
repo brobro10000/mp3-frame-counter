@@ -39,3 +39,9 @@ release does not authorize or trigger them.
 No automatic merge, review override, speculative infrastructure, test weakening or fabricated release evidence. A
 reviewable PR handoff does not authorize its merge. Read [phase rules](README.md), the
 [release-operator role](../agents/release-operator.md) and [reviewer role](../agents/reviewer.md).
+
+## Observed phase completion
+
+The [V1 closure](../validation/v1-closure.md) records the successful main run, `v0.1.6`, all verified release assets and
+the identical publisher-only retry observed on 2026-10-10. This satisfies the active release-only exit criteria; the
+deferred deployment follow-up above remains separate. Later releases must meet the same controls.

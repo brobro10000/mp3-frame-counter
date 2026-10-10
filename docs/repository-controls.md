@@ -1,8 +1,9 @@
 # Repository merge controls
 
-Target: private `brobro10000/mp3-frame-counter`, default branch `main`. The owner explicitly authorized an approval
-override on 2026-10-09 because no independent reviewer is available. This amendment supersedes the original no-bypass
-review policy retained in the historical `agents/` planning and evidence artifacts.
+Target: private `brobro10000/mp3-frame-counter`, default branch `main`. On 2026-10-09 the owner authorized a review
+override because an eligible reviewer was unavailable at that time. A dedicated automated companion, `brobro1000`, now
+provides eligible exact-commit GitHub reviews when explicitly requested and its checks pass. The owner exception remains
+configured; no rules were changed for V1 closure. Automated review is not independent human review.
 
 Administrative setup applies settings outside CI. The versioned ruleset files are documentation and read-only audit
 inputs; a pull request never applies them automatically.
@@ -35,6 +36,18 @@ Actions are enabled with SHA pinning required, default read-only permissions and
 disabled. The validation workflow explicitly grants only `contents: read`, uses no repository-admin credentials or
 deployment secrets, and does not use `pull_request_target`. Checkout credentials are not persisted.
 
+## Companion review
+
+The Docker companion is maintained in the private
+[companion-reviewer repository](https://github.com/brobro10000/companion-reviewer), including setup, isolation,
+credential recovery and approval checks. It uses a separate GitHub identity, inspects the exact PR source and only
+publishes a qualifying approval after fresh CI, conversation and protection checks. It never merges. The owner granted
+collaborator access; no code-owner gate was added.
+
+For PR #5, [review 5477487545](https://github.com/brobro10000/mp3-frame-counter/pull/5#pullrequestreview-5477487545)
+approved head `8f41b9f` as `brobro1000`; GitHub reported `APPROVED` and `CLEAN` before the owner merged it. New commits
+require fresh review. The [V1 closure](validation/v1-closure.md) records the subsequent merge and release.
+
 ## Using the owner's override
 
 GitHub does not allow authors to approve their own PRs. The configured exception allows an explicit merge override
@@ -48,9 +61,10 @@ instead. When signed in as `brobro10000`:
 The checkbox was observed enabled and unchecked on PR 1 after configuration. It was not selected and no merge was
 attempted. The broad checkbox label does not grant a bypass of the separate core ruleset.
 
-CODEOWNERS remains deferred: naming the sole owner would not create an eligible independent reviewer. No code-owner gate
-or collaborator invitation was added. Agents must not exercise the override, approve, merge or enable auto-merge without
-a separate explicit instruction.
+CODEOWNERS remains deferred: naming the sole owner would not create an eligible independent reviewer. The later
+companion collaborator enables the normal approval path; it does not change CODEOWNERS or remove the explicit owner
+exception. Agents must not exercise the override, approve, merge or enable auto-merge without a separate explicit
+instruction.
 
 ## Safe read-only verification
 
@@ -82,10 +96,10 @@ cannot bypass the core ruleset and can bypass the review ruleset only through PR
 main rulesets or classic protection that could obstruct that exception. It uses only read-only API requests and local
 Git reads.
 
-An unapproved PR can still report `REVIEW_REQUIRED` and `BLOCKED` until the owner explicitly chooses the override. Those
-standard statuses do not mean the account-specific exception is unavailable. The current read-only audit accepts the
-exact open-PR head or protected-main head and verifies the corresponding successful CI run. It no longer assumes the
-original foundation PR remains open.
+An unapproved PR can report `REVIEW_REQUIRED` and `BLOCKED` until it receives an eligible approval or the owner
+explicitly chooses the configured exception. Those statuses do not by themselves establish readiness or remove other
+requirements. The current read-only audit accepts the exact open-PR head or protected-main head and verifies the
+corresponding successful CI run. It no longer assumes the original foundation PR remains open.
 
 ## Application-release audit limitation
 

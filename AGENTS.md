@@ -2,7 +2,7 @@
 
 ## Verified intent
 
-Implement and verify the MP3 browser application and automated GitHub releases in five ordered phases.
+Maintain the verified V1 MP3 browser application and automated GitHub releases; scope subsequent iterations separately.
 The later owner amendment defers deployment; read docs/requirements/release-process.md.
 
 ## Primary users
@@ -19,6 +19,8 @@ The later owner amendment defers deployment; read docs/requirements/release-proc
 - Owner authorized execution of P1 through P5 and required shell/UI actions on 2026-10-09; read docs/phases/execution-authorization.md.
 - Read docs/requirements/README.md, docs/mvp.md, docs/architecture/decisions.md and docs/phases/README.md before work.
 - Read docs/validation/execution-status.md for current progression and dated evidence; local/PR passes are not publication.
+- Read docs/validation/v1-closure.md for the verified V1 release and carryover limits before planning later work.
+- Complete the closure PR review/merge before starting a separately scoped iteration; prior P1–P5 authority is not new scope.
 - Preserve dated handoff results and original captures; update current status with exact revision/run evidence when it changes.
 - The planning baseline is merged at 0c9f538; preserve original foundation and source/archive bytes.
 - Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
