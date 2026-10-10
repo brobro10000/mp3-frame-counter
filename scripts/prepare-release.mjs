@@ -4,7 +4,9 @@
  * Run `node scripts/prepare-release.mjs --report .artifacts/e2e-result.json` with the pinned runtime, full Git history,
  * a clean preparation checkout and Docker's exact tested linux/amd64 images still present. The report's source may
  * precede the preparation-tooling revision. No version override, rebuild, retag, push, provider call or publish exists.
- * Git source/baseline/configuration identities and Docker IDs are checked before exporting either image by immutable ID.
+ * Git source/required-suite/configuration identities and Docker IDs are checked before exporting by immutable ID.
+ * Post-policy reports retain their original preflight admission (CI) or local selection; preparation HEAD cannot
+ * replace the tested source/base, and local evidence cannot authorize publication. Historical report bytes stay valid.
  *
  * Creates ignored .artifacts/releases/0.1.<source-first-parent-ordinal>/ with two Docker archives, checksums,
  * reservation, manifest and deterministic notes. Version previews remain provisional even when checks pass locally.
@@ -18,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { detectPhase } from "./phase-policy.mjs";
+import { verifyPreparationAcceptance } from "./acceptance-preparation.mjs";
 import {
   archiveIdentity,
   canonical,
@@ -65,30 +67,7 @@ try {
   git(["merge-base", "--is-ancestor", evidence.sourceRevision, preparationRevision]);
   git(["cat-file", "-e", `${evidence.sourceRevision}^{commit}`]);
   const ordinal = Number(git(["rev-list", "--first-parent", "--count", evidence.sourceRevision]).trim());
-  const baseline = JSON.parse(git(["show", `${evidence.sourceRevision}:docs/testing/baseline.json`]));
-  assert.equal(baseline.schemaVersion, 1, "Unsupported source baseline schema");
-  assert.equal(baseline.suiteCommit, evidence.suiteCommit);
-  assert.equal(baseline.suiteTree, evidence.suiteTree);
-  assert.equal(baseline.manifestSha256, evidence.fixtureManifestSha256);
-  assert.equal(baseline.contractRevision, evidence.contractRevision);
-  assert.equal(
-    baseline.publicationStatus,
-    evidence.baselinePublication,
-    "Baseline publication claim differs from tested source",
-  );
-  git(["merge-base", "--is-ancestor", baseline.suiteCommit, evidence.sourceRevision]);
-  const baselinePaths = git(["ls-tree", "-r", "--name-only", "-z", baseline.suiteCommit]).split("\0").filter(Boolean);
-  assert.equal(detectPhase(baselinePaths), "acceptance", "Initial baseline must precede product implementation");
-  assert.equal(git(["rev-parse", `${baseline.suiteCommit}:tests/acceptance`]).trim(), baseline.suiteTree);
-  assert.equal(
-    git(["rev-parse", `${evidence.sourceRevision}:tests/acceptance`]).trim(),
-    baseline.suiteTree,
-    "Tested source changed frozen suite bytes",
-  );
-  assert.equal(
-    digest(git(["show", `${baseline.suiteCommit}:tests/acceptance/fixtures/manifest.json`], null)),
-    baseline.manifestSha256,
-  );
+  verifyPreparationAcceptance(root, report, process.env);
   const sourceFiles = Object.fromEntries(
     sourceConfigurationPaths.map((path) => [path, git(["show", `${evidence.sourceRevision}:${path}`], null)]),
   );
