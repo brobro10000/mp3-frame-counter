@@ -1,7 +1,15 @@
 # Independent acceptance baseline and change control
 
+**GATE-01 working-change amendment, 2026-10-10:** dormant transition support is implemented in the current change and
+remains pending integration validation, independent review and merge. Read the
+[acceptance transition guide](acceptance-transition.md) for trusted preflight, bootstrap, candidate/binding separation
+and release evidence. The registry is empty; r3 remains the only active suite, with unchanged genesis metadata and
+historical objects. The earlier roadmap amendment below records the pre-GATE technical limitation, not permission to
+skip the new change's review or activate a successor. Current bounded execution authority comes from the
+[later owner instruction](../phases/roadmap-execution-authorization.md).
+
 **Roadmap amendment, 2026-10-10:** the [successor design](../roadmap/README.md#acceptance-succession) requires
-[GATE-01](../phases/next-iteration.md#pr-card-2--gate-01-admit-independently-reviewed-successor-suites) before any
+[GATE-01](../phases/next-iteration.md#pr-card-1--gate-01-admit-independently-reviewed-successor-suites) before any
 successor-suite PR. Current verification still freezes every r3 path/byte and requires a pre-product suite commit; the
 amendment procedure below is not an existing technical route around those checks. Preserve genesis JSON and historical
 suite objects, use separate test-only proposals and actual merged binding, and keep gate authors independent of product

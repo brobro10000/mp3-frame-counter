@@ -5,11 +5,11 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **PLAN-01 merged; v0.1.8 published; cost-bootstrap source under review; hosting remains pending**. The
-[dated execution record](../validation/roadmap-execution.md) records PR #8, its exact companion approval, owner merge
-and successful main publication. The original documentation-only scope and v0.1.7 assessment below remain dated history.
-The active window contains COST-BOOTSTRAP, GATE-01 and VER-01; no dedicated cloud project or live cost controls have
-been created by these source changes.
+Status: **PLAN-01 and COST-BOOTSTRAP merged; v0.1.9 published; live project cost controls verified**. The
+[execution record](../validation/roadmap-execution.md) preserves PLAN-01. The
+[cost record](../validation/cloud-cost-bootstrap.md) records PR #9, its reviewed apply and live readback. A dedicated
+project now has a USD 75 Cloud Run cap and USD 100 all-service alert budget; no application service is deployed. GATE-01
+is under implementation, with r3 still required. The active cards are GATE-01, VER-01 and release-line activation.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
 reserves **v1.0.0 for the first verified production deployment**. It is a human-readable planning amendment, not an
@@ -28,11 +28,15 @@ and publication; [v0.1.8](https://github.com/brobro10000/mp3-frame-counter/relea
 bytes were not independently downloaded or rehashed for this update. See the
 [execution record](../validation/roadmap-execution.md) for exact head, review and timestamps.
 
-The [cost bootstrap](../../infra/cloud/bootstrap/README.md) now provides dedicated-project/API/budget Terraform and a
-separate fixed USD 75 Run-cap reconciler. It is authored source, not applied infrastructure. Its
-[validation record](../validation/cloud-cost-bootstrap.md) distinguishes reviewed local checks from pending integrated
-CI. GATE-01 and VER-01 remain prerequisites for their respective future changes. The original assessment snapshot is
-preserved below; planning/publication progress does not change its acceptance or submission evidence.
+The [cost bootstrap](../../infra/cloud/bootstrap/README.md) merged in PR #9 at
+`a21108cf2982eb973fa9b4502007084bbd450d08`; main run
+[38033869422](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38033869422) passed and published v0.1.9.
+The reviewed saved Terraform plan created the project, APIs and alert budget; the separate cap was created once and
+verified by recorded identity. The [validation record](../validation/cloud-cost-bootstrap.md) distinguishes readback
+from untested notification delivery or enforcement timing. A later readback correction removes a default-field drift
+without changing budget ownership. GATE-01 and VER-01 remain prerequisites for their respective future changes. The
+original assessment snapshot is preserved below; planning/publication progress does not change its acceptance or
+submission evidence.
 
 ## Original planning assessment and evidence boundary
 
@@ -190,7 +194,7 @@ work-package IDs survive version/date changes. Only the [next three cards](../ph
 
 | Envelope            | Work and required exit                                                                                                                                                                                                         |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Remaining v0.1.x    | PLAN-01 is merged. COST-BOOTSTRAP follows its cost/access branch; GATE-01 admission and VER-01 allocator migration retain their ordering. Preserve product behavior and artifact releases.                                     |
+| Remaining v0.1.x    | PLAN-01 and COST-BOOTSTRAP are merged. GATE-01 admission and VER-01 allocator migration retain their ordering. Preserve product behavior and artifact releases.                                                                |
 | v0.2.x              | Approved line activation; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
 | v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                          |
 | v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                         |
@@ -361,18 +365,18 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 
 ## Decision gates and responsibility
 
-| Gate          | Default and current boundary                                                                                                                        | Owner / blocked work                                        |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.                      | Owner + coordinator; preserve card scope and prerequisites. |
-| GATE-REVIEW   | Single pending successor, trusted preflight, exact reviewed binding and persistent applicability. Review not yet performed.                         | Independent gate reviewer + owner; GATE-01.                 |
-| VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                                               | Release reviewer + owner; VER-01 and line changes.          |
-| DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                                           | Acceptance author + security reviewer; docs activation.     |
-| QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                                        | Release/tooling owner; QUEUE-WORKFLOW only.                 |
-| COST-01       | Billing/IaC authorized; bounded bootstrap source authored, unapplied. Verify USD 75 Run cap and USD 100 alert budget before billable app resources. | Owner + deployment operator; paid resources/hosting.        |
-| ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                                             | Owner + deployment operator; setup/exposure.                |
-| HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                                         | Acceptance author + deployment operator; stage exit.        |
-| LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.                                     | Owner; production deployment and exposure.                  |
-| SUBMISSION-01 | Preserve v0.1.7 handoff; confirm actual deadline/submission separately.                                                                             | Owner; external assessment submission only.                 |
+| Gate          | Default and current boundary                                                                                                                                                   | Owner / blocked work                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.                                                 | Owner + coordinator; preserve card scope and prerequisites. |
+| GATE-REVIEW   | Single pending successor, trusted preflight, exact reviewed binding and persistent applicability. Independent fixtures/review precede implementation; final PR review pending. | Independent gate reviewer + owner; GATE-01.                 |
+| VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                                                                          | Release reviewer + owner; VER-01 and line changes.          |
+| DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                                                                      | Acceptance author + security reviewer; docs activation.     |
+| QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                                                                   | Release/tooling owner; QUEUE-WORKFLOW only.                 |
+| COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations.                                           | Owner + deployment operator; paid resources/hosting.        |
+| ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                                                                        | Owner + deployment operator; setup/exposure.                |
+| HOST-01       | Prove real ingress, lifecycle, headroom, retention and configured controls.                                                                                                    | Acceptance author + deployment operator; stage exit.        |
+| LAUNCH-01     | Human approval before production application deployment, binding exact candidate, exposure and tested recovery.                                                                | Owner; production deployment and exposure.                  |
+| SUBMISSION-01 | Preserve v0.1.7 handoff; confirm actual deadline/submission separately.                                                                                                        | Owner; external assessment submission only.                 |
 
 The coordinator owns scope/integration and serialized Git operations; independent acceptance authors own expectations;
 the companion reviews; GitHub controls merge eligibility; the existing publisher owns tags/assets/finalization; the
@@ -413,8 +417,8 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances its independent cost branch while retaining GATE-01
-before successor suites and VER-01 after the shared-reader migration.
+[active three-card window](../phases/next-iteration.md) advances GATE-01, VER-01 and separate release-line activation.
+Successor suites still require GATE-01, and allocation follows the shared-reader migration.
 
 ## PLAN-01 local verification — 2026-10-10
 

@@ -1,10 +1,11 @@
 # Next iteration: phase instructions and three PR cards
 
-**Execution status, 2026-10-10:** PLAN-01 is merged in PR #8 and v0.1.8 is published; see the
-[dated execution record](../validation/roadmap-execution.md), which preserves the original documentation-only scope. The
-owner authorized [continued execution](roadmap-execution-authorization.md), companion-reviewed merges and automatic
-stage delivery. Exactly three active cards remain below: COST-BOOTSTRAP, GATE-01 and VER-01. Production application
-deployment/promotion requires human intervention; no deployed state is claimed.
+**Execution status, 2026-10-10:** PLAN-01 and COST-BOOTSTRAP are merged; v0.1.9 is published. The dedicated project, USD
+75 Run cap and USD 100 all-service alert budget have been read back; see
+[cost evidence](../validation/cloud-cost-bootstrap.md). The owner authorized
+[continued execution](roadmap-execution-authorization.md), companion-reviewed merges and automatic stage delivery. The
+three active cards below are GATE-01, VER-01 and LINE-02. GATE-01 is in progress; no successor is active. Production
+application deployment/promotion requires human intervention, and no deployed application is claimed.
 
 Read the [versioned roadmap](../roadmap/README.md) for current-state evidence, architecture, dependency diagrams,
 release envelopes, deployment and named decision gates. This document owns phase operation and exactly three detailed
@@ -38,83 +39,7 @@ Keep raw `POST /file-upload`, its exact JSON success shape, inclusive **20,971,5
 semantics and pure TypeScript physical-frame parser unchanged throughout these three cards. Preserve original captures,
 private sample handling, frozen suite bytes, dated reports and historical generated orchestrator artifacts.
 
-## PR card 1 — COST-BOOTSTRAP: Codify the dedicated project and monthly controls
-
-**Outcome:** reviewable IaC for one dedicated billed project, minimal APIs and a USD 100 all-service alert budget, plus
-a separately owned USD 75 Cloud Run spend-cap manifest/reconciler. Stage and production share that cap. No application
-service, registry, workload identity, cloud storage or deployment is introduced by this card.
-
-**Base and prerequisites:** PLAN-01 is merged as `533ddca81153b189d9f53cfc7cc81f24b9421231`; refresh exact main before
-integration. The owner authorized billing activation, IaC and the monthly cost boundary in the
-[execution amendment](roadmap-execution-authorization.md#monthly-cost-boundary). Independent scratch review and
-[local validation](../validation/cloud-cost-bootstrap.md) precede integration. This card follows PLAN-01 independently
-of GATE-01; serialize shared workflow edits with gate work.
-
-### Owned implementation scope
-
-- `infra/cloud/bootstrap/`: Terraform 1.13.3, Google provider 8.6.0 and reviewed provider lockfile; private inputs and
-  state exclusions; project/API/alert-budget declarations; outputs, cap template, reconciler, tests and operating guide.
-- `package.json`: add deterministic cap tests to the existing tooling command.
-- `.github/workflows/ci.yml`: pinned Terraform setup, formatting, backend-disabled lockfile-read-only initialization and
-  provider validation in foundation CI. Preserve required job names and release permissions; grant no cloud credentials.
-- `scripts/policy.mjs`: require the pinned validation-only workflow and cap-test inclusion; reject tracked Terraform
-  caches, state, private inputs, saved plans and `*.private.json` identity records.
-- `docs/architecture/diagrams/release.mmd`: keep the source-linked release view aligned with mandatory Terraform
-  validation, including review of any diagram-assistant commit before merge.
-- Targeted roadmap/phase/deployment pointers and `docs/validation/cloud-cost-bootstrap.md` plus the
-  [dated execution record](../validation/roadmap-execution.md).
-
-**Read-only/non-goals:** product source, frozen acceptance and genesis evidence, parser/upload behavior, application
-images, release allocation, historical releases, generated orchestrator artifacts, hosted test profiles and live cloud
-state. No credential creation, live plan/apply, application provisioning or production operation in the PR itself.
-
-### Required behavior and order
-
-1. Require operator-selected private project/account inputs and verified USD billing currency. Pin Terraform/provider
-   versions and retain the provider lockfile; never embed personal identities, secrets or host paths.
-2. Terraform creates the dedicated project before API activation and its scoped alerts-only budget. Initial state is
-   local, ignored and private until a later reviewed backend migration after cost-control verification.
-3. Keep fixed USD 100 all-service monthly gross-cost alerts at 50/75/90/100% current spend and forecast 100%. Use
-   default billing IAM email recipients and verify the owner receives them. Add no Pub/Sub/channel infrastructure merely
-   to satisfy the provider schema.
-4. The separate declarative REST reconciler owns exactly one USD 75/month Cloud Run cap for the dedicated project.
-   Default checks are read-only. Explicit initial creation requires complete absence discovery, one POST and observed
-   readback. Persist the exact cap resource identity privately after creation.
-5. Reject missing recorded controls, ambiguity, incomplete discovery, changed scope/amount, unsafe destinations,
-   permission failures, unknown/lifted/enforced state and unfinished reconciliation. Resolve uncertain creation through
-   read-only discovery; never automatically repeat creation, lift/delete a cap or increase a limit.
-6. Keep tokens in process memory, use the fixed Google API origin with redirect refusal, and sanitize errors. Future
-   stage/production identities cannot administer cost controls. `prevent_destroy` and provider `PREVENT` safeguards make
-   teardown a separate human-controlled operation.
-
-The cap pauses new Run usage. Reporting lag, in-flight costs and ancillary services still allow overages; the USD 25
-reserve and all-service alerts are not an enforced invoice ceiling. If cap support or permission is unavailable, stop
-before billable application resources instead of silently substituting an alert budget.
-
-### Validation and review
-
-Run deterministic injected-adapter tests without cloud credentials, scoped formatting and portability checks, pinned
-Terraform formatting and provider validation. CI initializes with `-backend=false -input=false -lockfile=readonly` and
-performs no plan, apply, authentication or resource access. Preserve full mandatory product acceptance for the eventual
-merge. Local source checks do not prove billing readiness, real API permissions, spend enforcement or a deployment.
-
-Require independent critical-boundary review and exact-head companion review; fix supported findings and repeat review
-for changed heads. The [validation record](../validation/cloud-cost-bootstrap.md) must distinguish earlier scratch
-results, final integrated checks and actual CI results.
-
-### Rollback, release effect and stop
-
-Before apply, rollback is a source revert. A normal reviewed merge may publish another v0.1.x software release without
-deployment. Live resources, if later created, require the documented guarded decommissioning procedure; ordinary
-`terraform destroy` is intentionally blocked and a source revert must not remove live protection.
-
-**Done:** bounded source merged after current companion approval and required checks. **Stop before live apply.** The
-coordinator can then perform the already-authorized, separately reviewed private plan for project/API/cost controls,
-verify actual billing and cap readiness, and record that evidence before any billable application resource. Later
-registry, backend, IAM, stage and production work remains outside this card; every production app deployment needs a
-human decision.
-
-## PR card 2 — GATE-01: Admit independently reviewed successor suites
+## PR card 1 — GATE-01: Admit independently reviewed successor suites
 
 **Outcome:** backward-compatible acceptance transition support, dormant on merge, with r3 still active.
 
@@ -206,7 +131,7 @@ needed. After activation, recovery must preserve readable evidence and a coheren
 PR. **Stop before** adding successor tests or activating a new contract. Use the execution amendment's review/merge
 path; its authority does not waive independent expectations or any required check.
 
-## PR card 3 — VER-01: Support source-bound release lines
+## PR card 2 — VER-01: Support source-bound release lines
 
 **Outcome:** deterministic allocation beyond v0.1 that preserves historical identities and immutable retries.
 
@@ -265,6 +190,44 @@ versions or reservations.
 **Done:** release consumers agree, historical releases remain verifiable, and a later line-activation PR is possible.
 **Stop before** line activation, Fastify implementation or production-finalization work. Continued authority applies
 only within this card's scope and prerequisites.
+
+## PR card 3 — LINE-02: Activate the approved v0.2 release line
+
+**Outcome:** the first source-bound v0.2.x publication using VER-01's shared allocator, without changing product
+behavior or activating a successor suite. The global first-parent ordinal remains the patch component.
+
+**Prerequisites:** GATE-01 and VER-01 merged with successful exact-source publication and immutable retry evidence;
+fresh protected main; the owner's adopted roadmap/version policy. Do not combine activation with allocator changes.
+
+### Owned scope and read-only boundaries
+
+Change only the approved minor-line field in root `release-policy.json` from `0.1` to `0.2` and targeted current-policy
+notes in release/roadmap documentation. Product, tests, dependencies, workflow, publisher implementation, acceptance
+registry/genesis, existing tags/assets and infrastructure remain read-only. An unexpected allocator defect returns to a
+separate repair card before activation.
+
+### Required behavior and validation
+
+1. Read the reviewed policy at exact base; verify VER-01 is implemented and its first main release is published.
+2. Apply only the minor-line change. The source merge itself allocates `0.2.<global source ordinal>`; do not reset
+   patch, guess a future squash SHA, edit package version or allocate an ordinary `1.*` release.
+3. Run policy/format and existing allocation/preparation/publication tests, then normal required CI and unchanged r3
+   acceptance. Existing numeric-latest tests must cover delayed old-line runs. Create no tags during local validation.
+4. Obtain exact-head companion approval, merge as owner through required checks and verify the actual main source,
+   version, release assets and latest selection. Failed publication remains a failed activation outcome until repaired
+   through the same immutable publisher; never overwrite a reservation with different bytes.
+
+### Review, rollback and stop
+
+The release reviewer checks the small policy diff, numeric ordering and historical identity compatibility. Companion
+approval and merge authority come from the execution amendment; production deployment remains separately gated. Before
+publication, rollback is a coherent source revert accepted by the allocator's monotonicity rules. After any v0.2 tag
+exists, repair forward without deleting tags or downgrading the line. A revert that violates monotonicity is not a
+recovery mechanism.
+
+**Done and stop:** actual first v0.2.x publication is verified and historical releases remain verifiable. Stop before
+the independent transport successor, Fastify migration, docs/CSP activation or any hosted deployment. Expand the next
+card only with current prerequisite evidence.
 
 ## Provisional work after the three-card window
 

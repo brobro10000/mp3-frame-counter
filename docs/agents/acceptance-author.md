@@ -1,18 +1,24 @@
 # Acceptance author role
 
-Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code.
-Read [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),
+**Current authority — 2026-10-10:** the [roadmap execution amendment](../phases/roadmap-execution-authorization.md)
+supersedes the historical documentation-only PLAN-01 limit below. Independently authored gate expectations precede
+implementation. Follow the [transition guide](../testing/acceptance-transition.md); GATE-01 is dormant and pending
+integration validation/review, with r3 still active. Do not author a successor or claim activation before its
+prerequisite gate is merged and verified.
+
+Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
+[MVP](../mvp.md), [contract](../testing/acceptance-contract.md),
 [independence policy](../testing/independence-and-baseline.md) and [P2](../phases/02-independent-acceptance.md).
 
 Receive requirements, primary sources and independent fixture evidence, not product implementation source. Own the
 standalone acceptance package, fixture manifest/provenance, test specs, optional runner image and test-only negative
-controls. No parser/API/UI/runtime-container implementation; do not use a product parser to create expected results.
-Use external BASE_URL, real uploads, three different valid counts and every required matrix case. No product imports,
+controls. No parser/API/UI/runtime-container implementation; do not use a product parser to create expected results. Use
+external BASE_URL, real uploads, three different valid counts and every required matrix case. No product imports,
 mounts, shared application configuration helper, runtime MediaInfo or Docker socket.
 
 Record actual MediaInfo tool/version/commands and sample hash/bytes/count convention; keep private input untracked.
-Missing counts/tools or unexplained oracle differences block the affected baseline. Distinguish structural fixtures
-from decodable audio. Record license/provenance and a valid deterministic exact-limit recipe.
+Missing counts/tools or unexplained oracle differences block the affected baseline. Distinguish structural fixtures from
+decodable audio. Record license/provenance and a valid deterministic exact-limit recipe.
 
 Before app availability, validate harness and deliberately wrong-answer controls without claiming behavioral TDD red
 from an unreachable server. Never use zero-test success, suppressed failures or skipped mandatory cases. Submit the
@@ -46,3 +52,8 @@ local acceptance, stage acceptance and production smoke; a local pass cannot sub
 Keep source expectations independent of product output. Never silently alter required cases, choose an older suite or
 convert skipped/failing assertions into acceptance. Stop at the independently reviewable handoff specified by the card;
 record source/suite identities, actual results and unresolved prerequisites without inventing approval.
+
+For admission evidence, preserve the original source/base and authenticated review observations. Separate candidate
+controls from required product acceptance, and `localSelection` from CI `acceptanceAdmission`. Review temporary-history
+and negative-control expectations independently of the gate implementation; no locally fabricated observation can
+authorize binding or publication.
