@@ -2,9 +2,9 @@
 
 Dated 2026-10-10. The [bounded contract](../deployment/cloud-access-foundation.md) prepares access infrastructure under
 [the active card](../phases/next-iteration.md#pr-card-3--access-foundation-prepare-protected-state-registry-and-scoped-identities).
-Independent executable expectations are reviewed and frozen before a different implementer writes Terraform.
-Implementation checks, CI, companion approval, merge/publication and live plan/apply/readback remain pending. No new
-cloud resource or application deployment is claimed.
+Independent executable expectations are reviewed and frozen before a different implementer writes Terraform. Initial
+implementation checks passed as recorded below; CI, companion approval, merge/publication and live plan/apply/readback
+remain pending. No new cloud resource or application deployment is claimed.
 
 ## Contract review
 
@@ -44,3 +44,36 @@ memo SHA-256: `d1716d10bd6f92c49bc5e75a052f76f0d89875a9f1b9d77db8fe4c9ee6c2bd7d`
 complete correction diff, review and handoff, and rehashed all 16 final author records. A separate single-account native
 mock feasibility probe passed; it does not establish this foundation's behavior. Full configuration and mutation-control
 checks remain pending until implementation. No cloud credentials, private state or actual provider resource was used.
+
+## Implementation and integration
+
+A separate implementer added only the five reserved Terraform files after independent expectations were frozen in
+`ea4d1e4`. The first complete focused run passed **19/19**, with no failed, skipped, cancelled or todo groups, against
+unchanged test SHA-256 `d71ead0c8eee3e42f33113c0e44b349c5cef9b7570b20dd44c7de2e23c7465ee`. Complete log SHA-256:
+`ae411072fd04be6223c149b1f9227cc13c8a88bde964e19df0b005d769251a04`. This includes successful mocked plans before five
+unsafe-configuration mutation controls reject them. No source correction was needed to obtain the pass.
+
+Installed Terraform 1.13.3 formatting, backend-disabled readonly initialization and validation passed. Google 8.6.0
+provider lock generation verified signed packages for Darwin ARM64 and Linux AMD64. Root read the handoff and complete
+focused result, and rehashed all 17 source/implementation records. Implementation handoff SHA-256:
+`c38b639a6911fee14edebde3f33a5bdb9f448b5a7e66cf656d79935990da0435`.
+
+The existing foundation CI job now validates both Terraform roots without cloud credentials or backend access. The
+ordinary tooling command includes the independent mocked access tests; repository policy requires both integrations.
+Required jobs, permissions, trusted preflight, release triggers and acceptance selection are unchanged.
+
+Independent implementation review identified missing portable exclusions for access-root state, private variable files,
+plans and provider caches. Root added narrowly scoped patterns to the existing root `.gitignore`; nine representative
+private/cache paths are ignored and all five source/lock files remain eligible for tracking. The Terraform
+implementation and frozen tests are unchanged by this correction. Full repository validation and final review remain
+pending.
+
+
+## Complete local validation
+
+Pinned Node 24.20.0 `npm run validate` exited zero with **564 tooling tests**, **20 gate tests** and **19/19 Mermaid
+renders**, plus formatting, workflow lint, repository policy and portability checks. Tooling includes the 19 access
+expectation groups. This run used the implementation/integration tree based on `ea4d1e4` and actual main `62e4cd4`;
+it excludes changes still on the separate hosted-evidence/source-projection branches. Complete log SHA-256:
+`a74afe103105db072e5d10cee6623d8bea61f24af02be5859455061b20c3751d`. The final evidence text receives an explicit
+format check. Remote CI, companion approval, actual-main publication and live plan/apply remain pending.

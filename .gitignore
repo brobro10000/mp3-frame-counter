@@ -16,3 +16,17 @@ __pycache__/
 *.pem
 *.key
 *.log
+
+# Access-foundation local state, private operator inputs, plans and provider cache.
+/infra/cloud/access/.terraform/
+/infra/cloud/access/*.tfstate
+/infra/cloud/access/*.tfstate.*
+/infra/cloud/access/*.tfvars
+/infra/cloud/access/*.tfvars.json
+/infra/cloud/access/*.tfplan
+/infra/cloud/access/*.private.json
+/infra/cloud/access/crash.log
+/infra/cloud/access/override.tf
+/infra/cloud/access/override.tf.json
+/infra/cloud/access/*_override.tf
+/infra/cloud/access/*_override.tf.json
