@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "kind": "release-line-migration-retry-observation",
+  "observedAt": "2026-10-10T09:29:01.781385+00:00",
+  "repository": "brobro10000/mp3-frame-counter",
+  "sourceRevision": "cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b",
+  "pullRequest": 12,
+  "review": {
+    "reviewer": "brobro1000",
+    "head": "aaece0ee419c320d8d1837c12c18e7b521e10dfa",
+    "runId": "20261010T091112-f6d875b1",
+    "reviewId": 5478444292,
+    "verdict": "approve",
+    "automated": true,
+    "reviewedFiles": 31
+  },
+  "ci": {
+    "runId": 38041021204,
+    "originalAttempt": 1,
+    "retryAttempt": 2,
+    "originalPublisherJob": 114181582228,
+    "retryPublisherJob": 114182479992,
+    "originalJobs": [
+      {
+        "id": 114181116273,
+        "name": "validate-foundation",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T09:20:11Z",
+        "completed_at": "2026-10-10T09:22:39Z",
+        "conclusion": "success"
+      },
+      {
+        "id": 114181116388,
+        "name": "validate-product",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T09:20:12Z",
+        "completed_at": "2026-10-10T09:22:13Z",
+        "conclusion": "success"
+      },
+      {
+        "id": 114181536684,
+        "name": "control-plane",
+        "run_attempt": 1,
+        "started_at": "2026-10-10T09:22:41Z",
+        "completed_at": "2026-10-10T09:22:56Z",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "release": {
+    "id": 408835934,
+    "tag_name": "v0.1.12",
+    "target_commitish": "cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b",
+    "published_at": "2026-10-10T09:23:28Z",
+    "draft": false,
+    "prerelease": false
+  },
+  "releasePolicy": {
+    "schemaVersion": 1,
+    "strategy": "global-first-parent-ordinal",
+    "line": "0.1",
+    "sha256": "eceab8fb3706f7ad948b78f4ed60f10836d7842a17f58bb419370e53e8ffe7b2"
+  },
+  "ordinal": 12,
+  "manifestSchemaVersion": 2,
+  "publicationSchemaVersion": 2,
+  "reservationSha256": "cee8962e4df7ca31dee7b1ef9a8b9fe04d68b2306a286f85604d173ffdce4341",
+  "admissionSha256": "0f636a7a9111ae4ea7285bab109bd01b0f42bfe5f6571633ac198913a9bd0265",
+  "origin": {
+    "attempt": 1,
+    "baseRevision": "bb8f9fd3cae2c5663af9fa9f891472363bf0abcd",
+    "repository": "brobro10000/mp3-frame-counter",
+    "runId": 38041021204,
+    "schemaVersion": 1,
+    "sourceRevision": "cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b",
+    "workflow": ".github/workflows/ci.yml",
+    "workflowRevision": "cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b"
+  },
+  "artifact": {
+    "id": 11665637677,
+    "name": "release-cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b-38041021204-1",
+    "digest": "sha256:81b3efa793285f4008c47d28b5586f0c10781b4dc7cb48e44dea2790dbaacf6c",
+    "size_in_bytes": 231660673,
+    "expires_at": "2026-10-17T09:22:06Z"
+  },
+  "assets": [
+    {
+      "id": 627535507,
+      "name": "api.docker.tar",
+      "size": 170095616,
+      "digest": "sha256:565a09693be6d63d16b7361a42962a716b5dd9336eeb491c439108c1c5b50eb4",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:16Z",
+      "updated_at": "2026-10-10T09:23:21Z"
+    },
+    {
+      "id": 627535645,
+      "name": "ci-origin.json",
+      "size": 348,
+      "digest": "sha256:72e23681fd77949f29fe6749008f74cb25944c3f10d9802e1f77dd4240c3e649",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:21Z",
+      "updated_at": "2026-10-10T09:23:22Z"
+    },
+    {
+      "id": 627535659,
+      "name": "e2e-result.json",
+      "size": 3758,
+      "digest": "sha256:487bad872b5a50de7b7721e19b4ed2c5c547fa11c523df36c849bd2bbf7d8f48",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:22Z",
+      "updated_at": "2026-10-10T09:23:22Z"
+    },
+    {
+      "id": 627535675,
+      "name": "frontend.docker.tar",
+      "size": 61552640,
+      "digest": "sha256:2c8c28f8fa26944704b88e1dff04e750a343759593d4e08175a33c43924e516a",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:22Z",
+      "updated_at": "2026-10-10T09:23:24Z"
+    },
+    {
+      "id": 627535730,
+      "name": "manifest.json",
+      "size": 3850,
+      "digest": "sha256:270805ec347baafa387c1c184d66c9cd3e1f15c342ac4cf9549eb202ef6a41e5",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:24Z",
+      "updated_at": "2026-10-10T09:23:25Z"
+    },
+    {
+      "id": 627535786,
+      "name": "publication-notes.md",
+      "size": 1116,
+      "digest": "sha256:3709cef9c86355b13b63f2cc25279fd98a20851de7f1c00610d9a40f6036e668",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:26Z",
+      "updated_at": "2026-10-10T09:23:27Z"
+    },
+    {
+      "id": 627535777,
+      "name": "publication.json",
+      "size": 3281,
+      "digest": "sha256:bb22921b3eec8d33fa822dd3953271822c763d86f7b68b6091ba47597251f04c",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:26Z",
+      "updated_at": "2026-10-10T09:23:26Z"
+    },
+    {
+      "id": 627535740,
+      "name": "release-notes.md",
+      "size": 1043,
+      "digest": "sha256:1ebf57cf17dc046fd98a9bd730acf583f53aa625e19b047a3d7fcf5656dba156",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:25Z",
+      "updated_at": "2026-10-10T09:23:25Z"
+    },
+    {
+      "id": 627535755,
+      "name": "reservation.json",
+      "size": 2259,
+      "digest": "sha256:ca7195f852fb2b30b56e86a9e902e092c42d71f80588b864f537f5d758573ffc",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:25Z",
+      "updated_at": "2026-10-10T09:23:26Z"
+    },
+    {
+      "id": 627535489,
+      "name": "SHA256SUMS",
+      "size": 167,
+      "digest": "sha256:cb1e930617569f4ccefeb380cbc1fdcb1c087c7a2d30ba8407a1329c7c89a7e6",
+      "state": "uploaded",
+      "created_at": "2026-10-10T09:23:16Z",
+      "updated_at": "2026-10-10T09:23:16Z"
+    }
+  ],
+  "downloadVerification": {
+    "SHA256SUMS": {
+      "bytes": 167,
+      "githubDigestVerified": true,
+      "sha256": "cb1e930617569f4ccefeb380cbc1fdcb1c087c7a2d30ba8407a1329c7c89a7e6"
+    },
+    "ci-origin.json": {
+      "bytes": 348,
+      "githubDigestVerified": true,
+      "sha256": "72e23681fd77949f29fe6749008f74cb25944c3f10d9802e1f77dd4240c3e649"
+    },
+    "e2e-result.json": {
+      "bytes": 3758,
+      "githubDigestVerified": true,
+      "sha256": "487bad872b5a50de7b7721e19b4ed2c5c547fa11c523df36c849bd2bbf7d8f48"
+    },
+    "manifest.json": {
+      "bytes": 3850,
+      "githubDigestVerified": true,
+      "sha256": "270805ec347baafa387c1c184d66c9cd3e1f15c342ac4cf9549eb202ef6a41e5"
+    },
+    "publication-notes.md": {
+      "bytes": 1116,
+      "githubDigestVerified": true,
+      "sha256": "3709cef9c86355b13b63f2cc25279fd98a20851de7f1c00610d9a40f6036e668"
+    },
+    "publication.json": {
+      "bytes": 3281,
+      "githubDigestVerified": true,
+      "sha256": "bb22921b3eec8d33fa822dd3953271822c763d86f7b68b6091ba47597251f04c"
+    },
+    "release-notes.md": {
+      "bytes": 1043,
+      "githubDigestVerified": true,
+      "sha256": "1ebf57cf17dc046fd98a9bd730acf583f53aa625e19b047a3d7fcf5656dba156"
+    },
+    "reservation.json": {
+      "bytes": 2259,
+      "githubDigestVerified": true,
+      "sha256": "ca7195f852fb2b30b56e86a9e902e092c42d71f80588b864f537f5d758573ffc"
+    }
+  },
+  "retry": {
+    "archivesDownloaded": 0,
+    "carriedForwardValidatorRecords": [
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "control-plane",
+        "observedJobId": 114182480502,
+        "originalJobId": 114181536684
+      },
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "validate-foundation",
+        "observedJobId": 114182479983,
+        "originalJobId": 114181116273
+      },
+      {
+        "attemptPage": 2,
+        "executionUnchanged": true,
+        "name": "validate-product",
+        "observedJobId": 114182479786,
+        "originalJobId": 114181116388
+      }
+    ],
+    "limitations": [
+      "Docker archive bytes were not downloaded or independently rehashed.",
+      "Archive integrity uses GitHub-reported asset metadata only.",
+      "Observed hashes/logs are not signed attestations or release authorization."
+    ],
+    "originalArtifactId": 11665637677,
+    "originalAttempt": 1,
+    "publisherJobId": 114182479992,
+    "releaseId": 408835934,
+    "retryAttempt": 2,
+    "reused": true,
+    "runId": 38041021204,
+    "status": "verified-publisher-only-retry",
+    "tag": "v0.1.12",
+    "unchangedAssets": 10,
+    "unchangedValidatorJobs": 3
+  },
+  "limitations": [
+    "Docker archive bytes were not downloaded or independently rehashed.",
+    "Archive integrity uses GitHub-reported asset metadata only.",
+    "Observed hashes/logs are not signed attestations or release authorization."
+  ]
+}
