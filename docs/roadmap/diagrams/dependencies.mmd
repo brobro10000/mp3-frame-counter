@@ -3,8 +3,9 @@ title: Planned roadmap prerequisites to verified production
 query: >-
   Show the adopted planning order, not implemented automation. Acceptance-gate migration precedes independent
   successor suites and actual merge binding. Version allocation precedes release-line activation. Transport and
-  docs successors are separate. Conditional queue-tooling support precedes live queue syntax and is not a hosting
-  prerequisite because reconciliation is the selected fallback. Stage and production evidence precede v1.0.0.
+  docs successors are separate. Verified line activation and truthful lifecycle observations precede transport
+  authoring. Conditional queue-tooling support precedes live queue syntax and is not a hosting prerequisite because
+  reconciliation is the selected fallback. Stage and production evidence precede v1.0.0.
 references:
   - 'File: /docs/roadmap/README.md'
   - 'File: /docs/phases/next-iteration.md'
@@ -13,7 +14,9 @@ flowchart TD
     PLAN["PLAN-01: documentation and decisions"] --> GATE["GATE-01: successor admission"]
     GATE --> VER["VER-01: allocator migration"]
     VER --> LINE["Approve v0.2 release line"]
-    GATE --> TRANSPORT["Independent OpenAPI and transport suite"]
+    LINE --> LIFECYCLE["TR-LIFECYCLE: shutdown observations and disposition"]
+    LIFECYCLE --> TRANSPORT["Independent OpenAPI and transport suite"]
+    GATE --> TRANSPORT
     TRANSPORT --> TBIND["Bind actual merged suite"]
     LINE --> FASTIFY["Fastify migration"]
     TBIND --> FASTIFY

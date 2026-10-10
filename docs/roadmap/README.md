@@ -5,13 +5,15 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **PLAN-01, COST-BOOTSTRAP and GATE-01 merged; v0.1.11 publication/retry verified**. The
+Status: **PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 merged; v0.1.12 publication/retry verified**. The
 [execution record](../validation/roadmap-execution.md) preserves PLAN-01. The
 [cost record](../validation/cloud-cost-bootstrap.md) records PR #9, its reviewed apply and live readback. A dedicated
 project now has a USD 75 Cloud Run cap and USD 100 all-service alert budget; no application service is deployed. The
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) verifies its dormant
-admission and immutable publisher retry. r3 remains required. The active cards are VER-01, separate line activation and
-the independent transport contract.
+admission and immutable publisher retry. The
+[version record](../validation/release-lines.md#protected-main-publication-and-retry) verifies source-bound allocation.
+r3 remains required. The active cards are LINE-02, TR-LIFECYCLE and TRANSPORT-CONTRACT. This source selects line 0.2;
+its first protected-main publication remains pending.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
 reserves **v1.0.0 for the first verified production deployment**. It is a human-readable planning amendment, not an
@@ -43,9 +45,16 @@ GATE-01 merged in [PR #11](https://github.com/brobro10000/mp3-frame-counter/pull
 [Main run 38038218010](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38038218010) published v0.1.11; a
 publisher-only retry retained all assets and the original admission digest. The
 [completion evidence](../validation/acceptance-transitions.md#protected-main-publication-and-retry) distinguishes eight
-independently hashed metadata assets from metadata-only archive verification. VER-01 is now in progress; release-line
-activation and every successor still need their own review and evidence. The original assessment snapshot below remains
-historical and does not change with this progression.
+independently hashed metadata assets from metadata-only archive verification.
+
+VER-01 merged in [PR #12](https://github.com/brobro10000/mp3-frame-counter/pull/12) as
+`cc2d9c80e7b04edd56d3109a55c3ed2e638cbf2b` after exact-head companion approval. Main run `38041021204` published
+v0.1.12; its publisher-only retry retained schema-2 policy binding, all ten assets and original admission. The
+[completion record](../validation/release-lines.md#protected-main-publication-and-retry) preserves exact identities and
+limits. LINE-02 separately selects 0.2 without a product change. The
+[shutdown diagnostic](../validation/lifecycle-controller.md) requires TR-LIFECYCLE before independent transport
+authoring: existing forced-stop success does not establish graceful drain. No successor or application deployment is
+active. The original assessment snapshot below remains historical and does not change with this progression.
 
 ## Original planning assessment and evidence boundary
 
@@ -202,23 +211,24 @@ Available connectors do not establish current account authorization; earlier acc
 Release envelopes describe milestones, not promises that every release on a line contains every capability. Stable
 work-package IDs survive version/date changes. Only the [next three cards](../phases/next-iteration.md) are detailed.
 
-| Envelope            | Work and required exit                                                                                                                                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP and GATE-01 are merged. Complete VER-01 allocator migration before separate line activation. Preserve product behavior and artifact releases.                                                          |
-| v0.2.x              | Approved line activation; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
-| v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                          |
-| v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                         |
-| Later v0.x          | Production-intended candidate, recovery rehearsal, finalization support and exact first-launch authorization.                                                                                                                  |
-| v1.0.0              | Authorized first public launch, verified production identity and smoke; additive finalization of the same source/image pair.                                                                                                   |
-| v1.x                | Compatible fixes, usability, maintenance and measured reliability/performance improvements.                                                                                                                                    |
-| V2 capability track | Triggered richer UI, processing, service cadence or history/authentication needs. SemVer 2.0.0 requires a justified breaking public contract.                                                                                  |
+| Envelope            | Work and required exit                                                                                                                                                                                                                                                |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remaining v0.1.x    | PLAN-01, COST-BOOTSTRAP, GATE-01 and VER-01 are merged and verified. LINE-02 separately activates the next line. Preserve product behavior and artifact releases.                                                                                                     |
+| v0.2.x              | Approved line activation; TR-LIFECYCLE observations/disposition; independent OpenAPI/transport successor and merge binding; Fastify; separate docs/CSP successor and binding; offline Redoc. Exit: unchanged upload contract and verified docs through local ingress. |
+| v0.3.x              | Hosted profiles/trusted launcher, exact-image registry handoff, publication reconciliation/backfill and narrow release-audit maintenance. Exit: reproducible delivery inputs, not a deployment claim.                                                                 |
+| v0.4.x              | Approved account/cost/access, scoped identities, stage/production definitions, actual stage deployment and acceptance.                                                                                                                                                |
+| Later v0.x          | Production-intended candidate, recovery rehearsal, finalization support and exact first-launch authorization.                                                                                                                                                         |
+| v1.0.0              | Authorized first public launch, verified production identity and smoke; additive finalization of the same source/image pair.                                                                                                                                          |
+| v1.x                | Compatible fixes, usability, maintenance and measured reliability/performance improvements.                                                                                                                                                                           |
+| V2 capability track | Triggered richer UI, processing, service cadence or history/authentication needs. SemVer 2.0.0 requires a justified breaking public contract.                                                                                                                         |
 
 Mandatory edges:
 
 1. PLAN-01 → COST-BOOTSTRAP review/merge → reviewed private project/API/budget apply → verified live cap → billable
    application resources. This cost branch is independent of GATE-01 and introduces no application deployment.
 2. PLAN-01 → GATE-01 → independent successor-suite PR → actual merged binding → corresponding implementation.
-3. VER-01 → separate line activation → first actual v0.2.x publication.
+3. VER-01 → separate line activation → first actual v0.2.x publication → TR-LIFECYCLE capability and operational
+   disposition → independent transport authoring. No graceful-drain pass is inferred from forced stop.
 4. DOCS-CONTRACT and independent browser acceptance → Redoc serving/CSP activation.
 5. QUEUE-TOOL → QUEUE-WORKFLOW, only after compatible validation is demonstrated.
 6. Hosted contracts/launcher plus registry provenance and cost/access approval → stage setup/deployment.
@@ -260,7 +270,7 @@ an unexecuted hosted requirement. See [transition diagram](diagrams/acceptance-t
 
 ### Source-bound version policy
 
-The proposed preproduction rule is `0.<approved minor>.<global tested-source first-parent ordinal>`. For example,
+The implemented preproduction rule is `0.<approved minor>.<global tested-source first-parent ordinal>`. For example,
 ordinal 18 on line 0.2 becomes 0.2.18. Patch numbers do not reset. Preserve historical mappings without mutable counters
 or an unknown future squash-SHA anchor. The root package version remains a separate tooling identity.
 
@@ -379,7 +389,7 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
 | GATE-REVIEW   | GATE-01 merged with independent expectations, exact-head companion approval and verified publication/retry; no successor is active.  | Independent gate reviewer + owner; GATE-01.                 |
-| VERSION-01    | Adopted planning direction: source-bound minor plus global ordinal; migration and activation pending.                                | Release reviewer + owner; VER-01 and line changes.          |
+| VERSION-01    | Source-bound minor plus global ordinal implemented and verified; separate 0.2 activation pending publication.                        | Release reviewer + owner; line changes.                     |
 | DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                            | Acceptance author + security reviewer; docs activation.     |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
 | COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations. | Owner + deployment operator; paid resources/hosting.        |
@@ -429,9 +439,9 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances VER-01, separate release-line activation and the
-independent transport contract. GATE-01's merged shared readers are verified; each later successor still requires
-independent authoring, actual merge binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances LINE-02, TR-LIFECYCLE and the independent transport
+contract. GATE-01 and VER-01 publication/retries are verified; each later successor still requires independent
+authoring, actual merge binding and corresponding implementation evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

@@ -1,8 +1,9 @@
 # Source-bound release version policy
 
-VER-01 extends the existing single publisher with a policy read from the exact tested source. It keeps the migration on
-`0.1`; changing to `0.2` requires the separate LINE-02 card. The tooling package version, product contract, release
-triggers, queue syntax and production gate remain unchanged. See the [active cards](../phases/next-iteration.md).
+VER-01 extends the existing single publisher with a policy read from the exact tested source. VER-01 introduced line
+`0.1`; the separate LINE-02 change selects `0.2` in this source. Actual publication remains unverified until its
+protected merge and successful main release. The tooling package version, product contract, release triggers, queue
+syntax and production gate remain unchanged. See the [active cards](../phases/next-iteration.md).
 
 ## Allocation and source identity
 
@@ -12,7 +13,7 @@ The root policy is a closed JSON object:
 {
   "schemaVersion": 1,
   "strategy": "global-first-parent-ordinal",
-  "line": "0.1"
+  "line": "0.2"
 }
 ```
 
