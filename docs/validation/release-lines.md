@@ -54,5 +54,20 @@ renders, all 20 terminal-gate tests and all 373 tooling tests with zero failures
 check resolved 147 local links/anchors across 17 Markdown files and confirmed exactly three detailed next cards. The
 checks included staged new files; no omitted untracked document is claimed as checked.
 
-The unchanged r3 application acceptance, exact-head companion review, protected-main publication and retry must be
-recorded separately before claiming their completion. No real GitHub release was created by the synthetic tests.
+## Real local application and export verification
+
+Clean source `d0da661f586070d4c050cd39a8e66c5a55a32985` passed
+`DOCKER_DEFAULT_PLATFORM=linux/amd64 CI_BASE_REF=<exact main base> npm run check:phase`: standalone r3 harness controls,
+75/75 unit tests, TypeScript build and 60/60 external browser/HTTP cases against the two real application containers.
+Cleanup passed, with no skipped acceptance case. The report records `sourceDirty: false`, unchanged genesis commit
+`a0a56d94e5457101cd043b6055ab084782c3e16f` and local selection, not CI admission.
+
+`npm run prepare:release` exported those exact tested AMD64 images under local preview `0.1.15`, with schema-2 policy
+line `0.1` and policy SHA-256 `eceab8fb3706f7ad948b78f4ed60f10836d7842a17f58bb419370e53e8ffe7b2`. A second invocation
+reported `reused: true`; all six file hashes and modification timestamps remained unchanged. Reservation SHA-256 is
+`16e5c087b330631c0d1356c0c62de63dfb98e6503a6d2ac95323f700239ef501`.
+
+This is local preparation, not a tag, future squash-version prediction, publication or deployment. The later
+documentation-only commit records these results without relabeling their source. Exact-head companion review,
+protected-main publication and its actual retry remain pending until observed. No real GitHub release was created by the
+synthetic tests.
