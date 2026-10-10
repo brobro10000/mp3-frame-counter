@@ -1,0 +1,691 @@
+{
+  "schemaVersion": 1,
+  "contractRevision": "hosted-v1",
+  "profiles": {
+    "local": [
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-01 accessible upload controls and explicit action"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-cbr exact independent count with audio/mpeg"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-cbr exact independent count with application/octet-stream"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-vbr exact independent count with audio/mpeg"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-vbr exact independent count with application/octet-stream"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-padded exact independent count with audio/mpeg"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 tone-padded exact independent count with application/octet-stream"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-02 MIME case/parameters, identity encoding and irrelevant extension"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-03 real browser file upload traverses the public frontend"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing one-frame"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing three-frames"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing variable-parameters"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing payload-sync"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing id3v23"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing id3v24"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing id3-large-padding"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing id3v1"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing both-tags"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-04 physical framing xing-physical"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed empty is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed garbage is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed truncated-frame is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed trailing-junk is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed corrupt-middle is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed truncated-header is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed metadata-only is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed tag-out-of-bounds is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed tag-nonsynchsafe is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed tag-reserved-flag is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed reserved-version is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed reserved-layer is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed reserved-bitrate is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed reserved-sample-rate is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed reserved-emphasis is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed tag-invalid-version is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-05 malformed tag-invalid-revision is 400 without partial count"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported mpeg2 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported mpeg25 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported layer2 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported layer1 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported free-format is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported id3v22 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported id3-revision is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported id3-unsynchronised is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported id3-footer is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported multiple-id3 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported appended-id3 is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported ape-tag is 415"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-06 unsupported and absent MIME plus unsupported encoding are isolated 415 errors"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-07 complete ingress accepts above-one-mib"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-07 complete ingress accepts six-mib"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-08 exact 20 MiB succeeds and one byte over returns readable 413"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-09 actual-byte limit on a chunked body without Content-Length"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-09 valid chunked body remains accepted without Content-Length"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-10 both service-local health paths and API routes/methods"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-11 pending state prevents duplicates and later input retries after API error"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-11 non-JSON/network errors recover and error text never becomes markup"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-12 incomplete upload abort has no partial success and subsequent upload works"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-003", "APP-V1-007", "APP-V1-015"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-12 controlled API outage yields 502 and real browser recovery"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-003", "APP-V1-007", "APP-V1-015"]
+      },
+      {
+        "case": {
+          "file": "acceptance.spec.ts",
+          "title": "AC-12 controlled API timeout yields 504 and subsequent upload works"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-003", "APP-V1-007", "APP-V1-015"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-01 direct API error precedence"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-02 exact paths and encoding normalization"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-03 Expect validates before body admission"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-04 two slots reject early and release after abort completion and error"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-05 idle body deadline is readable and releases capacity"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-06 active body reaches total deadline and releases capacity"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "transport.spec.ts",
+          "title": "TC-07 unfinished upload closes and SIGTERM exits normally"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-V1-015"]
+      },
+      {
+        "case": {
+          "file": "docs.spec.ts",
+          "title": "DC-01 public docs routes methods assets and policy ownership"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-008", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "docs.spec.ts",
+          "title": "DC-02 served YAML preserves independent transport semantics and local references"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-008", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "docs.spec.ts",
+          "title": "DC-03 desktop actual Redoc response expansion under effective CSP"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "docs.spec.ts",
+          "title": "DC-03 narrow actual Redoc response expansion under effective CSP"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "docs.spec.ts",
+          "title": "DC-04 upload page retains its original effective style protection"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      }
+    ],
+    "stage": [
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-ui.spec.ts",
+          "title": "HS-01 accessible UI completes a real small MP3 upload"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-ui.spec.ts",
+          "title": "HS-02 upload error permits a subsequent valid browser upload"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-03 CBR count and accepted media survive managed ingress"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-04 VBR physical count survives managed ingress"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-05 padded physical count survives managed ingress"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-009"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-06 Xing-bearing physical frames remain counted"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-004", "APP-V1-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-07 malformed and unsupported uploads retain readable JSON errors"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-005", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-08 unsupported media and encoding remain isolated errors"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-09 public upload paths and methods retain their contract"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-007"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-10 upload above one MiB retains its complete count"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-11 six MiB upload retains its complete count"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-12 exact twenty MiB upload is accepted"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-13 one byte over the limit yields readable error and recovery"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-14 valid upload without Content-Length is accepted"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-003", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-15 actual-byte limit survives upload without Content-Length"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-16 externally aborted upload permits later complete upload"
+        },
+        "requirements": ["APP-V1-003", "APP-V1-007", "APP-V1-014"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-api.spec.ts",
+          "title": "HS-17 public frontend health remains service-local"
+        },
+        "requirements": ["APP-V1-007", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-docs.spec.ts",
+          "title": "HS-18 public docs routes assets errors and headers survive ingress"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-008", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-docs.spec.ts",
+          "title": "HS-19 served specification retains local transport semantics"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-008", "APP-V1-016"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-docs.spec.ts",
+          "title": "HS-20 desktop docs render and interact under effective CSP"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-docs.spec.ts",
+          "title": "HS-21 narrow docs render and interact under effective CSP"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/stage/specs/stage-docs.spec.ts",
+          "title": "HS-22 upload-page policy remains isolated from docs exceptions"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      }
+    ],
+    "production": [
+      {
+        "case": {
+          "file": "hosted/production/specs/production-smoke.spec.ts",
+          "title": "HP-01 usable UI completes one small known-count upload"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-002", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/production/specs/production-smoke.spec.ts",
+          "title": "HP-02 production docs are genuinely rendered and usable"
+        },
+        "requirements": ["APP-V1-001", "APP-V1-016", "APP-REL-005"]
+      },
+      {
+        "case": {
+          "file": "hosted/production/specs/production-smoke.spec.ts",
+          "title": "HP-03 production specification remains available and correct"
+        },
+        "requirements": ["APP-V1-002", "APP-V1-008", "APP-REL-005"]
+      }
+    ]
+  }
+}

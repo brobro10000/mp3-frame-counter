@@ -3,16 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Independent external acceptance candidate docs-v1; no application imports",
+  "description": "Independent external acceptance candidate hosted-v1; no application imports",
   "engines": {
     "node": "24.20.0",
     "npm": "11.19.0"
   },
   "packageManager": "npm@11.19.0",
   "scripts": {
-    "check": "tsc --noEmit && node scripts/check-fixtures.ts && node scripts/check-openapi.ts && node scripts/negative-controls.ts && node scripts/transport-controls.ts && node scripts/docs-controls.mjs && node scripts/check-discovery.ts",
+    "check": "tsc --noEmit && node scripts/check-fixtures.ts && node scripts/check-openapi.ts && node scripts/negative-controls.ts && node scripts/transport-controls.ts && node scripts/docs-controls.mjs && node scripts/hosted-controls.ts && node scripts/check-discovery.ts",
     "e2e": "node scripts/run-e2e.ts",
-    "browser:install": "playwright install chromium"
+    "browser:install": "playwright install chromium",
+    "e2e:stage": "node scripts/run-stage.ts",
+    "e2e:production": "node scripts/run-production.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.64.0",
