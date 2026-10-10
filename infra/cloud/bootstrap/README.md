@@ -70,7 +70,9 @@ own reviewed IaC.
   provider deliberately uses its quota only after required API enablement. A quota/permission failure is a concrete
   prerequisite to resolve, not permission to alter global CLI configuration.
 - Use the checked-in provider lockfile from authorized initialization; Terraform verified the provider's HashiCorp
-  signature. See the [validation record](../../../docs/validation/cloud-cost-bootstrap.md) for local results and limits.
+  signature. It includes `linux_amd64` and `darwin_arm64` package hashes so CI can initialize read-only. When adding an
+  operator platform, use reviewed `terraform providers lock -platform=OS_ARCH` output instead of letting CI rewrite
+  locks. See the [validation record](../../../docs/validation/cloud-cost-bootstrap.md) for local results and limits.
 
 Google provider authentication accepts the environment access token without placing it in a Terraform input variable.
 When the token expires, obtain a new owner-authorized token in memory and retry the read-only plan. Do not add service

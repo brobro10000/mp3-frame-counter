@@ -36,6 +36,15 @@ tests and 83 tooling tests (including the 21 cap cases), with no failures or ski
 tightened private-state exclusions. GitHub CI and exact-head companion review remain the next gates; these local checks
 do not replace unchanged product acceptance in CI or live cost-control verification.
 
+The first complete CI attempt at source `23fdf31f0aefb22c7e347ab8f68058e5c6c53cc8`
+([run 38032740999](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38032740999)) exposed a Linux provider
+lock portability failure: initialization verified the signed archive, but validation could not verify the cached Linux
+package against the macOS-only `h1` checksum. The coordinator ran
+`terraform providers lock -platform=linux_amd64 -platform=darwin_arm64` against the origin registry. Both packages
+verified as signed by HashiCorp, and the lockfile gained the Linux package checksum without changing provider version.
+The following CI run must verify that correction; the failed attempt is retained as evidence.
+[Terraform platform locking](https://developer.hashicorp.com/terraform/cli/commands/providers/lock).
+
 ## Earlier scratch checks
 
 The source was first authored and reviewed in an ignored scratch directory. During those checks no tracked files,
