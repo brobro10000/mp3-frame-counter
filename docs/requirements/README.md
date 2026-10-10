@@ -9,9 +9,11 @@ The assessment and planning baseline are captured. The owner subsequently author
 alone never establishes implementation or deployment completion.
 
 For the current result, use the [execution status](../validation/execution-status.md): the local application has passed
-the complete independent suite. P1 and P2 are merged, and the unchanged baseline is bound to P2’s protected-main commit
-`a0a56d9`; the first GitHub release remains outstanding. Deployment is deferred by the latest owner instruction,
-SRC-RELEASE-ONLY. Each registry links its verified local evidence separately from those release requirements.
+the complete independent suite locally and in PR CI. P1 and P2 are merged, and the unchanged baseline is bound to P2’s
+protected-main commit `a0a56d9`. Product PR #5 remains open after passing CI at `3e7e21d`; the first GitHub release
+remains outstanding. Deployment is deferred by the latest owner instruction, SRC-RELEASE-ONLY. The execution status
+links the project progression, dated local evidence and verified GitHub runs separately from unexecuted release
+requirements.
 
 ## Contents
 

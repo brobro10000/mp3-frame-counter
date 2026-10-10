@@ -52,8 +52,10 @@ The renderer writes ignored SVG evidence under `.artifacts/mermaid/`; it does no
 Ubuntu 24.04 CI uses `aa-exec --profile=chrome npm run validate` with the runner's existing AppArmor Chrome profile so
 Chromium retains its sandbox. An equivalent local Ubuntu host must provide that profile and Chrome's system libraries;
 use the same command if its user-namespace policy blocks a direct launch. A missing browser or launch failure fails the
-check; it is never reported as a parser pass. macOS uses the normal sandboxed launch. No host packages are installed
-implicitly by repository scripts.
+check; it is never reported as a parser pass. macOS uses the normal sandboxed launch. The Mermaid commands do not
+install host packages. Separately, the acceptance controller runs Playwright `install-deps chromium` on Linux only when
+`CI=true`, using the CI runner package manager for Chromium system dependencies. Local execution with CI unset does not
+install system packages; the pinned browser download remains explicit in the documented tooling/controller flow.
 
 The API build already uses `npm ci --ignore-scripts`; its final image copies only compiled application files and package
 metadata. Mermaid, Chrome and other development dependencies do not enter the runtime image.

@@ -5,12 +5,12 @@ and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX front
 separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
 not decode audio or use a runtime parsing library.
 
-The [five-phase implementation](docs/phases/README.md) is authorized. The integrated local application passed all **60
-independent acceptance cases** and **75 parser/API unit tests**. See the
-[tested revision and evidence](docs/validation/p4-integration.md). The current goal is **releases without deployment**;
-the independent acceptance suite is now merged on protected main. The first automatic GitHub release remains
-outstanding. The [execution status](docs/validation/execution-status.md) records each boundary and the remaining
-actions.
+The [five-phase implementation](docs/phases/README.md) is authorized. The integrated application passed all **60
+independent acceptance cases** and **75 parser/API unit tests**, locally and in
+[PR CI at `3e7e21d`](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38012435332). The current goal is
+**releases without deployment**; the independent acceptance suite is now merged on protected main. The first automatic
+GitHub release remains outstanding. The [execution status](docs/validation/execution-status.md) records each boundary
+and the remaining actions.
 
 ## Local application
 
@@ -90,8 +90,11 @@ their recorded bytes; [active agent metadata](agents/README.md) documents the or
 
 PR and main-push CI infer required validation from actual repository contents. The stable `control-plane` job rejects
 missing, skipped, cancelled or failed mandatory dependencies; an earlier phase selector cannot bypass product tests.
-`npm run verify:github` audits live repository controls and exact revision checks read-only. Main success also retains a
-source archive for seven days; this archive is not a deployed service.
+`npm run verify:github` audits live repository controls and exact PR revision checks read-only; its
+[application-main limitation](docs/repository-controls.md#application-release-audit-limitation) is documented.
+Successful foundation/test-only main pushes retain a source archive for seven days. Application main pushes instead
+retain a same-run tested-image bundle for seven days and publish verified assets to a GitHub release; those release
+assets remain until deliberately removed. Neither artifact path deploys a service.
 
 [APP-REL-001–006](docs/requirements/release-process.md) now separate repository releases from deferred deployment. After
 an application-bearing push to protected `main` passes all mandatory checks, CI publishes a versioned private GitHub
@@ -108,4 +111,4 @@ protected-main and successful-run checks to that local preparation boundary.
 
 The [owner-only review exception](docs/repository-controls.md) preserves core PR, CI and conversation protections.
 GitHub does not allow authors to approve their own PRs. An agent needs explicit instruction to merge or invoke the owner
-exception; agent review is not human approval. Production approval separately binds the tested release identity.
+exception; agent review is not human approval. Exact-release production approval applies when deployment resumes.

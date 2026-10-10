@@ -1,12 +1,13 @@
 ---
 title: Local runtime and independent acceptance boundary
 query: >-
-  Show the implemented local runtime as a compact flowchart. Keep the two
-  Compose application containers distinct from the temporary independent
-  acceptance runner and host controller. Show the single browser origin, raw
-  upload proxy, bounded in-process API/parser boundary, and reviewed fixture
-  inputs. This view describes local execution; do not infer cloud deployment or
-  introduce services absent from the referenced source.
+  Show Docker wrapping exactly two independently built application images as Compose containers. Nest NGINX and its
+  static assets inside the frontend container, and the HTTP handler plus parser inside one Node process in the API
+  container. Put both containers inside Docker's Compose network. Keep browser JavaScript, the host controller and
+  extracted Playwright/Chromium runner outside Docker. Distinguish published loopback host port from internal frontend
+  port 8080 and private API port 3000, with a separate test-only loopback binding for direct API diagnostics. Show
+  source-defined runtime users, read-only filesystems, temporary mounts and
+  bounded in-process parsing. Do not imply a third parser/test container, Node frontend runtime or cloud deployment.
 references:
   - 'File: /compose.yaml'
   - 'File: /frontend/Dockerfile'
@@ -18,16 +19,30 @@ references:
 generationTime: '2026-10-10T01:12:38.134Z'
 ---
 flowchart LR
-    B["Browser"]
-    subgraph LOCAL["Local Compose: two non-root application containers"]
-        F["Frontend: static HTML and NGINX :8080"]
-        A["API: node:http :3000, bounded upload buffer"]
-        P["Pure in-process TypeScript frame counter"]
-        F -->|"Raw POST /file-upload"| A
-        A -->|"Complete received bytes, at most 20 MiB"| P
+    B["User browser<br/>app.js executes here"]
+    subgraph DOCKER["Docker Engine: Compose project / private network"]
+        subgraph FRONT["frontend container: NGINX image / UID 101"]
+            F["NGINX :8080<br/>serves HTML, CSS and app.js files"]
+            FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
+        end
+        subgraph BACK["api container: Node runtime image / UID 1000"]
+            subgraph NODE["One Node process"]
+                A["node:http :3000<br/>bounded upload buffer"]
+                P["Pure TypeScript parser<br/>compiled JavaScript function"]
+                A -->|"Complete bytes, at most 20 MiB"| P
+            end
+            AS["Read-only filesystem<br/>temporary /tmp: 8 MiB"]
+        end
+        F -->|"Compose DNS api:3000<br/>raw POST /file-upload over HTTP/1.1"| A
     end
-    B -->|"One loopback origin: default port 8080"| F
-    T["Independent short-lived acceptance runner"] -->|"BASE_URL: browser and HTTP"| F
+    B -->|"Published 127.0.0.1:FRONTEND_PORT<br/>host default 8080 maps to container 8080"| F
+    T["Host process: Playwright and Chromium<br/>frozen suite in a temporary directory"] -->|"BASE_URL: browser and HTTP<br/>isolated test host port"| F
+    T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| A
     O["Reviewed fixture manifest and expectations"] --> T
-    C["Host or CI controller"] -.->|"Scoped lifecycle and cleanup"| LOCAL
-    C -.->|"Runs against exact app image pair"| T
+    C["Host or CI controller<br/>owns Docker operations"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
+    C -.->|"Runs suite against exact image pair"| T
+    T -.->|"Authenticated fault requests"| C
+    style DOCKER fill:#f1f5f9,stroke:#334155,stroke-width:2px
+    style FRONT fill:#e0f2fe,stroke:#0369a1,stroke-width:2px
+    style BACK fill:#dcfce7,stroke:#15803d,stroke-width:2px
+    style NODE fill:#f0fdf4,stroke:#15803d,stroke-dasharray:5 5

@@ -58,8 +58,9 @@ its hosted preview was inspected.
 
 The mandatory `validate-foundation` job installs the pinned browser and runs `npm run validate`, which now includes both
 diagram rendering and its regression checks. A diagram failure therefore fails the existing required `control-plane`
-gate. The separate product ancestry/acceptance gate is unchanged. This does not make the current product PR merge-ready
-while the independent acceptance baseline is absent from protected main.
+gate. The separate product ancestry/acceptance gate is unchanged. At that repair revision, product shipping was still
+blocked because the independent baseline was absent from main. P2 later merged as `a0a56d9`, and the reconciled product
+passed PR CI; see [current progression](execution-status.md).
 
 ## Executed checks and review
 
@@ -150,3 +151,24 @@ behavior change, requirement/archive modification or frozen-baseline amendment r
 After restoration, `npm run validate` again passed all 16 renders and all 82 gate/tooling tests, with formatting, lint,
 policy and portability checks green. Independent read-only review confirmed the bot's diagram body was unchanged and the
 Compose configuration parsed identically before and after the comment. Final hosted evidence is linked from the PR.
+
+## Docker boundary clarification
+
+The subsequent documentation audit compared the three implemented views with both Dockerfiles, Compose and the
+acceptance controller. The runtime view now nests exactly two application containers: NGINX and static files in the
+frontend container, and the HTTP handler plus parser in one Node process in the API container. It distinguishes the
+published frontend port, private Compose upstream and temporary test-only API diagnostic binding. Browser JavaScript,
+Playwright/Chromium and the Docker controller execute outside those containers.
+
+The upload sequence uses container boxes, and the release view distinguishes the API's TypeScript build stage, minimal
+runtime image, running test containers and exported image archives. It describes the current integrated application; the
+earlier source-only foundation delivery path remains documented separately. Artifact publication is not deployment.
+
+The manually maintained future-hosting proposal also places HTTP and parsing inside the same API container and process.
+It retains the unverified provider-fit boundary and does not imply a third parser service or an existing deployment.
+
+The upload view now also references both Dockerfiles and Compose, bringing the source-reference total from 19 to 22. All
+references resolve to tracked source files. All **16/16** diagrams rendered, and the updated canonical and
+future-hosting SVGs were inspected as browser-rendered images for readable labels and container/process boundaries.
+Independent read-only source review confirmed those boundaries. The runtime file retains the prior bot generation
+timestamp; these edits were manual and do not represent another source-triggered AI regeneration.

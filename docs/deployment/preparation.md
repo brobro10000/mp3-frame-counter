@@ -87,8 +87,9 @@ consistency rules; an operator must independently obtain authentic evidence and 
 not modify the local manifest's `deployable: false`, perform promotion or establish deployment. There is deliberately no
 placeholder successful deployment workflow or CLI action.
 
-For the active release-only milestone, land the independent baseline separately on protected main, validate the actual
-merged product revision and observe its automatic GitHub release with exact tested archives. The stricter publication
-workflow is described in the [release-only process](release-only.md). Future deployment still requires provider fit,
-access and budget, registry identities, full candidate acceptance, exact production approval, hosted smoke and recovery;
-see the [deferred deployment runbook](runbook.md). Local preparation establishes none of those remote observations.
+The independent baseline is already merged separately and bound to protected main at `a0a56d9`. For the active
+release-only milestone, validate the eventual merged product revision and observe its automatic GitHub release with
+exact tested archives. The stricter publication workflow is described in the [release-only process](release-only.md).
+Future deployment still requires provider fit, access and budget, registry identities, full candidate acceptance, exact
+production approval, hosted smoke and recovery; see the [deferred deployment runbook](runbook.md). Local preparation
+establishes none of those remote observations.

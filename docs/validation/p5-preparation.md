@@ -1,8 +1,9 @@
 # P5 provider-independent preparation evidence
 
-Status: local preparation tooling implemented and focused checks passed on 2026-10-09. Actual image export has not been
-run by this author. No provider integration, cloud resource, credential change, deployment, tag or hosted release was
-created. P5 and APP-REL-001–006 remain incomplete.
+Historical author handoff on 2026-10-09: local preparation tooling and focused checks passed. At that handoff, actual
+image export had not been run by this author; the later root execution and archive review are recorded below. No
+provider integration, cloud resource, credential change, deployment, tag or hosted release was created. P5 and
+APP-REL-001–006 remain incomplete.
 
 ## Input observed
 
@@ -52,11 +53,11 @@ They do not invoke Docker, contact a provider, export the actual images, prove G
 ingress, approve production or rehearse recovery. Root integration owns package/Make wiring, independent review,
 committing the preparation tooling and the later explicit local export run.
 
-## Remaining release prerequisites
+## Release prerequisites at the original preparation handoff
 
-The current acceptance baseline has not landed separately on protected main. The tested application revision is local
-and has no corresponding successful protected-main release run. Provider account creation/terms confirmation, budget,
-region, fit/diagnostic access and scoped credentials remain unresolved as recorded in
+At the original handoff, the acceptance baseline had not landed separately on protected main. The tested application
+revision was local and had no corresponding successful protected-main release run. Provider account creation/terms
+confirmation, budget, region, fit/diagnostic access and scoped credentials remain unresolved as recorded in
 [deployment preflight](deployment-preflight.md). Registry digests, candidate acceptance, exact production approval,
 deployed smoke, successful version/tag/release publication and actual recovery rehearsal remain absent.
 
@@ -95,7 +96,7 @@ is `15fcd28cb4d5f71dbb1b060c42751990d71a9c77af993112b1a6774a4575b60c`.
 
 The archives remain ignored in `.artifacts/releases/0.1.10/`; only portable identity evidence is tracked. They have no
 registry digests, provider configuration, candidate result or production approval. This is an executed local preparation
-step, not fulfillment of any complete APP-REL outcome. The remaining prerequisites above still apply.
+step, not fulfillment of any complete APP-REL outcome. Those were the outstanding prerequisites at that time.
 
 ## Independent archive inspection and identity correction
 
@@ -126,3 +127,11 @@ After this correction, independent review again returned advisory PASS and root'
 64 gate/tooling cases and policy checks. A clean-source `make prepare-release` at
 `359aabae8b0229c330a0d96c349be57b0501507f` successfully reused the unchanged bundle. Its output preserved original
 preparation revision `b99b292` and recorded `359aaba` separately as the verifying revision; no artifact was rewritten.
+
+## Subsequent scope and baseline changes
+
+The owner later [deferred deployment](../requirements/release-process.md). P1/P2 subsequently merged, and the unchanged
+acceptance suite is bound to protected-main commit `a0a56d9`. Release-only automation and product PR CI now pass; actual
+publication still awaits the product merge and successful main run. See [current progression](execution-status.md). The
+provisional version, original manifest, source/image identities and recorded export/reuse results above remain
+historical evidence; they are not a published GitHub release or a current deployment prerequisite list.

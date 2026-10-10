@@ -94,12 +94,19 @@ exited 0 in 5.200 seconds without OOM or partial success, inside the seven-secon
 exactly **6,090** frames. Its identity was rechecked against the independent oracle. No private bytes entered Git or CI.
 An additional real browser upload displayed the permitted tone fixture's exact count of 9 at desktop and mobile widths.
 
-## Remaining boundaries
+## Remaining boundaries at the recorded P4 revision
 
-PRs #3 and #4 have passing exact-head CI but await separately authorized merges. Product shipping CI intentionally fails
-until the separately merged test-only baseline is bound to its actual protected-main SHA. The local baseline does not
-substitute for that condition. Revalidate the integrated merged revision after completing the required merge sequence.
+At this P4 revision, PRs #3 and #4 had passing CI but awaited separately authorized merges. Product shipping CI
+intentionally failed until the separately merged test-only baseline was bound to its actual protected-main SHA. The
+local baseline did not substitute for that condition; integrated main still required separate validation.
 
 No Render account, paid resource, registry publication, candidate deployment, production approval, application release
 or managed recovery is established by this document. All APP-REL-001–006 remain required for MVP completion. See
 [deployment preflight](deployment-preflight.md) and the [release runbook](../deployment/runbook.md).
+
+## Subsequent progression
+
+The prerequisite PRs later merged: P1 as `60e51fb` and the unchanged P2 suite as `a0a56d9`. Product PR CI subsequently
+passed at `3e7e21d`. The later [release-only amendment](../requirements/release-process.md) defers managed deployment;
+active APP-REL-001–006 require repository publication. [Current execution status](execution-status.md) records the
+remaining product merge and first release. The original local measurements and artifact identities above are unchanged.

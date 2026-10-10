@@ -36,14 +36,17 @@ The parser received explanatory comments only: the supplied sample's **6,090 phy
 Xing metadata frame; MediaInfo reports **6,089 audio frames**. The prior [independent sample record](sample-baseline.md)
 is preserved. There is no sample-specific count adjustment.
 
-## Remaining boundary
+## Remaining boundary at the recorded revision
 
-Local acceptance still uses the explicitly provisional P2 baseline. PR #3 must land first, then PR #4 must be refreshed
-and pass checks before its separate merge. The independent owner must bind the unchanged baseline to its actual
-protected-main squash commit before the reconciled product PR can pass shipping CI. No guard was bypassed.
+The original local acceptance used the explicitly provisional P2 baseline. At that time PR #3 still needed to land,
+followed by a refreshed and validated PR #4. Shipping CI required the independent owner to bind the unchanged baseline
+to its actual protected-main squash commit. No guard was bypassed.
+
+Subsequently, PR #3/#4 merged, the unchanged suite was bound to `a0a56d9`, and the reconciled product passed PR CI. See
+[current progression](execution-status.md); the original source/report above retain their actual inputs.
 
 The first main-only bundle export, private release publication, real upload retry and final remote assets have **not**
-been observed. After the prerequisites merge, record the actual successful main run and tag/release URL before declaring
+been observed. After the product merge, record the actual successful main run and tag/release URL before declaring
 automatic publication complete. The workflow has seven-day handoff artifact retention, a single pending publisher slot
 and conservative original-attempt checks; [operational guidance](../deployment/release-only.md) explains retries.
 Deployment remains deferred. No merge, owner override, tag, release or cloud deployment was performed in this

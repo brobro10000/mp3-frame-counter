@@ -26,8 +26,10 @@ Implementation agents cannot modify the frozen acceptance suite or gate logic. A
 independent author and receives a separately recorded review. Later component ownership is assigned only after these
 dependencies pass.
 
-P3 was independently reviewed and locally validated at `f7ad2f5`. P4 proceeds provisionally against the unchanged local
-P2 baseline; shipping CI still requires its separate protected-main merge. The additional exclusive assignments are:
+P3 was independently reviewed and locally validated at original source `f7ad2f5`. P4 then proceeded provisionally
+against the unchanged local P2 baseline; shipping CI required its separate protected-main merge. P2 has since merged as
+`a0a56d9`, and the reconciled product passed PR CI; see the [current progression](../validation/execution-status.md).
+The additional exclusive assignments recorded for that work were:
 
 | Work           | Owner                              | Owned paths                                                          | Validation                                                   |
 | -------------- | ---------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |

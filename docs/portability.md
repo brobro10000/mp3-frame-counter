@@ -52,10 +52,12 @@ name the actual personal repository owner; the audit will reject a copied except
 a bypass, modifies GitHub or copies permissions automatically. The offline policy checks the actor's shape and scope;
 only the authenticated audit can prove the configured actor is the live owner.
 
-The current policy intentionally uses private ownership, `main`, squash merges and this foundation workflow. To change
-those conventions, update the related workflow, policy assertions, rulesets and documentation together. The audit is
-still phase-specific: it expects an open owner-authored PR with passing CI, ordinary approval requirements outstanding,
-and no protected-branch delivery run. It is not a general audit of a finished application or an organization repository.
+The current policy intentionally uses private personal ownership, `main`, squash merges and the reviewed workflow. To
+change those conventions, update the workflow, policy assertions, rulesets and documentation together. The read-only
+auditor accepts an exact open-PR head or protected-main head and reports review state rather than requiring a particular
+approval decision. Its delivery check still assumes foundation source delivery on main; see the
+[application-release audit limitation](repository-controls.md#application-release-audit-limitation). It is not a general
+audit for arbitrary organization policies or proof of application release assets.
 
 The optional Python orchestrator adapter inherits tools and authentication from its caller. It does not search anyone's
 home directory. `--timeout-seconds` accepts 1-600 seconds per command, defaulting to 300; missing tools and timeouts

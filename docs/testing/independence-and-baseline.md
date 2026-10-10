@@ -31,9 +31,10 @@ specs. The root application retains its own lockfile; no npm workspaces or secon
 pinned package/browser versions. The host controller runs an extracted suite in a separate temporary directory.
 
 The runner receives external `BASE_URL`, reviewed fixture inputs and nonsecret target identity. No imports or mounts of
-server, parser, frontend or application configuration helpers. No runtime MediaInfo. Its Docker context is only the
-acceptance directory; no Docker socket or application source. A trusted host/CI controller starts/stops app containers;
-the runner is short-lived and not a third default Compose service.
+server, parser, frontend or application configuration helpers, and no runtime MediaInfo. The controller installs and
+runs Playwright/Chromium as host processes from the extracted temporary suite directory; no acceptance Dockerfile or
+runner image is implemented. Only the trusted controller operates the application containers through Docker and the
+scoped fault interface. The suite receives no Docker socket or application source and is not a third Compose service.
 
 Use accessible role/label locators, independent browser contexts, bounded waits and real file uploads. Do not mock
 successful upload responses or use arbitrary sleeps to manufacture E2E success. See
@@ -52,10 +53,10 @@ Product changes to acceptance/workflow paths require a distinct amendment review
 E2E cannot be bypassed by declaring P1/P2 mode or reporting harness checks as product acceptance. The stable terminal
 gate fails for missing, skipped, cancelled or failed mandatory dependencies.
 
-A small result artifact should contain suite revision, fixture manifest hash, target environment and resolved
-deployment/artifact identities, passed/failed/blocked counts, run ID and sanitized evidence references. Preserve failed
-runs. Unknown deployment identity stays unknown and cannot satisfy a release gate. Do not record credentials, filenames
-from private uploads, raw audio, sensitive headers or unredacted screenshots/traces.
+A small result artifact should contain suite revision, fixture manifest hash, target environment and resolved artifact
+identities, passed/failed/blocked counts, run ID and sanitized evidence references. Preserve failed runs. Deployment
+identity stays unknown for the release-only milestone and cannot satisfy a future hosted-deployment gate. Do not record
+credentials, filenames from private uploads, raw audio, sensitive headers or unredacted screenshots/traces.
 
 ## Honest red evidence and amendments
 

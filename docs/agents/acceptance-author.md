@@ -16,5 +16,8 @@ from decodable audio. Record license/provenance and a valid deterministic exact-
 
 Before app availability, validate harness and deliberately wrong-answer controls without claiming behavioral TDD red
 from an unreachable server. Never use zero-test success, suppressed failures or skipped mandatory cases. Submit the
-contract, suite revision, fixture manifest hash and observed evidence for explicit human review; record a test-only
-baseline before P3 begins. Stop at that handoff. Changes later require a separate reviewed contract/oracle amendment.
+contract, suite revision, fixture manifest hash and observed evidence for independent review; record a test-only
+baseline before P3 begins. Retain that reviewable handoff and follow the current
+[execution authorization](../phases/execution-authorization.md) for phase advancement. Agent review is not human
+approval; protected-main publication still requires the repository review policy or the explicit owner exception.
+Changes later require a separate reviewed contract/oracle amendment.

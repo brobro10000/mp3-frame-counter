@@ -6,6 +6,9 @@ query: >-
   publication. Include frozen baseline verification, complete acceptance, immutable artifact/provenance checks,
   version/tag identity, draft asset verification and safe identical retries. Do not add deployment, registry push,
   provider provisioning or production approval; those are absent from the current release implementation.
+  For the current integrated application, show independent Docker image builds, the two running Compose containers
+  and host acceptance processes, then export of those exact tested images. Images and archives are artifacts, not
+  extra running services. Earlier source-only phases have a separate foundation-delivery path outside this view.
 references:
   - "File: /.github/workflows/ci.yml"
   - "File: /scripts/run-ci-phase.mjs"
@@ -17,20 +20,20 @@ references:
   - "File: /scripts/release-manifest.mjs"
 ---
 flowchart TD
-    EVENT["PR or protected-main push"] --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests"]
-    EVENT --> P["Product: verify frozen baseline, unit/build checks, exact image pair and full E2E"]
-    P --> KIND{"Successful application main push?"}
+    EVENT["Current integrated application: PR or protected-main push"] --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests"]
+    EVENT --> P["Product: verify frozen baseline and run unit/build checks"]
+    P --> BUILD["Build two independent Docker images<br/>frontend: static assets with NGINX<br/>API: TypeScript build stage to minimal Node runtime"]
+    BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium tests their real HTTP boundary"]
+    TEST --> KIND{"Successful application main push?"}
     KIND -->|"Yes"| B["Export exact tested images on producing runner; upload immutable same-run bundle"]
-    KIND -->|"PR or source-only phase"| RESULT["No application bundle export"]
+    KIND -->|"PR"| RESULT["No application bundle export"]
     F --> G{"Terminal gate: all mandatory jobs succeeded?"}
     B --> G
     RESULT --> G
     G -->|"No"| STOP["Fail checks; no release"]
     G -->|"Yes"| MAIN{"Protected-main push?"}
     MAIN -->|"No: PR"| REVIEW["Checks available for human review and protected merge"]
-    MAIN -->|"Yes"| READY{"Application bundle ready?"}
-    READY -->|"No"| SOURCE["Deliver foundation source artifact"]
-    READY -->|"Yes"| VERIFY["Serialized publisher verifies source, baseline, same-run checks and bundle hashes"]
+    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, baseline, same-run checks and bundle hashes"]
     VERIFY --> DRAFT["Create or verify exact v0.1.ordinal tag and private draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
     ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]

@@ -14,12 +14,12 @@ publisher cannot bypass them. It also verifies the exact source and successful o
 On the acceptance runner, `scripts/publish-release-bundle.mjs` validates the clean exact event SHA and passing E2E
 report, then exports the exact tested `linux/amd64` images through local preparation. It uploads that versioned bundle
 as an immutable artifact of the same workflow run. The separate `publish-release` job downloads that specific bundle,
-checks source/configuration, acceptance and archive identities, and runs `npm run publish:release` to create/finish a
-private GitHub release. The equivalent npm wrapper is `npm run publish:release`; the CI job needs no npm install.
-Publication never rebuilds images. The bundle carries both Docker archives, `SHA256SUMS`, reservation/manifest/local
-notes, `ci-origin.json` and `e2e-result.json`. The publisher adds `publication.json` and `publication-notes.md`. The
-local `manifest.json` remains `prepared-local` and `deployable: false`; separate publication evidence records repository
-release status and explicitly no deployment.
+checks source/configuration, acceptance and archive identities, and runs `node scripts/publish-release.mjs` to
+create/finish a private GitHub release. The equivalent npm wrapper is `npm run publish:release`; the CI job needs no npm
+install. Publication never rebuilds images. The bundle carries both Docker archives, `SHA256SUMS`,
+reservation/manifest/local notes, `ci-origin.json` and `e2e-result.json`. The publisher adds `publication.json` and
+`publication-notes.md`. The local `manifest.json` remains `prepared-local` and `deployable: false`; separate publication
+evidence records repository release status and explicitly no deployment.
 
 The default workflow token is read-only. Only the main-only publisher receives `contents: write` to create its tag,
 release and assets, plus `actions: read` to verify original-run checks. It receives no provider secrets. The main merge
@@ -61,8 +61,8 @@ first remote publication.
 
 ## First release and deferred deployment
 
-The first actual automatic release cannot occur until P1 and the separate P2 baseline merge, the baseline is bound to
-its real protected-main commit, and the reviewed product/publisher scope passes CI and merges. See
+P1 and the separate P2 baseline are merged, and the unchanged baseline is bound to protected-main commit `a0a56d9`. The
+product/publisher PR passed CI at `3e7e21d`; its merge and first successful main-run publication remain outstanding. See
 [current execution status](../validation/execution-status.md). Local tests and a configured publisher do not prove this
 first remote execution. No manual feature-branch publication is a substitute.
 

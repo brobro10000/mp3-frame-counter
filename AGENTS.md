@@ -18,7 +18,8 @@ The later owner amendment defers deployment; read docs/requirements/release-proc
 
 - Owner authorized execution of P1 through P5 and required shell/UI actions on 2026-10-09; read docs/phases/execution-authorization.md.
 - Read docs/requirements/README.md, docs/mvp.md, docs/architecture/decisions.md and docs/phases/README.md before work.
-- Read docs/validation/execution-status.md for observed outcomes; local P4 pass does not establish GitHub publication or deployment.
+- Read docs/validation/execution-status.md for current progression and dated evidence; local/PR passes are not publication.
+- Preserve dated handoff results and original captures; update current status with exact revision/run evidence when it changes.
 - The planning baseline is merged at 0c9f538; preserve original foundation and source/archive bytes.
 - Follow phase dependencies and independent evidence; do not fabricate human review, oracle, tests or deployment results.
 - Read the role in docs/agents before work; acceptance and CI gate authors remain independent of product implementers.
@@ -32,7 +33,8 @@ The later owner amendment defers deployment; read docs/requirements/release-proc
 - Verify protected-main CI, exact artifacts and GitHub publication before declaring a repository release complete.
 - Provider fit, charges, production approval and hosted checks apply only when deployment is explicitly resumed.
 - Preserve core no-bypass GitHub controls and owner-only review exception; no fabricated approvals or silent control changes.
-- Do not merge, exercise an owner review override or enable auto-merge without explicit instruction; production approval binds the tested release identity.
+- Do not merge, exercise an owner review override or enable auto-merge without explicit instruction.
+- Exact-release production approval applies only when deployment is explicitly resumed.
 - Keep tracked paths portable; never commit secrets, personal system details, MP3 inputs, caches or private plugin implementation.
 - Preserve the ignored sample identity; ordinary CI cannot require private sample bytes or local MediaInfo.
 - Document every script purpose, inputs, usage, side effects and failure behavior; quote paths and propagate errors.

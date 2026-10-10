@@ -34,6 +34,10 @@ files must be Git-tracked first. The report at `.artifacts/mermaid/result.json` 
 the same directory; open that SVG in a browser. A Mermaid editor can also open the `.mmd` directly. GitHub's plain file
 view may show source instead of rendering standalone diagrams.
 
+Docker boundaries are explicit: the runtime view nests the two Compose containers and the API's one Node process; the
+upload sequence groups participants by container; the release view separates image builds, running test containers and
+archived images. Browser JavaScript and the host acceptance processes sit outside those application containers.
+
 The existing mandatory syntax/rendering check still validates **all** tracked diagrams, including excluded archives and
 requirements Markdown. `.mermaidignore` controls only the external sync app and never suppresses repository validation.
 See [validation evidence](../../validation/mermaid.md) for the distinction between local renders and observed app runs.

@@ -15,9 +15,13 @@ public-ingress uploads, cleanup and recovery. Inspect source/configuration/image
 dependencies, memory/resource boundaries and independent image builds. Fail-closed gate semantics and privileged
 workflow/test changes require explicit review; never let an earlier-phase selector suppress integrated acceptance.
 
-Review contract/oracle/test amendments separately with old/new expectations and evidence; request revalidation. For P5,
-review provider fit, exact artifacts/configuration, candidate results, approval binding, partial rollout and recovery.
-Do not call a written plan deployed or a health response full acceptance.
+Review contract/oracle/test amendments separately with old/new expectations and evidence; request revalidation. For
+active P5, review protected-main source and checks, exact tested image archives, baseline/configuration identity,
+main-only publication permissions, immutable tags/assets, draft completion and identical retries under the
+[release-only amendment](../requirements/release-process.md). Distinguish tested automation from observed publication.
+
+Provider fit, candidate results, production approval, partial rollout and hosted recovery apply only when deployment is
+explicitly resumed. Do not call a written plan deployed or a health response full acceptance.
 
 These role instructions do not enforce distinct-person review. Preserve the owner's explicitly authorized PR-only
 review exception and identify its use. Agent review is not GitHub human approval. Do not approve, merge, invoke an
