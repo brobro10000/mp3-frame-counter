@@ -20,7 +20,7 @@ references:
   - 'File: /server/src/http.ts'
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
-generationTime: '2026-10-10T07:58:36.429Z'
+generationTime: '2026-10-10T10:13:57.088Z'
 ---
 flowchart LR
     B["User browser<br/>app.js executes here"]
@@ -46,7 +46,15 @@ flowchart LR
     C["Host or CI controller<br/>owns Docker operations"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
     C -.->|"Runs suite against exact image pair"| T
     T -.->|"Authenticated fault requests"| C
+    subgraph LIFECYCLE["API Lifecycle Management"]
+        L1["createApiLifecycle"]
+        L2["lifecycle.state()"]
+        L3["lifecycle.signalTerm()"]
+    end
+    L1 --> L2
+    L1 --> L3
     style DOCKER fill:#f1f5f9,stroke:#334155,stroke-width:2px
     style FRONT fill:#e0f2fe,stroke:#0369a1,stroke-width:2px
     style BACK fill:#dcfce7,stroke:#15803d,stroke-width:2px
     style NODE fill:#f0fdf4,stroke:#15803d,stroke-dasharray:5 5
+    style LIFECYCLE fill:#fef3c7,stroke:#d97706,stroke-width:2px
