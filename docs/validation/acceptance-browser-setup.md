@@ -1,8 +1,8 @@
 # Acceptance browser preparation evidence
 
-**Status — 2026-10-10:** corrected implementation passes all 38 independent focused groups after committed behavioral
-regressions. DOCS-HARNESS remains open: real local readiness, fresh Linux CI, companion review, merge and publication
-are not yet verified. No docs rendering, CSP or hosted result is claimed. The
+**Status — 2026-10-10:** corrected implementation passes focused and full local validation, actual local browser
+readiness, 82 unit tests and all 67 image-bound transport cases. DOCS-HARNESS remains open pending fresh Linux CI,
+companion approval, merge and protected-main publication. No docs rendering, CSP or hosted result is claimed. The
 [contract](../testing/acceptance-browser-setup.md) defines the bounded helper and evidence.
 
 ## Prerequisite and independent expectations
@@ -112,9 +112,43 @@ its before/after hashes matched the above. All focused execution used injected c
 process fixtures. No actual browser/package installation, network, Docker or product execution occurred in that handoff.
 Broader verification remains required; green inert tests do not establish fresh Linux browser availability.
 
+## Complete local validation
+
+Clean source `378155bf01750d2a4e4f90b1b96204ff0bb39a15` passed `npm run validate` on pinned Node 24.20.0: formatting,
+workflow lint, policy, portability, **19 Mermaid renders, 20 gate tests and 459 tooling tests**, with no failures, skips
+or cancellations. Log `.artifacts/docs-harness-validate.log` SHA-256:
+`018f119b3e51989a2b2cb66c8761582117b81429b163e964ecb2c398e60de882`.
+
+The same clean source passed
+`DOCKER_DEFAULT_PLATFORM=linux/amd64 CI_BASE_REF=f4fb747df8890511edde7878064bb9af79823138 npm run check:phase`. The
+normal runner selected the immutable transport-v1 suite, executed package-local browser preparation **before** its
+standalone checks, passed **82 unit tests**, built both images and passed **67/67 external cases** with zero skips or
+retries. The E2E result duration was 93,170 ms. Cleanup passed; separate exact Compose-project queries confirmed no
+remaining containers or network. Existing fixture/oracle, product, workflow, lock, registry and cloud bytes remain
+unchanged from the trusted base.
+
+Actual local readiness used Playwright 1.64.0, Chromium/headless-shell revision 1248 and observed browser 156.0.8078.4.
+The install command completed in approximately 287 ms and the about:blank probe in 342 ms, with completed close and
+confirmed cleanup. The macOS run did not execute `install-deps`. This is real launch evidence using an available local
+cache, not proof of fresh acquisition or Linux OS setup. The separate later E2E controller retains its cached setup.
+
+- API image: `sha256:d0e49aa8cffbefaec3ff547709012a8e2c4f61b9b83bc4d8111556035da79a8d`.
+- Frontend image: `sha256:f8c521d4d6e71273d7f6e680d9fccb635a87fd4a814f80299f1ca08e0899ac8d`.
+- Ignored `.artifacts/docs-harness-local-browser-setup.json` SHA-256:
+  `f1b26ef3f8c77a6c9c94557b3dd71df3f6cc9ccf85395bcccde0d7fda5c3a780`.
+- Ignored `.artifacts/docs-harness-local-e2e-result.json` SHA-256:
+  `fe346b3ab27ac6c468c7be8e71c89ecf7e3321f2078ca63f7c68bedd1231bd6a`.
+- Ignored `.artifacts/docs-harness-phase.log` SHA-256:
+  `a89dbefd30cb9afb997e90b4a1a9af3bf280cc6a5e091e5cbec7708b09749d58`.
+
+Local resolution classifies this as governance, keeps transport-v1 required with activation `f4fb747` and binding
+`5645b05`, and reports no candidate/pending successor. It is not trusted CI admission. Candidate/pending branch behavior
+is covered by inert histories; no real docs candidate exists. Subsequent evidence-only documentation commits do not
+change the measured helper, runner or product bytes, but final PR/main CI must validate their own source and image pair.
+
 ## Remaining completion evidence
 
-Record focused implementation results and actual bounded local readiness, then fresh Ubuntu CI setup before checks and
-the complete unchanged 67-case required transport suite. Record exact-head automated companion approval, actual merge
-and source-bound main publication separately. Setup evidence remains `productAcceptance: false`; no synthetic fixture,
-warm cache, download success or later E2E pass substitutes for the required preparation observation.
+Obtain fresh Ubuntu setup before standalone checks and complete unchanged required acceptance against the final source.
+Record exact-head automated companion approval, actual merge and source-bound main publication separately. Setup records
+always remain `productAcceptance: false`; no warm cache, synthetic pass or download alone substitutes for the required
+fresh Linux preparation observation. No documentation renderer or hosted capability is established here.
