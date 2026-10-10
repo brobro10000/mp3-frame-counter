@@ -1,5 +1,11 @@
 # Runtime dependency policy: independent expectations
 
+**Completion amendment — 2026-10-10:** PR #17 merged as `3e1851eaddb558f6c38eedc88334605212a7a153` and main run
+`38050747378` published v0.2.17. The
+[completion evidence](../validation/runtime-dependency-policy.md#protected-main-completion) records actual companion
+approval, checks and publication. Earlier pending statements below are historical. The policy is now available for the
+separately scoped Fastify implementation; main still requires r3 with transport-v1 pending.
+
 **Implementation amendment — 2026-10-10:** the helper and narrow policy call now pass all 26 corrected focused groups
 locally. The test-first records below remain historical. Required CI, exact-head companion review, merge and publication
 are pending; see the [execution evidence](../validation/runtime-dependency-policy.md). No Fastify installation follows
@@ -11,7 +17,7 @@ helper is not implemented by this test-first change. No runtime dependency, lock
 changed. Required acceptance remains r3, with transport-v1 bound and pending its first product-affecting implementation.
 
 Read the
-[RUNTIME-POLICY card](../phases/next-iteration.md#pr-card-1--runtime-policy-admit-one-explicitly-pinned-framework-dependency),
+[RUNTIME-POLICY card](https://github.com/brobro10000/mp3-frame-counter/blob/3e1851eaddb558f6c38eedc88334605212a7a153/docs/phases/next-iteration.md#pr-card-1--runtime-policy-admit-one-explicitly-pinned-framework-dependency),
 [transition policy](acceptance-transition.md) and [acceptance-author role](../agents/acceptance-author.md). The separate
 Fastify migration must validate the selected package, dependency graph, product behavior and exact image pair;
 permission to declare a package does not establish those results.

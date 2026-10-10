@@ -1,11 +1,15 @@
 /**
- * Native HTTP transport for the frozen MP3 upload contract. createApiServer returns an unbound server and an idempotent
- * bounded shutdown operation; callers choose the listen address. Requests stay in memory, never enter a file or log,
- * and reach the pure parser only after a complete bounded body. Typed parser failures become safe JSON responses.
+ * Fastify transport for the frozen MP3 upload contract. createApiServer returns an unbound service with asynchronous
+ * readiness/listen and idempotent bounded shutdown; callers choose the listen address. Requests stay in memory, never
+ * enter a file or log, and reach the pure parser only after a complete bounded body. Typed parser failures become safe
+ * JSON responses.
  */
+import Fastify from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import { createServer } from "node:http";
 import type { IncomingMessage, Server, ServerResponse } from "node:http";
 import type { Socket } from "node:net";
+import type { Readable } from "node:stream";
 import { Mp3ParseError } from "./errors.ts";
 import { countMp3Frames } from "./mp3.ts";
 
@@ -33,10 +37,11 @@ export const DEFAULT_API_BUDGETS: Readonly<ApiBudgets> = Object.freeze({
 
 export interface ApiService {
   server: Server;
+  listen(port: number, host: string): Promise<void>;
   shutdown(): Promise<void>;
 }
 
-/** PORT is the sole runtime setting; tests can separately bind the returned server to ephemeral port zero. */
+/** PORT is the sole runtime setting; tests use the service readiness boundary to bind ephemeral port zero. */
 export function parsePort(value: string | undefined): number {
   if (value === undefined) return 3_000;
   if (!/^[0-9]+$/.test(value)) throw new Error("PORT must be an integer between 1 and 65535.");
@@ -110,6 +115,142 @@ function rejectBody(
   request.resume();
 }
 
+/** Fixed transport failures are translated to the closed public error shape, never framework diagnostics. */
+class UploadError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
+interface UploadState {
+  release(): void;
+  read(payload: Readable, done: (error: Error | null, body?: Buffer) => void): void;
+}
+
+/** Reserve one upload lifecycle; collection and every terminal event share one idempotent release operation. */
+function createUploadState(
+  request: FastifyRequest,
+  reply: FastifyReply,
+  budgets: ApiBudgets,
+  declaredLength: number | undefined,
+  expectContinue: boolean,
+  releaseAdmission: () => void,
+): UploadState {
+  const raw = request.raw;
+  let buffer: Buffer | undefined;
+  let received = 0;
+  let released = false;
+  let readSettled = false;
+  let payload: Readable | undefined;
+  let parserDone: ((error: Error | null, body?: Buffer) => void) | undefined;
+  let bodyDeadline: NodeJS.Timeout | undefined;
+  let idleDeadline: NodeJS.Timeout | undefined;
+
+  /** Stop only collection; a completed body retains its admission slot until the route finishes counting. */
+  const stopReading = (): void => {
+    clearTimeout(bodyDeadline);
+    clearTimeout(idleDeadline);
+    payload?.off("data", onData);
+    payload?.off("end", onEnd);
+  };
+  /** Release admission once and discard request-owned storage, including Fastify's body reference. */
+  const release = (): void => {
+    if (released) return;
+    released = true;
+    stopReading();
+    buffer = undefined;
+    request.body = undefined;
+    raw.off("aborted", onAbort);
+    raw.off("error", onAbort);
+    reply.raw.off("close", onAbort);
+    releaseAdmission();
+  };
+  /** Settle Fastify's parser once, including disconnected clients, so no continuation or buffer stays abandoned. */
+  const finishReading = (error: Error | null, body?: Buffer): void => {
+    if (readSettled) return;
+    readSettled = true;
+    stopReading();
+    if (error) release();
+    const done = parserDone;
+    parserDone = undefined;
+    done?.(error, body);
+  };
+  /** Disconnection settles any pending parser before cleanup; a later response close cannot release twice. */
+  const onAbort = (): void => {
+    finishReading(new UploadError(400, "The upload did not complete."));
+    release();
+  };
+  /** Count actual bytes before copying into the single allocation and refresh only the inactivity deadline. */
+  const onData = (chunk: Buffer): void => {
+    if (released || readSettled) return;
+    if (chunk.length > MAX_UPLOAD_BYTES - received) {
+      finishReading(new UploadError(413, "The upload exceeds the 20 MiB limit."));
+      return;
+    }
+    if (!buffer || chunk.length > buffer.length - received) {
+      finishReading(new UploadError(400, "The request body does not match its declared length."));
+      return;
+    }
+    chunk.copy(buffer, received);
+    received += chunk.length;
+    idleDeadline?.refresh();
+  };
+  /** Pass only a complete nonempty initialized view to the Fastify route; parser failures use its error handler. */
+  const onEnd = (): void => {
+    if (released || readSettled) return;
+    if (!raw.complete) {
+      finishReading(new UploadError(400, "The upload did not complete."));
+    } else if (received === 0) {
+      finishReading(new UploadError(400, "Choose a nonempty MP3 file."));
+    } else {
+      // The route receives only initialized bytes, as a view with no second whole-upload allocation.
+      finishReading(null, buffer!.subarray(0, received));
+    }
+  };
+  raw.once("aborted", onAbort);
+  raw.on("error", onAbort);
+  // Late errors after release/rejection must not become unhandled stream errors.
+  raw.on("error", () => {});
+  reply.raw.once("close", onAbort);
+
+  return {
+    release,
+    /** Attach collection after admission and acknowledge Continue only when allocation and deadlines are ready. */
+    read(stream, done): void {
+      if (released) {
+        done(new UploadError(400, "The upload did not complete."));
+        return;
+      }
+      payload = stream;
+      parserDone = done;
+      payload.on("data", onData);
+      payload.once("end", onEnd);
+      bodyDeadline = setTimeout(
+        () => finishReading(new UploadError(408, "The upload did not finish within the time limit.")),
+        budgets.bodyTimeoutMs,
+      );
+      idleDeadline = setTimeout(
+        () => finishReading(new UploadError(408, "The upload stopped sending data.")),
+        budgets.inactivityTimeoutMs,
+      );
+      bodyDeadline.unref();
+      idleDeadline.unref();
+      try {
+        // Allocate only after admission, before Continue; tiny chunks cannot create an unbounded object list.
+        buffer = Buffer.allocUnsafe(declaredLength ?? MAX_UPLOAD_BYTES);
+        if (expectContinue) reply.raw.writeContinue();
+        payload.resume();
+      } catch {
+        finishReading(new UploadError(500, "The MP3 could not be analyzed. Please try again."));
+      }
+    },
+  };
+}
+
+/** Configure transport without listening; callers must await listen before issuing requests and await shutdown. */
 export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService {
   const budgets = { ...DEFAULT_API_BUDGETS, ...overrides };
   for (const value of Object.values(budgets)) {
@@ -121,182 +262,190 @@ export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService
 
   let activeUploads = 0;
   let stopping = false;
+  let startupPromise: Promise<void> | undefined;
   let shutdownPromise: Promise<void> | undefined;
   const sockets = new Set<Socket>();
+  const continued = new WeakSet<IncomingMessage>();
+  const uploads = new WeakMap<IncomingMessage, UploadState>();
+  const app = Fastify({
+    logger: false,
+    exposeHeadRoutes: false,
+    bodyLimit: MAX_UPLOAD_BYTES,
+    return503OnClosing: false,
+    forceCloseConnections: "idle",
+    serverFactory(handler) {
+      /** Preserve raw pathname/method precedence before router normalization; successful requests enter Fastify. */
+      const dispatch = (request: IncomingMessage, response: ServerResponse): void => {
+        request.socket.setTimeout(0);
+        const pathname = (request.url ?? "").split("?", 1)[0];
+        if (pathname !== "/file-upload" && pathname !== "/healthz") {
+          rejectBody(request, response, 404, "The requested API route does not exist.", budgets.rejectionDrainMs);
+          return;
+        }
+        const allowed = pathname === "/healthz" ? "GET" : "POST";
+        if (request.method !== allowed) {
+          response.setHeader("Allow", allowed);
+          rejectBody(
+            request,
+            response,
+            405,
+            "This method is not allowed for the requested API route.",
+            budgets.rejectionDrainMs,
+          );
+          return;
+        }
+        handler(request, response);
+      };
+      const server = createServer(
+        {
+          requestTimeout: 0,
+          headersTimeout: budgets.headersTimeoutMs,
+          connectionsCheckingInterval: Math.min(1_000, budgets.headersTimeoutMs),
+          keepAliveTimeout: 5_000,
+          maxHeaderSize: 8_192,
+          highWaterMark: 65_536,
+        },
+        dispatch,
+      );
+      server.maxConnections = budgets.maxConnections;
+      // Node truncates exposed headers at a count limit; retain every field within the strict byte cap.
+      server.maxHeadersCount = 0;
+      server.setTimeout(budgets.inactivityTimeoutMs, (socket) => socket.destroy());
+      server.on("checkContinue", (request, response) => {
+        continued.add(request);
+        dispatch(request, response);
+      });
+      server.on("checkExpectation", (request, response) => {
+        rejectBody(request, response, 417, "The request expectation is not supported.", budgets.rejectionDrainMs);
+      });
+      server.on("connection", (socket) => {
+        sockets.add(socket);
+        socket.once("close", () => sockets.delete(socket));
+      });
+      return server;
+    },
+  });
 
-  const handle = (request: IncomingMessage, response: ServerResponse, expectContinue = false): void => {
-    // Own body timing below; socket timeouts remain enabled before headers and after responses.
-    request.socket.setTimeout(0);
-    const reject = (status: number, message: string) => {
-      rejectBody(request, response, status, message, budgets.rejectionDrainMs);
-    };
-    const pathname = (request.url ?? "").split("?", 1)[0];
-    if (pathname !== "/file-upload" && pathname !== "/healthz") {
-      reject(404, "The requested API route does not exist.");
-      return;
-    }
-    const allowed = pathname === "/healthz" ? "GET" : "POST";
-    if (request.method !== allowed) {
-      response.setHeader("Allow", allowed);
-      reject(405, "This method is not allowed for the requested API route.");
-      return;
-    }
-    if (pathname === "/healthz") {
-      // A health request with a body is still bounded and its connection is not reused.
+  /** Incomplete requests need the existing readable bounded drain, with Fastify explicitly yielding the response. */
+  const reject = (request: FastifyRequest, reply: FastifyReply, status: number, message: string): void => {
+    uploads.get(request.raw)?.release();
+    reply.hijack();
+    rejectBody(request.raw, reply.raw, status, message, budgets.rejectionDrainMs);
+  };
+  // Header validation and admission run before the custom parser can allocate or consume upload bytes.
+  app.addHook("onRequest", (request, reply, done) => {
+    if (request.raw.method === "GET") {
       if (request.headers["transfer-encoding"] || Number(request.headers["content-length"] ?? 0) > 0) {
-        response.setHeader("Connection", "close");
+        reply.header("Connection", "close");
       }
-      request.on("error", () => {});
-      json(request, response, 200, { status: "ok" });
+      request.raw.on("error", () => {});
+      done();
       return;
     }
     const mediaType = request.headers["content-type"]?.split(";", 1)[0]?.trim().toLowerCase();
     if (mediaType !== "audio/mpeg" && mediaType !== "application/octet-stream") {
-      reject(415, "Upload raw MP3 bytes with audio/mpeg or application/octet-stream content type.");
+      reject(request, reply, 415, "Upload raw MP3 bytes with audio/mpeg or application/octet-stream content type.");
       return;
     }
     const encoding = request.headers["content-encoding"]?.trim().toLowerCase();
     if (encoding !== undefined && encoding !== "identity") {
-      reject(415, "Encoded request bodies are not supported.");
+      reject(request, reply, 415, "Encoded request bodies are not supported.");
       return;
     }
-
     const lengthHeader = request.headers["content-length"];
     const declaredLength = lengthHeader === undefined ? undefined : Number(lengthHeader);
     if (declaredLength !== undefined && declaredLength > MAX_UPLOAD_BYTES) {
-      reject(413, "The upload exceeds the 20 MiB limit.");
+      reject(request, reply, 413, "The upload exceeds the 20 MiB limit.");
       return;
     }
     if (stopping || activeUploads >= budgets.maxActiveUploads) {
-      response.setHeader("Retry-After", "1");
-      reject(503, "The service is busy. Please try again shortly.");
+      reply.raw.setHeader("Retry-After", "1");
+      reject(request, reply, 503, "The service is busy. Please try again shortly.");
       return;
     }
-
     activeUploads += 1;
-    let buffer: Buffer | undefined;
-    let received = 0;
-    let settled = false;
-    let bodyDeadline: NodeJS.Timeout | undefined;
-    let idleDeadline: NodeJS.Timeout | undefined;
-    const release = (): boolean => {
-      if (settled) return false;
-      settled = true;
-      activeUploads -= 1;
-      buffer = undefined;
-      clearTimeout(bodyDeadline);
-      clearTimeout(idleDeadline);
-      request.off("data", onData);
-      request.off("end", onEnd);
-      request.off("aborted", onAbort);
-      response.off("close", onAbort);
-      return true;
-    };
-    const fail = (status: number, message: string): void => {
-      if (release()) reject(status, message);
-    };
-    const onAbort = (): void => {
-      release();
-    };
-    const onData = (chunk: Buffer): void => {
-      if (settled) return;
-      if (chunk.length > MAX_UPLOAD_BYTES - received) {
-        fail(413, "The upload exceeds the 20 MiB limit.");
-        return;
-      }
-      if (!buffer || chunk.length > buffer.length - received) {
-        fail(400, "The request body does not match its declared length.");
-        return;
-      }
-      chunk.copy(buffer, received);
-      received += chunk.length;
-      idleDeadline?.refresh();
-    };
-    const onEnd = (): void => {
-      if (settled) return;
-      if (!request.complete) {
-        fail(400, "The upload did not complete.");
-        return;
-      }
-      if (received === 0) {
-        fail(400, "Choose a nonempty MP3 file.");
-        return;
-      }
-      try {
-        // This is a view of only initialized received bytes, never an additional whole-upload copy.
-        const frameCount = countMp3Frames(buffer!.subarray(0, received));
-        release();
-        json(request, response, 200, { frameCount });
-      } catch (error) {
-        if (error instanceof Mp3ParseError) {
-          fail(error.kind === "malformed" ? 400 : 415, error.message);
-        } else {
-          fail(500, "The MP3 could not be analyzed. Please try again.");
-        }
-      }
-    };
-
-    request.once("aborted", onAbort);
-    request.on("error", onAbort);
-    response.once("close", onAbort);
-    request.on("data", onData);
-    request.once("end", onEnd);
-    bodyDeadline = setTimeout(
-      () => fail(408, "The upload did not finish within the time limit."),
-      budgets.bodyTimeoutMs,
+    uploads.set(
+      request.raw,
+      createUploadState(request, reply, budgets, declaredLength, continued.has(request.raw), () => {
+        activeUploads -= 1;
+      }),
     );
-    idleDeadline = setTimeout(() => fail(408, "The upload stopped sending data."), budgets.inactivityTimeoutMs);
-    bodyDeadline.unref();
-    idleDeadline.unref();
-    try {
-      // One bounded buffer avoids an unbounded count of tiny chunk objects. Unused capacity is never parsed or sent.
-      buffer = Buffer.allocUnsafe(declaredLength ?? MAX_UPLOAD_BYTES);
-      if (expectContinue) response.writeContinue();
-    } catch {
-      fail(500, "The MP3 could not be analyzed. Please try again.");
-    }
-  };
-
-  const server = createServer(
-    {
-      requestTimeout: 0,
-      headersTimeout: budgets.headersTimeoutMs,
-      connectionsCheckingInterval: Math.min(1_000, budgets.headersTimeoutMs),
-      keepAliveTimeout: 5_000,
-      maxHeaderSize: 8_192,
-      highWaterMark: 65_536,
-    },
-    handle,
-  );
-  server.maxConnections = budgets.maxConnections;
-  // Node truncates exposed headers at a count limit; retain every field within the strict byte cap for policy checks.
-  server.maxHeadersCount = 0;
-  server.setTimeout(budgets.inactivityTimeoutMs, (socket) => socket.destroy());
-  server.on("checkContinue", (request, response) => handle(request, response, true));
-  server.on("checkExpectation", (request, response) => {
-    rejectBody(request, response, 417, "The request expectation is not supported.", budgets.rejectionDrainMs);
+    done();
   });
-  server.on("connection", (socket) => {
-    sockets.add(socket);
-    socket.once("close", () => sockets.delete(socket));
+
+  app.removeAllContentTypeParsers();
+  app.addContentTypeParser("*", (request, payload, done) => {
+    const state = uploads.get(request.raw);
+    if (!state) {
+      done(new UploadError(500, "The MP3 could not be analyzed. Please try again."));
+      return;
+    }
+    state.read(payload, done);
+  });
+  app.setErrorHandler((error, request, reply) => {
+    if (error instanceof UploadError) reject(request, reply, error.status, error.message);
+    else if (error instanceof Mp3ParseError) {
+      reject(request, reply, error.kind === "malformed" ? 400 : 415, error.message);
+    } else reject(request, reply, 500, "The MP3 could not be analyzed. Please try again.");
+  });
+  app.setNotFoundHandler((request, reply) => {
+    reject(request, reply, 404, "The requested API route does not exist.");
+  });
+  app.addHook("onResponse", (request, _reply, done) => {
+    uploads.get(request.raw)?.release();
+    done();
+  });
+  app.get("/healthz", (_request, reply) => {
+    return reply
+      .header("Content-Type", "application/json; charset=utf-8")
+      .header("Cache-Control", "no-store")
+      .header("X-Content-Type-Options", "nosniff")
+      .send({ status: "ok" });
+  });
+  app.post<{ Body: Buffer | undefined }>("/file-upload", (request, reply) => {
+    try {
+      if (!request.body || request.body.length === 0) throw new UploadError(400, "Choose a nonempty MP3 file.");
+      const frameCount = countMp3Frames(request.body);
+      return reply
+        .header("Content-Type", "application/json; charset=utf-8")
+        .header("Cache-Control", "no-store")
+        .header("X-Content-Type-Options", "nosniff")
+        .send({ frameCount });
+    } finally {
+      uploads.get(request.raw)?.release();
+    }
   });
 
   return {
-    server,
+    server: app.server,
+    /** Await framework readiness, propagating bind errors and refusing new startup once shutdown begins. */
+    listen(port, host): Promise<void> {
+      if (stopping) return Promise.reject(new Error("The API has begun shutdown and cannot start listening."));
+      if (startupPromise) return Promise.reject(new Error("API startup has already been requested."));
+      startupPromise = (async () => {
+        await app.ready();
+        if (stopping) throw new Error("The API shut down before readiness completed.");
+        await app.listen({ port, host });
+      })();
+      return startupPromise;
+    },
+    /** Stop admission synchronously, preserve admitted work and force-close stragglers within the socket budget. */
     shutdown(): Promise<void> {
       if (shutdownPromise) return shutdownPromise;
       stopping = true;
-      shutdownPromise = new Promise((resolve, reject) => {
+      shutdownPromise = (async () => {
         const deadline = setTimeout(() => {
           for (const socket of sockets) socket.destroy();
         }, budgets.shutdownTimeoutMs);
         deadline.unref();
-        server.close((error) => {
+        try {
+          // Finish or reject pending readiness before closing; it cannot open a late listener after shutdown resolves.
+          await startupPromise?.catch(() => {});
+          await app.close();
+        } finally {
           clearTimeout(deadline);
-          if (error && (error as NodeJS.ErrnoException).code !== "ERR_SERVER_NOT_RUNNING") reject(error);
-          else resolve();
-        });
-      });
+        }
+      })();
       return shutdownPromise;
     },
   };

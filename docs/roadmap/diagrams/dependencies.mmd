@@ -4,8 +4,9 @@ query: >-
   Show the adopted planning order, not implemented automation. Acceptance-gate migration precedes independent
   successor suites and actual merge binding. Version allocation precedes release-line activation. Transport and
   docs successors are separate. A narrow governance-only dependency policy precedes runtime installation. Verified
-  line activation and truthful lifecycle observations precede transport authoring. Conditional queue-tooling support precedes live queue syntax and is not a hosting prerequisite because
-  reconciliation is the selected fallback. Stage and production evidence precede v1.0.0.
+  line activation and truthful lifecycle observations precede transport authoring. The browser harness precedes docs
+  candidate controls. Conditional queue-tooling support precedes live queue syntax and is not a hosting prerequisite
+  because reconciliation is the selected fallback. Stage and production evidence precede v1.0.0.
 references:
   - 'File: /docs/roadmap/README.md'
   - 'File: /docs/phases/next-iteration.md'
@@ -21,7 +22,8 @@ flowchart TD
     LINE --> FASTIFY["Fastify migration"]
     TBIND --> RUNTIME["RUNTIME-POLICY: narrowly admit pinned Fastify"]
     RUNTIME --> FASTIFY
-    FASTIFY --> DOCS["Independent docs and CSP contract"]
+    FASTIFY --> HARNESS["DOCS-HARNESS: prepare pinned browser before checks"]
+    HARNESS --> DOCS["Independent docs and CSP contract"]
     DOCS --> DBIND["Bind actual merged docs suite"]
     DBIND --> REDOC["Offline Redoc and scoped CSP"]
     REDOC --> HOSTTEST["Hosted profiles and trusted launcher"]

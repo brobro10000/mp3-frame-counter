@@ -1,7 +1,7 @@
 ---
 title: MP3 upload and result sequence
 query: >-
-  Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, native Node API and
+  Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, Fastify API on Node and
   pure parser. Include local file validation, pending controls, the actual-byte 20 MiB bound, typed parser failures,
   proxy failures, JSON validation and restored controls after every outcome. Count complete physical MPEG-1 Layer III
   frames including metadata-bearing frames. Keep errors readable and show that aborted uploads cannot succeed.
@@ -24,7 +24,7 @@ sequenceDiagram
         participant Frontend as NGINX :8080
     end
     box rgb(220,252,231) API Docker container - one Node process
-        participant API as Node HTTP :3000
+        participant API as Fastify on Node :3000
         participant Parser as In-process parser
     end
     User->>Browser: Select file and Analyze MP3
@@ -37,11 +37,12 @@ sequenceDiagram
             Frontend-->>Browser: Error status and JSON
         else Request forwarded over HTTP/1.1 without buffering or retry
             Frontend->>API: Forward raw bytes to api:3000 on Compose network
-            API->>API: Validate headers, admission and actual received bytes
+            API->>API: Raw path/method bridge, then ordered Fastify admission
+            API->>API: Custom stream parser bounds actual bytes and deadlines
             alt Invalid request, over limit, busy or timed out
                 API-->>Frontend: Contracted error status and JSON
             else Complete nonempty body within 20 MiB
-                API->>Parser: Count complete physical MPEG-1 Layer III frames
+                API->>Parser: POST route counts complete physical MPEG-1 Layer III frames
                 alt Valid supported file
                     Parser-->>API: Positive count including metadata-bearing frames
                     API-->>Frontend: 200 JSON with frameCount
