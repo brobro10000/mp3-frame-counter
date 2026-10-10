@@ -1,6 +1,7 @@
 # P4 — Integrated local product
 
-Status: proposed future phase, **not authorized by P0**. Trace: APP-V1-001–010,013,016; AC-01–12; R-03,05,11.
+Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
+follow. Trace: APP-V1-001–010,013,016; AC-01–12; R-03,05,11.
 
 ## Objective
 

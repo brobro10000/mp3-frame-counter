@@ -1,6 +1,7 @@
 # P3 — Pure parser
 
-Status: proposed future phase, **not authorized by P0**. Trace: APP-V1-004,005,009,010,013,016; R-01,02,11.
+Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
+follow. Trace: APP-V1-004,005,009,010,013,016; R-01,02,11.
 
 ## Objective
 

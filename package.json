@@ -20,7 +20,8 @@
     "validate": "npm run format:check && npm run lint:workflows && npm run check:policy && npm run check:portability && npm run test:gate && npm run test:tooling",
     "verify:github": "node scripts/verify-github.mjs",
     "artifact:foundation": "node scripts/package-foundation.mjs",
-    "check:phase": "node scripts/run-ci-phase.mjs"
+    "check:phase": "node scripts/run-ci-phase.mjs",
+    "test:acceptance:harness": "npm --prefix tests/acceptance run check"
   },
   "devDependencies": {
     "prettier": "3.9.9",

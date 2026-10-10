@@ -1,7 +1,7 @@
 # P5 — Managed deployment and release
 
-Status: proposed future phase, **not authorized by P0**. Trace: APP-V1-012,014,015,016; APP-REL-001–006;
-R-04,06,07,08,11.
+Status: execution authorized by the [later owner instruction](execution-authorization.md); original phase criteria
+follow. Trace: APP-V1-012,014,015,016; APP-REL-001–006; R-04,06,07,08,11.
 
 ## Objective
 

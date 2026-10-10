@@ -1,0 +1,391 @@
+{
+  "contractRevision": "r3",
+  "license": "CC0-1.0",
+  "expectationSource": "Independent construction and recorded MediaInfo/FFprobe oracle; never product output.",
+  "fixtures": [
+    {
+      "id": "tone-cbr",
+      "kind": "encoded-audio",
+      "bytes": 3456,
+      "sha256": "10f2179e8a1ffbdcf30285977860112b7304e4a2b93ef3b77843b0f9843876d7",
+      "status": 200,
+      "frameCount": 9,
+      "recipe": "Original 440 Hz tone; FFmpeg9.0.2/libmp3lame; MediaInfo26.10 and FFprobe both nine contiguous packets, no metadata frame."
+    },
+    {
+      "id": "tone-vbr",
+      "kind": "encoded-audio",
+      "bytes": 2160,
+      "sha256": "03e194fcbcdd5bc46037eb53c98929db3cfcc0ce2afe1f437255a7d8af968820",
+      "status": 200,
+      "frameCount": 16,
+      "recipe": "Original 660 Hz tone; fifteen FFprobe/MediaInfo audio frames plus one complete182-byte Xing frame."
+    },
+    {
+      "id": "tone-padded",
+      "kind": "encoded-audio",
+      "bytes": 13165,
+      "sha256": "17501d89cacdbff053b9a34281ca0b566bff41a6164269b11cd15828f7a130cd",
+      "status": 200,
+      "frameCount": 21,
+      "recipe": "Original 880 Hz tone; MediaInfo/FFprobe twenty-one packets with626/627-byte padding lengths."
+    },
+    {
+      "id": "one-frame",
+      "kind": "structural",
+      "bytes": 384,
+      "sha256": "a0c133863e989efb35706adc8b03b075216340ad28bea7ac5869f222667dccfc",
+      "status": 200,
+      "frameCount": 1,
+      "recipe": "One literal384-byte fffb9400 frame."
+    },
+    {
+      "id": "three-frames",
+      "kind": "structural",
+      "bytes": 1152,
+      "sha256": "25400892735d2a91e14d8015c5b4e4f85678a8276b62614c26210637ca320c3f",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "Three literal384-byte fffb9400 frames."
+    },
+    {
+      "id": "variable-parameters",
+      "kind": "structural",
+      "bytes": 3202,
+      "sha256": "67acf99f9c9ddb418b34ac33ad38e957e6a796c6bacd3ce485c4971177e817f2",
+      "status": 200,
+      "frameCount": 7,
+      "recipe": "Seven explicit384,385,960,96,417,576,384-byte frames; vary bitrate, padding, rate, channel and CRC protection."
+    },
+    {
+      "id": "payload-sync",
+      "kind": "structural",
+      "bytes": 768,
+      "sha256": "c49f6c19c94139d03e0e628080b4013c9bad856ff8cb5dd5e54f586fd0268ed5",
+      "status": 200,
+      "frameCount": 2,
+      "recipe": "Two384-byte frames with extra fffb9400 sequences at payload offsets100 and500."
+    },
+    {
+      "id": "id3v23",
+      "kind": "structural",
+      "bytes": 1174,
+      "sha256": "86964337196006ddbdae7810dd53e8b11524fbdd9ca9050f4b6cd5f74f4c335d",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "One22-byte flags-zero ID3v2.3 tag plus three384-byte frames."
+    },
+    {
+      "id": "id3v24",
+      "kind": "structural",
+      "bytes": 1174,
+      "sha256": "62e88025298fb81f23d41eecad0ecdc3419b4b32a3b62c6ae9b78c3ccdc5ffae",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "One22-byte flags-zero ID3v2.4 tag plus three384-byte frames."
+    },
+    {
+      "id": "id3v1",
+      "kind": "structural",
+      "bytes": 1280,
+      "sha256": "cde41148dfc5f65a477e1f446d7c6381cafbb5fcb2c9cec5983fb93395ba4be0",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "Three384-byte frames plus128-byte trailing TAG record."
+    },
+    {
+      "id": "both-tags",
+      "kind": "structural",
+      "bytes": 1302,
+      "sha256": "bffc6418397798913b6152da6e3ca329f667e81d3606f2ec4206b95ae4079b2a",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "Leading22-byte ID3v2.4, three384-byte frames, trailing128-byte TAG."
+    },
+    {
+      "id": "xing-physical",
+      "kind": "structural",
+      "bytes": 768,
+      "sha256": "63168de7f45c62d0f27b194ca8e68ac9bf9702cc809d7e0ac2d4f65db54ff90d",
+      "status": 200,
+      "frameCount": 2,
+      "recipe": "Two complete384-byte frames; first Xing field falsely claims999 frames."
+    },
+    {
+      "id": "above-one-mib",
+      "kind": "boundary",
+      "bytes": 1152000,
+      "sha256": "c247555768d076b859d120c45af4822207fd626634336ce946b343918517eae4",
+      "status": 200,
+      "frameCount": 3000,
+      "recipe": "3000*384=1152000 bytes of complete frames."
+    },
+    {
+      "id": "six-mib",
+      "kind": "boundary",
+      "bytes": 6291456,
+      "sha256": "b6725350431006ee6878b59a4d78860dc77d8c47a5d9acd4010821698b47f6fa",
+      "status": 200,
+      "frameCount": 16384,
+      "recipe": "16384*384=6291456 bytes of complete frames."
+    },
+    {
+      "id": "exact-limit",
+      "kind": "boundary",
+      "bytes": 20971520,
+      "sha256": "a237948e3d83613151e3139da0f99bce30770d64e140c925ab648a81e9cce129",
+      "status": 200,
+      "frameCount": 54613,
+      "recipe": "54613*384+128=20971520 bytes, complete frames plus trailing ID3v1."
+    },
+    {
+      "id": "empty",
+      "kind": "malformed",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: empty."
+    },
+    {
+      "id": "garbage",
+      "kind": "malformed",
+      "bytes": 33,
+      "sha256": "c5156d15b1616206ecd8b51eb2328a5199541b6166020fef02f496f3e1b5190f",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: garbage."
+    },
+    {
+      "id": "truncated-frame",
+      "kind": "malformed",
+      "bytes": 1151,
+      "sha256": "85a414a3f85b3617088290c23048184dc36e9b8eafb720ed0b766ed05879d1e1",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: truncated-frame."
+    },
+    {
+      "id": "trailing-junk",
+      "kind": "malformed",
+      "bytes": 1153,
+      "sha256": "fd6768170560a35942e6f4f77dcc3675bcb2a822de949398a748fa1b3174ceac",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: trailing-junk."
+    },
+    {
+      "id": "corrupt-middle",
+      "kind": "malformed",
+      "bytes": 1152,
+      "sha256": "0cb28df477535fb7f9e9d6040db740c00031f8f51632585a386c73622fd948f5",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: corrupt-middle."
+    },
+    {
+      "id": "truncated-header",
+      "kind": "malformed",
+      "bytes": 3,
+      "sha256": "fb3ed0ca7730015cd650f81c70fccab0dd218a5e79ab6cc078a0938a63120025",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: truncated-header."
+    },
+    {
+      "id": "metadata-only",
+      "kind": "malformed",
+      "bytes": 22,
+      "sha256": "2df2296fc34a6ea1dabc820d3013cffeadaf8fa80367d1a484f0ed98a2b1bbc2",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: metadata-only."
+    },
+    {
+      "id": "tag-out-of-bounds",
+      "kind": "malformed",
+      "bytes": 10,
+      "sha256": "802866e85052b2d76f3a16bd4824112fa414a58d5e6e51514474a33555542739",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: tag-out-of-bounds."
+    },
+    {
+      "id": "tag-nonsynchsafe",
+      "kind": "malformed",
+      "bytes": 394,
+      "sha256": "0ec8efcce3fc8807b490c990c2e96a61dec50da9eac273a1ccf81e04db38e85b",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: tag-nonsynchsafe."
+    },
+    {
+      "id": "tag-reserved-flag",
+      "kind": "malformed",
+      "bytes": 406,
+      "sha256": "2c88b14fab96a307d5f7e61a0af602ec4369a352e06c3e1413877ae739ae34ea",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: tag-reserved-flag."
+    },
+    {
+      "id": "reserved-version",
+      "kind": "malformed",
+      "bytes": 384,
+      "sha256": "d0789dfd17b2783e8022875ce84b7719631de2fbf971e0b59c6ea01f500ffc16",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: reserved-version."
+    },
+    {
+      "id": "reserved-layer",
+      "kind": "malformed",
+      "bytes": 384,
+      "sha256": "b6fca20f5ccd1e9e0495266382ba8cf62cf07848f6d6757549c23b4258bd91f0",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: reserved-layer."
+    },
+    {
+      "id": "reserved-bitrate",
+      "kind": "malformed",
+      "bytes": 384,
+      "sha256": "e516ba1068142ab6b8900fe2a9f1030fa68e173693b950ff6814f0b6d1aaef7c",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: reserved-bitrate."
+    },
+    {
+      "id": "reserved-sample-rate",
+      "kind": "malformed",
+      "bytes": 384,
+      "sha256": "4dc35a790c3f3e1a2f762454f863357480db34c14223200d9073441528fc2438",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: reserved-sample-rate."
+    },
+    {
+      "id": "reserved-emphasis",
+      "kind": "malformed",
+      "bytes": 384,
+      "sha256": "f38d433af59c7844b8e1d0435e7c0b8965213c24c6d48664b9ec5f042a689ec2",
+      "status": 400,
+      "recipe": "Fixed isolated malformed construction in lib/fixtures.ts: reserved-emphasis."
+    },
+    {
+      "id": "mpeg2",
+      "kind": "unsupported",
+      "bytes": 192,
+      "sha256": "a0051e454be540ccee140f92512ed613a0a4e56b3b3f6cb3bb23b86a9613a57f",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: mpeg2."
+    },
+    {
+      "id": "mpeg25",
+      "kind": "unsupported",
+      "bytes": 384,
+      "sha256": "7fa45b7fbe5befb053f495d0e533ff5db36b4b70184e685ee45295a0628f9fd4",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: mpeg25."
+    },
+    {
+      "id": "layer2",
+      "kind": "unsupported",
+      "bytes": 384,
+      "sha256": "884c0ad705db7e9f8e22b5d1143dd0865275162ea0d5f10a7a34a8ff0f8323fc",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: layer2."
+    },
+    {
+      "id": "layer1",
+      "kind": "unsupported",
+      "bytes": 128,
+      "sha256": "19f25b4c3fac1f323683f2d9addab1056d83d59ca1aecf05c6d24ea98f6ba58f",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: layer1."
+    },
+    {
+      "id": "free-format",
+      "kind": "unsupported",
+      "bytes": 1152,
+      "sha256": "b554d24eb1aad7b38075363ea2fb5e5c20b83ced6ad3a05fd9fb74958dbe9f7e",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: free-format."
+    },
+    {
+      "id": "id3v22",
+      "kind": "unsupported",
+      "bytes": 402,
+      "sha256": "56cffd30570e6c52dbbe31ecce94f1fd1fa65991deb833a49ffc03f865498db5",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: id3v22."
+    },
+    {
+      "id": "id3-revision",
+      "kind": "unsupported",
+      "bytes": 406,
+      "sha256": "a7be097d7f8be9b018d7558e1bfe86abf79baef9a3149b7e7c85148994ba7a21",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: id3-revision."
+    },
+    {
+      "id": "id3-unsynchronised",
+      "kind": "unsupported",
+      "bytes": 406,
+      "sha256": "d299477c592b67cf7b1ccfa3489dc323e1bc2a74f0a1eef5996751f770cb9859",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: id3-unsynchronised."
+    },
+    {
+      "id": "id3-footer",
+      "kind": "unsupported",
+      "bytes": 416,
+      "sha256": "defb0327d2d5cd5526d9bf12ef9c1aba9cb0016307137c9034fa71489b6dc329",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: id3-footer."
+    },
+    {
+      "id": "multiple-id3",
+      "kind": "unsupported",
+      "bytes": 428,
+      "sha256": "26dd9441ff6b53a987773321b5ded6d1229a6ed243a7008a11e642cf7b7ee02a",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: multiple-id3."
+    },
+    {
+      "id": "appended-id3",
+      "kind": "unsupported",
+      "bytes": 406,
+      "sha256": "c06e84a618ee9e2826027522eb69b835185a93a48777699524284bb7cab17f59",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: appended-id3."
+    },
+    {
+      "id": "ape-tag",
+      "kind": "unsupported",
+      "bytes": 416,
+      "sha256": "a81be78ca28a70eb876c9e278fd02ab79d4c14a658fea56f29cfea7d11fb8a03",
+      "status": 415,
+      "recipe": "Fixed isolated excluded-format construction in lib/fixtures.ts: ape-tag."
+    },
+    {
+      "id": "over-limit",
+      "kind": "boundary",
+      "bytes": 20971521,
+      "sha256": "21262263be8a0748607878b99005d3a9473bc19657c9b731a578be747f37cd6e",
+      "status": 413,
+      "recipe": "The exact-limit fixture plus one zero byte:20971521 bytes."
+    },
+    {
+      "id": "id3-large-padding",
+      "kind": "structural",
+      "status": 200,
+      "frameCount": 3,
+      "recipe": "22-byte title tag plus300 zero padding bytes; synchsafe body size312 and three384-byte frames.",
+      "bytes": 1474,
+      "sha256": "089089edc07ec55e81b744291fab81f90868a7aa7dab3decd268b0a14ebd0127"
+    },
+    {
+      "id": "tag-invalid-version",
+      "kind": "malformed",
+      "status": 400,
+      "recipe": "ID3 major version or revision byte is reservedFF; complete frame follows.",
+      "bytes": 406,
+      "sha256": "53b78fac264a2ca9b890fe31c19dde5a8a37f3130f1952116ca36fe7e24925a5"
+    },
+    {
+      "id": "tag-invalid-revision",
+      "kind": "malformed",
+      "status": 400,
+      "recipe": "ID3 major version or revision byte is reservedFF; complete frame follows.",
+      "bytes": 406,
+      "sha256": "a9e9fbeb63139d2742825935dce18d1c88d2c2163de4d23e788b31277f17909a"
+    }
+  ]
+}

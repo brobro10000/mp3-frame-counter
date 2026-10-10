@@ -4,8 +4,9 @@ This directory is the central reference for the MP3 File Analysis App assessment
 [formalized assessment requirements](assessment.md) and the [first application MVP release process](release-process.md)
 before planning or reviewing future work, then read the [V1 contract and choices](../mvp.md).
 
-The assessment is captured, not implemented. Recording requirements does not authorize the application phase. The
-current work is V1 planning documentation; implementation remains separately authorized by phase.
+The assessment and planning baseline are captured. The owner subsequently authorized P1–P5 execution; read the
+[execution record](../phases/execution-authorization.md) and phase evidence for current status. Requirement capture
+alone never establishes implementation or deployment completion.
 
 ## Contents
 
@@ -60,9 +61,9 @@ required alongside managed deployment and explicit production approval.
 
 Use the assessment and release amendment for their stable requirements, the unified brief for current planning scope,
 [docs/mvp.md](../mvp.md) for the normalized human-readable proposal, and [decisions](../architecture/decisions.md) for
-edge proposals and blockers. No implementation is authorized by recording this plan. The previous draft's generated
-contracts are archived under `agents/history/v1-draft/`; original foundation contracts remain under
-`agents/history/foundation/`. There is no active generated execution plan pending required reviews;
+edge proposals and blockers. Implementation authorization comes from the later explicit owner instruction. The previous
+draft's generated contracts are archived under `agents/history/v1-draft/`; original foundation contracts remain under
+`agents/history/foundation/`. Fresh active generated contracts now map the five authorized phases;
 [the orchestrator boundary](../../agents/README.md) explains why. If source and normalized wording disagree, correct the
 transcription or explicitly record a justified later amendment; never invent a requirement.
 
