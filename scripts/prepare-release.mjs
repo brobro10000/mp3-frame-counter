@@ -39,7 +39,12 @@ import {
 
 const root = process.cwd();
 const git = (args, encoding = "utf8") =>
-  execFileSync("git", args, { cwd: root, encoding, timeout: 30_000, maxBuffer: 16 * 1024 * 1024 });
+  execFileSync("git", ["--no-replace-objects", ...args], {
+    cwd: root,
+    encoding,
+    timeout: 30_000,
+    maxBuffer: 16 * 1024 * 1024,
+  });
 const write = (path, value) => writeFileSync(path, value, { flag: "wx", mode: 0o600 });
 
 try {

@@ -227,6 +227,7 @@ function pathKind(path) {
       ".mermaidignore",
       "docs/main-ruleset.json",
       "docs/review-ruleset.json",
+      "release-policy.json",
     ].includes(path)
   )
     return "governance";

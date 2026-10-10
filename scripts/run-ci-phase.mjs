@@ -52,10 +52,16 @@ try {
     const extract = (baseline) => {
       const directory = mkdtempSync(join(tmpdir(), "mp3-acceptance-"));
       temporary.push(directory);
-      const archive = run("git", ["archive", "--format=tar", baseline.suiteCommit, suitePath], root, process.env, {
-        stdio: ["ignore", "pipe", "inherit"],
-        maxBuffer: 32 * 1024 * 1024,
-      }).stdout;
+      const archive = run(
+        "git",
+        ["--no-replace-objects", "archive", "--format=tar", baseline.suiteCommit, suitePath],
+        root,
+        process.env,
+        {
+          stdio: ["ignore", "pipe", "inherit"],
+          maxBuffer: 32 * 1024 * 1024,
+        },
+      ).stdout;
       run("tar", ["-xf", "-", "-C", directory], root, process.env, {
         input: archive,
         stdio: ["pipe", "inherit", "inherit"],

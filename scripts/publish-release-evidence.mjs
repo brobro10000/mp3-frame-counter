@@ -291,6 +291,18 @@ export function requireReleaseWorkflow(workflow) {
   assert.equal(workflow.concurrency.group, "mvp-${{ github.event.pull_request.number || github.run_id }}");
   const product = workflow.jobs["validate-product"];
   const mainOnly = "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}";
+  for (const command of ["node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"]) {
+    const consumers = product.steps.filter((step) => step.run === command);
+    assert.equal(consumers.length, 1, "Require exactly one acceptance consumer command");
+    assert.deepEqual(
+      consumers[0].env,
+      {
+        GATE_ADMISSION_PATH: "${{ steps.acceptance-preflight.outputs.admission-path }}",
+        GATE_ADMISSION_SHA256: "${{ steps.acceptance-preflight.outputs.admission-sha256 }}",
+      },
+      "Consumer admission must come directly from the trusted preflight",
+    );
+  }
   const bundle = product.steps.find((step) => step.id === "release-bundle");
   assert.equal(bundle?.if, mainOnly);
   assert.equal(bundle.run, "node scripts/publish-release-bundle.mjs");
