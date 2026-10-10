@@ -5,25 +5,24 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status, 2026-10-10: **DOCS-IMPLEMENTATION, HOSTED-PROFILE-POLICY and PROFILE-DECLARATIONS are published**. The latest
-verified release is [v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26). Its required
-docs-v1 suite contains all 72 local cases and persists for descendants and reverts. Offline Redoc and the served OpenAPI
-specification shipped in v0.2.24; the profile protocol shipped in v0.2.25 and its declaration validator in v0.2.26. The
-[protected-main evidence](../phases/next-iteration.md#profile-declarations-protected-main-completion) records the actual
-sources, runs, automated approvals, images and publication limits. No application service is deployed.
+Status, 2026-10-10: **HOSTED-CONTRACT is published as
+[v0.3.28](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.28)**. Docs-v1 remains required with all 72
+local cases. Offline Redoc shipped in v0.2.24; the profile protocol and immutable declaration reader shipped in v0.2.25
+and v0.2.26. The independently authored hosted successor merged in PR #28 and published after passing main CI. Its
+separate binding remains under verification; neither candidate controls nor binding establish application hosting.
 
-The next [three-card window](../phases/next-iteration.md) is **HOSTED-DELIVERY-POLICY / LINE-03**, **HOSTED-CONTRACT**
-and **HOSTED-BIND**. The first opens the planned 0.3 line and reserves exact IaC path ownership without adding resources
-or workflow privileges. The independently authored hosted successor must preserve all 72 local obligations. Its browser
-authentication adapter uses the [reviewed bounded CDP design](../deployment/hosted-delivery-policy.md), with executable
-Linux/HTTPS, confinement, response-fidelity and cleanup controls still required before candidate freeze. Candidate
-authoring, actual binding, application activation and hosted verification stay distinct. Stacked PRs and disjoint agent
-lanes apply throughout the remaining path to v1; every production deployment retains human intervention.
+The next [three-card window](../phases/next-iteration.md) is **HOSTED-BIND**, **HOSTED-EVIDENCE** and
+**HOSTED-SOURCE-PROJECTION**. The binding records actual reviewed merge identities; separate dormant helpers validate
+hosted evidence and retain original required declaration bytes. The [binding record](../validation/hosted-binding.md)
+separates prerequisite evidence from pending checks. Later launcher, registry, access/runtime IaC and workflow changes
+remain provisional. Merge approved PRs promptly, then immediately reconcile dependents onto actual main and refresh
+checks/review. Disjoint agent lanes continue toward v1; every production application deployment retains human
+intervention.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
 [version record](../validation/release-lines.md#protected-main-publication-and-retry) preserve earlier publication and
-retry evidence. Line 0.2 is active. The [cost record](../validation/cloud-cost-bootstrap.md) records the dedicated
+retry evidence. Line 0.3 is active. The [cost record](../validation/cloud-cost-bootstrap.md) records the dedicated
 project's USD 75 Cloud Run cap and USD 100 all-service alert budget. No application service is deployed.
 
 This roadmap preserves the working assessment submission, evolves the application through bounded v0.x releases, and
@@ -505,12 +504,11 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) covers hosted delivery policy/line activation, the independent
-hosted successor and its separate actual-merge binding. Fastify, offline Redoc/docs-v1 activation and the hosted-profile
-protocol are published. PROFILE-DECLARATIONS merged at `fd0f35bca1289319ce909a4aff785251c0cd1583`; main run
-[38084476141](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38084476141) published v0.2.26. GATE-01 and
-VER-01 publication/retries are verified; each later successor still requires independent authoring, actual merge binding
-and corresponding implementation evidence. None of these milestones establishes application hosting.
+[active three-card window](../phases/next-iteration.md) covers actual hosted binding and two dormant evidence/source
+helpers. Fastify, offline Redoc/docs-v1 activation, the hosted-profile protocol and declaration reader are published. PR
+#27 opened line 0.3; PR #28 merged the independent candidate. GATE-01 and VER-01 publication/retries remain verified;
+each successor still requires independent authoring, actual merge binding and corresponding implementation evidence.
+None of these milestones establishes application hosting.
 
 ## PLAN-01 local verification — 2026-10-10
 

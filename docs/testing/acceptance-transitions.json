@@ -36,6 +36,24 @@
         "reviewedHead": "3ab053816b242ded9fcd522eda08b18dac225277",
         "reviewedTree": "88431a72ffc1ee448ad2cd22ef22a7d6d33e3cfe"
       }
+    },
+    {
+      "id": "hosted-v1",
+      "predecessor": "docs-v1",
+      "contractRevision": "hosted-v1",
+      "contractPath": "docs/testing/contracts/hosted-v1.md",
+      "contractSha256": "892e2f11bbae0d291a1ae82340acfc40a94f68fed265ce811e7565f623396949",
+      "suiteCommit": "4c2733ea2efa469b8e4718d8763b234ab92876e4",
+      "suiteTree": "343fc6c3d7abadcba2605ed1fb31b0f6ec4f883a",
+      "manifestSha256": "130e728e0cf43282b6a4d16108dcc8c3a44bd4e4e8030d7828ddfa00df8f0ae4",
+      "review": {
+        "repository": "brobro10000/mp3-frame-counter",
+        "pullRequest": 28,
+        "reviewId": 5480947557,
+        "reviewer": "brobro1000",
+        "reviewedHead": "711e96c0900e8d88d1c0bb20a6164d37668b3e0e",
+        "reviewedTree": "1a86e1f81226228d3661f33bc70bb38a33653b52"
+      }
     }
   ]
 }
