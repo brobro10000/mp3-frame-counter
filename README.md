@@ -27,11 +27,12 @@ milestone.
 
 **Documentation release, 2026-10-10:** v0.2.24 shipped offline Redoc at `/docs/` and OpenAPI 3.0.3 at
 `/docs/openapi.yaml`. The renderer is packaged in the API image; NGINX applies its scoped policy through the same
-origin. Protected-main CI passed 120 units and all 72 required docs-v1 external cases. The latest verified release is
-[v0.2.26](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.26), which implements dormant profile
-declaration validation on top of v0.2.25's hosted-profile protocol. Read the
-[completion record](docs/phases/next-iteration.md#profile-declarations-protected-main-completion) for exact publication;
-local/CI success is separate from hosting. No application service is deployed.
+origin. Protected-main CI passed 120 units and all 72 required docs-v1 external cases. Profile declaration validation
+shipped in v0.2.26 on top of v0.2.25's hosted-profile protocol. The latest verified release is
+[v0.3.27](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.27), opening the hosted-delivery line with
+dormant exact IaC path admission. Read the
+[completion record](docs/phases/next-iteration.md#hosted-delivery-policy--line-03-protected-main-completion) for exact
+publication; local/CI success is separate from hosting. No application service is deployed.
 
 ## Local application
 
