@@ -5,18 +5,18 @@ automatic stage delivery. [The execution amendment](../phases/roadmap-execution-
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning
 snapshot and its verification claims remain historical.
 
-Status: **DOCS-CONTRACT merged; v0.2.21 publication verified; DOCS-BIND proposed**. The
-[candidate publication record](../validation/docs-binding.md) identifies the actual squash, exact-head automated
-companion approval, protected-main run, distinct 46 candidate controls/72 discovered cases, 82 unit tests, 67 required
-transport cases and release metadata. transport-v1 remains required. Binding review, merge and publication remain
-pending; no documentation product acceptance or deployment is claimed.
+Status: **DOCS-BIND merged; v0.2.22 publication verified; DOCS-TOOL-POLICY in progress**. The
+[binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) records PR #22,
+exact-head automated companion approval, the actual squash and protected-main publication. Main passed 46 pending
+controls/72-case discovery, 82 unit tests and all 67 required transport cases. Transport-v1 remains required and docs-v1
+is the single pending bound successor. No docs product acceptance or deployment is claimed.
 
-The next three cards are **DOCS-BIND, DOCS-TOOL-POLICY and DOCS-IMPLEMENTATION**. The
+The next three cards are **DOCS-TOOL-POLICY, DOCS-IMPLEMENTATION and HOSTED-PROFILE-POLICY**. The
 [browser prerequisite](../validation/acceptance-browser-setup.md#protected-main-completion--2026-10-10) published in
 v0.2.20. The independent docs candidate selects local Redoc CE 2.5.4 without a CLI, docs-only CSP and finite retained
 live-document observation; read its [disposition](../../tests/acceptance/fixtures/docs/docs-01-disposition.md) for
-limits and authority. Binding and tool-policy publication precede product dependency/build/route/CSP changes. No docs
-route or renderer is implemented in the released application yet.
+limits and authority. The binding is published; tool-policy publication still precedes product
+dependency/build/route/CSP changes. No docs route or renderer is implemented in the released application yet.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and
@@ -452,9 +452,9 @@ resources, protected state, reproducible setup and guarded teardown as part of h
 | Gate          | Default and current boundary                                                                                                         | Owner / blocked work                                        |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
 | POLICY-01     | PLAN-01 merged in PR #8; continued bounded implementation and clean reviewed merges are authorized by the execution amendment.       | Owner + coordinator; preserve card scope and prerequisites. |
-| GATE-REVIEW   | GATE-01 verified; PR #19/v0.2.19 activated transport-v1. No successor is pending; preserve independent transitions.                  | Independent gate reviewer + owner; later transitions.       |
+| GATE-REVIEW   | GATE-01 verified; transport-v1 remains required. PR #22/v0.2.22 bound docs-v1 as the single pending successor.                       | Independent gate reviewer + owner; later transitions.       |
 | VERSION-01    | Source-bound minor plus global ordinal implemented and verified; 0.2 activation and first publication verified.                      | Release reviewer + owner; line changes.                     |
-| DOCS-01       | Pin/test local renderer and scoped CSP; resolve dynamic-style handling before activation.                                            | Acceptance author + security reviewer; docs activation.     |
+| DOCS-01       | Bound docs-v1 selects Redoc CE 2.5.4 and scoped CSP with finite observation; actual product activation remains pending.              | Acceptance author + security reviewer; docs activation.     |
 | QUEUE-01      | Reconciliation/backfill first; no compatible extended-queue linter verified.                                                         | Release/tooling owner; QUEUE-WORKFLOW only.                 |
 | COST-01       | Billing/IaC authorized; dedicated project, USD 75 Run cap and USD 100 alert budget verified. Recheck before billable app operations. | Owner + deployment operator; paid resources/hosting.        |
 | ACCESS-01     | Dedicated resources, short-lived federation, environment identities and authenticated prelaunch access.                              | Owner + deployment operator; setup/exposure.                |
@@ -503,10 +503,11 @@ Codex and the private plugin, whose direct Python executor has a separate timeou
 Future generated-plan migration requires its own bounded milestone, inspected installed contracts, exact input/output
 scope, recoverable migration and direct validation. A blocked generated operation never blocks this Markdown roadmap.
 Only human-readable documents and diagram sources were persisted by PLAN-01. It is now merged; the
-[active three-card window](../phases/next-iteration.md) advances the DOCS-HARNESS browser prerequisite, independent
-docs/CSP candidate authoring and its separate actual binding. Fastify and its prerequisite cards are complete. GATE-01
-and VER-01 publication/retries are verified; each later successor still requires independent authoring, actual merge
-binding and corresponding implementation evidence.
+[active three-card window](../phases/next-iteration.md) advances the selected Redoc tool policy, bound documentation
+implementation and the dormant hosted-profile prerequisite. Browser preparation, the docs/CSP candidate and its binding
+are published. Fastify and its prerequisite cards are complete. GATE-01 and VER-01 publication/retries are verified;
+each later successor still requires independent authoring, actual merge binding and corresponding implementation
+evidence.
 
 ## PLAN-01 local verification — 2026-10-10
 

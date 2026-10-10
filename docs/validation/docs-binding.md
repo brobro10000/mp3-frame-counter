@@ -1,6 +1,10 @@
-# DOCS-BIND candidate publication evidence
+# DOCS-BIND publication and binding evidence
 
-## Status — 2026-10-10
+**Current status:** PR #22 completed this binding and published v0.2.22; see the
+[protected-main completion](#protected-main-binding-completion--2026-10-10). Earlier proposal and local-only statements
+below preserve their original chronology. Transport-v1 remains required; docs-v1 is pending, with no product activation.
+
+## Original proposal status — 2026-10-10
 
 This change proposes the separate binding of the published `docs-v1` candidate. Its own binding CI, exact-head approval,
 merge and protected-main publication are pending. It adds no product capability. The candidate was published by
@@ -181,3 +185,88 @@ The focused log SHA-256 is `3fd05653f08fcc12242466abb340d798c1e590f504c739464508
 log is `e4db3a0c80ce5f596b77ef8dbed427fb00087c907239d06661607cb22feb1abf`. These local checks do not rerun image-bound
 application acceptance or establish protected-main publication. Final PR/main CI, exact-head companion review and actual
 binding publication remain required.
+
+## Protected-main binding completion — 2026-10-10
+
+[PR #22](https://github.com/brobro10000/mp3-frame-counter/pull/22) completed DOCS-BIND. The exact reviewed head was
+`d171cba95ca2865d69696600efba34ec9cbcf9e2`; its complete Git tree `f233617625df23ddb844e1a734431ee84084f1e6` equals the
+actual squash `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6`. Its sole parent is `351d2e5b998f882287c4c5e4bb41427d4ad5c41e`.
+The normal owner squash completed at `17:19:07Z`, without a review override. The twelve-path diff contained the single
+binding append and documentation only; previous registry, suite, contract, genesis, product, executable and workflow
+bytes were preserved.
+
+The actual Docker companion run `20261010T171049-1e5ca8bc` reviewed all twelve changed files and returned approval with
+no findings or human-assistance requirement. Its report SHA-256 is
+`28bb332f7f6f5d221bf072822e429815546a352233bd4e6e38794c7432dca0f3`. The publisher separately revalidated current state
+and submitted
+[automated approval 5480053623](https://github.com/brobro10000/mp3-frame-counter/pull/22#pullrequestreview-5480053623)
+as `brobro1000` at `17:18:29Z`. Root verified the exact approval/head, successful mandatory checks, current clean base
+and complete resolved-conversation state before merging as `brobro10000`. This is automated independent review, not
+human review.
+
+### Actual CI and selection
+
+[PR run 38070313416, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38070313416/attempts/1)
+passed on synthetic merge `556f00252a33b0e12c4450f91b0278294657b704`; its parents are the actual base and reviewed head,
+and its complete tree equals the reviewed tree. Foundation, product and control-plane jobs passed; publication and
+foundation-delivery jobs were skipped as intended for the PR.
+
+[Protected-main run 38071238087, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38071238087/attempts/1)
+passed on the actual squash. Foundation `114268907224`, product `114268907378`, control-plane `114269785372` and
+publisher `114269824252` succeeded; foundation delivery was skipped. Both validation jobs ran trusted admission before
+`npm ci`. Pending docs and required transport each completed package-local Linux browser preparation before standalone
+checks. Node was 24.20.0, npm 11.19.0, Playwright 1.64.0 and Chromium 156.0.8078.4/revision 1248.
+
+Main reported **46 passing pending controls and exact 72-case discovery**, separately from **82 passing unit tests and
+all 67 required transport application cases**, with zero failures/skips/retries and passed scoped cleanup. Foundation
+passed **459 tooling tests, 20 gate tests and 19 Mermaid renders**, formatting, policy, portability, workflow and
+Terraform checks. Preparation and pending controls do not establish docs application behavior.
+
+The product, control-plane and publisher retained original base `351d2e5b998f882287c4c5e4bb41427d4ad5c41e` and agreed on
+admission SHA-256 `0ee2aab3a6a0a574e21b82a855be022a0d50100b984325df761dd13ccc718f91`. The published admission resolves
+**binding**, **transport-v1 required**, **docs-v1 pending**, no candidate and no docs activation. The binding commit is
+the actual squash. Its null `activationCommit` describes the newly pending transition; it does not erase the earlier
+required transport identity. Root's initial local diagnostic incorrectly expected the old transport activation SHA in
+this field; inspection of the existing resolver corrected the observer, without changing policy or evidence. Missing
+authenticated binding observations still failed closed.
+
+The same-run handoff artifact `11676568185` has upload/download digest
+`8e0a15e32053da500052b9ff1aa0f8aa38c927fbd5410163e1ea89516c8f8c70`. This is the CI bundle archive identity, distinct
+from Docker image IDs and any future registry digests. Root rehashed the independent main audit's thirteen retained
+records and matched 48 exact log citations; audit verification SHA-256 is
+`fb21a709a09e4f03c5eda37cc1649a751ec181224016cd6a3c9022ad902418b7`.
+
+### Verified publication and limits
+
+The allocator/publisher produced [v0.2.22](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.2.22),
+release `409093836`, at `2026-10-10T17:24:22Z`. The tag/source is the actual squash, with ten assets. Publisher reported
+`released-not-deployed`, `deployed: false`, `reused: false` and binding SHA-256
+`21c68726d430969d0eb7643cd68fca5aa4ee68573bc6f53538e6b1e084965223`. Preparation retains its original provisional,
+non-deployable `prepared-local` statements.
+
+Root independently downloaded and rehashed eight bounded metadata assets against the GitHub-reported sizes/digests,
+verified actual source/base/run/attempt and admission, and checked required-suite, image/configuration and reservation
+agreement. Recorded Docker image IDs are:
+
+- API: `sha256:76097267625d49e84f42f04f09d2d1a914fbf66e78a740f5f6ecf0b9235f5cf8`.
+- Frontend: `sha256:cde7988809c86d5ce43008d9f6b1db2d043e4e470d730556707044784c9e1886`.
+
+| Metadata asset         | SHA-256                                                            |
+| ---------------------- | ------------------------------------------------------------------ |
+| `SHA256SUMS`           | `0a8b5db533d5388783f3f2b17cd7f75ab9f768eae9ff22f9e3019b3a5ea6f006` |
+| `ci-origin.json`       | `15a5a52a38f01a3630d8a4302a9cee3c5efeffd4012e1fcd508501a1c73d95a7` |
+| `e2e-result.json`      | `16584e2650d1e2da70c6f73399c4bb700d68727c7c048038d881117166ce1126` |
+| `manifest.json`        | `089d72cd8a44ad4ab4e45b4a54a01bdcab669fc874477cfe68835e4b40221f28` |
+| `publication-notes.md` | `0ac30400a475b2b8bf43a10ce96090fc3817ca421b5c4e75f4f4e353d49fdbba` |
+| `publication.json`     | `2f5c4ebe5937afaabf77482d90feaa681f27e377e7b3edb8355c5517895a52fd` |
+| `release-notes.md`     | `835ab83dc956b4691f0aec63a7390ccb6b4da636b34ceae5488bd977c059a865` |
+| `reservation.json`     | `e1e678b4d9402bd0e633bba5c296251501c16900ab3102d80d0876f49734fd68` |
+
+Root verification SHA-256 is `f493e61a33eb1a6426a8934cc921f29f0701a96c072bb26fcfab640d53f582b3`. Image archives were not
+downloaded/rehashed; archive identities remain metadata checks. The independent CI audit read actual job logs, not raw
+control reports, admission artifacts or runner process inventories. Scoped cleanup is the harness result; source-local
+resolver parity alone is not CI authority. No publication retry, registry transfer or deployment occurred.
+
+DOCS-BIND is complete. The next governance card may independently admit the selected Redoc build-tool metadata while
+transport remains required and docs pending. Actual tool-policy publication still precedes root dependency, build,
+asset, route and CSP implementation. Those product changes must activate and pass the frozen docs-v1 successor.

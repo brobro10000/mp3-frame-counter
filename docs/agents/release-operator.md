@@ -5,9 +5,10 @@ supersedes the historical deployment deferral and documentation-only PLAN-01 lan
 work is authorized; production application deployment remains a human gate. The shipped release-only behavior is not
 evidence of stage deployment. Follow the [transition guide](../testing/acceptance-transition.md): transport-v1 is required
 after PR #19/v0.2.19. Browser setup and the docs-v1 candidate are published in v0.2.20 and v0.2.21. The
-[separate docs binding](../validation/docs-binding.md) is proposed here; its review, merge and publication remain
-pending. Binding-only and intervening governance releases keep transport-v1 required and docs-v1 pending. Preserve
-exact admission, source, run and suite identities; candidate controls do not satisfy product acceptance.
+[docs binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
+PR #22/v0.2.22. Intervening governance releases keep transport-v1 required and docs-v1 pending. Verify the actual
+tool-policy source and unchanged selection before product adoption; candidate controls do not satisfy product
+acceptance. Preserve original-base admission, exact source/run/suite/image identities and immutable retry evidence.
 
 Purpose: publish one verified repository release under [P5](../phases/05-managed-deployment.md), the
 [release-only process](../deployment/release-only.md) and amended [requirements](../requirements/release-process.md).

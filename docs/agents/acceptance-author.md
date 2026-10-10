@@ -6,9 +6,10 @@ implementation. Follow the [transition guide](../testing/acceptance-transition.m
 with 67 required external cases. Its
 [completion evidence](../validation/fastify-transport.md#protected-main-completion) verifies protected-main publication.
 DOCS-HARNESS published in v0.2.20; the independent docs-v1 candidate published in PR #21/v0.2.21. Its
-[separate binding](../validation/docs-binding.md) is proposed here and remains pending review, merge and publication.
-Preserve the frozen candidate; binding and later tool policy precede docs product implementation. Candidate controls
-and discovery do not activate a contract or establish product acceptance.
+[separate binding](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10) published in
+PR #22/v0.2.22. Preserve the frozen suite; transport remains required and docs-v1 is pending. Independently reviewed
+tool-policy expectations precede policy implementation and publication, which precedes docs product work. Candidate
+controls and discovery do not activate a contract or establish product acceptance.
 
 Purpose: establish independent executable acceptance evidence in separately authorized P2, before product code. Read
 [MVP](../mvp.md), [contract](../testing/acceptance-contract.md),

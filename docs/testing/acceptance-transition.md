@@ -9,9 +9,10 @@ binding. PR #19 activated it at `f4fb747df8890511edde7878064bb9af79823138`. Prot
 [activation completion](../validation/fastify-transport.md#protected-main-completion). **transport-v1 remains required
 for descendants.** DOCS-HARNESS published in v0.2.20. The independent docs-v1 candidate merged as
 `351d2e5b998f882287c4c5e4bb41427d4ad5c41e` in PR #21 and published v0.2.21 with separate 46-control/72-case discovery
-evidence. This change proposes its actual binding with predecessor transport-v1; binding review, merge and publication
-remain pending. See the [candidate and binding record](../validation/docs-binding.md). After binding, intervening
-governance keeps transport-v1 required; the next product change must pass docs-v1 and activate it persistently.
+evidence. PR #22 bound that candidate at `cfafcbe3e0bd33af2c95ccd9b4aee4f0c07960e6` and published v0.2.22. See the
+[binding completion](../validation/docs-binding.md#protected-main-binding-completion--2026-10-10). Transport-v1 remains
+required and docs-v1 is the single pending successor. Intervening governance retains that selection; the next product
+change must pass docs-v1 and activate it persistently.
 
 The [genesis record](baseline.json), historical suite objects and
 [transport binding-only evidence](../validation/transport-binding.md#protected-main-binding-publication) remain
