@@ -112,6 +112,14 @@ export function assertStragglerOutcome(outcome: Outcome, started: number, deadli
   if (outcome.kind === "response")
     assert.notEqual(outcome.response.status, 200, "Unfinished upload produced partial success");
 }
+/**
+ * Observe an unfinished upload's actual socket-closure promise (openUpload().closure), using the monotonic
+ * performance.now() timestamp taken when SIGTERM was requested and the previously validated target/generation.
+ * Poll the supplied bounded state-read callback within the remaining shutdown window; only 409 reads are retried.
+ * Resolve only for timely closure without partial success and normal exit of that same identity. Reject missing/late
+ * closure, invalid readback, changed identity, abnormal exit or deadline expiry; this does not certify graceful drain.
+ * Observation timeouts do not cancel underlying work. The caller owns socket cleanup and service restoration in finally.
+ */
 export async function observeShutdown(
   initial: Identity,
   outcome: Promise<Outcome>,

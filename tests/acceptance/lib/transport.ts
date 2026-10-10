@@ -16,6 +16,11 @@ export const SHUTDOWN_MS = 8_000;
 export type Outcome = { kind: "response"; response: ResponseData; at: number } | { kind: "closed"; at: number };
 export type First = { kind: "continue"; at: number } | Outcome;
 
+/**
+ * Observe a supplied promise for at most the given milliseconds, returning its value or propagating its rejection.
+ * On expiry, reject with the supplied message and clear only this helper's timer. The underlying work is not canceled;
+ * its owner remains responsible for cancellation and resource cleanup after either outcome.
+ */
 export async function within<T>(promise: Promise<T>, milliseconds: number, message: string): Promise<T> {
   let timer: ReturnType<typeof setTimeout>;
   try {
@@ -31,6 +36,14 @@ export async function within<T>(promise: Promise<T>, milliseconds: number, messa
 }
 export const delay = (milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 
+/**
+ * Immediately send headers to the validated API origin using the supplied path/method/header/body-length options.
+ * No body is sent until the caller uses write/end. first resolves on Continue or a terminal outcome; outcome resolves
+ * on a complete response or premature closure; closure resolves only on actual socket closure, retaining any response
+ * status/headers seen even if its body was incomplete. Transport errors resolve as closed outcomes, not rejections.
+ * Invalid request setup can throw synchronously. No deadline is installed: callers must bound observations and call
+ * close in finally, after collecting any required peer-closure evidence; client cleanup cannot establish that evidence.
+ */
 export function openUpload(
   origin: string,
   options: {
