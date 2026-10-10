@@ -1,0 +1,9 @@
+# The API build needs only its lockfile, compiler configuration and source.
+**
+!package.json
+!package-lock.json
+!tsconfig.json
+!server
+!server/src
+!server/src/**
+!server/Dockerfile

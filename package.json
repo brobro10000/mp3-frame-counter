@@ -2,7 +2,7 @@
   "name": "mp3-frame-counter",
   "version": "0.0.0",
   "private": true,
-  "description": "Repository foundation for a future TypeScript MP3 assessment",
+  "description": "MP3 physical-frame counter with independent acceptance and verified delivery",
   "type": "module",
   "engines": {
     "node": "24.20.0",
@@ -16,15 +16,28 @@
     "check:policy": "node scripts/policy.mjs",
     "check:portability": "node scripts/check-portability.mjs",
     "test:gate": "node --test scripts/ci-gate.test.mjs",
-    "test:tooling": "node --test scripts/github-context.test.mjs scripts/portability.test.mjs scripts/phase-policy.test.mjs scripts/acceptance-baseline.test.mjs",
-    "validate": "npm run format:check && npm run lint:workflows && npm run check:policy && npm run check:portability && npm run test:gate && npm run test:tooling",
+    "test:tooling": "node --test scripts/github-context.test.mjs scripts/portability.test.mjs scripts/phase-policy.test.mjs scripts/acceptance-baseline.test.mjs scripts/e2e-controller.test.mjs scripts/release-preparation.test.mjs scripts/mermaid.test.mjs scripts/publish-release.test.mjs",
+    "validate": "npm run format:check && npm run lint:workflows && npm run check:policy && npm run check:portability && npm run check:mermaid && npm run test:gate && npm run test:tooling",
     "verify:github": "node scripts/verify-github.mjs",
     "artifact:foundation": "node scripts/package-foundation.mjs",
     "check:phase": "node scripts/run-ci-phase.mjs",
-    "test:acceptance:harness": "npm --prefix tests/acceptance run check"
+    "test:acceptance:harness": "npm --prefix tests/acceptance run check",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:unit": "node --test tests/unit/*.test.ts",
+    "test:e2e": "node scripts/run-e2e.mjs",
+    "prepare:release": "node scripts/prepare-release.mjs",
+    "publish:release": "node scripts/publish-release.mjs",
+    "mermaid:install": "puppeteer browsers install chrome@155.0.8059.39",
+    "check:mermaid": "node scripts/check-mermaid.mjs"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "12.0.0",
+    "@types/node": "24.19.2",
+    "markdown-it": "15.0.2",
     "prettier": "3.9.9",
+    "puppeteer": "25.13.0",
+    "typescript": "7.0.2",
     "yaml": "2.9.1"
   }
 }

@@ -1,0 +1,174 @@
+# Mermaid validation and repair
+
+Date: 2026-10-09. Scope: all repository Mermaid diagrams, including supplied planning views and archived documentation.
+This evidence concerns diagram syntax and rendering, not application acceptance, deployment or human approval. It
+supports APP-EVAL-004/008 and APP-V1-008/010 through repeatable tooling, documented evidence and mandatory CI.
+
+## Diagnosis and correction
+
+The previous workflow validated Markdown formatting but did not run a Mermaid parser or renderer. The original
+[planning record](v1-planning.md#mermaid-boundary) correctly left independent rendering unverified; a successful display
+connector response was insufficient evidence.
+
+The four sequence diagrams contained five literal semicolons in message or note text. Mermaid treats semicolons as
+statement separators; the
+[official sequence syntax](https://mermaid.js.org/syntax/sequenceDiagram.html#entity-codes-to-escape-characters)
+requires `#59;` when displaying a semicolon. The correction preserves the displayed wording and changes no architecture
+or requirement. Semicolons inside quoted flowchart labels remain unchanged.
+
+| Document                                                                       | Diagram count | Corrected sequence text        |
+| ------------------------------------------------------------------------------ | ------------- | ------------------------------ |
+| [Active architecture](../architecture/v1.md)                                   | 5             | Retry message and ingress note |
+| [V1 supplied brief](../requirements/sources/v1-planning-brief.md)              | 3             | Oversize note                  |
+| [Unified supplied brief](../requirements/sources/unified-planning-brief.md)    | 5             | Oversize note                  |
+| [Archived architecture](../../agents/history/v1-draft/docs/architecture/v1.md) | 3             | Aborted-body note              |
+
+## Reproduction
+
+The original Git revision `0e8d4726c331a65d64911e713b814252ae62fcb6` was extracted with `git show` and passed through
+Mermaid CLI 12.0.0, locked Mermaid 12.1.0 and Puppeteer 25.13.0 with Chrome 155.0.8059.39. Of 16 discovered diagrams, 12
+rendered and all four sequence diagrams produced parser errors. The
+[before-repair report](artifacts/mermaid-before.json) records every diagram location, source hash and actual error.
+
+## Repeatable check
+
+From a checkout using pinned Node 24.20.0/npm 11.19.0:
+
+```sh
+npm ci
+npm run mermaid:install
+npm run check:mermaid
+node --test scripts/mermaid.test.mjs
+npm run validate
+```
+
+`check:mermaid` discovers Git-tracked Markdown fences with CommonMark, including nested/tilde fences, and standalone
+`.mmd`/`.mermaid` files. Stage new diagram documents before running it. It renders each diagram with the pinned official
+CLI in sandboxed Chrome, blocks non-package resource requests, reports file/line diagnostics and fails on zero
+discovery, missing tools, invalid diagrams or render failures. It writes SVGs and `result.json` to ignored
+`.artifacts/mermaid/`. No source rewriting or syntax normalization hides errors.
+[Toolchain setup](../toolchain.md#mermaid-rendering-tools) describes the explicit browser installation and Ubuntu
+AppArmor profile.
+
+The corrected documents produced **16/16 SVGs**, including all four sequence diagrams, with no parse/render failures.
+The [after-repair report](artifacts/mermaid-after.json) records each tested source hash. All four sequence SVGs were
+also opened as browser-rendered images and visually checked for participants, nested alternatives, responses and the
+restored semicolon text. GitHub uses its own Mermaid version; this is concrete local renderer evidence, not a claim that
+its hosted preview was inspected.
+
+The mandatory `validate-foundation` job installs the pinned browser and runs `npm run validate`, which now includes both
+diagram rendering and its regression checks. A diagram failure therefore fails the existing required `control-plane`
+gate. The separate product ancestry/acceptance gate is unchanged. At that repair revision, product shipping was still
+blocked because the independent baseline was absent from main. P2 later merged as `a0a56d9`, and the reconciled product
+passed PR CI; see [current progression](execution-status.md).
+
+## Executed checks and review
+
+- `npm ci` reproduced the locked development dependency graph. Its four low-severity upstream findings are recorded in
+  [toolchain notes](../toolchain.md#mermaid-rendering-tools).
+- `npm run validate` passed formatting, workflow lint, policy, portability, 16/16 diagram renders and all **72**
+  gate/tooling cases (20 terminal-gate cases and 52 tooling cases, including eight new Mermaid cases), with no failures
+  or skips.
+- The first broad pass exposed a machine-path-looking literal in the new negative test. The test now constructs its
+  remote-host URL from a temporary fixture at runtime. The portability guard stayed unchanged; the complete rerun
+  passed.
+- `npm run typecheck`, `npm run build` and all **75** application unit tests passed after the clean dependency install.
+  Product source and the frozen independent acceptance package were unchanged; full container E2E was not repeated for
+  this documentation/tooling repair.
+- Independent read-only review passed for the validator, negative controls, workflow/policy binding and original-byte
+  preservation. Agent review is not GitHub human approval. Hosted results must be checked on the exact
+  [PR #5 head](https://github.com/brobro10000/mp3-frame-counter/pull/5/checks), separately from these local
+  observations.
+
+## Provenance
+
+The three supplied/archived originals are retained byte-for-byte as adjacent `.original.txt` captures. The existing
+Markdown paths are clearly labeled rendering derivatives, preserving existing links. Their only changes are the
+provenance banner and semicolon escapes. The [source register](../requirements/README.md#source-register) retains the
+original checksums. The [archive manifest](../../agents/history/v1-draft/manifest.json) retains its original path, hash
+and mode, with `captured_path` identifying the original architecture bytes. Verification of all 17 archive hashes and
+modes passed; all three captures matched their pre-repair Git blobs exactly.
+
+Raw `.original.txt` captures remain historical input, not executable diagram documents. Every corrected Markdown fence
+is subject to validation, including historical and supplied views; no invalid Markdown is grandfathered or skipped.
+
+## Mermaid connection and GitHub check
+
+The Mermaid Diagram Sync Assistant is installed. Its observed
+[check on the P1 revision](https://github.com/brobro10000/mp3-frame-counter/commit/445e374f3410f43296b9508e28d5f8d0f375120b/checks)
+completed as **skipped**, with “No Diagrams to Update”: no diagram referenced a changed source file. At that revision
+the repository used Markdown fences without linked standalone `.mmd` files. The app's
+[documented purpose](https://mermaid.ai/docs/ai/github-app) is to regenerate source-linked diagrams and commit updates
+to PRs. That is separate from syntax validation. No app settings, account credits or automatic rewriting were enabled by
+that syntax repair. The mandatory repository check runs without an account, connector, Codex or private plugin.
+
+## Source-sync setup
+
+The owner subsequently authorized enabling source-linked updates. The three implemented runtime, upload and release
+views now live in [canonical standalone files](../architecture/diagrams/README.md), with exact source references and
+scope queries in YAML frontmatter. Their former Markdown copies are replaced by links to avoid drift after bot commits.
+The two manual planning views stay in the architecture page; its active release flow now reflects SRC-RELEASE-ONLY.
+
+The root `.mermaidignore` allows automatic updates only to those three `.mmd` files. Requirements captures, archived and
+generated agent artifacts, validation evidence and the frozen acceptance package are excluded from regeneration.
+Mandatory rendering still discovers all **16** diagrams: three standalone implemented views and thirteen Markdown
+fences. No validation gate, dependency, baseline, permission or release trigger changes are needed.
+
+The metadata follows the first-party
+[writer and path resolver](https://github.com/Mermaid-Chart/vscode-mermaid-chart/blob/7ac3d0242002113af58e19515590b6ffaa3d39df/src/frontmatter.ts#L185-L307).
+The [GitHub app documentation](https://mermaid.ai/docs/ai/github-app) describes source matching and `.mermaidignore`.
+Local source-reference checks and SVG renders validate repository setup; successful live app recognition and any bot
+commit must be observed separately on the PR head before claiming automatic synchronization works.
+
+Local setup verification passed: all 19 references resolve to tracked source files; a Gitignore-style scope probe
+allowed the three opted-in diagrams and representative product/workflow sources while excluding unregistered diagrams
+and protected inputs. `npm run validate` passed 16/16 renders, formatting, workflow lint, policy, portability, 20 gate
+tests and 62 tooling tests. Requirements, archives, acceptance bytes, product code and CI gates were unchanged. The
+[PR checks](https://github.com/brobro10000/mp3-frame-counter/pull/5/checks) and PR validation section record the live
+integration outcome separately.
+
+## Controlled sync probe
+
+On 2026-10-10 UTC the owner requested a simulated diagram change to exercise the integration. The runtime view's
+internal frontend listener label was temporarily replaced with `listener pending sync`; all 16 diagrams still rendered.
+The [diagram-only check](https://github.com/brobro10000/mp3-frame-counter/runs/114094435345) at `a7ed94d` skipped
+because no referenced source changed. This is expected source-trigger behavior, not a parser failure.
+
+A documentation-only comment in `compose.yaml` then clarified that NGINX listens on container port 8080 while
+`FRONTEND_PORT` controls the host binding. No executable setting or application behavior changed. The resulting
+[source-triggered check](https://github.com/brobro10000/mp3-frame-counter/runs/114094657076) at `6b9993e` succeeded with
+**Updated 1 Diagram**, consumed one Mermaid AI credit, and created
+[bot commit 407f084](https://github.com/brobro10000/mp3-frame-counter/commit/407f08493430791678158ca5eb3e7b498808f5ef).
+The commit changed only `runtime.mmd`; GitHub Actions started again on that bot head.
+
+Inspection found that the bot rewrote frontmatter formatting, added its actual generation timestamp and changed final
+newline handling, but left the diagram body and temporary label unchanged. The listener was therefore restored to
+`:8080` manually. The probe proves source-reference matching, app execution, bot write-back and CI re-entry. It does
+**not** establish that AI repairs every stale label. Review actual generated changes, retain mandatory rendering and
+require fresh CI on the final corrected head. The useful Compose comment remains; no simulation placeholder, application
+behavior change, requirement/archive modification or frozen-baseline amendment remains.
+
+After restoration, `npm run validate` again passed all 16 renders and all 82 gate/tooling tests, with formatting, lint,
+policy and portability checks green. Independent read-only review confirmed the bot's diagram body was unchanged and the
+Compose configuration parsed identically before and after the comment. Final hosted evidence is linked from the PR.
+
+## Docker boundary clarification
+
+The subsequent documentation audit compared the three implemented views with both Dockerfiles, Compose and the
+acceptance controller. The runtime view now nests exactly two application containers: NGINX and static files in the
+frontend container, and the HTTP handler plus parser in one Node process in the API container. It distinguishes the
+published frontend port, private Compose upstream and temporary test-only API diagnostic binding. Browser JavaScript,
+Playwright/Chromium and the Docker controller execute outside those containers.
+
+The upload sequence uses container boxes, and the release view distinguishes the API's TypeScript build stage, minimal
+runtime image, running test containers and exported image archives. It describes the current integrated application; the
+earlier source-only foundation delivery path remains documented separately. Artifact publication is not deployment.
+
+The manually maintained future-hosting proposal also places HTTP and parsing inside the same API container and process.
+It retains the unverified provider-fit boundary and does not imply a third parser service or an existing deployment.
+
+The upload view now also references both Dockerfiles and Compose, bringing the source-reference total from 19 to 22. All
+references resolve to tracked source files. All **16/16** diagrams rendered, and the updated canonical and
+future-hosting SVGs were inspected as browser-rendered images for readable labels and container/process boundaries.
+Independent read-only source review confirmed those boundaries. The runtime file retains the prior bot generation
+timestamp; these edits were manual and do not represent another source-triggered AI regeneration.

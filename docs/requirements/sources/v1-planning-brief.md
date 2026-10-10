@@ -1,5 +1,9 @@
 # MP3 Frame Counter — V1 Definition and Phased Delivery
 
+> Rendering correction, 2026-10-09: this Markdown escapes Mermaid sequence-text semicolons only.
+> The [byte-exact original](v1-planning-brief.original.txt) retains the recorded source hash.
+> This syntax repair does not change requirements, historical claims or execution authority.
+
 Use the installed `codex-mvp-orchestrator` plugin to capture and plan the following project. V1 means the first functional MVP described here, not a required release number or the orchestrator's version.
 
 ## 1. This task: definition and planning only
@@ -258,7 +262,7 @@ sequenceDiagram
     end
     Frontend-->>Browser: Preserve API status and JSON
     Browser-->>User: Display count or readable error
-    Note over Frontend,API: NGINX may reject oversize requests before API; return JSON 413
+    Note over Frontend,API: NGINX may reject oversize requests before API#59; return JSON 413
     Note over API,Parser: No MediaInfo invocation and no retained upload
 ```
 

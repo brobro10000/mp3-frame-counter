@@ -1,0 +1,64 @@
+# Two local runtime services. Only the frontend is published; acceptance diagnostics use a temporary isolated binding.
+name: mp3-frame-counter
+services:
+  api:
+    user: "1000:1000"
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      PORT: "3000"
+    expose:
+      - "3000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=8m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 64
+    stop_grace_period: 7s
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/healthz').then(async r=>{if(r.status!==200||(await
+          r.json()).status!=='ok')process.exit(1)}).catch(()=>process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 3s
+  frontend:
+    user: "101:101"
+    build:
+      context: frontend
+    environment:
+      # NGINX listens on 8080 inside the container; FRONTEND_PORT changes only the published host port.
+      PORT: "8080"
+      API_UPSTREAM: api:3000
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-8080}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 64m
+    cpus: 0.5
+    pids_limit: 32
+    stop_grace_period: 7s
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 3s

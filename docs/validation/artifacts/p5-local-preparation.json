@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "status": "prepared-local",
+  "deployable": false,
+  "versionProvisional": true,
+  "version": "0.1.10",
+  "ordinal": 10,
+  "platform": "linux/amd64",
+  "sourceRevision": "2adf71b447bfee9b78e9bdfc2b29566af894d0fe",
+  "preparationRevision": "b99b292c55b5fc114911829a896d309c8c1900f6",
+  "reservationSha256": "15fcd28cb4d5f71dbb1b060c42751990d71a9c77af993112b1a6774a4575b60c",
+  "identity": {
+    "version": "0.1.10",
+    "ordinal": 10,
+    "platform": "linux/amd64",
+    "evidence": {
+      "sourceRevision": "2adf71b447bfee9b78e9bdfc2b29566af894d0fe",
+      "suiteCommit": "28c2a9c548f872dac54d9395a8ca0ed852f82240",
+      "suiteTree": "b789ffe426f4d0a303144338923748c9cdf424cf",
+      "fixtureManifestSha256": "2f56db4641f9e5c09b34c2bc0c630e85a46a010025c634375b110a35e2cb120a",
+      "contractRevision": "r3",
+      "baselinePublication": "provisional-local-review",
+      "runId": "mp3-e2e-88959-29ea5b218537",
+      "localAcceptanceConfigurationSha256": "ba560f895495fce3a05894f67986af5048b66d418c0fef447d9cdd3ebea9120a",
+      "acceptance": {
+        "status": "passed",
+        "planned": 60,
+        "passed": 60,
+        "failed": 0,
+        "skipped": 0
+      },
+      "images": {
+        "api": "sha256:f720d77ebf4690fbb96092e4eea1fe32201ac22a5e713eb88acf68ff49534634",
+        "frontend": "sha256:d1b001b4f683d82177e65e20241b6b92ba47f1deb681f89d35a4ca69aabfa424"
+      }
+    },
+    "sourceConfiguration": {
+      "sha256": "59e9761f1c57ec244567f0aa5dd9f7392b7a600e3a354c7993c68c65541e90c1",
+      "files": [
+        {
+          "path": ".dockerignore",
+          "sha256": "011e9b80a92c516502690413e8c7dcc0e87acf084020ca9c93323a2e7c8ff5e1"
+        },
+        {
+          "path": "compose.yaml",
+          "sha256": "dec0a97796ae0e81e61be12d5eee16c5cc10134563055352e83dca02fd666c4d"
+        },
+        {
+          "path": "frontend/.dockerignore",
+          "sha256": "131ad9cb902b77645bec16301812600c28407bc1fee6670f9458f33a6186cacd"
+        },
+        {
+          "path": "frontend/Dockerfile",
+          "sha256": "7292237886ecc37f2f60793b44343a4efc28426d594198d2f53fe500844a9a7b"
+        },
+        {
+          "path": "frontend/entrypoint.sh",
+          "sha256": "f26bd62bfab3d5e546defebc67f437387405efb9bc5f028b64156a52a4f1602c"
+        },
+        {
+          "path": "frontend/nginx.conf.template",
+          "sha256": "5787920ca621504bbe416741a5c73212cf4e04d14d348004df654317b1a52d67"
+        },
+        {
+          "path": "server/Dockerfile",
+          "sha256": "b172dbb281335153ab70e2161f63edc9c76c08320334006272b4cc1949e3b436"
+        }
+      ]
+    }
+  },
+  "artifacts": {
+    "api": {
+      "localImageId": "sha256:f720d77ebf4690fbb96092e4eea1fe32201ac22a5e713eb88acf68ff49534634",
+      "archiveFile": "api.docker.tar",
+      "archiveSha256": "b8b28e87a292a6d11a0c431760d01197f54cc0b424463b79577a7c2410e5dc88",
+      "archiveBytes": 58523648,
+      "registryDigest": null
+    },
+    "frontend": {
+      "localImageId": "sha256:d1b001b4f683d82177e65e20241b6b92ba47f1deb681f89d35a4ca69aabfa424",
+      "archiveFile": "frontend.docker.tar",
+      "archiveSha256": "65be146fd4532a4efbe3ea0da07d957dd2cc86cc22509d799d8876dead033b11",
+      "archiveBytes": 25592320,
+      "registryDigest": null
+    }
+  },
+  "providerConfigurationSha256": null,
+  "provider": null,
+  "candidate": null,
+  "productionApproval": null,
+  "missingGates": [
+    "protected-main-source-and-CI",
+    "protected-main-acceptance-baseline",
+    "provider-account-budget-fit-and-scoped-access",
+    "observed-registry-digests",
+    "full-candidate-acceptance",
+    "exact-production-approval",
+    "deployed-smoke-and-recovery"
+  ]
+}

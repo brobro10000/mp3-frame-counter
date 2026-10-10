@@ -26,5 +26,36 @@ Implementation agents cannot modify the frozen acceptance suite or gate logic. A
 independent author and receives a separately recorded review. Later component ownership is assigned only after these
 dependencies pass.
 
+P3 was independently reviewed and locally validated at original source `f7ad2f5`. P4 then proceeded provisionally
+against the unchanged local P2 baseline; shipping CI required its separate protected-main merge. P2 has since merged as
+`a0a56d9`, and the reconciled product passed PR CI; see the [current progression](../validation/execution-status.md).
+The additional exclusive assignments recorded for that work were:
+
+| Work           | Owner                              | Owned paths                                                          | Validation                                                   |
+| -------------- | ---------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| P3 parser      | Parser implementer                 | Parser/errors modules, parser unit tests, P3 evidence                | Frozen fixture matrix, unit/build, independent review        |
+| P4 native API  | Parser implementer                 | HTTP/entrypoint modules, HTTP unit tests, API evidence               | Actual HTTP and lifecycle tests                              |
+| P4 frontend    | Frontend implementer               | frontend/, frontend evidence                                         | Isolated image build, browser and ingress acceptance         |
+| P4 controller  | Independent foundation/gate author | E2E lifecycle scripts/tests and controller evidence                  | Authentication, lifecycle failure, real frozen suite         |
+| P4 integration | Root                               | API Dockerfile, Compose, Makefile, root tooling and integration docs | Independent clean builds, complete AC-01–12, resource review |
+
 Phase completion and deployment evidence will be recorded separately in `docs/validation/`. This authorization record
 does not itself claim that any implementation phase, release or automated deployment has completed.
+
+The subsequent [execution status](../validation/execution-status.md) records the clean P4 result at `2adf71b`: 60/60
+external cases and 75 unit cases passed. Local P5 preparation is assigned to the independent foundation/gate author
+(`scripts/release-manifest.mjs`, `scripts/prepare-release.mjs`, their focused tests and preparation evidence); root owns
+command wiring and central status. A separate reviewer checks release identity and failure handling before execution.
+Provider actions, successful release publication and recovery remain distinct unexecuted work.
+
+## Later amendment: releases without deployment
+
+On 2026-10-09 the owner deferred deployment and requested releases without deploying; the exact instruction is retained
+as [SRC-RELEASE-ONLY](../requirements/sources/release-only-request.txt). This narrows the active P5 completion boundary
+to protected-main validation and GitHub publication of the exact tested artifacts. It does not authorize merges, review
+overrides, auto-merge, provider actions or a manual release from a feature branch.
+
+The independent foundation/gate author owns the main-only publisher, workflow and focused tests. Root owns command
+wiring, requirements/status integration and the PR handoff. A separate reviewer examines release identity, least
+privilege and retry behavior. Frozen acceptance expectations remain unchanged. Deployment criteria and prior
+observations remain recorded as deferred work, without claiming their completion.

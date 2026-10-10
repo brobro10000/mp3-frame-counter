@@ -83,8 +83,21 @@ main rulesets or classic protection that could obstruct that exception. It uses 
 Git reads.
 
 An unapproved PR can still report `REVIEW_REQUIRED` and `BLOCKED` until the owner explicitly chooses the override. Those
-standard statuses do not mean the account-specific exception is unavailable. The read-only audit expects an open
-unapproved foundation PR; reassess that phase-specific expectation after merging.
+standard statuses do not mean the account-specific exception is unavailable. The current read-only audit accepts the
+exact open-PR head or protected-main head and verifies the corresponding successful CI run. It no longer assumes the
+original foundation PR remains open.
+
+## Application-release audit limitation
+
+The optional `npm run verify:github` helper currently requires `deliver-foundation` to succeed in protected-main mode.
+The application-release workflow deliberately skips that job and runs `publish-release` instead. Therefore the helper
+can reject an otherwise successful application main run at its delivery assertion. This is a known read-only audit
+limitation, not a release gate: CI and the publisher do not invoke this helper. PR-head auditing remains supported.
+
+Until the helper is adapted and independently reviewed, verify application main runs directly: all mandatory jobs and
+`publish-release` must succeed for the exact merged SHA, and the release tag/assets/provenance must match the
+[release-only process](deployment/release-only.md). Do not describe the helper's failure as a deployment or publication
+failure without inspecting those actual results. This documentation audit does not modify the helper or weaken gates.
 
 Private branch rules require an eligible GitHub plan. Ruleset creation and effective-rule readback succeeded here; there
 was no observed plan or credential restriction. No forced push, branch deletion or merge attempt is used as a test of

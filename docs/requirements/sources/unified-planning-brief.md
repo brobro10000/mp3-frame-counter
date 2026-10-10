@@ -1,5 +1,9 @@
 # MP3 Frame Counter — Unified Planning Prompt
 
+> Rendering correction, 2026-10-09: this Markdown escapes Mermaid sequence-text semicolons only.
+> The [byte-exact original](unified-planning-brief.original.txt) retains the recorded source hash.
+> This syntax repair does not change requirements, historical claims or execution authority.
+
 ## 1. Current task and authority
 
 Use the installed `codex-mvp-orchestrator` to define and plan this project. **This is the planning task before any of the earlier prompts have been executed.** Treat the earlier MVP, deployment, and test-first prompts as drafts superseded by this consolidated instruction. This document is self-contained; do not execute an earlier prompt as a prerequisite.
@@ -360,7 +364,7 @@ sequenceDiagram
     end
     Frontend-->>Browser: Preserve contracted response
     Browser-->>User: Count or readable error
-    Note over Frontend,API: Ingress may reject oversize input first; contracted upload rejection remains usable
+    Note over Frontend,API: Ingress may reject oversize input first#59; contracted upload rejection remains usable
     Note over API,Parser: No MediaInfo call, retained upload, or background job
 ```
 

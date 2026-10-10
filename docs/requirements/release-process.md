@@ -1,71 +1,84 @@
-# First application MVP release process
+# Application releases without deployment
 
-Baseline: **2026-10-09**. Source: [SRC-RELEASE-DECISION](sources/release-process-request.txt), the user's instruction to
-include a continuous deployment and release cycle in the first MVP process after reviewing the foundation's limits. This
-is a later user amendment, separate from the [original assessment](assessment.md).
+Current authority: **2026-10-09 release-only amendment**, [SRC-RELEASE-ONLY](sources/release-only-request.txt). After
+reviewing deployment readiness, the owner explicitly deferred deployment and requested releases without deploying. This
+supersedes the earlier requirement to deploy before publishing a successful application release. The earlier
+[release request](sources/release-process-request.txt) and [unified brief](sources/unified-planning-brief.original.txt)
+remain immutable historical sources.
 
-Here, **first application MVP** means the first functional browser/API product following repository foundation. Its
-completion requires the release cycle below as well as its agreed application scope. These requirements must not be
-silently deferred to a subsequent MVP. Capturing them now does not authorize application implementation, a merge,
-provisioning, spending, credentials changes or a deployment.
+A release now means a Git tag and private GitHub repository release containing the tested application artifacts,
+checksums, notes and provenance. It does not mean a running service, hosted acceptance, production approval or
+successful deployment. No provider account, hosting budget or deployment credential is needed for this publication
+boundary.
 
-The foundation currently validates PRs and main pushes and configures a seven-day source archive. It has no deployable
-application, deployment target, automatic versioning, release publication or rollback implementation. All requirements
-below are **pending**; this document is a process contract, not execution evidence.
+The owner asked whether merging is safe; this is not an instruction for an agent to merge, use the owner review override
+or enable auto-merge. Core merge controls and the independently frozen acceptance baseline remain mandatory. Publishing
+from eligible protected-main pushes is the requested automation; PR validation must never publish a release.
 
-The [unified planning proposal](../mvp.md) operationalizes this amendment with independent acceptance, a managed
-candidate and explicit exact-release production approval. See [the planned runbook](../deployment/runbook.md).
+## Current and deferred requirements
 
-## Required outcomes
+Stable IDs are retained. The table explicitly distinguishes the active release portion from deferred deployment work;
+deferral is not completion. The original assessment itself does not require a hosting provider or managed deployment.
 
-The acceptance criteria operationalize the user's request. Provider, tooling and versioning choices remain open until
-the application MVP is planned; they are not requirements copied from the assessment HTML.
+| ID          | Active release-only requirement                                                                                   | Evidence needed                                                                                                               | Deferred deployment portion                                                                     |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| APP-REL-001 | Reproducible local build/run configuration for the two independently built application images.                    | Documented setup, clean builds and complete local acceptance against the identified images.                                   | Provider selection, account/region/budget, managed configuration and successful hosting.        |
+| APP-REL-002 | Automatically publish eligible application releases from protected main after every mandatory check succeeds.     | Main-only workflow, failure controls and an observed successful publication run. PRs receive no release write token.          | Automatic deployment to a candidate or production service.                                      |
+| APP-REL-003 | Determine versions automatically and publish matching tags, notes and private repository releases.                | Version policy, exact source/tag binding, real release URL and explicit undeployed status.                                    | Deployment verification as a prerequisite for publication; it is no longer a release-only gate. |
+| APP-REL-004 | Retain the exact tested image pair, archive checksums and source/suite/configuration provenance.                  | Published image archives, validated manifests and conflict-safe retries. Never rebuild after acceptance for the same release. | Registry promotion, provider deployment identities and managed rollback artifact retention.     |
+| APP-REL-005 | Verify the local application before publication and expose release failures through GitHub Actions.               | Full unchanged acceptance suite with zero failures/skips, clean source, successful cleanup and verified release assets.       | Hosted health, public-ingress acceptance and production smoke checks.                           |
+| APP-REL-006 | Preserve prior published artifacts and handle failed publication or corrections without replacing released bytes. | Draft-until-complete publication, identical retry behavior, mismatch rejection and a documented new-version correction path.  | Managed rollback, first-deployment abort and candidate recovery rehearsal.                      |
 
-| ID          | Required outcome                                                                                                           | Acceptance evidence                                                                                                                                                                                                                                                                                                                   | Status   |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| APP-REL-001 | Select and document a deployment target, environment and reproducible application build/run configuration.                 | Record the target, setup prerequisites, environment-variable names without values, runtime/build commands and any cost or access decisions. Deploy successfully to the authorized target from the repository workflow.                                                                                                                | Pending. |
-| APP-REL-002 | Automate the release cycle for eligible changes on protected `main`, after all required validation succeeds.               | Link workflow configuration and an actual successful run from commit through deployment. Demonstrate that failed, cancelled, skipped or missing mandatory checks prevent deployment and successful release publication. PR validation must not deploy to the release environment or receive its credentials.                          | Pending. |
-| APP-REL-003 | Automatically determine application versions and create corresponding Git tags and repository releases with release notes. | Document the versioning policy and triggering changes. Link a generated version, tag, release, source commit and deployment. Publish a successful release only after deployment verification; failed candidates remain clearly unsuccessful.                                                                                          | Pending. |
-| APP-REL-004 | Build an identifiable artifact and deploy those exact bytes, retaining enough provenance and artifacts for recovery.       | Link the version, commit, artifact checksum or immutable digest, deployment identifier and workflow run. Document retention sufficient for the current and previous known-good release. A retry must not overwrite an existing version with different content or allow an older run to replace a newer release accidentally.          | Pending. |
-| APP-REL-005 | Verify the deployed service before declaring release success and make failures visible.                                    | Run an automated health/readiness check and a deployed `POST /file-upload` smoke test with an independently verified fixture count and the required JSON response. Record actual results, the deployed revision and where the owner sees a failed run. Keep the local assessment MP3 and secrets out of logs and published artifacts. | Pending. |
-| APP-REL-006 | Provide a repeatable rollback or recovery procedure and verify it before first application MVP completion.                 | Document the trigger, operator command/workflow, previous known-good artifact and post-recovery checks. Record a controlled rehearsal on an authorized environment with before/after revisions and successful checks. Define first-deployment recovery when no previous release exists.                                               | Pending. |
+No GitHub application release has been observed at this amendment's intake. Existing
+[local preparation evidence](../validation/p5-preparation.md) and the
+[60-case application result](../validation/p4-integration.md) establish local behavior only. Implementation, passing
+tests, protected-main execution and actual release publication must each be recorded separately in the
+[execution status](../validation/execution-status.md).
 
-All rows derive from `SRC-RELEASE-DECISION`. The deployed API checks also trace to `APP-REQ-002`, `APP-REQ-003` and
-`APP-REQ-006`; operating instructions support `APP-SUB-002` and `APP-SUB-003`. The supplied sample remains a separate
-assessment acceptance input under `APP-ASSET-001`; CI smoke tests need a reproducible, permitted fixture.
+## Release eligibility and identity
 
-## Required MVP process
+1. Land the foundation and independently authored test-only baseline through the existing PR controls. Record the
+   baseline's actual protected-main squash SHA with unchanged suite tree and fixture manifest. A feature-branch SHA or
+   provisional local freeze cannot satisfy shipping eligibility.
+2. Validate the actual application revision. Foundation checks and product checks remain mandatory, including the
+   complete external local suite through NGINX and the API. Missing, failed, skipped or cancelled checks block release.
+3. On an eligible application-bearing push to protected `main`, export the exact tested `linux/amd64` API/frontend
+   images and retain their checksums and evidence. Foundation-only and test-only commits retain source delivery but do
+   not become application releases.
+4. Publish the matching version, tag, release notes and complete verified assets using a dedicated trusted job with
+   `contents: write` and `actions: read` for verifying CI evidence. All validation jobs retain `contents: read`;
+   deployment credentials are unnecessary.
+5. Clearly label the release **not deployed**. Record the CI run, tested source, suite, fixture hash, configuration and
+   both image/archive identities. A successful API call requesting publication is insufficient without checking the
+   resulting release and assets.
 
-1. **Plan:** Read the central registry and include `APP-REL-001` through `APP-REL-006` in the first application MVP's
-   definition, system specification, phase plan and completion checklist. Resolve the decisions below and assign
-   implementation and verification work. Keep the historical foundation contracts intact.
-2. **Implement:** Add the application build, required application tests and release workflow. Extend the terminal gate
-   to cover all mandatory checks. Preserve the current merge controls and isolate deployment credentials from PR jobs;
-   grant release jobs only the permissions they need. Document each new script's purpose and operation.
-3. **Validate before release:** Run required local checks and PR CI for the candidate revision. Verify workflow failure
-   handling, version calculation, artifact identity and retry/concurrency behavior with suitable tests or controlled
-   runs. Document any necessary environment setup and permissions before seeking authorization for external actions.
-4. **Exercise the cycle:** Once the relevant merge and deployment actions are authorized, observe a real automated
-   deployment and release, run the deployed checks and perform the controlled recovery rehearsal. Existing owner review
-   override permissions do not authorize agents to merge or deploy on their own.
-5. **Audit completion:** Update each row with evidence links, commands, actual results and tested/deployed revisions.
-   The first application MVP is ready only when its application criteria and all six release criteria are verified. If
-   execution is awaiting access or authorization, report that gap and leave the affected criteria pending; a green
-   foundation CI run, workflow YAML or local source archive does not establish deployment readiness.
+Keep the existing version policy: `0.1.<first-parent ordinal of the tested main commit>`, with tag `v<version>`. Full
+history and protected linear main make the ordinal deterministic; gaps are allowed for ineligible commits.
+Feature-branch versions from `make prepare-release` remain previews and cannot be published by that local command. The
+root tooling package version is not the application release version. No npm package or public container publication is
+required.
 
-## Decisions to record during application planning
+## Failure, retry and retention
 
-Resolve these alongside `APP-OPEN-004`, with rationale and affected requirement IDs:
+Serialize publication without cancelling a run after it may have created a tag or draft release. Bind each version to
+one source revision and one set of bytes. Reuse an identical complete result; reject conflicting tags, source, manifests
+or assets. Never force-update a tag or overwrite a different asset to make a retry succeed. An older queued run must not
+replace a newer release as the latest release.
 
-- Hosting provider, target environment, access and cost constraints, plus build/artifact format. The unified brief now
-  fixes two runtime images, one candidate environment and managed hosting. Public package publication remains
-  unnecessary.
-- Versioning scheme, how changes determine versions, eligible release triggers and any environment approval gate. If
-  approval is required, automate the remaining steps after that gate; do not represent this as unattended deployment.
-- Deployment authentication, minimum workflow permissions, environment-variable configuration and secret storage.
-- Artifact/release retention, handling overlapping runs and retries, and how failed candidates are labelled.
-- Health/readiness checks, smoke fixture and its independent reference count, failure visibility and recovery steps.
+Keep incomplete publication as a draft until all required assets are verified. A retained tag or draft alone is not a
+successful release. Inspect a failed run and retry the same identity; if content needs correction, merge the correction
+and publish a new version. Preserve previously published releases and their artifacts rather than repointing them.
+GitHub release assets remain available until deliberately removed; short-lived Actions artifacts are transfer evidence,
+not the sole retention mechanism. No automated deletion of old releases is authorized.
 
-Record routine implementation decisions without unnecessary approval requests. Obtain authorization where an action
-requires it, including paid provisioning or changes to external accounts. Do not infer a provider or production access
-from the presence of an installed plugin.
+The documented local setup and release artifacts provide a reproducible execution path. They do not establish managed
+capacity, provider ingress behavior or production safety. Private assessment audio, credentials and local machine paths
+must never enter tags, notes, manifests or release assets.
+
+## Deferred managed deployment
+
+APP-V1-014 and the hosted promotion/recovery portion of APP-V1-015 are deferred. The
+[provider evaluation](../architecture/deployment.md) and [deployment runbook](../deployment/runbook.md) remain plans for
+later work; their requirements do not block the current merge or release-only milestone. Before any future deployment,
+revalidate provider fit, credentials, costs, exact artifacts/configuration, full candidate acceptance, production
+approval and recovery. Release publication alone never grants that deployment authority.

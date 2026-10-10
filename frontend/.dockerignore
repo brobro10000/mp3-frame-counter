@@ -1,0 +1,8 @@
+# Only these independent frontend inputs enter the build context.
+*
+!Dockerfile
+!index.html
+!styles.css
+!app.js
+!nginx.conf.template
+!entrypoint.sh

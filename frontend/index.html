@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Count the physical frames in an MPEG-1 Layer III MP3 file." />
+    <title>MP3 frame counter</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a class="wordmark" href="/" aria-label="MP3 frame counter home">
+          <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          Frame counter<span class="wordmark-dot" aria-hidden="true">.</span>
+        </a>
+        <span class="header-note">A closer look at your audio</span>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <p class="eyebrow"><span aria-hidden="true"></span> MP3 ANALYSIS</p>
+          <h1 id="page-title">Every frame,<br /><em>accounted for.</em></h1>
+          <p class="intro-copy">Choose an MP3 and find its exact physical frame count. One file, one clear result.</p>
+          <div class="format-note">
+            <span class="note-line" aria-hidden="true"></span>
+            <p>For MPEG-1 Layer III audio.<br />Your upload is processed without being saved.</p>
+          </div>
+        </section>
+
+        <section class="analysis-card" aria-labelledby="card-title">
+          <div class="card-heading">
+            <span class="step-number" aria-hidden="true">01 /</span>
+            <h2 id="card-title">Start with your file</h2>
+          </div>
+          <form id="analysis-form" novalidate>
+            <label for="mp3-file">MP3 file</label>
+            <input id="mp3-file" name="mp3" type="file" accept="audio/mpeg,.mp3" aria-describedby="file-help" />
+            <p class="field-help" id="file-help">Up to 20 MiB (20,971,520 bytes). MPEG-1 Layer III only.</p>
+            <button id="analyze-button" type="submit">
+              <span>Analyze MP3</span><span class="button-symbol" aria-hidden="true">↗</span>
+            </button>
+          </form>
+          <section class="result" aria-labelledby="result-title">
+            <h3 id="result-title">YOUR RESULT</h3>
+            <p id="analysis-status" role="status" aria-live="polite" aria-atomic="true" data-state="idle">
+              Choose a file, then select Analyze MP3.
+            </p>
+          </section>
+          <noscript><p class="no-script">Enable JavaScript to upload a file and display its frame count.</p></noscript>
+        </section>
+      </main>
+
+      <footer><span>Small details. Exact counts.</span><span>MP3 frame counter</span></footer>
+    </div>
+  </body>
+</html>

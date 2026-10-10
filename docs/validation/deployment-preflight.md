@@ -9,6 +9,10 @@ Docker Desktop was installed but stopped. It was started successfully. Engine 29
 available, including `linux/amd64` support. The host runtime test used `linux/arm64`; an amd64 application build remains
 required before the proposed Render deployment.
 
+Subsequent [P4 execution](p4-integration.md) built both application images for `linux/amd64` and passed all 60 local
+acceptance cases against their exact identities. That satisfies the local platform/build check; it does not establish
+provider ingress, account access or a managed deployment.
+
 The following public base-image indexes were fetched from Docker Hub and verified by the Docker client. Both declare
 amd64 and arm64 support. Local pulls and network-disabled version checks passed:
 

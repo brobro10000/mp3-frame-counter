@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: mvp-${{ github.event.pull_request.number || github.ref }}
+  group: mvp-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -27,7 +27,9 @@ jobs:
           node-version-file: .nvmrc
           package-manager-cache: false
       - run: npm ci
-      - run: npm run validate
+      - run: npm run mermaid:install
+      # Match upstream Mermaid CLI CI: Ubuntu's Chrome AppArmor profile permits Chrome's own sandbox to operate.
+      - run: aa-exec --profile=chrome npm run validate
 
   # This job always runs. Its trusted-base/content checks choose mandatory work without a PR phase selector.
   validate-product:
@@ -36,6 +38,9 @@ jobs:
     timeout-minutes: 30
     env:
       CI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+    outputs:
+      release-ready: ${{ steps.release-bundle.outputs.ready }}
+      release-artifact: ${{ steps.release-bundle.outputs.artifact-name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -47,6 +52,18 @@ jobs:
           package-manager-cache: false
       - run: npm ci
       - run: node scripts/run-ci-phase.mjs
+      # Export on this runner, where acceptance's exact image IDs still exist. Pull requests never run publication.
+      - id: release-bundle
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: node scripts/publish-release-bundle.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: ${{ steps.release-bundle.outputs.ready == 'true' }}
+        with:
+          name: ${{ steps.release-bundle.outputs.artifact-name }}
+          path: ${{ steps.release-bundle.outputs.directory }}
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 7
 
   control-plane:
     name: control-plane
@@ -69,8 +86,10 @@ jobs:
 
   deliver-foundation:
     name: deliver-foundation
-    needs: [control-plane]
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: [control-plane, validate-product]
+    if:
+      ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready
+      != 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -89,3 +108,38 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 7
+
+  # Release artifacts only: no registry push, provider credential, service deployment or production approval flow.
+  publish-release:
+    name: publish-release
+    needs: [control-plane, validate-product]
+    if:
+      ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready
+      == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    concurrency:
+      group: publish-release-main
+      cancel-in-progress: false
+    env:
+      CI_BASE_REF: ${{ github.event.before }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: ${{ needs.validate-product.outputs.release-artifact }}
+          path: .artifacts/release-input
+      - name: Publish verified private release without deployment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/publish-release.mjs
