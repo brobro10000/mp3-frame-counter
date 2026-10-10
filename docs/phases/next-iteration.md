@@ -235,6 +235,30 @@ candidate merge or control pass establishes hosted application acceptance.
 <a id="pr-card-2--hosted-bind-bind-the-actual-reviewed-candidate"></a>
 <a id="pr-card-3--hosted-bind-bind-the-actual-reviewed-candidate"></a>
 
+### HOSTED-BIND prerequisite completion — 2026-10-10
+
+[PR #29](https://github.com/brobro10000/mp3-frame-counter/pull/29) merged as `62e4cd456fcafab54a1ac4080805f2ebfa51d853`
+at 22:25:18Z, with sole parent `4c2733ea2efa469b8e4718d8763b234ab92876e4` and tree
+`572b54d2427eb7b3bfe2b8ac96aab7c6da200856`, identical to reviewed head `0f4a85a5c423c03af368e34da9c758ae19c3f487`.
+Companion `brobro1000` posted
+[automated approval 5481012150](https://github.com/brobro10000/mp3-frame-counter/pull/29#pullrequestreview-5481012150);
+owner `brobro10000` merged after required checks without bypass. The card below remains its historical scope.
+
+[Main CI 38091357730, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38091357730) passed all
+mandatory jobs and publication. It passed 545 tooling tests, 20 gate tests, 19 Mermaid renders, 120 units and 72
+required docs-v1 local cases with scoped cleanup. Hosted-v1 remains pending: its 95 controls and 72/22/3 discovery were
+separate non-acceptance checks. Original job-output admission SHA-256
+`60c6e8a052e89a3c9e19ae73f5808453b5b92faed606037efaec48108b8b2c3e` agrees across product, control and publisher.
+
+[v0.3.29](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.29), release **409245406**, published at
+**22:32:21Z** with ten assets and `deployed: false`. Root replayed original source/base/run/admission and verified
+required docs-v1, pending hosted-v1, source/configuration/image identities and all eight metadata asset hashes. Archives
+were compared as metadata only; neither was downloaded or rehashed. Verification SHA-256:
+`42801b1aadeb82ee20083517349ec0b1050dad532d524c1040c51d7b6940cb1c`. Root also read the independent CI audit, rehashed 18
+records and matched 230 exact citations; audit SHA-256:
+`8df2520ac44e4a7b1c85249ae4b2ba9faa15bfef2d0356127fedd23748fe74fb`. These local diagnostic hashes are not signed
+attestations; the linked original CI and publication establish the external prerequisite. No hosted deployment occurred.
+
 ## PR card 1 — HOSTED-BIND: Bind the actual reviewed candidate
 
 **Outcome:** append the exact actual `hosted-v1` successor identity and reviewed merge facts. Docs-v1 remains required
@@ -272,8 +296,8 @@ authenticated expected values. A valid failed/blocked record stays nonpassing. N
 provider operation or release/deployment gate is replaced or activated.
 
 **Prerequisites and order:** actual PR27/v0.3.27 publication and the independently reviewed exact API contract authored
-in the dependent branch for `docs/deployment/hosted-evidence.md`. Independent synthetic expectations and implementation
-may proceed while HOSTED-CONTRACT and HOSTED-BIND validate. Reconcile onto actual protected main and verify HOSTED-BIND
+in [the helper contract](../deployment/hosted-evidence.md). Independent synthetic expectations and implementation may
+proceed while HOSTED-CONTRACT and HOSTED-BIND validate. Reconcile onto actual protected main and verify HOSTED-BIND
 publication before merging this dependent. Pending/candidate identities cannot authorize real hosted execution.
 
 **Exclusive ownership:** an independent author writes only `scripts/hosted-evidence.test.mjs`; after those expectations
