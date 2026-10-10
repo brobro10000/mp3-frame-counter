@@ -1,5 +1,5 @@
 {
-  "contractRevision": "docs-v1",
+  "contractRevision": "hosted-v1",
   "cases": [
     {
       "file": "acceptance.spec.ts",
