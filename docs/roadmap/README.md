@@ -13,11 +13,13 @@ separate binding remains under verification; neither candidate controls nor bind
 
 The next [three-card window](../phases/next-iteration.md) is **HOSTED-BIND**, **HOSTED-EVIDENCE** and
 **HOSTED-SOURCE-PROJECTION**. The binding records actual reviewed merge identities; separate dormant helpers validate
-hosted evidence and retain original required declaration bytes. The [binding record](../validation/hosted-binding.md)
-separates prerequisite evidence from pending checks. Later launcher, registry, access/runtime IaC and workflow changes
-remain provisional. Merge approved PRs promptly, then immediately reconcile dependents onto actual main and refresh
-checks/review. Disjoint agent lanes continue toward v1; every production application deployment retains human
-intervention.
+hosted evidence and retain original required declaration bytes. The
+[pure evidence validator](../deployment/hosted-evidence.md) has passed its local independent tests;
+[PR/main verification](../validation/hosted-evidence.md) remains separate. The
+[binding record](../validation/hosted-binding.md) separates prerequisite evidence from pending checks. Later launcher,
+registry, access/runtime IaC and workflow changes remain provisional. Merge approved PRs promptly, then immediately
+reconcile dependents onto actual main and refresh checks/review. Disjoint agent lanes continue toward v1; every
+production application deployment retains human intervention.
 
 The [execution record](../validation/roadmap-execution.md),
 [gate record](../validation/acceptance-transitions.md#protected-main-publication-and-retry) and

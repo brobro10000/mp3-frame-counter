@@ -272,8 +272,8 @@ authenticated expected values. A valid failed/blocked record stays nonpassing. N
 provider operation or release/deployment gate is replaced or activated.
 
 **Prerequisites and order:** actual PR27/v0.3.27 publication and the independently reviewed exact API contract authored
-in the dependent branch for `docs/deployment/hosted-evidence.md`. Independent synthetic expectations and implementation
-may proceed while HOSTED-CONTRACT and HOSTED-BIND validate. Reconcile onto actual protected main and verify HOSTED-BIND
+in [the helper contract](../deployment/hosted-evidence.md). Independent synthetic expectations and implementation may
+proceed while HOSTED-CONTRACT and HOSTED-BIND validate. Reconcile onto actual protected main and verify HOSTED-BIND
 publication before merging this dependent. Pending/candidate identities cannot authorize real hosted execution.
 
 **Exclusive ownership:** an independent author writes only `scripts/hosted-evidence.test.mjs`; after those expectations
