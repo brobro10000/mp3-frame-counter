@@ -1,13 +1,17 @@
 ---
 title: Local runtime and independent acceptance boundary
 query: >-
-  Show Docker wrapping exactly two independently built application images as Compose containers. Nest NGINX and its
-  static assets inside the frontend container, and the HTTP handler plus parser inside one Node process in the API
-  container. Put both containers inside Docker's Compose network. Keep browser JavaScript, the host controller and
-  extracted Playwright/Chromium runner outside Docker. Distinguish published loopback host port from internal frontend
-  port 8080 and private API port 3000, with a separate test-only loopback binding for direct API diagnostics. Show
-  source-defined runtime users, read-only filesystems, temporary mounts and
-  bounded in-process parsing. Do not imply a third parser/test container, Node frontend runtime or cloud deployment.
+  Show Docker wrapping exactly two independently built application images as
+  Compose containers. Nest NGINX and its static assets inside the frontend
+  container, and the HTTP handler plus parser inside one Node process in the API
+  container. Put both containers inside Docker's Compose network. Keep browser
+  JavaScript, the host controller and extracted Playwright/Chromium runner
+  outside Docker. Distinguish published loopback host port from internal
+  frontend port 8080 and private API port 3000, with a separate test-only
+  loopback binding for direct API diagnostics. Show source-defined runtime
+  users, read-only filesystems, temporary mounts and bounded in-process parsing.
+  Do not imply a third parser/test container, Node frontend runtime or cloud
+  deployment.
 references:
   - 'File: /compose.yaml'
   - 'File: /frontend/Dockerfile'
@@ -16,7 +20,7 @@ references:
   - 'File: /server/src/http.ts'
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
-generationTime: '2026-10-10T01:12:38.134Z'
+generationTime: '2026-10-10T07:58:36.429Z'
 ---
 flowchart LR
     B["User browser<br/>app.js executes here"]
