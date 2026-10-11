@@ -10,6 +10,21 @@ The build compiles React into static same-origin assets. NGINX serves those asse
 development server, npm process or extra container runs in production. The root application lockfile owns the frontend
 dependencies; the independent acceptance package keeps its separate lockfile.
 
+## Source boundaries
+
+- [App](src/App.tsx) composes the page. [Components](src/components/UploadForm.tsx) render the form, introduction,
+  navigation and accessible result without issuing requests.
+- [useMp3Analysis](src/hooks/useMp3Analysis.ts) owns selection, byte feedback, duplicate admission, the 45-second
+  deadline, cancellation, retry state and stale-result prevention. Selection alone never uploads.
+- [The API service](src/services/mp3Analysis.ts) sends the raw file and handles response data. Its
+  [pure response helpers](src/services/response.ts) narrow unknown JSON before rendering; [response.ts](src/response.ts)
+  keeps the existing helper entrypoint for the unchanged unit tests.
+- [Shared types](src/types/analysis.ts) define the mutually exclusive idle, pending, success and error states.
+
+From the repository root, use `npm run build:frontend` for the strict TypeScript/static bundle build,
+`npm run typecheck` for both application boundaries and `node --test tests/unit/frontend-response.test.ts` for the 54
+response regression cases. Full browser/API acceptance remains a separate required check.
+
 Run the complete application from the repository root with `make up`, then open
 [http://127.0.0.1:8080/](http://127.0.0.1:8080/). Build the frontend image independently from the same root:
 

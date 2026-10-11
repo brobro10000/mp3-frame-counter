@@ -5,8 +5,9 @@ query: >-
   Compose containers. Nest NGINX and its static assets inside the frontend
   container, and Fastify transport plus parser inside one Node process in the
   API container. Put both containers inside Docker's Compose network. Keep
-  browser React from frontend/src/App.tsx, the host controller and extracted
-  Playwright/Chromium runner outside Docker. The frontend build uses Vite.
+  browser React page components, useMp3Analysis business state and the raw API
+  service outside Docker, with the host controller and extracted Playwright
+  runner also outside Docker. App.tsx composes the page; Vite builds static assets.
   Distinguish published loopback host port from internal
   frontend port 8080 and private API port 3000, with a separate test-only
   loopback binding for direct API diagnostics. Show source-defined runtime
@@ -19,6 +20,12 @@ references:
   - 'File: /frontend/Dockerfile'
   - 'File: /frontend/src/App.tsx'
   - 'File: /frontend/src/main.tsx'
+  - 'File: /frontend/src/hooks/useMp3Analysis.ts'
+  - 'File: /frontend/src/services/mp3Analysis.ts'
+  - 'File: /frontend/src/services/response.ts'
+  - 'File: /frontend/src/types/analysis.ts'
+  - 'File: /frontend/src/components/UploadForm.tsx'
+  - 'File: /frontend/src/components/AnalysisResult.tsx'
   - 'File: /frontend/vite.config.ts'
   - 'File: /package.json'
   - 'File: /frontend/nginx.conf.template'
@@ -30,7 +37,7 @@ references:
 generationTime: '2026-10-11T13:20:27.232Z'
 ---
 flowchart LR
-    B["User browser<br/>bundled React executes here"]
+    B["User browser: compiled React<br/>page components, upload hook and API service"]
     subgraph DOCKER["Docker Engine: Compose project / private network"]
         subgraph FRONT["frontend container: NGINX image / UID 101"]
             F["NGINX :8080<br/>serves compiled React assets, HTML and CSS"]

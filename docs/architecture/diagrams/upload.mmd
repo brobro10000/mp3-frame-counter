@@ -2,7 +2,8 @@
 title: MP3 upload and result sequence
 query: >-
   Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, Fastify API on Node and
-  pure parser. Include local file validation, pending controls, the actual-byte 20 MiB bound, typed parser failures,
+  pure parser. Separate page components, the upload-state hook and raw request/response service inside the browser.
+  Include local file validation, pending controls, the actual-byte 20 MiB bound, typed parser failures,
   proxy failures, JSON validation and restored controls after every outcome. Count complete physical MPEG-1 Layer III
   frames including metadata-bearing frames. Keep errors readable and show that aborted uploads cannot succeed.
   Use only behavior supported by the referenced files; this is not a cloud deployment diagram.
@@ -11,6 +12,12 @@ query: >-
 references:
   - "File: /frontend/src/App.tsx"
   - "File: /frontend/src/response.ts"
+  - "File: /frontend/src/hooks/useMp3Analysis.ts"
+  - "File: /frontend/src/services/mp3Analysis.ts"
+  - "File: /frontend/src/services/response.ts"
+  - "File: /frontend/src/types/analysis.ts"
+  - "File: /frontend/src/components/UploadForm.tsx"
+  - "File: /frontend/src/components/AnalysisResult.tsx"
   - "File: /frontend/nginx.conf.template"
   - "File: /server/src/http.ts"
   - "File: /server/src/mp3.ts"
@@ -20,7 +27,9 @@ references:
 ---
 sequenceDiagram
     actor User
-    participant Browser as Browser runs compiled React
+    participant Browser as Browser page components
+    participant Hook as Browser upload hook
+    participant Service as Browser API service
     box rgb(224,242,254) Frontend Docker container
         participant Frontend as NGINX :8080
     end
@@ -28,14 +37,20 @@ sequenceDiagram
         participant API as Fastify on Node :3000
         participant Parser as In-process parser
     end
-    User->>Browser: Select file and Analyze MP3
+    User->>Browser: Select file
+    Browser->>Hook: selectFile resets prior result
+    User->>Browser: Analyze MP3
+    Browser->>Hook: analyze on form submit
     alt Missing file or file exceeds 20 MiB
-        Browser-->>User: Readable local error
+        Hook-->>Browser: Readable local error
+        Browser-->>User: Display error
     else File passes local validation
-        Browser->>Browser: Set pending, disable duplicate submit, start deadline
-        Browser->>Frontend: Raw POST /file-upload via published loopback port
+        Hook->>Hook: Admit one request, set pending and start deadline
+        Hook-->>Browser: Disable pending controls
+        Hook->>Service: Await analysis of selected File with abort signal
+        Service->>Frontend: Await raw POST /file-upload via published loopback port
         alt Ingress rejection or unavailable/timed-out upstream
-            Frontend-->>Browser: Error status and JSON
+            Frontend-->>Service: Error status and JSON
         else Request forwarded over HTTP/1.1 without buffering or retry
             Frontend->>API: Forward raw bytes to api:3000 on Compose network
             API->>API: Raw path/method bridge, then ordered Fastify admission
@@ -52,11 +67,15 @@ sequenceDiagram
                     API-->>Frontend: 400 or 415 JSON
                 end
             end
-            Frontend-->>Browser: Preserve API status and JSON
+            Frontend-->>Service: Preserve API status and JSON
         end
-        Browser->>Browser: Validate JSON and exact success shape
+        Service->>Service: Await JSON and validate exact success shape
+        Service-->>Hook: Typed count or readable error
+        Hook->>Hook: Apply only the current request generation
+        Hook-->>Browser: Render result and restore controls
         Browser-->>User: Count or readable error#59; allow retry
-        Browser->>Browser: Always clear deadline and restore controls
+        Hook->>Hook: Always clear this request's deadline
     end
-    Note over Browser,API: Abort or network failure is not partial success
+    Note over Hook,Service: Selection and unmount abort requests#59; stale outcomes never update the page
+    Note over Hook,API: Abort or network failure is not partial success
     Note over API,Parser: Release bounded upload memory#59; no MediaInfo, retained upload or background job
