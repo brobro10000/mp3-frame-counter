@@ -51,6 +51,52 @@ test("success or signal-only exit records cannot establish permission denial fro
       assert.deepEqual(classify(operation, exitCode, denial), { operation, exitCode, permission: null });
 });
 
+test("the exact provider polling wrapper classifies read denial only for nonzero exits", () => {
+  const classify = subject();
+  const wrapped = `Error: Error waiting for Updating Service: error while retrieving operation: ${denial}`;
+  const messages = [wrapped, wrapped.replaceAll("'", '"'), `╷\n│ ${wrapped}\n│\n╵`];
+  for (const operation of commands)
+    for (const stderr of messages) {
+      assert.deepEqual(classify(operation, 1, stderr), { operation, exitCode: 1, permission: "run.operations.get" });
+      for (const exitCode of [0, null])
+        assert.deepEqual(classify(operation, exitCode, stderr), { operation, exitCode, permission: null });
+    }
+});
+
+test("the polling wrapper cannot turn other errors echoes or split text into read-denial evidence", () => {
+  const classify = subject();
+  assert.equal(classify("terraform-apply", 1, denial).permission, "run.operations.get");
+  const wrapped = `Error: Error waiting for Updating Service: error while retrieving operation: ${denial}`;
+  const messages = [
+    ...["run.services.update", "run.operations.list", "run.operations.getIamPolicy", "RUN.OPERATIONS.GET"].map(
+      (permission) => wrapped.replace("run.operations.get", permission),
+    ),
+    wrapped.replace(" denied ", " granted "),
+    wrapped.replace("Error 403", "Error 401"),
+    wrapped.replace("Error 403", "Error 404"),
+    wrapped.replace("Updating Service", "Creating Service"),
+    wrapped.replace("error while retrieving operation: ", ""),
+    wrapped.replace("error while retrieving operation", "error while retrieving revision"),
+    wrapped.replace("error while retrieving operation", "Error while retrieving operation"),
+    wrapped.replace("googleapi: Error", "googleapi:\nError"),
+    wrapped.replace("'run.operations.get' denied", "'run.operations.get'\ndenied"),
+    wrapped.replace("'run.operations.get'", "'run.operations.get\""),
+    `${wrapped} Additional diagnostic text.`,
+    `"${wrapped}"`,
+    `echo "${wrapped}"`,
+    JSON.stringify({ printed: wrapped }),
+    "Error: Error waiting for Updating Service: error while retrieving operation: https://synthetic.invalid/run.operations.get?status=denied",
+    "Error: Error waiting for Updating Service: error while retrieving operation: Authorization: Bearer synthetic.run.operations.get.denied.token",
+    "Error: Error waiting for Updating Service: error while retrieving operation: projects/synthetic-private-project/operations/run.operations.get-denied",
+  ];
+  for (const stderr of messages)
+    assert.deepEqual(classify("terraform-apply", 1, stderr), {
+      operation: "terraform-apply",
+      exitCode: 1,
+      permission: null,
+    });
+});
+
 test("unrelated grants other permissions quoted echoes and split messages do not prove read denial", () => {
   const classify = subject();
   const messages = [

@@ -32,6 +32,12 @@ after private temporary storage is successfully removed. It contains only the fi
 in bounded memory; truncated text cannot establish a denial. This diagnostic does not authorize a permission change or
 establish a successful deployment. Retain the failed outcome and investigate before changing access.
 
+The pinned Google provider 8.6.0 wraps operation-poll errors with `error while retrieving operation` and then
+`Error waiting for Updating Service`. Recognize that exact wrapper as well as bare 403 and structured code-7 errors; all
+still require the complete literal permission denial. See the
+[pinned operation waiter](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/tpgresource/common_operation.go).
+Synthetic wrapper coverage establishes diagnostic compatibility, not the cause of a historical deployment failure.
+
 The current checkout policy permits only this one exact secret reference. Historical release verification still admits
 the original variable-backed workflow without rewriting its bytes or reservations. This change protects future output;
 existing logs retain their original content. See
