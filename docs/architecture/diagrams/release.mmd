@@ -91,5 +91,4 @@ flowchart TD
     FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
     PROBE["Optional owner probe ID-token permission<br/>supervised hosted checks"] --> RECOVERY
     PROBE --> BRIDGE
-    RELEASE -.->|"Cloud pause"| PAUSE["Local MVP handoff and cloud pause — 2026-10-11"]
-    PAUSE -.->|"No production deployment"| FAIL
+    RELEASE -.-> PAUSE["Current delivery pause<br/>stage disabled; software releases continue"]

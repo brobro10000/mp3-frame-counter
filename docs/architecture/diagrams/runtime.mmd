@@ -37,12 +37,12 @@ references:
 generationTime: '2026-10-11T14:49:05.328Z'
 ---
 flowchart LR
-    B["User browser<br/>app.js executes here"]
+    B["User browser: compiled React<br/>page components, upload hook and API service"]
     subgraph DOCKER["Docker Engine: Compose project / private network"]
         subgraph FRONT["frontend container: NGINX image / UID 101"]
-            F["NGINX :8080<br/>serves HTML, CSS and app.js files"]
+            F["NGINX :8080<br/>serves compiled React assets, HTML and CSS"]
             FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
-            H["Health Check<br/>location = /health<br/>returns 200 {'status':'ok'}"]
+            H["Compose probe /healthz<br/>hosted alias /health<br/>returns 200 {'status':'ok'}"]
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
