@@ -67,4 +67,4 @@ flowchart TD
     FAIL -.->|"Retry only with identical source and bytes"| VERIFY
     RELEASE --> HANDOFF["Upload verified publisher handoff"]
     HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
-    RECEIPT --> DEPLOY["Deploy stage: execute stage delivery and deployment"]
+    RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement and provisioned runtime"]
