@@ -1,5 +1,5 @@
 {
-  "contractRevision": "hosted-health-v1",
+  "contractRevision": "hosted-reasonless-v1",
   "cases": [
     {
       "file": "hosted/stage/specs/stage-ui.spec.ts",

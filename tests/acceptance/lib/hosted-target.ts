@@ -273,7 +273,7 @@ function verifySuite(input: HostedSuiteInputV1): void {
       const bytes = readFileSync(join(root, path));
       ensure(createHash("sha256").update(bytes).digest("hex") === input.suite[key], "IDENTITY");
       ensure(
-        JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)).contractRevision === "hosted-health-v1",
+        JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)).contractRevision === "hosted-reasonless-v1",
         "IDENTITY",
       );
     }

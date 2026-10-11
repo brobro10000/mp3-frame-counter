@@ -53,6 +53,10 @@ const planned = [
   ...["actual400", "wrong-path", "wrong-status", "uncorrelated", "extra"].map(
     (kind) => `browser-upload-console-${kind}`,
   ),
+  "browser-reasonless-native-counterpart",
+  ...["actual400", "wrong-path", "wrong-status", "wrong-method", "near-miss", "uncorrelated", "extra"].map(
+    (kind) => `browser-reasonless-console-${kind}`,
+  ),
   "browser-bounded-observer-overflow",
   "browser-cancel-paused-during-cleanup",
   ...["paused-deadline", "cdp", "cleanup", "late-callback"].map((fault) => `browser-real-latch-${fault}`),

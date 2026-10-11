@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractRevision": "hosted-health-v1",
+  "contractRevision": "hosted-reasonless-v1",
   "profiles": {
     "local": [
       {

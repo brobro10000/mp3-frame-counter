@@ -163,8 +163,22 @@ export async function runHostedBrowserControls(browser: Browser): Promise<Contro
       if (path === "/file-upload" || path === "/wrong-path") {
         if (req.method === "POST" && req.url === "/file-upload?correlation=post") mixedPostReceipts++;
         if (req.method === "GET" && req.url === "/file-upload?correlation=get") mixedGetReceipts++;
-        res.writeHead(req.url?.includes("status=401") ? 401 : 400, { "Content-Type": "application/json" });
-        res.end('{"error":"Owned malformed upload"}');
+        const status = req.url?.includes("status=401") ? 401 : 400;
+        const body = '{"error":"Owned malformed upload"}';
+        if (req.url?.includes("reason=empty")) {
+          // Node's ServerResponse supplies a default reason for an empty string. This owned HTTP fixture instead sends
+          // an intact reasonless status line, letting Chromium/CDP expose the native console class without fulfillment.
+          assert.ok(res.socket);
+          res.socket.end(
+            `HTTP/1.1 ${status} \r\nContent-Type: application/json\r\n` +
+              `Content-Length: ${Buffer.byteLength(body)}\r\nConnection: close\r\n\r\n${body}`,
+          );
+        } else {
+          if (req.url?.includes("reason=near-miss"))
+            res.writeHead(status, "Bad Request!", { "Content-Type": "application/json" });
+          else res.writeHead(status, { "Content-Type": "application/json" });
+          res.end(body);
+        }
         return;
       }
       if (path === "/allowed.js") {
@@ -447,6 +461,103 @@ export async function runHostedBrowserControls(browser: Browser): Promise<Contro
           assert.ok(lease.observation().consoleErrors >= 1);
           if (kind === "actual400") assert.deepEqual(finish, { cleanup: "passed", failures: [] });
           else refused(finish, "ASSERTION");
+        }),
+      );
+    }
+    await control("browser-reasonless-native-counterpart", async () => {
+      const context = await browser.newContext();
+      try {
+        const page = await context.newPage();
+        const path = "/file-upload?reason=empty&case=native";
+        const messages: { exact: boolean; location: boolean }[] = [];
+        page.on("console", (message) => {
+          if (message.type() === "error")
+            messages.push({
+              exact: message.text() === "Failed to load resource: the server responded with a status of 400 ()",
+              location: message.location().url === origin + path,
+            });
+        });
+        await page.goto(origin + "/blank");
+        const actual = await page.evaluate(async (path) => {
+          const response = await fetch(path, { method: "POST", body: "bad" });
+          return {
+            status: response.status,
+            statusText: response.statusText,
+            body: await response.text(),
+            media: response.headers.get("content-type"),
+          };
+        }, path);
+        await settle();
+        assert.deepEqual(actual, {
+          status: 400,
+          statusText: "",
+          body: '{"error":"Owned malformed upload"}',
+          media: "application/json",
+        });
+        assert.deepEqual(messages, [{ exact: true, location: true }]);
+      } finally {
+        await cleanup(context.close());
+      }
+    });
+    // These independently authored controls exercise native response/console delivery. Exact text is an assertion,
+    // never a synthetic positive; every negative retains actual cleanup and the original finite matcher controls.
+    for (const kind of [
+      "actual400",
+      "wrong-path",
+      "wrong-status",
+      "wrong-method",
+      "near-miss",
+      "uncorrelated",
+      "extra",
+    ] as const) {
+      await control("browser-reasonless-console-" + kind, () =>
+        leaseCase(async (lease) => {
+          await lease.page.goto(origin + "/blank");
+          const expected = "Failed to load resource: the server responded with a status of 400 ()";
+          let exactConsole = 0;
+          const observe = (message: import("@playwright/test").ConsoleMessage) => {
+            if (message.type() === "error" && message.text() === expected) exactConsole++;
+          };
+          lease.page.on("console", observe);
+          try {
+            const result = await lease.page.evaluate(async (kind) => {
+              let result: { status: number; statusText: string; body: string; media: string | null } | null = null;
+              if (kind !== "uncorrelated") {
+                const response = await fetch(
+                  kind === "wrong-path"
+                    ? "/wrong-path?reason=empty"
+                    : kind === "wrong-status"
+                      ? "/file-upload?reason=empty&status=401"
+                      : kind === "near-miss"
+                        ? "/file-upload?reason=near-miss"
+                        : "/file-upload?reason=empty&case=" + kind,
+                  kind === "wrong-method" ? { method: "GET" } : { method: "POST", body: "bad" },
+                );
+                result = {
+                  status: response.status,
+                  statusText: response.statusText,
+                  body: await response.text(),
+                  media: response.headers.get("content-type"),
+                };
+              }
+              if (kind === "uncorrelated" || kind === "extra")
+                console.error("Failed to load resource: the server responded with a status of 400 ()");
+              return result;
+            }, kind);
+            await settle();
+            const finish = await lease.close();
+            if (result) {
+              assert.equal(result.status, kind === "wrong-status" ? 401 : 400);
+              assert.equal(result.body, '{"error":"Owned malformed upload"}');
+              assert.equal(result.media, "application/json");
+              assert.equal(result.statusText, kind === "near-miss" ? "Bad Request!" : "");
+            }
+            assert.equal(exactConsole, kind === "wrong-status" || kind === "near-miss" ? 0 : kind === "extra" ? 2 : 1);
+            if (kind === "actual400") assert.deepEqual(finish, { cleanup: "passed", failures: [] });
+            else refused(finish, "ASSERTION");
+          } finally {
+            lease.page.off("console", observe);
+          }
         }),
       );
     }

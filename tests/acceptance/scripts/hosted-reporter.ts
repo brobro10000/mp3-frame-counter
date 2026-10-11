@@ -91,7 +91,7 @@ export default class HostedReporter implements Reporter {
         const value: HostedDiscovery = {
           schemaVersion: 1,
           kind: "hosted-suite-discovery",
-          contractRevision: "hosted-health-v1",
+          contractRevision: "hosted-reasonless-v1",
           profile: this.role,
           status,
           inventory: this.planned,

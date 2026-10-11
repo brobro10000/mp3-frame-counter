@@ -33,10 +33,11 @@ const leases = new WeakMap<HostedBrowserLease, PrivateLease>();
 const DEADLINE = 5000;
 const CAPACITY = 500;
 const UPLOAD_ERROR_CLASS = "Failed to load resource: the server responded with a status of 400 (Bad Request)";
+const UPLOAD_REASONLESS_ERROR_CLASS = "Failed to load resource: the server responded with a status of 400 ()";
 type CorrelationRecord = { at: number; timer?: ReturnType<typeof setTimeout> };
 
 /**
- * Correlate only an eligible POST400 response with the fixed resource-status console class at the identical full URL.
+ * Correlate only an eligible POST400 response with either fixed resource-status console class at the identical full URL.
  * Each observation is consumed once within five monotonic seconds; duplicate/ambiguous or expired console observations
  * fail. Playwright exposes no console request ID/method: this is finite matching, not native request-identity proof.
  * The private clock/timer options support only the fixed pure control seam below; runtime always uses real time.
@@ -471,7 +472,7 @@ async function createLease(
         return;
       counts.console++;
       if (
-        text === UPLOAD_ERROR_CLASS &&
+        (text === UPLOAD_ERROR_CLASS || text === UPLOAD_REASONLESS_ERROR_CLASS) &&
         approved(message.location().url) &&
         new URL(message.location().url).pathname === "/file-upload"
       ) {

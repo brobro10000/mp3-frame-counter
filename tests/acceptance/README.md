@@ -1,12 +1,15 @@
 # Independent acceptance package
 
-This package contains the independent `hosted-health-v1` candidate: all 72 preserved local cases, 22 stage cases and
-three production smoke cases. The immutable hosted-v1 suite remains required until separate reviewed successor binding
-and product activation. The [health successor contract](../../docs/testing/contracts/hosted-health-v1.md) changes only
-HS-17's public request to `/health`; local `/healthz`, fixture bytes and every other assertion remain unchanged. Hosted
-execution requires the trusted launcher and verified environment identity; discovery alone establishes neither. The
-package never imports product implementation, reads private samples or uses a Docker socket. Application and acceptance
-lockfiles remain separate, without workspaces.
+This package contains the independent `hosted-reasonless-v1` candidate: all 72 preserved local cases, 22 stage cases and
+three production smoke cases. The source-selected predecessor remains required until separate reviewed successor binding
+and genuine product activation. The [reasonless-console contract](../../docs/testing/contracts/hosted-reasonless-v1.md)
+adds only the exact empty-reason upload-400 console string to the existing full-URL, POST/status, finite-time
+correlation. The [health predecessor](../../docs/testing/contracts/hosted-health-v1.md) and its public `/health`
+amendment remain normative. Fixture bytes, case identities, requirement mappings and every other assertion remain
+unchanged. Hosted execution requires the trusted launcher and verified environment identity; discovery alone establishes
+neither. The package never imports product implementation, reads private samples or uses a Docker socket. Application
+and acceptance lockfiles remain separate, without workspaces. Dated predecessor calibration below remains historical
+evidence.
 
 Use pinned Node 24.20.0/npm 11.19.0. From the repository root:
 
