@@ -5,6 +5,7 @@
  * Effects: isolated temporary copies, provider initialization/download, mocked plan-only tests, then recursive cleanup.
  * Failure: missing source/tools, unsupported source syntax, invalid plans, ineffective mutation controls or cleanup fail.
  * Native mocks establish configuration semantics, not real IAM propagation, deletion protection or cloud readiness.
+ * ACCESS-BACKEND requires one empty GCS declaration; init -backend=false keeps mocks separate from live state migration.
  */
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -172,15 +173,25 @@ function sourceContract(source) {
       "Forbidden block",
     );
   }
+  assert.equal(nodes.filter((node) => node.name === "terraform").length, 1, "Expected one Terraform block");
+  const terraform = one(nodes, "terraform");
+  assert.equal(terraform.file, "versions.tf", "Backend declaration belongs in versions.tf");
+  const backend = one(terraform.children, "backend", ["gcs"]);
+  assert.equal(backend.kind, "block");
+  assert.deepEqual(backend.children, [], "Backend configuration must remain empty");
   const visit = (node) => {
-    assert(!["provisioner", "connection", "dynamic", "backend", "cloud"].includes(node.name), "Forbidden nested block");
+    assert(!["provisioner", "connection", "dynamic", "cloud"].includes(node.name), "Forbidden nested block");
+    if (node.name === "backend") assert.equal(node, backend, "Backend declaration outside the sole approved position");
     assert(node.name !== "ignore_changes", "Ignored configuration changes are outside the foundation");
     for (const child of node.children ?? []) visit(child);
   };
   nodes.forEach(visit);
   for (const text of Object.values(source)) rejectFileReads(text);
-  const terraform = one(nodes, "terraform");
-  assert.deepEqual(terraform.children.map((node) => node.name).sort(), ["required_providers", "required_version"]);
+  assert.deepEqual(terraform.children.map((node) => node.name).sort(), [
+    "backend",
+    "required_providers",
+    "required_version",
+  ]);
   assert.equal(expression(terraform, "required_version"), '"= 1.13.3"');
   const providers = one(terraform.children, "required_providers");
   assert.equal(providers.children.length, 1);
@@ -447,7 +458,7 @@ function registryContract(plan, input) {
   assert.equal(value.deletion_policy, "PREVENT");
   assert.equal(value.cleanup_policy_dry_run, true);
   assert(!(value.cleanup_policies ?? []).some((policy) => policy.action === "DELETE"));
-  assert.deepEqual(value.docker_config, [{ immutable_tags: false }]);
+  assert.deepEqual(value.docker_config, [], "Docker configuration must remain omitted for mutable default tags");
   assert.equal(value.vulnerability_scanning_config.length, 1);
   assert.equal(value.vulnerability_scanning_config[0].enablement_config, "DISABLED");
 }
@@ -595,6 +606,59 @@ test("structural file guard refuses file hash reads while preserving pure string
 test("only the five source files, pinned provider, explicit input surface and literal lifecycle guards are admitted", () => {
   sourceContract(sourceFiles());
 });
+test("backend controls require the sole empty GCS block in versions.tf before initialization", () => {
+  // Literal contract fixture: this exercises the amended guard before the backend source implementation exists.
+  // Only in-memory source copies change; none of these structural controls invokes Terraform or initializes state.
+  const settings = `required_version = "= 1.13.3"
+required_providers {
+  google = {
+    source = "hashicorp/google"
+    version = "8.6.0"
+  }
+}`;
+  const provider = `provider "google" {
+  project = var.project_id
+  billing_project = var.project_id
+  region = var.region
+  user_project_override = true
+}`;
+  const versions = (declaration) => `terraform {\n${settings}\n${declaration}\n}\n${provider}\n`;
+  const valid = { ...sourceFiles(), "versions.tf": versions('backend "gcs" {}') };
+  assert.doesNotThrow(() => sourceContract(valid), "Valid empty backend counterpart must pass first");
+  for (const [label, declaration] of [
+    ["absent", ""],
+    ["wrong type", 'backend "local" {}'],
+    ["missing label", "backend {}"],
+    ["additional label", 'backend "gcs" "extra" {}'],
+    ["attribute instead of block", "backend = {}"],
+    ["duplicate", 'backend "gcs" {}\nbackend "gcs" {}'],
+    ["bucket", 'backend "gcs" { bucket = "synthetic-bucket" }'],
+    ["prefix", 'backend "gcs" { prefix = "synthetic-prefix" }'],
+    ["credential", 'backend "gcs" { credentials = "synthetic-not-a-token" }'],
+    ["unknown argument", 'backend "gcs" { unexpected = false }'],
+    ["nested content", 'backend "gcs" { nested {} }'],
+    ["nested in other block", 'locals { backend "gcs" {} }'],
+  ])
+    assert.throws(
+      () => sourceContract({ ...valid, "versions.tf": versions(declaration) }),
+      { code: "ERR_ASSERTION" },
+      label,
+    );
+  for (const addition of ['backend "gcs" {}', 'locals { backend "gcs" {} }', 'terraform { backend "gcs" {} }'])
+    assert.throws(() => sourceContract({ ...valid, "main.tf": `${valid["main.tf"]}\n${addition}\n` }), {
+      code: "ERR_ASSERTION",
+    });
+  assert.throws(
+    () =>
+      sourceContract({
+        ...valid,
+        "versions.tf": `${provider}\n`,
+        "main.tf": `${valid["main.tf"]}\nterraform {\n${settings}\nbackend "gcs" {}\n}\n`,
+      }),
+    { code: "ERR_ASSERTION" },
+    "Moving the otherwise valid Terraform block into another existing source file must fail",
+  );
+});
 for (const [label, check] of [
   ["exact resource and API boundary", apiContract],
   ["state privacy, recovery and deletion protections", bucketContract],
@@ -609,6 +673,54 @@ for (const [label, check] of [
     check(plans[1].plan, alternate);
   });
 }
+test("registry default normalization has a valid omitted-block counterpart and refuses explicit overrides", () => {
+  // This corrective contract was adopted after real-provider readback; only these isolated fixture copies change.
+  const source = sourceFiles();
+  const valid = {
+    ...source,
+    "main.tf": source["main.tf"].replace(/\n\s*docker_config\s*\{\s*immutable_tags\s*=\s*false\s*\}\n/g, "\n"),
+  };
+  const header = 'resource "google_artifact_registry_repository" "images" {';
+  assert.equal(valid["main.tf"].split(header).length, 2, "Controls require one literal registry fixture target");
+  const plans = mocked(valid, [runBlock("omitted_registry_default", { project_id: defaults.project_id })]);
+  assert.equal(plans.length, 1);
+  complete(plans[0].plan, defaults);
+  for (const [label, declaration, value] of [
+    ["explicit_false", "docker_config { immutable_tags = false }", false],
+    ["explicit_true", "docker_config { immutable_tags = true }", true],
+    ["empty_block", "docker_config {}", null],
+  ]) {
+    const changed = {
+      ...valid,
+      "main.tf": valid["main.tf"].replace(header, `${header}\n  ${declaration}`),
+    };
+    assert.notEqual(changed["main.tf"], valid["main.tf"]);
+    const rejected = mocked(changed, [runBlock(label, { project_id: defaults.project_id })]);
+    assert.equal(rejected.length, 1, `${label} must reach a successful real mock plan`);
+    assert.deepEqual(resources(rejected[0].plan).get("google_artifact_registry_repository.images").docker_config, [
+      { immutable_tags: value },
+    ]);
+    assert.throws(
+      () => registryContract(rejected[0].plan, defaults),
+      (error) =>
+        error.code === "ERR_ASSERTION" &&
+        error.message.startsWith("Docker configuration must remain omitted for mutable default tags"),
+      `${label} must fail the amended Docker-configuration oracle`,
+    );
+  }
+  for (const ignored of ["[docker_config]", "all"]) {
+    const changed = mutateAttribute(
+      valid,
+      "google_artifact_registry_repository.images",
+      ["lifecycle", "prevent_destroy"],
+      `true\n    ignore_changes = ${ignored}`,
+    );
+    assert.throws(() => sourceContract(changed), {
+      code: "ERR_ASSERTION",
+      message: "Ignored configuration changes are outside the foundation",
+    });
+  }
+});
 test("ordinary short and maximum project/repository identifiers have valid counterparts", () => {
   const inputs = [
     { project_id: "abcde1", region: "us-west1", registry_id: "r" },

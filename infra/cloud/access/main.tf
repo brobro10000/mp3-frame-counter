@@ -70,10 +70,7 @@ resource "google_artifact_registry_repository" "images" {
   deletion_policy        = "PREVENT"
   cleanup_policy_dry_run = true
 
-  docker_config {
-    immutable_tags = false
-  }
-
+  # Omit the optional false-valued block: provider/API absence represents mutable tags without recurring drift.
   vulnerability_scanning_config {
     enablement_config = "DISABLED"
   }

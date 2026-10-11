@@ -60,3 +60,64 @@ outside the Run cap; the alerts are not an invoice ceiling. Keep state, variable
 Require actual resource/IAM readback and a no-change plan. An existing unrelated resource or unexpected action blocks
 apply. Do not remove protections to make teardown pass: planned teardown needs an explicitly reviewed retention and
 protection amendment. Do not create a production service or run an application candidate to finish this package.
+
+## Protected GCS backend amendment — 2026-10-10
+
+The separate ACCESS-BACKEND package selects one empty `backend "gcs" {}` directly inside the existing Terraform block in
+`versions.tf`. This supersedes the initial local-backend source choice only after the amendment is independently tested,
+reviewed and published. The remaining four files, 23 resources, IAM grants, outputs, provider pins and destruction
+safeguards stay unchanged. No bucket, prefix, credential or backend override is committed.
+
+An independent test author first amends the existing source guard to require exactly that empty block in that file and
+position, with one literal `gcs` label. Every other backend occurrence remains forbidden. Preserve all prior resource,
+IAM, lifecycle and native mocked-plan expectations. Add valid-counterpart refusal controls for absence, duplication,
+another backend type, relocation, nonempty bucket/prefix/credentials/unknown arguments and nested content. Freeze the
+reviewed amendment before a separate implementer changes `versions.tf`. Existing credential-free CI continues using
+`init -backend=false` and isolated native mock tests; it must not initialize a real backend.
+
+A GCS backend requires its bucket to exist. First setup therefore uses the published initial access root from PR #32 and
+private local state, with current cost controls and a reviewed create-only plan. Do not initialize a new empty GCS state
+owner to bypass that order. After actual resource/IAM readback, the published backend amendment may be copied into the
+same owned working directory, retaining its existing state and protected backup.
+
+Root supplies only the trusted operations bucket and an unused access-state prefix through a private backend-config
+file. Confirm exact bucket protections, operator access and absence of unrelated destination state before migrating. Use
+short-lived external authentication and `terraform init -migrate-state -lockfile=readonly` with that private config; do
+not place credentials in backend options, automatically force-copy, or apply from two state owners. Verify matching
+state lineage and all resources, explain any serial change, observe the stored object/version and backend locking, and
+require a refreshed no-change plan before treating migration as complete. Retain private recovery copies. An uncertain
+migration stops further apply until both local and remote state have been reconciled.
+
+This package authorizes no new resource, grant, workflow, production operation or runtime deployment. Backend source
+tests prove the declaration and preserved mock semantics; only the later recorded migration/readback proves live state
+custody. Ordinary destruction and lock removal remain outside this amendment.
+
+## Provider default normalization amendment — 2026-10-10
+
+The first authorized access apply created all 23 planned instances. Its immediate readback plan proposed only adding
+`docker_config { immutable_tags = false }` back to the registry. Provider 8.6.0 omits the empty false configuration in
+its API request and flattens an absent response to an empty list. This recorded failed no-change check is not ignored.
+
+The bounded correction omits the entire optional `docker_config` block and retains the provider/API default of mutable
+tags. Do not use an empty block, `ignore_changes`, a provider upgrade or immutable tags to conceal the difference. An
+independent author must amend the plan oracle to require an empty Docker-configuration list and add meaningful refusal
+controls for explicit overrides before a separate implementer removes the three source lines. Preserve the original
+expectation and observed failure, all IAM/deletion safeguards and the exact 23-resource/five-output boundary.
+
+This extends ACCESS-BACKEND's source scope to `main.tf` only for that default normalization. Before remote migration,
+verify the actual API omits or reports false immutable tags and a fresh reviewed plan has no resource actions. If the
+correction needs any provider mutation, stop and review its exact plan separately. Terraform's original private state
+and the failed readback remain retained. Backend migration, locking and production deployment remain separate gates.
+
+## Additional operational gate: default project identities
+
+The initial authenticated resource/IAM readback matched all seven declared direct IAM grants and all resource identity,
+protection and output checks. Its project-IAM check failed because the default Compute identity has a broad Editor
+grant, alongside additional Google service-agent roles. No pre-apply project-IAM snapshot establishes their provenance.
+The Editor role can inherit bucket access through Google's project-editor convenience bindings.
+
+**ACCESS-IAM-DEFAULTS** must reconcile exact default identities and workload dependencies before remote-state migration
+or automated deployment credentials become trusted. Prefer a separately reviewed IaC correction; preserve owner access,
+necessary service agents and the seven declared resource-scoped grants. Do not delete accounts, enable unrelated APIs,
+remove unknown bindings or treat a current failed audit as passed. This remains outside the
+backend/default-normalization source amendment and does not require a product change.
