@@ -1,3 +1,4 @@
+import { checkBackendRedocExamples } from "./backend-audio-redoc.mjs";
 /**
  * Hosted docs-v1 predicates through explicitly owned authenticated HTTP/browser adapters. No destination or credential
  * lookup occurs here. Pure frozen contract predicates remain unchanged; native failures become fixed ASSERTION codes.
@@ -147,6 +148,8 @@ export async function checkHostedDocsBrowser(
     await response400.getByText("error", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
     const after = await response400.innerText();
     requireThat(after !== before && after.includes("required") && after.includes("string"), "REAL_INTERACTION");
+    const sampledSpec = parseYaml((await http.docs("/docs/openapi.yaml")).body);
+    await finite(checkBackendRedocExamples(page, sampledSpec), 15000);
     const images = await page.locator("img").evaluateAll((nodes) =>
       nodes.map((node) => {
         const i = node as HTMLImageElement;

@@ -4,6 +4,7 @@
  * has no network, filesystem or mutation side effects. Import these functions rather than duplicating checks.
  */
 import assert from "node:assert/strict";
+import { assertCodedError } from "./backend-audio-errors.mjs";
 
 export interface ResponseData {
   status: number;
@@ -22,12 +23,8 @@ export function assertFrameResponse(response: ResponseData, expected: number): v
   assert.deepEqual(assertJson(response), { frameCount: expected });
 }
 
-export function assertErrorResponse(response: ResponseData, status: number): void {
+/** Verify exact controlled code/status/message using the independent catalogue; never accept a legacy envelope. */
+export function assertErrorResponse(response: ResponseData, status: number, code?: string): void {
   assert.equal(response.status, status);
-  const value = assertJson(response) as Record<string, unknown>;
-  assert.ok(value !== null && typeof value === "object" && !Array.isArray(value));
-  assert.deepEqual(Object.keys(value), ["error"]);
-  assert.equal(typeof value.error, "string");
-  assert.ok((value.error as string).trim().length > 0);
-  assert.doesNotMatch(value.error as string, /\bat .*\.(?:[cm]?[jt]s):\d|\/Users\/|\/home\//);
+  assertCodedError(assertJson(response), status, code);
 }

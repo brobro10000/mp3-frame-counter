@@ -7,6 +7,7 @@
  * lease closes even after refusal/setup failure. This is candidate calibration, never hosted application acceptance.
  */
 import assert, { AssertionError } from "node:assert/strict";
+import { absentDetail } from "./backend-audio-contract.ts";
 import { once } from "node:events";
 import { createServer, type Server } from "node:http";
 import { expect, type Browser } from "@playwright/test";
@@ -54,7 +55,7 @@ export async function runHostedUiControls(browser: Browser): Promise<ControlRow[
         response.writeHead(401).end();
         return;
       }
-      if (request.url === "/file-upload" && request.method === "POST") {
+      if (request.url === "/file-upload?details=true" && request.method === "POST") {
         uploads += 1;
         const chunks: Buffer[] = [];
         let length = 0;
@@ -69,7 +70,11 @@ export async function runHostedUiControls(browser: Browser): Promise<ControlRow[
             length === expectedBody.length &&
             Buffer.concat(chunks).equals(expectedBody);
           response.writeHead(validReceipt ? 200 : 400, { "Content-Type": "application/json" });
-          response.end(validReceipt ? '{"frameCount":9}' : '{"error":"Invalid control upload"}');
+          response.end(
+            validReceipt
+              ? JSON.stringify(absentDetail(9))
+              : '{"code":"UPLOAD_EMPTY","error":"Choose a nonempty MP3 file."}',
+          );
         });
         return;
       }
@@ -90,7 +95,7 @@ const button = document.querySelector('button');
 const status = document.querySelector('[role="status"]');
 globalThis.fixtureState = { selected: 0, clicked: 0, completed: 0, timerFired: false };
 async function upload() {
-  const response = await fetch('/file-upload', {
+  const response = await fetch('/file-upload?details=true', {
     method: 'POST', headers: { 'Content-Type': 'audio/mpeg' }, body: input.files[0]
   });
   const value = await response.json();

@@ -1,0 +1,966 @@
+{
+  "contractRevision": "backend-audio-v1",
+  "kind": "independently-constructed-audio-expectations",
+  "physicalManifestUnchanged": true,
+  "audioCountOverrides": {
+    "tone-vbr": 15,
+    "xing-physical": 1
+  },
+  "fixtures": [
+    {
+      "id": "Xing-stereo-plain",
+      "bytes": 1152,
+      "sha256": "39662ffbabb1bc0d3516b0977473e14d1f0a428b13a52898583dcabdb2be7af6",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Info-stereo-plain",
+      "bytes": 1152,
+      "sha256": "78613d0040aa2d3bf3cc4fbdfb822ea27376760592ce99f4b8a440b293085e48",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Info",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Xing-stereo-crc",
+      "bytes": 1152,
+      "sha256": "ba9c8f74e174e03eba1d2df8a71049c27d4bca1ec91fe4d058437f5458855f73",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Info-stereo-crc",
+      "bytes": 1152,
+      "sha256": "5c61b4aa3c2abf1d98c8bf870f9a68e0744e5fe80e8f6c255ca02829b3191735",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Info",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Xing-mono-plain",
+      "bytes": 1152,
+      "sha256": "40848ca630a3016f2d2bc02712b7f59dc0110538ed55dc0840fa7b6dfb33e075",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 21,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Info-mono-plain",
+      "bytes": 1152,
+      "sha256": "7e72ce26713bc8a2634a06856f8c61d100fe592dc000051495b49d2d50a50407",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Info",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 21,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Xing-mono-crc",
+      "bytes": 1152,
+      "sha256": "9e868663dc1b9e341544708698d7e26c167270cd210816fb670e4c1452924360",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 21,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "Info-mono-crc",
+      "bytes": 1152,
+      "sha256": "b9162e72dc25d9b753ef381d6ed76ed5f152f4dd30b03fb7353eb81fa74b7f65",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Info",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 21,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-0",
+      "bytes": 1152,
+      "sha256": "863d1287b5d9ee3eee43da843d90f9dc10e11b6f99d51f9ed40ce2b37d02fe85",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-1",
+      "bytes": 1152,
+      "sha256": "afe49cd62985389b2e80cfbf812fc4933908f5d4e7f78fc43270fa8b0f80eeca",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 1,
+            "declaredAudioFrameCount": 2
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-2",
+      "bytes": 1152,
+      "sha256": "2985f04a3604cfd1a61cc023cf6404e4a569554b24968a74a6025ec9c7a5975f",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 2,
+            "declaredMpegStreamByteCount": 1152
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-3",
+      "bytes": 1152,
+      "sha256": "9f9bd5bd7633e0edb9e65ecf69be2a2664d7c4d2ba1cd9325a733e3ed9d038be",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 3,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-4",
+      "bytes": 1152,
+      "sha256": "0a465a40f99209dee25faa32b5f61bdd6cb36e66b552f66f8b0e80e0170e9382",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 4,
+            "seekTableEntryCount": 100
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-5",
+      "bytes": 1152,
+      "sha256": "20d620d8825e6611a467b818ec6a50eac3d8b4b0814a1fbe52a9b5fa4fe59f81",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 5,
+            "declaredAudioFrameCount": 2,
+            "seekTableEntryCount": 100
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-6",
+      "bytes": 1152,
+      "sha256": "ed0c319a89915890e0a45501b681972348d4460ca172542d59f7a5bdd78d3923",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 6,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-7",
+      "bytes": 1152,
+      "sha256": "e31d194dcaf102900564188a4ed74a459692a0697faeb5ee904418599fe52be4",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 7,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-8",
+      "bytes": 1152,
+      "sha256": "c39ac917002959b606750891dfbb6f97f93d819eb77eb818eba09ce04e68d685",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 8,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-9",
+      "bytes": 1152,
+      "sha256": "7440a3e4cbe71e25efa3c8abef3170d3bc946fe2caf38f1f4e5986395f6df122",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 9,
+            "declaredAudioFrameCount": 2,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-10",
+      "bytes": 1152,
+      "sha256": "2db12bfba2c02121a48b34521a6f8d809f5c973c29f3411d3577f075246641dd",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 10,
+            "declaredMpegStreamByteCount": 1152,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-11",
+      "bytes": 1152,
+      "sha256": "d855de8da079b005ae64463dcfc630c0fff24842177d52c5c1243f9698fd0138",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 11,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-12",
+      "bytes": 1152,
+      "sha256": "150bb8071f0da5af1e96ec87c5e300bb279c80e1dd52c91f32b2a4eecc2d25ba",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 12,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-13",
+      "bytes": 1152,
+      "sha256": "5c593eacf42f916102a41ea361389a0c537d8d80724d786d40dfb791b56f0364",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 13,
+            "declaredAudioFrameCount": 2,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-14",
+      "bytes": 1152,
+      "sha256": "4815c555eed4eb2510a9196d68e11fde2503bdeddc93f107ac79dd29f528a916",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 14,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "flags-15",
+      "bytes": 1152,
+      "sha256": "39662ffbabb1bc0d3516b0977473e14d1f0a428b13a52898583dcabdb2be7af6",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "tampered-count",
+      "bytes": 1152,
+      "sha256": "48c6ec6a108e895d9bbc6205db38019c474882e8910f0d64f008be4e22530bcc",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 4294967295,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": [
+            {
+              "code": "XING_DECLARED_FRAME_COUNT_MISMATCH"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "zero-declaration",
+      "bytes": 1152,
+      "sha256": "1c4e2a5cb0a74e0db7c803671981ae9458bb3050260c40099f91e569ea479d50",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 0,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": [
+            {
+              "code": "XING_DECLARED_FRAME_COUNT_MISMATCH"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "removed-final-frame",
+      "bytes": 768,
+      "sha256": "014dc319330031682e1c004c276d7d02a77ee20020b3bf7b772855723b1cf13e",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 2,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": [
+            {
+              "code": "XING_DECLARED_FRAME_COUNT_MISMATCH"
+            },
+            {
+              "code": "XING_DECLARED_STREAM_BYTES_MISMATCH"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "truncated-final-frame",
+      "bytes": 1151,
+      "sha256": "ad0a4bdc1683c70576b2c1fd15c149195c5468bbf4a9607710cfd239e24b30b6",
+      "expected": null,
+      "status": 400,
+      "code": "MP3_TRUNCATED_FRAME"
+    },
+    {
+      "id": "leading-44-byte-tag",
+      "bytes": 1196,
+      "sha256": "8eb511655da9edf07d480ad259c5f7bcacb3521476df2553f17e1cdae9dd649e",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 44,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 80,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "both-outer-tags",
+      "bytes": 1324,
+      "sha256": "a311d3b33022bb0755c51ca53c4e517dc41644a27344bfab18e3cfa3de89bedc",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 3,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 44,
+            "frameLengthBytes": 384,
+            "markerOffsetBytes": 80,
+            "flags": 15,
+            "declaredAudioFrameCount": 2,
+            "declaredMpegStreamByteCount": 1152,
+            "seekTableEntryCount": 100,
+            "qualityValue": 0
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "removed-carrier",
+      "bytes": 768,
+      "sha256": "5fbd0a27362c5c8821a077fc72e5d498daab43cdf06f32d1e4fdba241c8bea6e",
+      "expected": {
+        "frameCount": 2,
+        "analysis": {
+          "physicalFrameCount": 2,
+          "excludedMetadataFrameCount": 0,
+          "xing": {
+            "status": "absent"
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "carrier-only",
+      "bytes": 384,
+      "sha256": "f6696403c407203b040dfcbab79daf659e447fbc48a8fdf9e93aae24650a1d71",
+      "expected": null,
+      "status": 400,
+      "code": "MP3_NO_AUDIO_FRAMES"
+    },
+    {
+      "id": "wrong-position",
+      "bytes": 384,
+      "sha256": "466d59e6ca073d182134b3404b12b01b83aea5dfa6fadd37b82417c2c4edb025",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 1,
+          "excludedMetadataFrameCount": 0,
+          "xing": {
+            "status": "absent"
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "vbri",
+      "bytes": 384,
+      "sha256": "0287b057d3f773408a79bcd8a761c89a1604a88148e999ce8c74ac2668ddd5e1",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 1,
+          "excludedMetadataFrameCount": 0,
+          "xing": {
+            "status": "absent"
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "later-marker",
+      "bytes": 1536,
+      "sha256": "5100655571d4ee44fbb757deba3ecf1c395c49a6703f8115e7dc2f685e25d1bb",
+      "expected": {
+        "frameCount": 4,
+        "analysis": {
+          "physicalFrameCount": 4,
+          "excludedMetadataFrameCount": 0,
+          "xing": {
+            "status": "absent"
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "id3-marker",
+      "bytes": 428,
+      "sha256": "4d224e6724ddbe1fc6a2d386fca5d2f1d2b05eadcd37a5a7bcf7590226989e71",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 1,
+          "excludedMetadataFrameCount": 0,
+          "xing": {
+            "status": "absent"
+          },
+          "warnings": []
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "shifted-crc-false",
+      "bytes": 768,
+      "sha256": "4379727c91773602dafa4104067199244907e62335e0990fcdd36a6d4a6ad33c",
+      "expected": null,
+      "status": 415,
+      "code": "MP3_UNSUPPORTED_METADATA"
+    },
+    {
+      "id": "shifted-crc-true",
+      "bytes": 768,
+      "sha256": "d504bd57081027cf72057f0bf7645b796415947b5d0c5cfdf7b2258396408523",
+      "expected": null,
+      "status": 415,
+      "code": "MP3_UNSUPPORTED_METADATA"
+    },
+    {
+      "id": "unknown-flags",
+      "bytes": 1152,
+      "sha256": "9c8240c7054377d105502fe42c74a98edbb5a182a83d397d1b235c0e9a844c36",
+      "expected": null,
+      "status": 415,
+      "code": "MP3_UNSUPPORTED_METADATA"
+    },
+    {
+      "id": "bounded-seek",
+      "bytes": 480,
+      "sha256": "b3cc2e4c1f04c95f01cb4455a40bb835945da5ff77b3bf6c5c7bf3136b3d65f5",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 2,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 96,
+            "markerOffsetBytes": 36,
+            "flags": 15,
+            "declaredAudioFrameCount": 1,
+            "declaredMpegStreamByteCount": 480
+          },
+          "warnings": [
+            {
+              "code": "XING_OPTIONAL_FIELD_TRUNCATED",
+              "field": "seekTable"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "code": null
+    },
+    {
+      "id": "bounded-quality",
+      "bytes": 528,
+      "sha256": "6f84e56bfb42462b39f7fb5ac1f22c9e57a300ef23709fd04a28cd5189c5557b",
+      "expected": {
+        "frameCount": 1,
+        "analysis": {
+          "physicalFrameCount": 2,
+          "excludedMetadataFrameCount": 1,
+          "xing": {
+            "status": "present",
+            "marker": "Xing",
+            "frameOffsetBytes": 0,
+            "frameLengthBytes": 144,
+            "markerOffsetBytes": 36,
+            "flags": 12,
+            "seekTableEntryCount": 100
+          },
+          "warnings": [
+            {
+              "code": "XING_OPTIONAL_FIELD_TRUNCATED",
+              "field": "qualityValue"
+            }
+          ]
+        }
+      },
+      "status": 200,
+      "code": null
+    }
+  ]
+}

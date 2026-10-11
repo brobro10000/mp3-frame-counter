@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import { performance } from "node:perf_hooks";
 import { assertErrorResponse, type ResponseData } from "../lib/assertions.ts";
+import { errorDto } from "../lib/backend-audio-errors.mjs";
 import { assertExecution, assertInventory, inventory, type Execution } from "../lib/inventory.ts";
 import {
   assertNormalExit,
@@ -43,7 +44,19 @@ async function rejects(name: string, callback: () => Promise<unknown>, marker: R
 const error = (status: number): ResponseData => ({
   status,
   headers: { "content-type": "application/json" },
-  body: '{"error":"Deliberately wrong control"}',
+  body: JSON.stringify(
+    errorDto(
+      (
+        {
+          400: "UPLOAD_INCOMPLETE",
+          404: "ROUTE_NOT_FOUND",
+          408: "UPLOAD_TIMEOUT",
+          415: "UNSUPPORTED_MEDIA_TYPE",
+          503: "SERVICE_BUSY",
+        } as Record<number, string>
+      )[status] ?? "INTERNAL_ERROR",
+    ),
+  ),
 });
 async function responder(server: Server, check: (upload: Upload) => Promise<void>) {
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));

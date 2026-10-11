@@ -1,0 +1,535 @@
+/**
+ * Usage: node scripts/backend-audio-controls.ts from the standalone acceptance package. Verify literal successor byte
+ * recipes, frozen physical identities, count/detail/error/OpenAPI sensitivity and complete72/22/3 identity declarations.
+ * Reads independent fixtures only and writes sanitized candidate-control evidence under .artifacts; no product target,
+ * imports, network, decoder, credentials, successful HTTP stub or acceptance execution is involved.
+ */
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  audioFixtures,
+  encodedVbrDetail,
+  absentDetail,
+  assertDetailedFrameResponse,
+  assertAudioUiText,
+  hasUiQuantity,
+} from "../lib/backend-audio-contract.ts";
+import { assertFrameResponse, assertErrorResponse, type ResponseData } from "../lib/assertions.ts";
+import { errorCatalogue, errorDto } from "../lib/backend-audio-errors.mjs";
+import { assertBackendSpec, exampleMatches } from "../lib/backend-audio-openapi.mjs";
+import { fixture, fixtureBytes } from "../lib/fixtures.ts";
+import { inventory } from "../lib/inventory.ts";
+
+let negativeControls = 0;
+const response = (value: unknown, status = 200): ResponseData => ({
+  status,
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify(value),
+});
+
+/** A refusal must originate in the contract predicate, never a missing import/API or fixture/tool setup exception. */
+function rejected(name: string, action: () => void): void {
+  assert.throws(action, assert.AssertionError, `${name}: no semantic rejection`);
+  negativeControls += 1;
+}
+
+/** Change one owned negative-control leaf after checking each intermediate value is an object. */
+function alter(value: unknown, path: readonly string[], next: unknown, remove = false): void {
+  assert.ok(path.length > 0);
+  let parent = value;
+  for (const key of path.slice(0, -1)) {
+    assert.ok(parent !== null && typeof parent === "object");
+    parent = Reflect.get(parent, key);
+  }
+  assert.ok(parent !== null && typeof parent === "object");
+  const key = path.at(-1);
+  assert.ok(key !== undefined);
+  if (remove) Reflect.deleteProperty(parent, key);
+  else Reflect.set(parent, key, next);
+}
+
+const frozen = JSON.parse(readFileSync(new URL("../fixtures/backend-audio.json", import.meta.url), "utf8"));
+const recipes = audioFixtures();
+assert.equal(frozen.contractRevision, "backend-audio-v1");
+assert.equal(new Set(recipes.map((entry) => entry.id)).size, recipes.length);
+assert.deepEqual(
+  recipes.map((entry) => ({
+    id: entry.id,
+    bytes: entry.bytes.length,
+    sha256: createHash("sha256").update(entry.bytes).digest("hex"),
+    expected: entry.expected ?? null,
+    status: entry.status ?? 200,
+    code: entry.code ?? null,
+  })),
+  frozen.fixtures,
+);
+assert.deepEqual(frozen.audioCountOverrides, { "tone-vbr": 15, "xing-physical": 1 });
+assert.equal(fixture("tone-vbr").frameCount, 16);
+assert.equal(fixture("xing-physical").frameCount, 2);
+assert.equal(fixture("tone-cbr").frameCount, 9);
+assert.equal(fixture("tone-padded").frameCount, 21);
+const encoded = fixtureBytes("tone-vbr");
+assert.equal(encoded.length, 2160);
+assert.equal(encoded.subarray(21, 25).toString(), "Xing");
+assert.equal(encoded.readUInt32BE(25), 15);
+assert.equal(encoded.readUInt32BE(29), 15);
+assert.equal(encoded.readUInt32BE(33), 2160);
+assert.equal(encoded.readUInt32BE(137), 0);
+assert.equal(Math.floor((144 * 64_000) / 44_100), 208);
+assert.equal(44 + 208 + 1_457_920, 1_458_172);
+assert.equal(6_090 - 1, 6_089);
+assert.equal(10 + 34, 44);
+assert.equal(36 + 4 + 4 + 4 + 4 + 100 + 4 + 52, 208);
+assert.equal(54_613 * 384 + 128, 20_971_520);
+
+assertFrameResponse(response({ frameCount: 15 }), 15);
+assertDetailedFrameResponse(response(encodedVbrDetail), encodedVbrDetail);
+assertDetailedFrameResponse(response(absentDetail(9)), absentDetail(9));
+for (const text of [
+  "15 audio frames\n16 - 1 = 15",
+  "Audio frames: 15\nPhysical frames: 16\nExcluded metadata frames: 1\n16 physical frames - 1 excluded frame = 15 audio frames",
+  "Audio frame count\n15\n16 physical frames − excluded metadata frames 1 = audio frames 15",
+])
+  assertAudioUiText(text, encodedVbrDetail);
+assert.ok(hasUiQuantity("Physical frames\n16 frames", /^Physical frames$/i, 16));
+assert.ok(hasUiQuantity("Declared MPEG-stream bytes: 2,160 bytes", /^Declared MPEG.stream bytes$/i, 2160));
+assert.ok(!hasUiQuantity("Declared MPEG-stream bytes: 12,160 bytes", /^Declared MPEG.stream bytes$/i, 2160));
+for (const text of [
+  "Audio frames: 16\n16 - 1 = 15",
+  "Audio frames: 15\n16 - 0 = 15",
+  "Audio frames: 15\n16 - 1 = 16",
+  "Audio frames: 15\n16 1 15",
+  "Declared audio frames: 15\n16 - 1 = 15",
+  "Audio frames: 15.5\n16 - 1 = 15",
+])
+  rejected("invalid semantic UI text", () => assertAudioUiText(text, encodedVbrDetail));
+for (const value of [0, -1, 1.5, null, "15", 16, Number.MAX_SAFE_INTEGER + 1])
+  rejected(`invalid audio count ${String(value)}`, () => assertFrameResponse(response({ frameCount: value }), 15));
+for (const [path, next, remove] of [
+  [["analysis"], undefined, true],
+  [["frameCount"], 16],
+  [["analysis", "physicalFrameCount"], 15],
+  [["analysis", "excludedMetadataFrameCount"], 0],
+  [["analysis", "excludedMetadataFrameCount"], null],
+  [["analysis", "xing", "markerOffsetBytes"], 23],
+  [["analysis", "xing", "seekTableEntryCount"], 99],
+  [["analysis", "xing", "qualityValue"], null],
+  [["analysis", "xing", "payload"], "internal"],
+  [["analysis", "warnings"], [{ code: "UNKNOWN" }]],
+  [["statusCode"], 200],
+] as const) {
+  const value = structuredClone(encodedVbrDetail);
+  alter(value, path, next, remove);
+  rejected("invalid detailed DTO", () => assertDetailedFrameResponse(response(value), encodedVbrDetail));
+}
+for (const [code, entry] of Object.entries(errorCatalogue)) {
+  const status = Number(entry[0]);
+  const dto = errorDto(code);
+  assertErrorResponse(response(dto, status), status, code);
+  rejected(`${code} legacy error`, () => assertErrorResponse(response({ error: dto.error }, status), status, code));
+  rejected(`${code} wrong status mapping`, () =>
+    assertErrorResponse(response(dto, status === 400 ? 415 : 400), status === 400 ? 415 : 400),
+  );
+  rejected(`${code} native message`, () =>
+    assertErrorResponse(response({ ...dto, error: "FST_ERR_INTERNAL /private/file" }, status), status),
+  );
+}
+const spec = JSON.parse(readFileSync(new URL("../fixtures/backend-audio-openapi.json", import.meta.url), "utf8"));
+assertBackendSpec(spec);
+const routingElsewhere = structuredClone(spec);
+routingElsewhere.paths["/healthz"].get.responses["404"] = routingElsewhere.paths["/file-upload"].post.responses["404"];
+delete routingElsewhere.paths["/file-upload"].post.responses["404"];
+delete routingElsewhere.paths["/file-upload"].post.responses["405"];
+assertBackendSpec(routingElsewhere);
+const equivalentLiterals = structuredClone(spec);
+const equivalentAnalysis = equivalentLiterals.components.schemas.FrameDetail.properties.analysis;
+equivalentAnalysis.properties.excludedMetadataFrameCount = { type: "integer", minimum: 0, maximum: 1 };
+equivalentAnalysis.properties.xing.oneOf[1].properties.marker = {
+  anyOf: [
+    { type: "string", enum: ["Info"] },
+    { type: "string", enum: ["Xing"] },
+  ],
+};
+assertBackendSpec(equivalentLiterals);
+
+/** Safe byte maxima describe reachable spans, with no requirement to choose MAX_SAFE_INTEGER. */
+const presentPath = [
+  "components",
+  "schemas",
+  "FrameDetail",
+  "properties",
+  "analysis",
+  "properties",
+  "xing",
+  "oneOf",
+  "1",
+  "properties",
+];
+const byteEndpoints = {
+  frameOffsetBytes: 20_971_520 - 2 * 96,
+  markerOffsetBytes: 20_971_520 - 2 * 96 + 36,
+  frameLengthBytes: 1_441,
+};
+assert.equal(Math.floor((144 * 320_000) / 32_000) + 1, 1_441);
+assert.equal(Math.floor((144 * 32_000) / 48_000), 96);
+for (const endpointKind of ["upload-cap", "attainable-endpoint"] as const) {
+  const equivalentBytes = structuredClone(spec);
+  for (const [field, endpoint] of Object.entries(byteEndpoints))
+    alter(equivalentBytes, [...presentPath, field, "maximum"], endpointKind === "upload-cap" ? 20_971_520 : endpoint);
+  assertBackendSpec(equivalentBytes);
+}
+for (const [field, endpoint] of Object.entries(byteEndpoints))
+  for (const [name, maximum] of [
+    ["too small", endpoint - 1],
+    ["unsafe", Number.MAX_SAFE_INTEGER + 1],
+    ["infinite", Infinity],
+    ["not-a-number", NaN],
+    ["fractional", endpoint + 0.5],
+    ["coerced", String(endpoint)],
+    ["negative", -1],
+    ["missing", undefined],
+  ] as const) {
+    const invalidBound = structuredClone(spec);
+    alter(invalidBound, [...presentPath, field, "maximum"], maximum, maximum === undefined);
+    rejected(`${field} ${name} maximum`, () => assertBackendSpec(invalidBound));
+  }
+for (const annotationKind of ["inline-description", "local-reference"] as const) {
+  const equivalentBinary = structuredClone(spec);
+  equivalentBinary.components.schemas.BinaryUpload = { type: "string", format: "binary", description: "Raw bytes." };
+  for (const media of Object.values(equivalentBinary.paths["/file-upload"].post.requestBody.content)) {
+    assert.ok(media !== null && typeof media === "object");
+    const schema =
+      annotationKind === "inline-description"
+        ? { type: "string", format: "binary", title: "Raw upload", description: "The raw uploaded file bytes." }
+        : { $ref: "#/components/schemas/BinaryUpload" };
+    Reflect.set(media, "schema", schema);
+  }
+  assertBackendSpec(equivalentBinary);
+}
+for (const [name, schema] of [
+  ["wrong binary type", { type: "object", format: "binary", description: "Raw bytes." }],
+  ["wrong binary format", { type: "string", format: "byte", description: "Raw bytes." }],
+  ["external binary reference", { $ref: "https://invalid.example/BinaryUpload" }],
+  ["missing binary reference", { $ref: "#/components/schemas/AbsentBinaryUpload" }],
+] as const) {
+  const invalidBinary = structuredClone(spec);
+  alter(invalidBinary, ["paths", "/file-upload", "post", "requestBody", "content", "audio/mpeg", "schema"], schema);
+  rejected(name, () => assertBackendSpec(invalidBinary));
+}
+for (const casing of ["lowercase", "uppercase"] as const) {
+  const equivalentHeaders = structuredClone(spec);
+  for (const methods of Object.values(equivalentHeaders.paths)) {
+    assert.ok(methods !== null && typeof methods === "object");
+    for (const operation of Object.values(methods)) {
+      assert.ok(operation !== null && typeof operation === "object");
+      const responses = Reflect.get(operation, "responses");
+      if (!responses || typeof responses !== "object") continue;
+      for (const response of Object.values(responses)) {
+        assert.ok(response !== null && typeof response === "object");
+        const headers = Reflect.get(response, "headers");
+        if (!headers || typeof headers !== "object") continue;
+        Reflect.set(
+          response,
+          "headers",
+          Object.fromEntries(
+            Object.entries(headers).map(([key, value]) => [
+              casing === "lowercase" ? key.toLowerCase() : key.toUpperCase(),
+              value,
+            ]),
+          ),
+        );
+      }
+    }
+  }
+  assertBackendSpec(equivalentHeaders);
+}
+for (const [name, path, value] of [
+  ["misnamed Allow", ["paths", "/file-upload", "get", "responses", "405", "headers"], { Allowance: {} }],
+  ["misnamed Retry-After", ["paths", "/file-upload", "post", "responses", "503", "headers"], { RetryAfter: {} }],
+  [
+    "restricted default count maximum",
+    ["components", "schemas", "FrameCount", "properties", "frameCount", "maximum"],
+    20_971_520,
+  ],
+  [
+    "restricted detailed count maximum",
+    ["components", "schemas", "FrameDetail", "properties", "frameCount", "maximum"],
+    20_971_520,
+  ],
+  [
+    "restricted physical count maximum",
+    ["components", "schemas", "FrameDetail", "properties", "analysis", "properties", "physicalFrameCount", "maximum"],
+    20_971_520,
+  ],
+] as const) {
+  const invalid = structuredClone(spec);
+  alter(invalid, path, value);
+  rejected(name, () => assertBackendSpec(invalid));
+}
+for (const field of ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue"]) {
+  const invalidDeclaration = structuredClone(spec);
+  alter(invalidDeclaration, [...presentPath, field, "maximum"], 20_971_520);
+  rejected(`${field} restricted uint32 maximum`, () => assertBackendSpec(invalidDeclaration));
+}
+for (const status of ["404", "405"]) {
+  const missingRouting = structuredClone(spec);
+  for (const methods of Object.values(missingRouting.paths)) {
+    assert.ok(methods !== null && typeof methods === "object");
+    for (const operation of Object.values(methods)) {
+      assert.ok(operation !== null && typeof operation === "object");
+      const responses = Reflect.get(operation, "responses");
+      if (responses !== null && typeof responses === "object") Reflect.deleteProperty(responses, status);
+    }
+  }
+  rejected(`missing appropriate routing ${status} examples`, () => assertBackendSpec(missingRouting));
+}
+const uploadPath = ["paths", "/file-upload", "post"];
+const schemaPath = ["components", "schemas"];
+const samplePath = [...uploadPath, "responses", "200", "content", "application/json"];
+for (const [name, path, next, remove] of [
+  ["no detailed branch", [...samplePath, "schema", "oneOf"], [{ $ref: "#/components/schemas/FrameCount" }]],
+  ["closed-default accepts analysis", [...schemaPath, "FrameCount", "additionalProperties"], true],
+  ["invalid count schema", [...schemaPath, "FrameCount", "properties", "frameCount", "minimum"], 0],
+  ["extra leaked detail", [...schemaPath, "FrameDetail", "properties", "internal"], { type: "string" }],
+  [
+    "unbounded warnings",
+    [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "warnings", "maxItems"],
+    undefined,
+    true,
+  ],
+  ["error-only schema", [...schemaPath, "Error", "properties", "code"], undefined, true],
+  ["missing standard502", [...uploadPath, "responses", "502"], undefined, true],
+  ["missing health route", ["paths", "/healthz"], undefined, true],
+  [
+    "unsafe offset schema",
+    [
+      ...schemaPath,
+      "FrameDetail",
+      "properties",
+      "analysis",
+      "properties",
+      "xing",
+      "oneOf",
+      "1",
+      "properties",
+      "frameOffsetBytes",
+      "type",
+    ],
+    "number",
+  ],
+  [
+    "missing error examples",
+    [...uploadPath, "responses", "415", "content", "application/json", "examples"],
+    undefined,
+    true,
+  ],
+  [
+    "wrong example code/status",
+    [...uploadPath, "responses", "413", "content", "application/json", "examples", "upload_too_large", "value", "code"],
+    "SERVICE_BUSY",
+  ],
+  ["HEAD content", ["paths", "/file-upload", "head", "responses", "405", "content"], {}],
+  ["missing Allow", ["paths", "/file-upload", "get", "responses", "405", "headers"], undefined, true],
+  ["missing RetryAfter", [...uploadPath, "responses", "503", "headers"], undefined, true],
+  ["coerced query rule", [...uploadPath, "parameters", "0", "description"], "Boolean true selects details."],
+] as const) {
+  const value = structuredClone(spec);
+  alter(value, path, next, remove);
+  rejected(name, () => assertBackendSpec(value));
+}
+
+/** Reject omissions and incorrect header literals found by the independent frozen-contract audit. */
+for (const [name, path, next, remove] of [
+  ["optional detailed count", [...schemaPath, "FrameDetail", "required"], ["analysis"]],
+  [
+    "optional absent carrier status",
+    [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "xing", "oneOf", "0", "required"],
+    [],
+  ],
+  ["unrestricted error code", [...schemaPath, "Error", "properties", "code", "enum"], undefined, true],
+  ["missing upload HEAD", ["paths", "/file-upload", "head"], undefined, true],
+  [
+    "wrong upload Allow value",
+    ["paths", "/file-upload", "get", "responses", "405", "headers", "Allow", "schema"],
+    { type: "string", enum: ["incorrect"] },
+  ],
+  [
+    "wrong health Allow value",
+    ["paths", "/healthz", "post", "responses", "405", "headers", "Allow", "schema"],
+    { type: "string", enum: ["POST"] },
+  ],
+  [
+    "invalid Retry-After value",
+    [...uploadPath, "responses", "503", "headers", "Retry-After", "schema"],
+    { type: "string", enum: ["incorrect"] },
+  ],
+  [
+    "zero Retry-After value",
+    [...uploadPath, "responses", "503", "headers", "Retry-After", "schema"],
+    { type: "string", enum: ["0"] },
+  ],
+] as const) {
+  const invalid = structuredClone(spec);
+  alter(invalid, path, next, remove);
+  rejected(name, () => assertBackendSpec(invalid));
+}
+const missingHeads = structuredClone(spec);
+for (const methods of Object.values(missingHeads.paths)) {
+  assert.ok(methods !== null && typeof methods === "object");
+  Reflect.deleteProperty(methods, "head");
+}
+rejected("all HEAD operations missing", () => assertBackendSpec(missingHeads));
+
+const literalHeaders = structuredClone(spec);
+for (const [path, methods] of Object.entries(literalHeaders.paths)) {
+  assert.ok(methods !== null && typeof methods === "object");
+  for (const operation of Object.values(methods)) {
+    assert.ok(operation !== null && typeof operation === "object");
+    const responses = Reflect.get(operation, "responses");
+    if (!responses || typeof responses !== "object") continue;
+    for (const [status, response] of Object.entries(responses)) {
+      assert.ok(response !== null && typeof response === "object");
+      const headers = Reflect.get(response, "headers");
+      if (!headers || typeof headers !== "object") continue;
+      const name = status === "405" ? "Allow" : status === "503" ? "Retry-After" : undefined;
+      if (name && Object.hasOwn(headers, name))
+        Reflect.set(headers, name, {
+          schema: { enum: name === "Allow" ? [path === "/file-upload" ? "POST" : "GET"] : ["1", "60"] },
+        });
+    }
+  }
+}
+assertBackendSpec(literalHeaders);
+const simple = { $ref: "#/components/schemas/FrameCount" };
+assert.ok(exampleMatches(spec, simple, { frameCount: 1 }));
+assert.ok(!exampleMatches(spec, simple, { frameCount: 1, analysis: {} }));
+
+/** Every finite literal field can omit a redundant type while retaining its exact value set. */
+const enumOnly = structuredClone(spec);
+function omitLiteralTypes(schema: unknown): void {
+  assert.ok(schema !== null && typeof schema === "object");
+  if (Array.isArray(Reflect.get(schema, "enum"))) Reflect.deleteProperty(schema, "type");
+  const properties = Reflect.get(schema, "properties");
+  if (properties && typeof properties === "object")
+    for (const child of Object.values(properties)) omitLiteralTypes(child);
+  const items = Reflect.get(schema, "items");
+  if (items) omitLiteralTypes(items);
+  for (const keyword of ["oneOf", "anyOf", "allOf"]) {
+    const branches = Reflect.get(schema, keyword);
+    if (Array.isArray(branches)) for (const child of branches) omitLiteralTypes(child);
+  }
+}
+for (const schema of Object.values(enumOnly.components.schemas)) omitLiteralTypes(schema);
+assertBackendSpec(enumOnly);
+for (const methods of Object.values(enumOnly.paths)) {
+  assert.ok(methods !== null && typeof methods === "object");
+  for (const operation of Object.values(methods)) {
+    assert.ok(operation !== null && typeof operation === "object");
+    const responses = Reflect.get(operation, "responses");
+    if (!responses || typeof responses !== "object") continue;
+    for (const response of Object.values(responses)) {
+      assert.ok(response !== null && typeof response === "object");
+      const content = Reflect.get(response, "content");
+      if (!content || typeof content !== "object") continue;
+      const media = Reflect.get(content, "application/json");
+      if (!media || typeof media !== "object") continue;
+      const examples = Reflect.get(media, "examples");
+      if (!examples || typeof examples !== "object") continue;
+      for (const example of Object.values(examples)) {
+        assert.ok(example !== null && typeof example === "object");
+        assert.ok(exampleMatches(enumOnly, Reflect.get(media, "schema"), Reflect.get(example, "value")));
+      }
+    }
+  }
+}
+const enumSchema = { enum: [0, 1] };
+const markerSchema = { enum: ["Xing", "Info"] };
+for (const [schema, value] of [
+  [enumSchema, 0],
+  [enumSchema, 1],
+  [markerSchema, "Xing"],
+  [markerSchema, "Info"],
+  [{ enum: [true, false] }, false],
+  [{ enum: [null] }, null],
+  [{ enum: [{ value: 1 }] }, { value: 1 }],
+  [{ enum: [[0, 1]] }, [0, 1]],
+  [{ oneOf: [{ enum: ["Xing"] }, { enum: ["Info"] }] }, "Info"],
+  [{ anyOf: [{ enum: ["Info"] }, { enum: ["Info"] }] }, "Info"],
+  [{ allOf: [markerSchema, { enum: ["Info"] }] }, "Info"],
+  [{ type: "integer", anyOf: [enumSchema], maximum: 1 }, 1],
+  [{ type: "array", items: enumSchema, maxItems: 0 }, []],
+] as const)
+  assert.ok(exampleMatches(spec, schema, value));
+for (const [name, schema, value] of [
+  ["enum wrong integer", enumSchema, 2],
+  ["enum integer string", enumSchema, "1"],
+  ["enum integer boolean", enumSchema, false],
+  ["enum integer fraction", enumSchema, 0.5],
+  ["enum integer null", enumSchema, null],
+  ["enum integer missing", enumSchema, undefined],
+  ["enum integer NaN", enumSchema, NaN],
+  ["enum integer infinite", enumSchema, Infinity],
+  ["enum marker wrong case", markerSchema, "xing"],
+  ["enum marker unknown", markerSchema, "VBRI"],
+  ["enum marker wrong type", markerSchema, 1],
+  ["enum contradictory explicit type", { type: "number", enum: ["Info"] }, "Info"],
+  ["enum structural mismatch", { enum: [{ value: 1 }] }, { value: "1" }],
+  ["enum array mismatch", { enum: [[0, 1]] }, [1, 0]],
+  ["ambiguous oneOf literal", { oneOf: [{ enum: ["Info"] }, { enum: ["Info"] }] }, "Info"],
+  ["unmatched anyOf literal", { anyOf: [{ enum: ["Info"] }, { enum: ["Xing"] }] }, "VBRI"],
+  ["unmatched allOf literal", { allOf: [markerSchema, { enum: ["Info"] }] }, "Xing"],
+  ["composition sibling enum", { enum: ["Xing"], anyOf: [markerSchema] }, "Info"],
+  ["composition sibling type", { type: "integer", oneOf: [markerSchema] }, "Info"],
+  ["composition sibling maximum", { type: "integer", anyOf: [enumSchema], maximum: 0 }, 1],
+  ["composition sibling minLength", { type: "string", allOf: [markerSchema], minLength: 5 }, "Info"],
+  ["composition sibling maxLength", { type: "string", anyOf: [markerSchema], maxLength: 3 }, "Info"],
+  ["zero array maximum", { type: "array", items: enumSchema, maxItems: 0 }, [1]],
+  ["array minimum", { type: "array", items: enumSchema, minItems: 1 }, []],
+] as const)
+  rejected(name, () => assert.ok(exampleMatches(spec, schema, value)));
+
+const chained = structuredClone(enumOnly);
+chained.components.schemas.LiteralExclusion = { enum: [0, 1] };
+chained.components.schemas.LiteralExclusionAlias = { $ref: "#/components/schemas/LiteralExclusion" };
+chained.components.schemas.FrameDetail.properties.analysis.properties.excludedMetadataFrameCount = {
+  $ref: "#/components/schemas/LiteralExclusionAlias",
+};
+assertBackendSpec(chained);
+for (const [name, reference] of [
+  ["cyclic literal reference", "#/components/schemas/LiteralExclusionAlias"],
+  ["external literal reference", "https://invalid.example/LiteralExclusion"],
+  ["missing literal reference", "#/components/schemas/MissingLiteralExclusion"],
+] as const) {
+  const invalidReference = structuredClone(chained);
+  invalidReference.components.schemas.LiteralExclusionAlias = { $ref: reference };
+  rejected(name, () => assertBackendSpec(invalidReference));
+}
+assert.equal(inventory.cases.length, 72);
+for (const [role, count] of [
+  ["stage", 22],
+  ["production", 3],
+] as const) {
+  const declaration = JSON.parse(readFileSync(new URL(`../fixtures/inventory.${role}.json`, import.meta.url), "utf8"));
+  assert.equal(declaration.cases.length, count);
+  assert.equal(declaration.contractRevision, "backend-audio-v1");
+}
+mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
+const report = {
+  schemaVersion: 1,
+  evidenceKind: "candidate-controls",
+  contractRevision: "backend-audio-v1",
+  status: "passed",
+  structuralRecipes: recipes.length,
+  negativeControls,
+  productAcceptance: false,
+  hostedAcceptance: false,
+  audioManifestSha256: createHash("sha256")
+    .update(readFileSync(new URL("../fixtures/backend-audio.json", import.meta.url)))
+    .digest("hex"),
+};
+writeFileSync(
+  new URL("../.artifacts/backend-audio-controls.json", import.meta.url),
+  JSON.stringify(report, null, 2) + "\n",
+);
+console.log(JSON.stringify(report));

@@ -11,6 +11,16 @@ import { assertErrorResponse, assertFrameResponse, assertJson } from "../lib/ass
 import { fixture, fixtureBytes, manifest } from "../lib/fixtures.ts";
 import { abortUpload, rawRequest } from "../lib/http.ts";
 import { target } from "../lib/target.ts";
+import {
+  audioExpected,
+  checkAudioMatrix,
+  checkAudioQueryMatrix,
+  assertDetailedFrameResponse,
+  encodedVbrDetail,
+  expectAudioUi,
+  checkAudioUiMatrix,
+  fixtureErrorCodes,
+} from "../lib/backend-audio-contract.ts";
 
 let destination: ReturnType<typeof target>;
 test.beforeAll(() => {
@@ -81,7 +91,7 @@ test("AC-01 accessible upload controls and explicit action", async ({ page }) =>
 for (const id of ["tone-cbr", "tone-vbr", "tone-padded"]) {
   for (const mime of ["audio/mpeg", "application/octet-stream"]) {
     test(`AC-02 ${id} exact independent count with ${mime}`, async () => {
-      assertFrameResponse(await upload(id, mime), fixture(id).frameCount!);
+      assertFrameResponse(await upload(id, mime), audioExpected(id, fixture(id).frameCount!));
     });
   }
 }
@@ -109,8 +119,13 @@ test("AC-03 real browser file upload traverses the public frontend", async ({ pa
   expect(request.method()).toBe("POST");
   expect(request.headers()["content-type"]).toBe("audio/mpeg");
   assert.deepEqual(request.postDataBuffer(), fixtureBytes("tone-vbr"));
-  assertFrameResponse({ status: response.status(), headers: response.headers(), body: await response.text() }, 16);
-  await expectCount(page, 16);
+  assert.deepEqual(new URL(request.url()).searchParams.getAll("details"), ["true"]);
+  assertDetailedFrameResponse(
+    { status: response.status(), headers: response.headers(), body: await response.text() },
+    encodedVbrDetail,
+  );
+  await expectAudioUi(page, encodedVbrDetail);
+  await checkAudioUiMatrix(page, destination.base);
 });
 
 for (const id of [
@@ -126,24 +141,31 @@ for (const id of [
   "xing-physical",
 ]) {
   test(`AC-04 physical framing ${id}`, async () => {
-    assertFrameResponse(await upload(id), fixture(id).frameCount!);
+    assertFrameResponse(await upload(id), audioExpected(id, fixture(id).frameCount!));
+    if (id === "xing-physical") await checkAudioMatrix(destination.base);
   });
 }
 
 for (const entry of manifest.fixtures.filter((entry) => entry.kind === "malformed")) {
   test(`AC-05 malformed ${entry.id} is 400 without partial count`, async () => {
-    assertErrorResponse(await upload(entry.id), 400);
+    assertErrorResponse(await upload(entry.id), 400, fixtureErrorCodes[entry.id]);
   });
 }
 
 for (const entry of manifest.fixtures.filter((entry) => entry.kind === "unsupported")) {
   test(`AC-06 unsupported ${entry.id} is 415`, async () => {
-    assertErrorResponse(await upload(entry.id), 415);
+    assertErrorResponse(
+      await upload(entry.id),
+      415,
+      ["mpeg2", "mpeg25", "layer2", "layer1", "free-format"].includes(entry.id)
+        ? "MP3_UNSUPPORTED_FORMAT"
+        : "MP3_UNSUPPORTED_METADATA",
+    );
   });
 }
 
 test("AC-06 unsupported and absent MIME plus unsupported encoding are isolated 415 errors", async () => {
-  assertErrorResponse(await upload("tone-cbr", "text/plain"), 415);
+  assertErrorResponse(await upload("tone-cbr", "text/plain"), 415, "UNSUPPORTED_MEDIA_TYPE");
   assertErrorResponse(
     await rawRequest(`${destination.base}/file-upload`, {
       method: "POST",
@@ -151,12 +173,17 @@ test("AC-06 unsupported and absent MIME plus unsupported encoding are isolated 4
     }),
     415,
   );
-  assertErrorResponse(await upload("tone-cbr", "audio/mpeg", { "Content-Encoding": "gzip" }), 415);
+  assertErrorResponse(
+    await upload("tone-cbr", "audio/mpeg", { "Content-Encoding": "gzip" }),
+    415,
+    "UNSUPPORTED_CONTENT_ENCODING",
+  );
 });
 
 for (const id of ["above-one-mib", "six-mib"]) {
   test(`AC-07 complete ingress accepts ${id}`, async () => {
-    assertFrameResponse(await upload(id), fixture(id).frameCount!);
+    assertFrameResponse(await upload(id), audioExpected(id, fixture(id).frameCount!));
+    if (id === "xing-physical") await checkAudioMatrix(destination.base);
   });
 }
 
@@ -177,7 +204,7 @@ test("AC-09 actual-byte limit on a chunked body without Content-Length", async (
   expect(response.transferEncoding).toBe("chunked");
   expect(response.sentBytes).toBe(20_971_521);
   assertErrorResponse(response, 413);
-  assertFrameResponse(await upload("tone-vbr"), 16);
+  assertFrameResponse(await upload("tone-vbr"), 15);
 });
 
 test("AC-09 valid chunked body remains accepted without Content-Length", async () => {
@@ -192,6 +219,7 @@ test("AC-09 valid chunked body remains accepted without Content-Length", async (
 });
 
 test("AC-10 both service-local health paths and API routes/methods", async () => {
+  await checkAudioQueryMatrix(destination.base);
   for (const origin of [destination.base, destination.api]) {
     const response = await rawRequest(`${origin}/healthz`);
     expect(response.status).toBe(200);
@@ -237,7 +265,8 @@ test("AC-11 pending state prevents duplicates and later input retries after API 
     intercepted = resolve;
   });
   let submissions = 0;
-  await page.route("**/file-upload", async (route) => {
+  const uploadRoute = (url: URL) => url.pathname === "/file-upload";
+  await page.route(uploadRoute, async (route) => {
     submissions += 1;
     intercepted();
     await held;
@@ -257,7 +286,7 @@ test("AC-11 pending state prevents duplicates and later input retries after API 
   }
   await expectCount(page, 9);
   expect(submissions).toBe(1);
-  await page.unroute("**/file-upload");
+  await page.unroute(uploadRoute);
   await expect(button).toBeEnabled();
   await select(page, "garbage");
   await button.click();
@@ -273,8 +302,9 @@ test("AC-11 pending state prevents duplicates and later input retries after API 
 test("AC-11 non-JSON/network errors recover and error text never becomes markup", async ({ page }) => {
   await page.goto(destination.base);
   const button = page.getByRole("button", { name: "Analyze MP3", exact: true });
+  const uploadRoute = (url: URL) => url.pathname === "/file-upload";
   for (const mode of ["non-json", "network", "markup"] as const) {
-    await page.route("**/file-upload", async (route) => {
+    await page.route(uploadRoute, async (route) => {
       if (mode === "network") await route.abort("connectionreset");
       else if (mode === "non-json")
         await route.fulfill({ status: 502, contentType: "text/html", body: "<h1>Unavailable</h1>" });
@@ -297,10 +327,10 @@ test("AC-11 non-JSON/network errors recover and error text never becomes markup"
     expect(
       await page.evaluate(() => (window as Window & { acceptanceInjected?: boolean }).acceptanceInjected),
     ).toBeUndefined();
-    await page.unroute("**/file-upload");
+    await page.unroute(uploadRoute);
     await select(page, "tone-vbr");
     await button.click();
-    await expectCount(page, 16);
+    await expectCount(page, 15);
   }
 });
 
@@ -329,7 +359,7 @@ test("AC-12 controlled API outage yields 502 and real browser recovery", async (
   await expect(page.getByRole("button", { name: "Analyze MP3", exact: true })).toBeEnabled();
   await select(page, "tone-vbr");
   await page.getByRole("button", { name: "Analyze MP3", exact: true }).click();
-  await expectCount(page, 16);
+  await expectCount(page, 15);
 });
 
 test("AC-12 controlled API timeout yields 504 and subsequent upload works", async () => {

@@ -52,7 +52,7 @@ test("HS-03 CBR count and accepted media survive managed ingress", async ({ host
 
 test("HS-04 VBR physical count survives managed ingress", async ({ hostedHttp }) => {
   for (const media of ["audio/mpeg", "application/octet-stream"]) {
-    assertFrameResponse(await upload(hostedHttp, "tone-vbr", media), 16);
+    assertFrameResponse(await upload(hostedHttp, "tone-vbr", media), 15);
   }
 });
 
@@ -63,7 +63,7 @@ test("HS-05 padded physical count survives managed ingress", async ({ hostedHttp
 });
 
 test("HS-06 Xing-bearing physical frames remain counted", async ({ hostedHttp }) => {
-  assertFrameResponse(await upload(hostedHttp, "xing-physical"), 2);
+  assertFrameResponse(await upload(hostedHttp, "xing-physical"), 1);
 });
 
 test("HS-07 malformed and unsupported uploads retain readable JSON errors", async ({ hostedHttp }) => {

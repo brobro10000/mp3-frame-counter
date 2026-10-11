@@ -1,0 +1,815 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "MP3 frame counter transport compatibility contract",
+    "version": "backend-audio-v1",
+    "description": "Local specification fixture for independent review. Documentation serving, Redoc and CSP are outside this successor."
+  },
+  "paths": {
+    "/file-upload": {
+      "post": {
+        "operationId": "countFrames",
+        "description": "Raw binary file, never multipart or JSON. Media type comparison is case-insensitive and parameters are tolerated. Content-Encoding is absent or a single case-insensitive identity token. Enforce the inclusive 20971520-byte limit against actual bytes even without Content-Length. A trustworthy larger Content-Length may reject before admission. Path then method then media/encoding precede body collection, empty validation and parser. Walk all complete frames; exclude only one supported leading Xing/Info carrier from the public audio count. The preserved r3 supported MPEG/tag subset applies. Unknown paths return 404; HEAD has 405 headers and no body. Invalid wire framing may be rejected before API JSON handling. Audio count excludes a recognized leading Xing/Info carrier; declarations never compute the result.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "audio/mpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "application/octet-stream": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "upload_empty": {
+                    "summary": "Safe error; Choose a nonempty MP3 file.",
+                    "value": {
+                      "code": "UPLOAD_EMPTY",
+                      "error": "Choose a nonempty MP3 file."
+                    }
+                  },
+                  "upload_incomplete": {
+                    "summary": "Safe error; The upload did not complete. Please try again.",
+                    "value": {
+                      "code": "UPLOAD_INCOMPLETE",
+                      "error": "The upload did not complete. Please try again."
+                    }
+                  },
+                  "request_invalid": {
+                    "summary": "Safe error; The request does not match the upload API contract.",
+                    "value": {
+                      "code": "REQUEST_INVALID",
+                      "error": "The request does not match the upload API contract."
+                    }
+                  },
+                  "mp3_invalid_header": {
+                    "summary": "Safe error; The MP3 contains an invalid frame header.",
+                    "value": {
+                      "code": "MP3_INVALID_HEADER",
+                      "error": "The MP3 contains an invalid frame header."
+                    }
+                  },
+                  "mp3_truncated_frame": {
+                    "summary": "Safe error; The MP3 ends before a complete frame.",
+                    "value": {
+                      "code": "MP3_TRUNCATED_FRAME",
+                      "error": "The MP3 ends before a complete frame."
+                    }
+                  },
+                  "mp3_invalid_metadata": {
+                    "summary": "Safe error; The MP3 contains malformed metadata.",
+                    "value": {
+                      "code": "MP3_INVALID_METADATA",
+                      "error": "The MP3 contains malformed metadata."
+                    }
+                  },
+                  "mp3_no_audio_frames": {
+                    "summary": "Safe error; The file contains no complete MPEG-1 Layer III audio frames.",
+                    "value": {
+                      "code": "MP3_NO_AUDIO_FRAMES",
+                      "error": "The file contains no complete MPEG-1 Layer III audio frames."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "API path dispatch failure before a matched upload handler; not a parser outcome.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "route_not_found": {
+                    "summary": "Safe error; The requested API resource does not exist.",
+                    "value": {
+                      "code": "ROUTE_NOT_FOUND",
+                      "error": "The requested API resource does not exist."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "API method dispatch failure before a matched upload handler; Allow is route specific.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "method_not_allowed": {
+                    "summary": "Safe error; This method is not allowed for the requested resource.",
+                    "value": {
+                      "code": "METHOD_NOT_ALLOWED",
+                      "error": "This method is not allowed for the requested resource."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "upload_timeout": {
+                    "summary": "Safe error; The upload did not finish within the time limit.",
+                    "value": {
+                      "code": "UPLOAD_TIMEOUT",
+                      "error": "The upload did not finish within the time limit."
+                    }
+                  },
+                  "upload_idle_timeout": {
+                    "summary": "Safe error; The upload stopped sending data.",
+                    "value": {
+                      "code": "UPLOAD_IDLE_TIMEOUT",
+                      "error": "The upload stopped sending data."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "upload_too_large": {
+                    "summary": "Safe error; The upload exceeds the 20 MiB (20,971,520-byte) limit.",
+                    "value": {
+                      "code": "UPLOAD_TOO_LARGE",
+                      "error": "The upload exceeds the 20 MiB (20,971,520-byte) limit."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "unsupported_media_type": {
+                    "summary": "Safe error; Upload raw MP3 bytes using audio/mpeg or application/octet-stream.",
+                    "value": {
+                      "code": "UNSUPPORTED_MEDIA_TYPE",
+                      "error": "Upload raw MP3 bytes using audio/mpeg or application/octet-stream."
+                    }
+                  },
+                  "unsupported_content_encoding": {
+                    "summary": "Safe error; Encoded request bodies are not supported.",
+                    "value": {
+                      "code": "UNSUPPORTED_CONTENT_ENCODING",
+                      "error": "Encoded request bodies are not supported."
+                    }
+                  },
+                  "mp3_unsupported_format": {
+                    "summary": "Safe error; Only supported MPEG-1 Layer III encoding is accepted.",
+                    "value": {
+                      "code": "MP3_UNSUPPORTED_FORMAT",
+                      "error": "Only supported MPEG-1 Layer III encoding is accepted."
+                    }
+                  },
+                  "mp3_unsupported_metadata": {
+                    "summary": "Safe error; This MP3 metadata layout is not supported.",
+                    "value": {
+                      "code": "MP3_UNSUPPORTED_METADATA",
+                      "error": "This MP3 metadata layout is not supported."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "417": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "expectation_failed": {
+                    "summary": "Safe error; The request expectation is not supported.",
+                    "value": {
+                      "code": "EXPECTATION_FAILED",
+                      "error": "The request expectation is not supported."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "internal_error": {
+                    "summary": "Safe error; The MP3 could not be analyzed. Please try again.",
+                    "value": {
+                      "code": "INTERNAL_ERROR",
+                      "error": "The MP3 could not be analyzed. Please try again."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "service_busy": {
+                    "summary": "Safe error; The service is busy. Please try again shortly.",
+                    "value": {
+                      "code": "SERVICE_BUSY",
+                      "error": "The service is busy. Please try again shortly."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]*$"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Exact independently walked audio count, with opt-in physical/carrier diagnostics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/FrameCount"
+                    },
+                    {
+                      "$ref": "#/components/schemas/FrameDetail"
+                    }
+                  ]
+                },
+                "examples": {
+                  "defaultCount": {
+                    "summary": "Default walked audio count.",
+                    "value": {
+                      "frameCount": 6089
+                    }
+                  },
+                  "detailedCount": {
+                    "summary": "Same audio count plus physical/carrier inspection.",
+                    "value": {
+                      "frameCount": 6089,
+                      "analysis": {
+                        "physicalFrameCount": 6090,
+                        "excludedMetadataFrameCount": 1,
+                        "xing": {
+                          "status": "present",
+                          "marker": "Xing",
+                          "frameOffsetBytes": 44,
+                          "frameLengthBytes": 208,
+                          "markerOffsetBytes": 80,
+                          "flags": 15,
+                          "declaredAudioFrameCount": 6089,
+                          "declaredMpegStreamByteCount": 1458128,
+                          "seekTableEntryCount": 100,
+                          "qualityValue": 0
+                        },
+                        "warnings": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Controlled ingress proxy failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "upstream_timeout": {
+                    "summary": "Safe error; Analysis service timed out. Please try again.",
+                    "value": {
+                      "code": "UPSTREAM_TIMEOUT",
+                      "error": "Analysis service timed out. Please try again."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Controlled ingress proxy failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "upstream_unavailable": {
+                    "summary": "Safe error; Analysis service is unavailable. Please try again.",
+                    "value": {
+                      "code": "UPSTREAM_UNAVAILABLE",
+                      "error": "Analysis service is unavailable. Please try again."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-max-body-bytes": 20971520,
+        "x-active-upload-limit": 2,
+        "parameters": [
+          {
+            "name": "details",
+            "in": "query",
+            "required": false,
+            "description": "Only exactly one decoded value true opts in; repeated or duplicate names select default.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "get": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "method_not_allowed": {
+                    "summary": "Safe error; This method is not allowed for the requested resource.",
+                    "value": {
+                      "code": "METHOD_NOT_ALLOWED",
+                      "error": "This method is not allowed for the requested resource."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "method_not_allowed": {
+                    "summary": "Safe error; This method is not allowed for the requested resource.",
+                    "value": {
+                      "code": "METHOD_NOT_ALLOWED",
+                      "error": "This method is not allowed for the requested resource."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "description": "Unsupported method. HEAD returns these headers without a response body.",
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "method_not_allowed": {
+                    "summary": "Safe error; This method is not allowed for the requested resource.",
+                    "value": {
+                      "code": "METHOD_NOT_ALLOWED",
+                      "error": "This method is not allowed for the requested resource."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "Unsupported method. HEAD returns JSON Content-Type and Allow headers, with no response body.",
+        "responses": {
+          "405": {
+            "description": "HEAD is unsupported and has no response body.",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["POST"]
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["application/json", "application/json; charset=utf-8"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "serviceHealth",
+        "description": "Service-local liveness only; no dependency or release identity claim.",
+        "responses": {
+          "200": {
+            "description": "Healthy service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      },
+      "head": {
+        "description": "Unsupported method. HEAD returns JSON Content-Type and Allow headers, with no response body.",
+        "responses": {
+          "405": {
+            "description": "HEAD is unsupported and has no response body.",
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["GET"]
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["application/json", "application/json; charset=utf-8"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "responses": {
+          "405": {
+            "description": "Readable JSON error; never a partial count, stack or reflected upload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "method_not_allowed": {
+                    "summary": "Safe error; This method is not allowed for the requested resource.",
+                    "value": {
+                      "code": "METHOD_NOT_ALLOWED",
+                      "error": "This method is not allowed for the requested resource."
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "Allow": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["GET"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "FrameCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frameCount"],
+        "properties": {
+          "frameCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "error"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "UPLOAD_EMPTY",
+              "UPLOAD_INCOMPLETE",
+              "REQUEST_INVALID",
+              "MP3_INVALID_HEADER",
+              "MP3_TRUNCATED_FRAME",
+              "MP3_INVALID_METADATA",
+              "MP3_NO_AUDIO_FRAMES",
+              "ROUTE_NOT_FOUND",
+              "METHOD_NOT_ALLOWED",
+              "UPLOAD_TIMEOUT",
+              "UPLOAD_IDLE_TIMEOUT",
+              "UPLOAD_TOO_LARGE",
+              "UNSUPPORTED_MEDIA_TYPE",
+              "UNSUPPORTED_CONTENT_ENCODING",
+              "MP3_UNSUPPORTED_FORMAT",
+              "MP3_UNSUPPORTED_METADATA",
+              "EXPECTATION_FAILED",
+              "INTERNAL_ERROR",
+              "SERVICE_BUSY",
+              "UPSTREAM_UNAVAILABLE",
+              "UPSTREAM_TIMEOUT"
+            ]
+          },
+          "error": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["ok"]
+          }
+        }
+      },
+      "FrameDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["frameCount", "analysis"],
+        "properties": {
+          "frameCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "analysis": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["physicalFrameCount", "excludedMetadataFrameCount", "xing", "warnings"],
+            "properties": {
+              "physicalFrameCount": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "excludedMetadataFrameCount": {
+                "type": "integer",
+                "enum": [0, 1]
+              },
+              "xing": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["status"],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": ["absent"]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status",
+                      "marker",
+                      "frameOffsetBytes",
+                      "frameLengthBytes",
+                      "markerOffsetBytes",
+                      "flags"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": ["present"]
+                      },
+                      "marker": {
+                        "type": "string",
+                        "enum": ["Xing", "Info"]
+                      },
+                      "frameOffsetBytes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "frameLengthBytes": {
+                        "type": "integer",
+                        "minimum": 96,
+                        "maximum": 9007199254740991
+                      },
+                      "markerOffsetBytes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "flags": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 15
+                      },
+                      "declaredAudioFrameCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 4294967295
+                      },
+                      "declaredMpegStreamByteCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 4294967295
+                      },
+                      "seekTableEntryCount": {
+                        "type": "integer",
+                        "enum": [100]
+                      },
+                      "qualityValue": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 4294967295
+                      }
+                    }
+                  }
+                ]
+              },
+              "warnings": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["code"],
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": ["XING_DECLARED_FRAME_COUNT_MISMATCH", "XING_DECLARED_STREAM_BYTES_MISMATCH"]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["code", "field"],
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": ["XING_OPTIONAL_FIELD_TRUNCATED"]
+                        },
+                        "field": {
+                          "type": "string",
+                          "enum": [
+                            "declaredAudioFrameCount",
+                            "declaredMpegStreamByteCount",
+                            "seekTable",
+                            "qualityValue"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-controlled-proxy-responses": {
+    "502": {
+      "description": "Controlled ingress provenance; the public response is also modeled under POST /file-upload.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    },
+    "504": {
+      "description": "Controlled ingress provenance; the public response is also modeled under POST /file-upload.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/Error"
+          }
+        }
+      }
+    }
+  },
+  "x-transport-requirements": {
+    "idleBodyMilliseconds": 10000,
+    "totalBodyMilliseconds": 30000,
+    "shutdownIntentMilliseconds": 5000,
+    "description": "Expect 100-continue is sent only after route/header validation and slot admission. Busy uploads receive readable 503 plus Retry-After before any body; unsupported expectations receive 417. Deadlines receive readable 408 and release capacity. Allocation, retention, exact configuration and graceful drain require independent source/resource/operational review. OpenAPI cannot prove timing, byte enforcement, connection cleanup or memory bounds."
+  }
+}

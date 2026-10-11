@@ -1,5 +1,5 @@
 {
-  "contractRevision": "hosted-health-v1",
+  "contractRevision": "backend-audio-v1",
   "cases": [
     {
       "file": "hosted/production/specs/production-smoke.spec.ts",

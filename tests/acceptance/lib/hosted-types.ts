@@ -87,7 +87,7 @@ export type HostedRows = {
 export type HostedDiscovery = {
   schemaVersion: 1;
   kind: "hosted-suite-discovery";
-  contractRevision: "hosted-health-v1";
+  contractRevision: "backend-audio-v1";
   profile: Profile;
   status: "passed" | "failed";
   inventory: CaseRef[];
