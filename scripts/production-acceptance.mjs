@@ -8,8 +8,9 @@
  * replays original admission, extracts the immutable required suite, then runs its fixed production wrapper privately.
  * Original currentContext stays CI authority; the distinct owner-operation identifies only the new production smoke.
  * observe/mint callbacks own provider authenticity and bounded deadlines; mint may return only an origin-bound ID token.
- * Owned installation/browser/wrapper work is bounded and cleaned up. Only fixed sanitized setup/result/envelope files
- * survive. Failures throw ERR_PRODUCTION_ACCEPTANCE with no raw child output, credential, supplied value or cause.
+ * Owned installation/browser/wrapper work is bounded and cleaned up. Four fixed nonsecret artifact types survive:
+ * setup, original result, validated envelope and original seven-field custody after cleanup. Failures throw
+ * ERR_PRODUCTION_ACCEPTANCE with no raw child output, credential, supplied value or cause.
  * No cloud resource, access/traffic, workflow, release, frozen suite or original bundle is modified by this module.
  */
 import assert from "node:assert/strict";
@@ -615,7 +616,18 @@ export async function runProductionAcceptance(options) {
         parentCleanup,
       });
       if (result) save("production-suite-result.json", result);
-      if (validated) save("production-acceptance.json", validated);
+      if (validated) {
+        save("production-acceptance.json", validated);
+        save("production-acceptance-custody.json", {
+          record: validated,
+          suiteResult: result,
+          expected,
+          launchId,
+          wrapperOutcome,
+          observations,
+          parentCleanup,
+        });
+      }
     }
     if (succeeded && validated?.status === "passed") return validated;
   } catch {

@@ -5,7 +5,8 @@
  * the independent product digest. This module replays original admission, installs the isolated locked suite/browser,
  * then mints only for the observed origin and passes bounded private stdin to the fixed stage wrapper. It never deploys.
  * Calls may use read-only Git, npm/browser downloads and the authorized external stage through the frozen suite.
- * Only validated nonsecret result/envelope and sanitized setup evidence survive; owned temporary files are removed.
+ * Four fixed nonsecret artifact types survive: setup, original result, validated envelope and original custody.
+ * Custody retains the original seven validator inputs after cleanup; owned temporary files are removed.
  * Failure throws ERR_STAGE_ACCEPTANCE after retaining available evidence, never raw child output or credential text.
  */
 import assert from "node:assert/strict";
@@ -446,7 +447,18 @@ export async function runStageAcceptance(options) {
         parentCleanup,
       });
       if (result) save("stage-suite-result.json", result);
-      if (validated) save("stage-acceptance.json", validated);
+      if (validated) {
+        save("stage-acceptance.json", validated);
+        save("stage-acceptance-custody.json", {
+          record: validated,
+          suiteResult: result,
+          expected,
+          launchId,
+          wrapperOutcome,
+          observations,
+          parentCleanup,
+        });
+      }
     }
     if (succeeded && validated?.status === "passed") return validated;
   } catch {

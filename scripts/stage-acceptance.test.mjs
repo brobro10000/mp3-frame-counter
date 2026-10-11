@@ -7,10 +7,15 @@
  */
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { createHash } from "node:crypto";
+import { existsSync, lstatSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import vm from "node:vm";
+import { validateAcceptanceProfiles } from "./acceptance-profiles.mjs";
+import { validateHostedAcceptance, validateHostedSuiteResult } from "./hosted-evidence.mjs";
 import { runStageAcceptance } from "./stage-acceptance.mjs";
 
 const modulePath = fileURLToPath(new URL("./stage-acceptance.mjs", import.meta.url));
@@ -128,4 +133,345 @@ test("inert launcher import and missing required profile cannot install, observe
   });
   assert.equal(result.status, 0, result.stderr);
   assert.equal(result.stdout, "required-profile-refusal-confirmed\n");
+});
+
+/** Model the original unequal profiles and actual child cleanup without Git, package, browser or provider effects. */
+async function stageCustodyFixture(t) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "stage-custody-control-")));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const clone = (value) => structuredClone(value);
+  const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+  const inventories = Object.fromEntries(
+    [
+      ["local", 72],
+      ["stage", 22],
+      ["production", 3],
+    ].map(([profile, count]) => [
+      profile,
+      {
+        contractRevision: "hosted-v1",
+        cases: Array.from({ length: count }, (_, i) => ({
+          file: `${profile}/synthetic.spec.ts`,
+          title: `Synthetic ${profile} obligation ${i + 1}`,
+        })),
+      },
+    ]),
+  );
+  const declarationInput = {
+    metadata: {
+      schemaVersion: 1,
+      contractRevision: "hosted-v1",
+      profiles: Object.fromEntries(
+        Object.entries(inventories).map(([profile, inventory]) => [
+          profile,
+          inventory.cases.map((entry) => ({
+            case: clone(entry),
+            requirements: [profile === "production" ? "APP-V1-015" : "APP-V1-014"],
+          })),
+        ]),
+      ),
+    },
+    inventories,
+    selectedContractRevision: "hosted-v1",
+    predecessorLocalInventory: { contractRevision: "docs-v1", cases: clone(inventories.local.cases) },
+  };
+  const projection = {
+    required: validateAcceptanceProfiles(declarationInput),
+    declarationInput,
+    profilesSha256: hash(JSON.stringify(declarationInput.metadata)),
+    inventorySha256: {
+      stage: hash(JSON.stringify(inventories.stage)),
+      production: hash(JSON.stringify(inventories.production)),
+    },
+  };
+  const origin = {
+    schemaVersion: 1,
+    repository: "example/synthetic-stage",
+    sourceRevision: "a".repeat(40),
+    baseRevision: "e".repeat(40),
+    runId: 7001,
+    attempt: 1,
+    workflow: ".github/workflows/ci.yml",
+    workflowRevision: "a".repeat(40),
+  };
+  const manifest = Buffer.from('{"syntheticFixture":true}\n');
+  const baseline = {
+    contractRevision: "hosted-v1",
+    suiteCommit: "b".repeat(40),
+    suiteTree: "c".repeat(40),
+    manifestSha256: hash(manifest),
+    baselinePublication: "protected-main",
+  };
+  const images = Object.fromEntries(
+    ["api", "frontend"].map((role, index) => [
+      role,
+      {
+        localImageId: `sha256:${String(index + 2).repeat(64)}`,
+        archiveSha256: String(index + 4).repeat(64),
+        registryDigest: `sha256:${String(index + 6).repeat(64)}`,
+      },
+    ]),
+  );
+  const release = { reservationSha256: "8".repeat(64), publicationSha256: "9".repeat(64) };
+  const registryDigests = Object.fromEntries(
+    Object.entries(images).map(([role, image]) => [role, image.registryDigest]),
+  );
+  const observation = (minutes) => ({
+    environment: "stage",
+    origin: "https://stage.invalid",
+    resourceId: "synthetic:stage/service",
+    revisionId: "stage-revision-1",
+    observedAt: new Date(Date.now() - minutes * 60000).toISOString(),
+    configurationSha256: "f".repeat(64),
+    registryDigests: clone(registryDigests),
+  });
+  const state = {
+    before: observation(2),
+    after: observation(1),
+    directories: [],
+    wrapperInput: null,
+    custodyWrites: [],
+    custodyWriteFailure: false,
+    wrapperMode: "passed",
+    observes: 0,
+  };
+  const credentialCanary = "stage.control.synthetic";
+  const options = {
+    root,
+    bundle: {
+      origin: clone(origin),
+      acceptanceAdmission: { sha256: "d".repeat(64), record: {} },
+      manifest: {
+        sourceRevision: origin.sourceRevision,
+        reservationSha256: release.reservationSha256,
+        artifacts: clone(images),
+      },
+    },
+    admissionSha256: "d".repeat(64),
+    currentContext: clone(origin),
+    images,
+    release,
+    observe: async () => clone(++state.observes === 1 ? state.before : state.after),
+    mint: async (audience) => {
+      assert.equal(audience, state.before.origin);
+      return {
+        kind: "google-id-token",
+        value: credentialCanary,
+        expiresAt: new Date(Date.now() + 3600000).toISOString(),
+      };
+    },
+    evidenceDirectory: join(root, ".artifacts/stage"),
+  };
+  const blobs = [
+    ["fixtures/manifest.json", manifest],
+    ["scripts/run-stage.ts", Buffer.from("// Synthetic wrapper only.\n")],
+  ].map(([path, bytes]) => ({
+    path,
+    bytes,
+    id: createHash("sha1").update(`blob ${bytes.length}\0`).update(bytes).digest("hex"),
+  }));
+  const context = vm.createContext({
+    process,
+    Buffer,
+    TextDecoder,
+    URL,
+    AbortController,
+    structuredClone,
+    setTimeout,
+    clearTimeout,
+  });
+  const fake = {
+    "./acceptance-admission.mjs": { verifyAcceptanceAdmission: () => ({ required: clone(baseline) }) },
+    "./acceptance-profile-source.mjs": { readRequiredAcceptanceProfileProjection: () => clone(projection) },
+    "./acceptance-browser-setup.mjs": {
+      prepareAcceptanceBrowser: async ({ suiteRoot }) => {
+        state.directories.push(suiteRoot);
+        return { status: "passed", cleanup: "confirmed" };
+      },
+    },
+    // Clone only at the VM realm boundary; the real validators still check every original JSON field unchanged.
+    "./hosted-evidence.mjs": {
+      validateHostedAcceptance: (input) => validateHostedAcceptance(structuredClone(input)),
+      validateHostedSuiteResult: (input) => validateHostedSuiteResult(structuredClone(input)),
+    },
+    "./publish-release-evidence.mjs": { requireOrigin: (original, current) => assert.deepEqual(original, current) },
+  };
+  const module = new vm.SourceTextModule(source, { context, identifier: modulePath });
+  await module.link(async (name) => {
+    let exports = fake[name] ?? (await import(name));
+    if (name === "node:fs")
+      exports = {
+        ...exports,
+        writeFileSync(path, bytes, settings) {
+          if (path === join(options.evidenceDirectory, "stage-acceptance-custody.json")) {
+            state.custodyWrites.push({ afterCleanup: state.directories.every((entry) => !existsSync(entry)) });
+            if (state.custodyWriteFailure) throw new Error("Synthetic custody-write failure");
+          }
+          return writeFileSync(path, bytes, settings);
+        },
+      };
+    if (name === "node:child_process")
+      exports = {
+        ...exports,
+        execFileSync(executable, args) {
+          assert.equal(executable, "git");
+          assert.equal(args[0], "--no-replace-objects");
+          if (args[1] === "rev-parse")
+            return Buffer.from((args[2].endsWith(":tests/acceptance") ? baseline.suiteTree : "3".repeat(40)) + "\n");
+          if (args[1] === "ls-tree")
+            return Buffer.from(blobs.map((blob) => `100644 blob ${blob.id}\ttests/acceptance/${blob.path}\0`).join(""));
+          if (args[1] === "cat-file") {
+            const blob = blobs.find((entry) => entry.id === args[3]);
+            assert(blob);
+            return blob.bytes;
+          }
+          throw new Error("Unexpected Git operation");
+        },
+        spawn(_executable, args, childOptions) {
+          if (args[0].endsWith("npm-cli.js"))
+            return spawn(process.execPath, ["--eval", "process.exit(0)"], childOptions);
+          assert.equal(args.length, 1);
+          assert.equal(args[0], join(childOptions.cwd, "scripts/run-stage.ts"));
+          state.directories.push(childOptions.env.HOSTED_PRIVATE_DIRECTORY);
+          const code = `import {mkdirSync,writeFileSync} from 'node:fs';import {join} from 'node:path';
+          if(process.env.GITHUB_TOKEN||process.env.STAGE_ACCESS_TOKEN)process.exit(9);
+          let bytes='';for await(const part of process.stdin)bytes+=part;const input=JSON.parse(bytes);
+          if(input.profile!=='stage'||input.audience!==input.target.origin)process.exit(8);
+          const inventory=${JSON.stringify(inventories.stage.cases)};
+          const result={schemaVersion:1,kind:'hosted-suite-result',profile:'stage',launchId:input.launchId,sourceRevision:input.sourceRevision,
+            suite:input.suite,inventory,tests:inventory.map(row=>({...row,status:'passed',expectedStatus:'passed',retry:0,retries:0})),status:'passed',cleanup:'passed'};
+          mkdirSync('.artifacts',{recursive:true});writeFileSync(join('.artifacts','hosted-stage-result.json'),JSON.stringify(result));
+          process.exit(${state.wrapperMode === "exit-failed" ? 7 : 0});`;
+          const child = spawn(process.execPath, ["--input-type=module", "--eval", code], childOptions);
+          const end = child.stdin.end.bind(child.stdin);
+          child.stdin.end = (input, ...rest) => {
+            state.wrapperInput = JSON.parse(input.toString());
+            return end(input, ...rest);
+          };
+          return child;
+        },
+      };
+    return new vm.SyntheticModule(
+      Object.keys(exports),
+      function () {
+        for (const key of Object.keys(exports)) this.setExport(key, exports[key]);
+      },
+      { context },
+    );
+  });
+  await module.evaluate();
+  assert.equal(typeof module.namespace.runStageAcceptance, "function", "Missing stage launcher export");
+  return { run: module.namespace.runStageAcceptance, options, state, projection, credentialCanary };
+}
+
+test("stage persists complete original seven-field custody after actual isolated cleanup", async (t) => {
+  const f = await stageCustodyFixture(t),
+    result = await f.run(f.options);
+  assert.equal(result.status, "passed");
+  assert.equal(result.tests.length, 22);
+  const path = join(f.options.evidenceDirectory, "stage-acceptance-custody.json");
+  assert(existsSync(path), "Missing original stage custody artifact");
+  const bytes = readFileSync(path),
+    stat = lstatSync(path),
+    custody = JSON.parse(bytes);
+  assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 1048576);
+  assert.equal(stat.mode & 0o777, 0o600);
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  assert.deepEqual(Object.keys(custody).sort(), [
+    "expected",
+    "launchId",
+    "observations",
+    "parentCleanup",
+    "record",
+    "suiteResult",
+    "wrapperOutcome",
+  ]);
+  assert.deepEqual(validateHostedAcceptance(custody), structuredClone(result));
+  assert.deepEqual(
+    custody.record,
+    JSON.parse(readFileSync(join(f.options.evidenceDirectory, "stage-acceptance.json"))),
+  );
+  assert.deepEqual(
+    custody.suiteResult,
+    JSON.parse(readFileSync(join(f.options.evidenceDirectory, "stage-suite-result.json"))),
+  );
+  assert.equal(custody.launchId, f.state.wrapperInput.launchId);
+  assert.equal(custody.wrapperOutcome, "completed");
+  assert.equal(custody.parentCleanup, "passed");
+  assert.deepEqual(custody.observations, { before: f.state.before, after: f.state.after });
+  assert.deepEqual(custody.expected, {
+    profile: "stage",
+    sourceRevision: f.options.bundle.origin.sourceRevision,
+    suite: f.state.wrapperInput.suite,
+    release: f.options.release,
+    images: f.options.images,
+    configurationSha256: f.state.before.configurationSha256,
+    target: {
+      origin: f.state.before.origin,
+      resourceId: f.state.before.resourceId,
+      revisionId: f.state.before.revisionId,
+    },
+    run: {
+      id: String(f.options.currentContext.runId),
+      attempt: f.options.currentContext.attempt,
+      workflowRevision: f.options.currentContext.workflowRevision,
+    },
+    declarationInput: f.projection.declarationInput,
+  });
+  for (const sensitive of [f.credentialCanary, ...f.state.directories]) assert(!bytes.toString().includes(sensitive));
+  for (const mutate of [
+    (value) => {
+      delete value.launchId;
+    },
+    (value) => {
+      value.launchId = "0".repeat(64);
+    },
+    (value) => {
+      value.suiteResult.tests.pop();
+    },
+    (value) => {
+      value.expected.release.publicationSha256 = "0".repeat(64);
+    },
+    (value) => {
+      value.suiteResult.cleanup = "failed";
+    },
+    (value) => {
+      value.parentCleanup = "failed";
+    },
+    (value) => {
+      value.wrapperOutcome = "failed";
+    },
+    (value) => {
+      value.observations.after.revisionId = "other-revision";
+    },
+  ]) {
+    const changed = structuredClone(custody);
+    mutate(changed);
+    assert.throws(() => validateHostedAcceptance(changed), { code: "ERR_HOSTED_EVIDENCE" });
+  }
+});
+
+test("a failed stage wrapper retains original nonpassing custody after cleanup", async (t) => {
+  const f = await stageCustodyFixture(t);
+  f.state.wrapperMode = "exit-failed";
+  await assert.rejects(f.run(f.options), { code: "ERR_STAGE_ACCEPTANCE", message: "Stage acceptance failed" });
+  const path = join(f.options.evidenceDirectory, "stage-acceptance-custody.json");
+  assert(existsSync(path), "Missing failed stage custody artifact");
+  const custody = JSON.parse(readFileSync(path));
+  assert.equal(lstatSync(path).mode & 0o777, 0o600);
+  assert.equal(validateHostedAcceptance(custody).status, "failed");
+  assert.equal(custody.wrapperOutcome, "failed");
+  assert.equal(custody.launchId, f.state.wrapperInput.launchId);
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  const claimedPass = structuredClone(custody);
+  claimedPass.record.status = "passed";
+  assert.throws(() => validateHostedAcceptance(claimedPass), { code: "ERR_HOSTED_EVIDENCE" });
+});
+
+test("stage custody write failure rejects the helper despite passing execution and cleaned children", async (t) => {
+  const f = await stageCustodyFixture(t);
+  f.state.custodyWriteFailure = true;
+  await assert.rejects(f.run(f.options), { code: "ERR_STAGE_ACCEPTANCE", message: "Stage acceptance failed" });
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  assert(!existsSync(join(f.options.evidenceDirectory, "stage-acceptance-custody.json")));
 });

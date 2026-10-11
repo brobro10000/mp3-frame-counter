@@ -9,7 +9,16 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -232,6 +241,9 @@ function fixture(t) {
     originalBytes,
     suiteDirectories: [],
     privateDirectories: [],
+    custodyWriteFailure: false,
+    custodyWrites: [],
+    wrapperInput: null,
   };
   const effects = {
     git: 0,
@@ -374,11 +386,32 @@ async function load(f) {
       if(mode!=='absent'){mkdirSync('.artifacts',{recursive:true});writeFileSync(join('.artifacts','hosted-production-result.json'),JSON.stringify(result));}
       process.exit(mode==='exit-failed'?7:0);
     `;
-    return spawn(process.execPath, ["--input-type=module", "--eval", code], options);
+    const child = spawn(process.execPath, ["--input-type=module", "--eval", code], options);
+    const end = child.stdin.end.bind(child.stdin);
+    child.stdin.end = (input, ...args) => {
+      f.state.wrapperInput = JSON.parse(input.toString());
+      return end(input, ...args);
+    };
+    return child;
   };
   const module = new vm.SourceTextModule(text, { context, identifier: fileURLToPath(moduleUrl) });
   await module.link(async (name) => {
     let exports = fake[name] ?? (await import(name));
+    if (name === "node:fs")
+      exports = {
+        ...exports,
+        writeFileSync(path, bytes, options) {
+          if (path === join(f.options.evidenceDirectory, "production-acceptance-custody.json")) {
+            f.state.custodyWrites.push({
+              afterCleanup: [...f.state.suiteDirectories, ...f.state.privateDirectories].every(
+                (entry) => !existsSync(entry),
+              ),
+            });
+            if (f.state.custodyWriteFailure) throw new Error("Synthetic custody-write failure");
+          }
+          return writeFileSync(path, bytes, options);
+        },
+      };
     if (name === "node:child_process")
       exports = {
         ...exports,
@@ -716,6 +749,111 @@ test("isolated three-case result preserves owner run custody observations cleanu
   const records = ["production-acceptance-setup.json", "production-suite-result.json", "production-acceptance.json"];
   for (const name of records)
     assert(!readFileSync(join(f.options.evidenceDirectory, name), "utf8").includes(credentialCanary));
+  const custodyPath = join(f.options.evidenceDirectory, "production-acceptance-custody.json");
+  assert(existsSync(custodyPath), "Missing original production custody artifact");
+  const stat = lstatSync(custodyPath),
+    bytes = readFileSync(custodyPath),
+    custody = JSON.parse(bytes);
+  assert(stat.isFile() && !stat.isSymbolicLink() && stat.size <= 1048576);
+  assert.equal(stat.mode & 0o777, 0o600);
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  assert.deepEqual(Object.keys(custody).sort(), [
+    "expected",
+    "launchId",
+    "observations",
+    "parentCleanup",
+    "record",
+    "suiteResult",
+    "wrapperOutcome",
+  ]);
+  assert.deepEqual(validateHostedAcceptance(custody), result);
+  assert.deepEqual(
+    custody.record,
+    JSON.parse(readFileSync(join(f.options.evidenceDirectory, "production-acceptance.json"))),
+  );
+  assert.deepEqual(
+    custody.suiteResult,
+    JSON.parse(readFileSync(join(f.options.evidenceDirectory, "production-suite-result.json"))),
+  );
+  assert.equal(custody.launchId, f.state.wrapperInput.launchId);
+  assert.equal(custody.wrapperOutcome, "completed");
+  assert.equal(custody.parentCleanup, "passed");
+  assert.deepEqual(custody.observations, { before: f.state.before, after: f.state.after });
+  assert.deepEqual(custody.expected, {
+    profile: "production",
+    sourceRevision: source,
+    suite: clone(f.state.wrapperInput.suite),
+    release: clone(f.options.release),
+    images: clone(f.options.images),
+    configurationSha256: f.options.approval.candidate.productionConfigurationSha256,
+    target: {
+      origin: f.state.before.origin,
+      resourceId: f.state.before.resourceId,
+      revisionId: f.state.before.revisionId,
+    },
+    run: { id: f.options.operation.id, attempt: f.options.operation.attempt, workflowRevision: source },
+    declarationInput: clone(f.projection.declarationInput),
+  });
+  for (const sensitive of [credentialCanary, ...f.state.privateDirectories, ...f.state.suiteDirectories])
+    assert(!bytes.toString().includes(sensitive));
+  for (const mutate of [
+    (value) => {
+      delete value.launchId;
+    },
+    (value) => {
+      value.launchId = "0".repeat(64);
+    },
+    (value) => {
+      value.suiteResult.tests.pop();
+    },
+    (value) => {
+      value.expected.release.publicationSha256 = "0".repeat(64);
+    },
+    (value) => {
+      value.suiteResult.cleanup = "failed";
+    },
+    (value) => {
+      value.parentCleanup = "failed";
+    },
+    (value) => {
+      value.wrapperOutcome = "failed";
+    },
+    (value) => {
+      value.observations.after.revisionId = "other-revision";
+    },
+  ]) {
+    const changed = clone(custody);
+    mutate(changed);
+    assert.throws(() => validateHostedAcceptance(changed), { code: "ERR_HOSTED_EVIDENCE" });
+  }
+});
+
+test("a failed production wrapper retains original nonpassing custody after cleanup", async (t) => {
+  const f = fixture(t),
+    run = await load(f);
+  f.state.wrapperMode = "exit-failed";
+  await assert.rejects(run(f.options), sanitized);
+  const path = join(f.options.evidenceDirectory, "production-acceptance-custody.json");
+  assert(existsSync(path), "Missing failed production custody artifact");
+  const custody = JSON.parse(readFileSync(path));
+  assert.equal(lstatSync(path).mode & 0o777, 0o600);
+  assert.equal(validateHostedAcceptance(custody).status, "failed");
+  assert.equal(custody.wrapperOutcome, "failed");
+  assert.equal(custody.launchId, f.state.wrapperInput.launchId);
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  const claimedPass = clone(custody);
+  claimedPass.record.status = "passed";
+  assert.throws(() => validateHostedAcceptance(claimedPass), { code: "ERR_HOSTED_EVIDENCE" });
+});
+
+test("production custody write failure rejects the helper despite passing execution and cleaned children", async (t) => {
+  const f = fixture(t),
+    run = await load(f);
+  f.state.custodyWriteFailure = true;
+  await assert.rejects(run(f.options), sanitized);
+  assert.deepEqual(f.state.custodyWrites, [{ afterCleanup: true }]);
+  assert.equal(f.effects.wrapper, 1);
+  assert(!existsSync(join(f.options.evidenceDirectory, "production-acceptance-custody.json")));
 });
 
 test("missing partial stale skipped retried or unclean wrapper results and provider drift never become smoke passes", async (t) => {

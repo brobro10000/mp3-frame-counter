@@ -83,10 +83,19 @@ the observed production resource/configuration/image pair to the approved candid
 production wrapper. Provider and token callbacks must have bounded deadlines and authenticate the intended origin.
 
 The helper performs no deployment, IAM, exposure, traffic, provisioning or GitHub write. It returns the validated
-production envelope and retains only `production-acceptance-setup.json`, `production-suite-result.json` and
-`production-acceptance.json` under the caller's owned `.artifacts` directory. Preserve those original result/custody
-facts when preparing finalization evidence; do not reconstruct a passing result from an inventory. Missing, failed,
-drifting or unclean execution blocks finalization. Scoped local bridge tests are not hosted smoke or a human event.
+production envelope and retains `production-acceptance-setup.json`, `production-suite-result.json`,
+`production-acceptance.json` and `production-acceptance-custody.json` under the caller's owned `.artifacts` directory.
+The corresponding stage runner retains the same four artifact types with the `stage-` prefix. Optional result/envelope
+files exist only when execution produced valid evidence.
+
+Each custody file preserves the original
+`{record, suiteResult, expected, launchId, wrapperOutcome, observations, parentCleanup}` validator input after owned
+cleanup. Revalidate that complete input and authenticate its original workflow/operator custody before production smoke
+or finalization. The bounded write-once files contain no credential or temporary path; a failed custody write fails the
+helper. Failed execution may retain valid failed custody and cannot be promoted to a pass. Preserve these original facts
+rather than reconstructing lifecycle claims from an inventory or envelope. Missing, failed, drifting or unclean
+execution blocks finalization. Scoped local bridge tests are not hosted smoke or a human event; custody persistence
+grants no production approval.
 
 ## Explicit deferrals
 
