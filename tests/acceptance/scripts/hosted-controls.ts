@@ -3,7 +3,9 @@
  * with a minimal environment, 360-second deadline and 1 MiB discarded-output bound. It requests graceful owned cleanup,
  * then marks any forced/missing reaping as failure. Only the exact planned synthetic control set can pass; partial
  * failures remain explicit. Internal --child accepts a fresh run identity, never a target, command or credential.
- * Child controls own loopback fixtures and pinned Chromium. Evidence is candidate calibration, never hosted acceptance.
+ * Child controls own loopback fixtures and pinned Chromium. A fixed Node module-mock flag captures the actual
+ * production smoke registration only in this internal child; no hosted input or private credentials are admitted.
+ * Evidence is candidate calibration, never hosted acceptance.
  */
 import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
@@ -87,6 +89,12 @@ const planned = [
   "browser-fixture-cleanup",
   "ui-explicit-action-counterpart",
   "ui-delayed-selection-refused",
+  "production-ui-details-positive",
+  "production-ui-details-missing-selector",
+  "production-ui-details-duplicate-selector",
+  "production-ui-details-default-only",
+  "production-ui-details-wrong-physical",
+  "production-ui-details-missing-warnings",
 ];
 const failureCodes: FailureCode[] = [
   "INPUT",
@@ -122,6 +130,8 @@ const sourceNames = [
   "lib/hosted-browser-controls.ts",
   "lib/hosted-ui.ts",
   "lib/hosted-ui-controls.ts",
+  "lib/hosted-production-ui-controls.ts",
+  "hosted/production/specs/production-smoke.spec.ts",
   "scripts/hosted-controls.ts",
   "scripts/hosted-reporter.ts",
   "scripts/run-stage.ts",
@@ -162,10 +172,10 @@ type ControlReport = {
   terminationRequested: boolean;
   failures: FailureCode[];
 };
-/** Refuse startup/debug inheritance before importing browser code; never pass a caller-selected runtime or target. */
-function environment(): NodeJS.ProcessEnv {
+/** Refuse caller runtime/debug flags; the closed child admits exactly its fixed registration-capture flag. */
+function environment(isChild: boolean): NodeJS.ProcessEnv {
   if (
-    process.execArgv.length ||
+    !isDeepStrictEqual(process.execArgv, isChild ? ["--experimental-test-module-mocks"] : []) ||
     process.permission ||
     [
       "NODE_OPTIONS",
@@ -271,6 +281,7 @@ async function child(runId: string, directory: URL): Promise<void> {
     const { runHostedHttpControls } = await import("../lib/hosted-http-controls.ts");
     const { runHostedBrowserControls } = await import("../lib/hosted-browser-controls.ts");
     const { runHostedUiControls } = await import("../lib/hosted-ui-controls.ts");
+    const { runHostedProductionUiControls } = await import("../lib/hosted-production-ui-controls.ts");
     report.controls.push(...(await runHostedProtocolControls()));
     if (!report.terminationRequested) report.controls.push(...(await runHostedHttpControls()));
     if (!report.terminationRequested) {
@@ -278,6 +289,7 @@ async function child(runId: string, directory: URL): Promise<void> {
       browser = await chromium.launch();
       if (!report.terminationRequested) report.controls.push(...(await runHostedBrowserControls(browser)));
       if (!report.terminationRequested) report.controls.push(...(await runHostedUiControls(browser)));
+      if (!report.terminationRequested) report.controls.push(...(await runHostedProductionUiControls(browser)));
     }
   } catch {
     report.failures.push("ASSERTION");
@@ -317,12 +329,16 @@ async function parent(runId: string, directory: URL, env: NodeJS.ProcessEnv): Pr
       stopped = false;
     let killTimer: ReturnType<typeof setTimeout> | undefined, finalTimer: ReturnType<typeof setTimeout> | undefined;
     const failures = new Set<FailureCode>();
-    const owned = spawn(process.execPath, [fileURLToPath(import.meta.url), "--child", runId], {
-      cwd: root,
-      env: { ...env, NODE_V8_COVERAGE: undefined },
-      detached: true,
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    const owned = spawn(
+      process.execPath,
+      ["--experimental-test-module-mocks", fileURLToPath(import.meta.url), "--child", runId],
+      {
+        cwd: root,
+        env: { ...env, NODE_V8_COVERAGE: undefined },
+        detached: true,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
     /** Resolve once and detach only owned handles; missing reaping is a failed observation, never cleanup proof. */
     const finish = (code: number | null, reaped: boolean) => {
       if (done) return;
@@ -456,7 +472,7 @@ async function main(): Promise<void> {
   if (process.argv.length !== (isChild ? 4 : 2)) throw new Error("INPUT");
   const runId = isChild ? process.argv[3] : randomUUID();
   if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(runId)) throw new Error("INPUT");
-  const env = environment();
+  const env = environment(isChild);
   process.env = env;
   const directory = new URL(`../.artifacts/hosted-controls/${runId}/`, import.meta.url);
   mkdirSync(directory, { recursive: true, mode: 0o700 });

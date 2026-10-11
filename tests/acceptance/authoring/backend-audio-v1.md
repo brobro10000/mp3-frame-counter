@@ -421,3 +421,46 @@ The relocated record's historical prefix remains byte-identical; the current nav
 companion's second finding without rewriting that history. No normative contract, fixture, lockfile, case identity,
 product or governance byte changed. Candidate integration, fresh CI/companion approval, actual merge and separate
 binding remain pending; harness calibration does not establish application or hosted acceptance.
+
+## Harness correction 7 — 2026-10-11 (non-normative)
+
+The next exact-head companion review found that production HP-01 still required the historical minimal response even
+though the amended browser contract requests `details=true`. Discovery cannot expose an assertion that never executes.
+An independent control author added six loopback counterparts that capture and execute the actual HP-01 callback,
+mocking only its fixed registration module. They exercise a valid detailed body, missing/duplicate selectors, a
+minimal-only body, an incorrect physical count and missing warnings. Every counterpart must prove one complete frozen
+CBR upload, one selection/click, a visible nine-frame result and owned browser/listener cleanup. Negative controls
+require the intended assertion's exact actual/expected comparison; unrelated failures cannot calibrate the defect.
+
+The frozen new control file is SHA-256 `162ca8a596e76206131fd2ea16a48161736473c2e0efeaeafa25344a40bb53a2`. The
+coordinator added six planned IDs and fixed source identities to the existing bounded control runner. The public parent
+still rejects runtime flags; its closed UUID child permits exactly the fixed `--experimental-test-module-mocks` flag. No
+arbitrary command, destination or private input is admitted. Minimal environment, 360-second deadline, 1 MiB
+discarded-output bound, exact child evidence checks and owned cleanup remain intact. The frozen runner SHA-256 is
+`db8bf58b2dd4690a5390b94b89b33cada3a1b67e4b15dcdbd734dc3817b2c5e0`.
+
+An initial coordinator diagnostic counted only literal IDs rather than the runner's generated IDs. A first execution
+then failed before any controls because the existing environment guard rejected the fixed child flag. Its zero-row
+failed report and reaped-process evidence are preserved separately as setup failure, not semantic RED. After repairing
+only that closed runner seam, the coordinator froze both files and ran `node scripts/hosted-controls.ts` before the
+consumer writer changed HP-01. Run `32324388-dc4b-40fa-beed-f0977f7623a6` exited 1: all 95 existing rows passed, all six
+new rows failed assertions, all 101 rows completed with successful cleanup, and no forced termination/process failure
+occurred. Raw RED log SHA-256: `13a675675afbb159d96203d2f70f5ba575f6db1a8616dcc23a5ee817e442f5ab`.
+
+A separate consumer writer changed exactly four HP-01 sites: import the existing detailed oracle, require exactly one
+decoded `details=true`, use the detailed-response assertion and expect the absent-Xing nine-frame detail. All three
+literal production case identities, small-upload scope, request bytes/media/origin checks, visible count and enabled
+controls remain unchanged. Production consumer SHA-256:
+`a36c71721c26dd37a6eb9f930c85f2be3a0ce2f65b84cab6b3fa47f36771168d`. A separate read-only reviewer found no supported
+issue in the consumer, six controls or bounded runner seam; they did not execute tests or consult product code.
+
+The coordinator inspected the diff and ran `npm --prefix tests/acceptance run check` once: exit 0, strict typechecking,
+46 original fixtures, 41 recipes, 216 semantic rejections, 52 transport controls, 46 docs controls, all 101 hosted owned
+controls and exact 72 local / 22 stage / 3 production discovery. Raw full-check log SHA-256:
+`2b61c1f40c42f30340041a0937bd35368db8d00500b33494fe4ad1c5dde5f573`. Before bytes, frozen handoff, setup failure,
+RED/green reports, process cleanup and raw logs remain in the ignored correction directory. This is local harness
+calibration and discovery, not hosted execution, product acceptance or deployment.
+
+Every preceding authoring-record byte remains intact. Normative contract, original fixtures, manifest, inventory,
+lockfile, existing 216 semantic controls, OpenAPI predicate, product and governance bytes remain unchanged. Current CI,
+fresh companion approval, actual candidate merge and separate binding remain prerequisites to product adoption.
