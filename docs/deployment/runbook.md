@@ -12,6 +12,32 @@ sources containing an admitted policy. VER-01 introduces line `0.1`; a separate 
 source identities and byte-for-byte retries remain intact. The original deployment-before-release wording below is
 historical: software releases continue independently under the current release-only authority.
 
+## Stage configuration and log privacy
+
+**Operating amendment, 2026-10-11:** store the existing closed stage JSON in the repository Actions secret
+`STAGE_DEPLOYMENT_CONFIG`. The stage job reads that exact secret as its sole configuration input, so Actions registers
+masking before printing step environments. The existing nonempty repository variable remains only a readiness condition;
+its value does not supply deployed configuration, and there is no variable fallback. Validate the secret's configuration
+before enabling delivery. Missing or malformed configuration fails verification before cloud authentication.
+
+The billing account ID identifies an account; it does not grant billing access. It previously appeared because the
+entire configuration was a job-wide variable, which Actions renders unmasked. Keep identifiers out of routine logs even
+when they are not credentials. The delivery controller retains sanitized outcomes and configuration hashes, without
+printing provider bodies or configuration values. Cloud credentials still use scoped, short-lived federation; this
+configuration secret contains no cloud key and changes no IAM, cost limit or production authority.
+
+Failed Terraform initialization, planning, plan reading or application may retain a closed `command-failure.json` record
+after private temporary storage is successfully removed. It contains only the fixed operation name, exit code and
+`run.operations.get` when a complete standard provider error explicitly denies that permission. Raw provider text stays
+in bounded memory; truncated text cannot establish a denial. This diagnostic does not authorize a permission change or
+establish a successful deployment. Retain the failed outcome and investigate before changing access.
+
+The current checkout policy permits only this one exact secret reference. Historical release verification still admits
+the original variable-backed workflow without rewriting its bytes or reservations. This change protects future output;
+existing logs retain their original content. See
+[GitHub's variable masking behavior](https://docs.github.com/en/actions/concepts/workflows-and-actions/variables) and
+[Actions secret usage](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets).
+
 ## Dedicated project and cost-control prerequisite
 
 Use the [bounded bootstrap](../../infra/cloud/bootstrap/README.md) and its
