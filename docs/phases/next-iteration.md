@@ -18,8 +18,9 @@ was immediately reconciled onto actual merged main while publication was verifie
 
 The next three-card window is **ACCESS-BACKEND**, **ACCESS-IAM-DEFAULTS** and the first pure unit of
 **SAME-RUN-HANDOFF**. PUBLISHER-HANDOFF merged as PR #33 at `781b334230d956485abbc508fcfe5de2b2684305`; its actual main
-publication and new producer artifact are verified below. PR #34 was immediately reconciled onto that main and
-retargeted, with fresh required checks. The IAM correction belongs to local bootstrap so remote-state trust does not
+publication and new producer artifact are verified below. PR #34 was immediately reconciled onto that main, passed fresh
+checks and companion review, then merged at `40d9ae09e2ddf17c52b160094622537e0a28c683` on 2026-10-11 at 00:30:07Z. Its
+operational migration remains pending. The IAM correction belongs to local bootstrap so remote-state trust does not
 create a backend dependency cycle. Authenticated acquisition/replay, launcher, registry, federation and runtime delivery
 remain separate future scope.
 
