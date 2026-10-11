@@ -1,44 +1,43 @@
 ---
-title: >-
-  Same-run CI lanes and tested software releases; hosted delivery paused
+title: Same-run CI lanes and tested software releases; hosted delivery paused
 query: >-
   Show the four reusable callers defined by this CI activation: Linter, Server
   tests, Application tests and Base acceptance E2E. The Linter caller requires
   checks and all four tooling shards: foundation, acceptance, publication and
   delivery, containing the unchanged 46-file union. Each executing worker runs
   trusted-base acceptance admission before head-owned commands. All four caller
-  results feed the always-running control-plane gate. This diagram describes
-  the prepared workflow source, not evidence of a successful activation run.
-  Derive the current graph from the PR head coordinator and reusable workflow
-  files, with the CI workflow guide as current scope. Historical two-job
-  branches in compatibility readers and the three logical publication checks
-  are replay/provenance data, not the current four callers or nine leaf jobs.
-  Do not restore the base branch's Foundation/Product diagram body.
-  Preserve historical two-job workflow replay through source-bound policy;
-  never replace required acceptance with a unit lane or candidate controls.
-  Base acceptance delegates to the source-bound controller: exact suite
-  extraction, browser preparation, all 72 frozen local cases, image identities
-  and cleanup. Only admitted split CI delegates host unit/build checks to the
-  mandatory application/server workers; local and legacy runs retain complete
-  checks. The foundation tooling shard installs its own pinned Chrome and uses
-  the GitHub runner's Chrome profile for renderer tests. Build separate frontend and API
-  images, run exactly two Compose application containers and test them with
-  host Playwright/Chromium. On main, export those exact tested images on the
+  results feed the always-running control-plane gate. This diagram describes the
+  prepared workflow source, not evidence of a successful activation run. Derive
+  the current graph from the PR head coordinator and reusable workflow files,
+  with the CI workflow guide as current scope. Historical two-job branches in
+  compatibility readers and the three logical publication checks are
+  replay/provenance data, not the current four callers or nine leaf jobs. Do not
+  restore the base branch's Foundation/Product diagram body. Preserve historical
+  two-job workflow replay through source-bound policy; never replace required
+  acceptance with a unit lane or candidate controls. Base acceptance delegates
+  to the source-bound controller: exact suite extraction, browser preparation,
+  all 72 frozen local cases, image identities and cleanup. Only admitted split
+  CI delegates host unit/build checks to the mandatory application/server
+  workers; local and legacy runs retain complete checks. The foundation tooling
+  shard installs its own pinned Chrome and uses the GitHub runner's Chrome
+  profile for renderer tests. Build separate frontend and API images, run
+  exactly two Compose application containers and test them with host
+  Playwright/Chromium. On main, export those exact tested images on the
   acceptance runner and upload their immutable same-run bundle. Images and
   archives are artifacts, not additional services. Show the publisher requiring
   all original-attempt leaf jobs, preflight evidence, exact source, suite and
   bundle hashes; read layout from the original source rather than moving HEAD.
   Retain three logical checks in immutable publication provenance. Allocate
-  versions from the tested source policy and global first-parent ordinal,
-  verify version/tag identity and every draft asset, and permit only identical
-  retries. Earlier source-only foundation delivery is outside this view.
-  Software releases continue while stage delivery is disabled. Show the pause
-  as informational, with hosted stage acceptance, recovery and production
+  versions from the tested source policy and global first-parent ordinal, verify
+  version/tag identity and every draft asset, and permit only identical retries.
+  Earlier source-only foundation delivery is outside this view. Software
+  releases continue while stage delivery is disabled. Show the pause as
+  informational, with hosted stage acceptance, recovery and production
   finalization explicitly deferred. Resuming stage requires enablement and an
-  existing authenticated runtime. Every production deployment requires an
-  actual human approval of the exact candidate and demonstrated recovery;
-  finalization requires passing production smoke and original custody. Fixed
-  same-source v1.0.0 finalization and metadata retries never rebuild or redeploy.
+  existing authenticated runtime. Every production deployment requires an actual
+  human approval of the exact candidate and demonstrated recovery; finalization
+  requires passing production smoke and original custody. Fixed same-source
+  v1.0.0 finalization and metadata retries never rebuild or redeploy.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /.github/workflows/linter.yml'
@@ -68,7 +67,7 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T16:13:53Z'
+generationTime: '2026-10-11T16:28:54.536Z'
 ---
 flowchart TD
     EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
