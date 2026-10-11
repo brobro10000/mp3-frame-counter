@@ -1,7 +1,8 @@
 # Visible CI lanes
 
-This change separates ordinary CI into four reusable workflows in the same run. The source-bound visibility policy is
-already merged; activation still requires the normal protected merge and successful CI on the actual merged source.
+Ordinary CI uses four reusable workflows in the same run. The source-bound visibility and backend source/dependency
+policies are adopted on protected main. The refactor's localized units and changed application behavior still require
+successor binding, the normal protected merge and successful CI on the actual merged product source.
 
 | Caller                | Reusable workflow                                                      | Mandatory work                                                                                                                                    |
 | --------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,7 +15,7 @@ Every executing worker performs the original trusted-base admission preflight be
 code. The unconditional `control-plane` job requires success from all four callers; failure, cancellation, missing or
 skipped work blocks it. Reusable calls introduce no path filters, optional acceptance or separate release-event trust.
 
-The local prerequisite extends the linter's closed tooling matrix to 49 files, each assigned exactly once: foundation
+The adopted prerequisite extends the linter's closed tooling matrix to 49 files, each assigned exactly once: foundation
 (11), acceptance (13), publication (9) and delivery (16). Historical 46-file inventories remain readable. Gate tests
 remain a separate mandatory command. The foundation shard installs its own pinned Chrome for Mermaid renderer tests and
 uses the Ubuntu runner's Chrome profile; the checks worker separately renders the actual repository diagrams. The
@@ -46,11 +47,12 @@ that application's directory. There are no tests left in a shared product-unit d
 application test directories. Independent acceptance remains in `tests/acceptance/`; tooling policy tests remain in
 `scripts/`. The shared root lockfile is intentional, with the acceptance package retaining its independent lockfile.
 
-The independently specified source/dependency prerequisite is included in this local product diff, preserving the other
-three shards and their job identities. It requires strict application/test typechecking, actual source lint, same-app
-OpenAPI generation and semantic validation. Historical source inventories remain readable; adopting the new layout
-cannot be undone by deleting tests or changing directories. This local wiring does not bind the new audio-count/error
-acceptance contract or establish a successful remote CI run.
+The independently specified source/dependency prerequisite merged through PR #62 at
+`e1616c52a3a0a777216678dc76403d293471a783`, preserving the other three shards and their job identities. It requires
+strict application/test typechecking, actual source lint, same-app OpenAPI generation and semantic validation.
+Historical source inventories remain readable; adopting the new layout cannot be undone by deleting tests or changing
+directories. This product wiring does not bind the new audio-count/error acceptance contract or establish product CI
+success.
 
 Release bundle preparation and upload remain on the single acceptance runner, where the exact tested Docker image IDs
 exist. The existing publisher consumes that same-run artifact only after the terminal gate succeeds; it does not rebuild
