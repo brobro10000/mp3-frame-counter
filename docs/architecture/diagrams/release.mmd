@@ -48,7 +48,7 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T09:29:26.422Z'
+generationTime: '2026-10-11T10:08:41.134Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -84,3 +84,4 @@ flowchart TD
     PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases and demonstrated recovery"]
     BRIDGE --> FINALIZE["Owner calls fixed same-source V1 finalizer<br/>original admission and authenticated evidence"]
     FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
+    BRIDGE --> CUSTODY["Preserve original custody facts<br/>validate complete input and authenticate custody"]
