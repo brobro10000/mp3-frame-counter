@@ -7,8 +7,8 @@ does not establish production v1.0.0. See the
 
 ## Run a received release with Docker
 
-Recipients need Docker with Compose and a standard checksum utility; no Node/npm, Git, Make, GitHub CLI or cloud login
-is needed when the files are supplied. Receive the **same-tag source directory** containing `compose.yaml` and
+Recipients need Docker with Compose, `tar` and a standard checksum utility; no Node/npm, Git, Make, GitHub CLI or cloud
+login is needed when the files are supplied. Receive the **same-tag source directory** containing `compose.yaml` and
 `compose.release.yaml`, plus all ten release assets. Alternatively, authorized recipients can download the assets and
 GitHub's separate **Source code (zip)** from the selected
 [release page](https://github.com/brobro10000/mp3-frame-counter/releases). That automatic source archive is separate
@@ -30,8 +30,8 @@ docker load --input "$release_bundle/frontend.docker.tar"
 ```
 
 Open `manifest.json` and copy the complete `artifacts.api.localImageId` and `artifacts.frontend.localImageId` values
-into the two variables below, replacing both placeholders. These are the exact immutable `sha256:…` image IDs, not
-archive checksums or guessed image names:
+into the two variables below, replacing both placeholders. These are the published immutable Docker configuration
+identities, not archive checksums or guessed image names:
 
 ```sh
 export API_IMAGE='sha256:REPLACE_WITH_EXACT_API_ID'
@@ -39,8 +39,12 @@ export FRONTEND_IMAGE='sha256:REPLACE_WITH_EXACT_FRONTEND_ID'
 docker image inspect "$API_IMAGE" "$FRONTEND_IMAGE" --format '{{.Id}} {{.Os}}/{{.Architecture}}'
 ```
 
-Confirm both inspections match the copied IDs and report `linux/amd64`; ARM hosts need working Docker emulation. Then
-start the exact pair with the matching source's canonical runtime settings:
+Confirm both inspections match the copied IDs and report `linux/amd64`; ARM hosts need working Docker emulation. If an
+ID is unavailable or differs, **stop before Compose**. Some containerd image stores expose an OCI manifest identity
+instead. Follow the [verified image-store fallback](image-store-compatibility.md#verify-a-containerd-loaded-image) for
+both archives; a different ID printed by `docker load` alone is insufficient. Set `API_IMAGE` and `FRONTEND_IMAGE` only
+to the identities that pass that verification, then start the exact pair with the matching source's canonical runtime
+settings:
 
 ```sh
 docker compose -p mp3-release -f compose.yaml -f compose.release.yaml \
@@ -123,6 +127,11 @@ signature or hosted approval.
 The following snippet validates the original preparation bytes, requires its exact clean source, loads the two archives,
 checks the loaded image IDs/platform and writes an ignored image override. It does not retag, rebuild or publish:
 
+This optional engineer snippet expects the published configuration IDs to be inspectable. On a containerd store where
+they are unavailable, it stops rather than creating an override. Preserve that failure and use the
+[manual verified fallback](image-store-compatibility.md#verify-a-containerd-loaded-image), followed by the received
+release's `compose.release.yaml` command above. Do not disable `verifyImageInspection` or alter release metadata.
+
 ```sh
 set -e
 node --input-type=module - "$release_bundle" <<'JS'
@@ -201,14 +210,15 @@ plan or apply. Local verification does not confer CI publication authority.
 
 ## Troubleshooting and cleanup
 
-| Symptom                                | Check                                                                                                                 |
-| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Port 8080 is occupied                  | Stop your earlier source/release project or choose `FRONTEND_PORT=8081`.                                              |
-| Startup times out                      | Source: `make ps`/`make logs`. Release: matching `mp3-release` Compose `ps`/`logs`; check both service health checks. |
-| Upload shows a JSON error              | Use MPEG-1 Layer III, raw bytes and the supported metadata subset within 20 MiB.                                      |
-| Inspector cannot display a response    | If the page shows a frame count, it received and parsed JSON. Inspector cache eviction is separate from API delivery. |
-| Release checksum/source/image mismatch | Stop and retain the original evidence; do not rebuild over the selected release or replace its files.                 |
-| A hosted URL returns Forbidden         | Existing stage requires authenticated invocation; cloud access is outside this local handoff.                         |
+| Symptom                                        | Check                                                                                                                                                           |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Port 8080 is occupied                          | Stop your earlier source/release project or choose `FRONTEND_PORT=8081`.                                                                                        |
+| Startup times out                              | Source: `make ps`/`make logs`. Release: matching `mp3-release` Compose `ps`/`logs`; check both service health checks.                                           |
+| Upload shows a JSON error                      | Use MPEG-1 Layer III, raw bytes and the supported metadata subset within 20 MiB.                                                                                |
+| Inspector cannot display a response            | If the page shows a frame count, it received and parsed JSON. Inspector cache eviction is separate from API delivery.                                           |
+| Release checksum/source/image mismatch         | Stop and retain the original evidence; do not rebuild over the selected release or replace its files.                                                           |
+| Loaded release configuration ID is unavailable | Stop before startup; verify the [containerd identity chain](image-store-compatibility.md#verify-a-containerd-loaded-image) before using an alternate loaded ID. |
+| A hosted URL returns Forbidden                 | Existing stage requires authenticated invocation; cloud access is outside this local handoff.                                                                   |
 
 Use `make down` for the source project and the matching `mp3-release` command above for release images. Do not run
 global Docker prune or remove unrelated projects. `.artifacts/tone-cbr.mp3` is an ignored local fixture copy; the
