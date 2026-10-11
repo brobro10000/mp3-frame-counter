@@ -92,3 +92,19 @@ observations are specific to that release; later revisions need their own verifi
 When deployment resumes, the [deployment runbook](runbook.md) still requires provider/account/budget approval, immutable
 registry identities, full stage acceptance through real ingress, exact production approval, hosted smoke and recovery. A
 repository release preserves candidate image bytes but supplies none of that hosted evidence.
+
+## Backend audio-count line adoption — 2026-10-11
+
+The coordinator recommends and proposes the separately reviewed **0.4** line before publishing the owner's observable
+computed-audio count and coded-error changes. This adopts the next minor envelope under the owner's authorized version
+progression; it does not claim that the owner named 0.4 or that all originally provisional hosting work is complete.
+This dated amendment supersedes the older provisional 0.4 hosted-delivery envelope only for line allocation; paused
+hosting remains incomplete. Release envelopes do not promise every planned feature in every release. The allocation
+strategy and global first-parent patch ordinal remain unchanged, so historical 0.3 sources retain their versions and
+immutable reservations. The adoption merge itself may publish unchanged behavior on 0.4.
+
+This governance-only change adds no successor tests, product capability, deployment or production finalization.
+Independent candidate merge and actual binding still precede the implementation. Later product release notes must state
+that supported leading Xing/Info carriers are excluded from the default audio count, while diagnostics expose
+physical/excluded counts; error envelopes add canonical codes. Production 1.0.0 remains blocked by paused hosting and
+its verified first-launch gates. Repair published versions forward rather than rewriting tags or prior evidence.
