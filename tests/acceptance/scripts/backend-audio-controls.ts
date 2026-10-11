@@ -993,6 +993,87 @@ const taggedDomainFailures = taggedDomainResults.filter((entry) => entry.status 
 if (taggedDomainFailures.length) console.error("TAGGED_OBJECT_DOMAINS", JSON.stringify(taggedDomainResults));
 assert.deepEqual(taggedDomainFailures, [], "TAGGED_OBJECT_DOMAINS missing semantic refusals");
 
+/** The exclusion domain must admit both 0 and 1, independently of which value a success example happens to exercise. */
+const correction9ExclusionPath = [
+  ...schemaPath,
+  "FrameDetail",
+  "properties",
+  "analysis",
+  "properties",
+  "excludedMetadataFrameCount",
+];
+const correction9DetailPath = [...schemaPath, "FrameDetail"];
+const correction9Baseline = controlSchemaAt(spec, correction9ExclusionPath);
+assert.equal(correction9Baseline.type, "integer");
+assert.deepEqual(correction9Baseline.enum, [0, 1]);
+for (const value of [0, 1]) assert.ok(exampleMatches(spec, correction9Baseline, value));
+
+/** Enum without redundant bounds, exact integer bounds, contained aliases and compatible composition preserve both DTOs. */
+for (const [name, schema] of [
+  ["literal enum", { type: "integer", enum: [0, 1] }],
+  ["bounded range", { type: "integer", minimum: 0, maximum: 1 }],
+  ["bounded composition", { type: "integer", enum: [0, 1], allOf: [{ type: "integer", minimum: 0, maximum: 1 }] }],
+] as const)
+  for (const representation of ["direct", "referenced"] as const) {
+    const positive = structuredClone(taggedExamples);
+    if (representation === "direct") alter(positive, correction9ExclusionPath, structuredClone(schema));
+    else {
+      positive.components.schemas.CompatibleExclusionAlias = structuredClone(schema);
+      alter(positive, correction9ExclusionPath, { $ref: "#/components/schemas/CompatibleExclusionAlias" });
+    }
+    const scalar = controlSchemaAt(positive, correction9ExclusionPath);
+    for (const value of [0, 1])
+      assert.ok(exampleMatches(positive, scalar, value), `${name} ${representation} ${value}`);
+    for (const dto of [absentDetail(9), encodedVbrDetail])
+      assert.ok(exampleMatches(positive, controlSchemaAt(positive, correction9DetailPath), dto));
+    assertBackendSpec(positive);
+  }
+
+/** Collect every missing exclusion refusal; fixture and semantic-damage preconditions stay outside counted checks. */
+const correction9Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction9Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction9Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction9Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+for (const refusedValue of [0, 1] as const)
+  for (const constraint of ["bound", "allOf"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      // Keep a valid example with the other value, so incidental example rejection cannot mask this domain omission.
+      const invalid = structuredClone(refusedValue === 0 ? spec : presentUnexercised);
+      const target = controlSchemaAt(invalid, correction9ExclusionPath);
+      assert.equal(target.type, "integer");
+      assert.deepEqual(target.enum, [0, 1]);
+      const boundName = refusedValue === 0 ? "minimum" : "maximum";
+      const retainedValue = refusedValue === 0 ? 1 : 0;
+      if (constraint === "bound") target[boundName] = retainedValue;
+      else target.allOf = [{ type: "integer", [boundName]: retainedValue }];
+      if (representation === "referenced") {
+        invalid.components.schemas.RestrictiveExclusionAlias = structuredClone(target);
+        alter(invalid, correction9ExclusionPath, { $ref: "#/components/schemas/RestrictiveExclusionAlias" });
+      }
+      const scalar = controlSchemaAt(invalid, correction9ExclusionPath);
+      assert.ok(!exampleMatches(invalid, scalar, refusedValue));
+      assert.ok(exampleMatches(invalid, scalar, retainedValue));
+      const exampleValue = controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value"]);
+      assert.equal(
+        controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value", "analysis"])
+          .excludedMetadataFrameCount,
+        retainedValue,
+      );
+      assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, correction9DetailPath), exampleValue));
+      correction9Rejected(`${representation} exclusion rejects ${refusedValue} through ${constraint}`, () =>
+        assertBackendSpec(invalid),
+      );
+    }
+const correction9Failures = correction9Results.filter((entry) => entry.status === "missing-refusal");
+if (correction9Failures.length) console.error("EXCLUSION_DOMAIN", JSON.stringify(correction9Results));
+assert.deepEqual(correction9Failures, [], "EXCLUSION_DOMAIN missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

@@ -508,3 +508,36 @@ in the ignored correction directory. Every preceding authoring-record byte is in
 fixtures, manifests, inventories, lockfile, product and governance bytes are unchanged. These results calibrate the
 independent harness; they are not product or hosted acceptance. Fresh current CI, companion approval, actual candidate
 merge and separate binding remain prerequisites to backend adoption.
+
+## Harness correction 9 — 2026-10-11 (non-normative)
+
+The next exact-head companion review found an exclusion-domain gap: a schema could advertise enum values 0/1 while
+restrictive bounds or composition rejected one of them. A valid example using the other value concealed that omission.
+The complete preceding CI run 38181442817 passed 250 candidate controls, 101 owned hosted controls and all 72 required
+predecessor cases; those results remain scoped to its recorded head and do not establish successor product adoption. The
+companion's request-changes report is preserved; no approval was published.
+
+An independent author added eight direct/reference controls for each value under restrictive bounds and allOf. Every
+mutation proves the missing value is refused, the other value is admitted and its whole example DTO remains valid.
+Enum-only, bounded-range, contained-alias and compatible-composition counterparts exercise both present/absent DTOs. The
+coordinator formatted only the insertion, froze its bytes and reproduced RED before a separate checker writer acted: all
+250 prior controls and positive setups completed, then all eight new semantic refusals were missing. Frozen RED SHA-256:
+`7e8d3cc6651dc542298ce7b85c5cdff6b2468a5977016836dfff3feaaedcb720`. The earlier pre-format RED and its distinct input
+hash remain preserved separately.
+
+The separate writer retained the exact enum/bounded-range distinction and moved the existing 0/1/null witness outside
+that conditional. Matcher, reference resolver, literal extraction and all predicate bytes outside that block are
+unchanged. Pinned formatting produced final predicate SHA-256
+`87cb78389c78c1721e9f103a1a3f59c502685cea971218218607dd89c03c266c`. The formatted controls SHA-256 is
+`3c3e96715d1a6cec70900bf00d4529398729e269bbb9fe2c567a186b24cb1ed5`; removing its 81-line insertion restores all 250
+previous control bytes.
+
+The coordinator ran the focused controls and strict candidate typechecking with Node 24.20.0 against the final formatted
+snapshot: both exited 0; all 258 semantic controls and valid counterparts passed. Raw focused GREEN SHA-256:
+`14dcaf6de6ca6feb6be21b783cd35e443ed96fbb0351c046849f047b40065a54`. The complete 258-control package was not rerun
+locally; current-source CI must run it before review/merge. Before identities, immutable review/receipt copies,
+RED/GREEN logs and final snapshots remain in the ignored correction directory.
+
+Every preceding authoring-record byte, original fixture, inventory, manifest, lockfile and normative contract remains
+unchanged. No product or governance input was edited. These are independent harness calibration results, not product or
+hosted acceptance. Fresh current CI, companion approval, actual candidate merge and separate binding remain required.

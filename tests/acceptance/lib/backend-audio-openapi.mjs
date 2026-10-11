@@ -181,14 +181,12 @@ export function assertBackendSpec(spec) {
   assert.equal(physical.minimum, 1, "SPEC_SCHEMAS");
   assert.equal(physical.maximum, Number.MAX_SAFE_INTEGER, "SPEC_SCHEMAS");
   const exclusion = resolve(spec, analysis.properties.excludedMetadataFrameCount);
-  if (exclusion.type === "integer" && exclusion.minimum === 0 && exclusion.maximum === 1) {
-    assert.ok(
-      exampleMatches(spec, exclusion, 0) &&
-        exampleMatches(spec, exclusion, 1) &&
-        !exampleMatches(spec, exclusion, null),
-      "SPEC_SCHEMAS",
-    );
-  } else assert.deepEqual(literals(spec, exclusion).sort(), [0, 1], "SPEC_SCHEMAS");
+  if (!(exclusion.type === "integer" && exclusion.minimum === 0 && exclusion.maximum === 1))
+    assert.deepEqual(literals(spec, exclusion).sort(), [0, 1], "SPEC_SCHEMAS");
+  assert.ok(
+    exampleMatches(spec, exclusion, 0) && exampleMatches(spec, exclusion, 1) && !exampleMatches(spec, exclusion, null),
+    "SPEC_SCHEMAS",
+  );
   const xing = resolve(spec, analysis.properties.xing);
   const xingBranches = (xing.oneOf ?? xing.anyOf)?.map((branch) => resolve(spec, branch));
   assert.equal(xingBranches?.length, 2, "SPEC_SCHEMAS");
