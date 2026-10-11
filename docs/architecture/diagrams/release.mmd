@@ -84,4 +84,3 @@ flowchart TD
     PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases and demonstrated recovery"]
     BRIDGE --> FINALIZE["Owner calls fixed same-source V1 finalizer<br/>original admission and authenticated evidence"]
     FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
-    FAIL -.->|"Retry only with identical source and bytes"| VERIFY

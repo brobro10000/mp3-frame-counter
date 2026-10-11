@@ -45,6 +45,7 @@ import { inspectCap, renderDesiredCap } from "../infra/cloud/bootstrap/cap-recon
 import { parseStageConfig, requireStagePlan, requireStageServingRevision } from "./stage-delivery-policy.mjs";
 import { stageCommandFailure } from "./stage-command-failure.mjs";
 import { sealStageDiagnostic } from "./stage-private-diagnostic.mjs";
+import { stageDiagnosticRecipient } from "./stage-diagnostic-recipient.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const evidenceDirectory = join(root, ".artifacts", "stage");
@@ -85,14 +86,20 @@ function record(name, value) {
 
 /** Seal failed streams for the fixed bounded public recipient; caller catches all errors without printing values. */
 function sealCommandFailure(operation, exitCode, stdout, stderr, stdoutTruncated, stderrTruncated) {
-  const recipient = JSON.parse(file(join(root, "infra/cloud/diagnostics/recipient.json"), 12288));
-  assert(recipient && !Array.isArray(recipient));
-  assert.equal(Object.keys(recipient).sort().join(","), "publicKey,schemaVersion");
-  assert.equal(recipient.schemaVersion, 1);
-  assert(typeof recipient.publicKey === "string" && recipient.publicKey.length > 0);
-  assert(Buffer.byteLength(recipient.publicKey, "utf8") <= 8192);
+  const recipient = stageDiagnosticRecipient;
+  assert(recipient && typeof recipient === "object" && !Array.isArray(recipient));
+  assert([null, Object.prototype].includes(Object.getPrototypeOf(recipient)));
+  const keys = Reflect.ownKeys(recipient);
+  assert(keys.every((key) => typeof key === "string"));
+  assert.equal(keys.sort().join(","), "publicKey,schemaVersion");
+  const descriptors = Object.getOwnPropertyDescriptors(recipient);
+  for (const key of keys) assert(descriptors[key].enumerable && Object.hasOwn(descriptors[key], "value"));
+  assert.equal(descriptors.schemaVersion.value, 1);
+  const publicKey = descriptors.publicKey.value;
+  assert(typeof publicKey === "string" && publicKey.length > 0);
+  assert(Buffer.byteLength(publicKey, "utf8") <= 8192);
   return sealStageDiagnostic({
-    publicKey: recipient.publicKey,
+    publicKey,
     operation,
     exitCode,
     context: diagnosticContext,

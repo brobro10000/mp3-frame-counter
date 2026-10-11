@@ -5,6 +5,7 @@
  * run/main/sealCommandFailure bindings. Synthetic inputs/deploy/verify callbacks replace cloud work; spawn and files
  * are memory-only boundaries. The seal stub proves custody/arguments, not encryption; independent helper tests own
  * cryptographic proof. No Git, network, credential, cloud, real child or filesystem write occurs in these probes.
+ * R3 selects one fixed passive recipient module; trusted Git preflight owns its regular-file/source custody.
  * Missing integration is explicit availability red before refusal assertions. No application acceptance is claimed.
  */
 import assert from "node:assert/strict";
@@ -17,7 +18,6 @@ import vm from "node:vm";
 
 const controllerUrl = new URL("./stage-delivery.mjs", import.meta.url);
 const root = "/synthetic-stage-controller";
-const recipientPath = join(root, "infra/cloud/diagnostics/recipient.json");
 const privateDirectory = "/synthetic-private-stage";
 const sourceRevision = "a".repeat(40);
 const canary = "SYNTHETIC_RAW_PROVIDER_CANARY";
@@ -33,6 +33,11 @@ function available() {
     source,
     /import\s*\{\s*sealStageDiagnostic\s*\}\s*from\s*["']\.\/stage-private-diagnostic\.mjs["']/u,
     "Missing sealStageDiagnostic controller import; availability red only",
+  );
+  assert.match(
+    source,
+    /import\s*\{\s*stageDiagnosticRecipient\s*\}\s*from\s*["']\.\/stage-diagnostic-recipient\.mjs["']/u,
+    "Missing fixed stageDiagnosticRecipient module import; availability red only",
   );
   assert.match(source, /function sealCommandFailure\(/u, "Missing agreed caller integration; availability red only");
   const terminal = source.lastIndexOf("\nmain().catch(");
@@ -59,15 +64,11 @@ async function fixture(scenario = {}) {
     classifications = [],
     writes = new Map();
   const files = new Map();
-  if (!scenario.missingRecipient)
-    files.set(recipientPath, Buffer.from(scenario.recipient ?? JSON.stringify({ schemaVersion: 1, publicKey })));
-  const directories = new Set([
-    root,
-    "/synthetic-private",
-    join(root, "infra"),
-    join(root, "infra/cloud"),
-    join(root, "infra/cloud/diagnostics"),
-  ]);
+  const directories = new Set([root, "/synthetic-private"]);
+  const recipient = Object.hasOwn(scenario, "recipient")
+    ? scenario.recipient
+    : Object.freeze({ schemaVersion: 1, publicKey });
+  if (scenario.observedEffects) Object.assign(scenario.observedEffects, { events, reads, seals });
   const fakeProcess = {
     version: process.version,
     execPath: process.execPath,
@@ -94,10 +95,10 @@ async function fixture(scenario = {}) {
     lstatSync(path) {
       if (!files.has(path) && !directories.has(path)) throw new Error("Synthetic missing path");
       return {
-        isSymbolicLink: () => path === scenario.symlink,
+        isSymbolicLink: () => false,
         isFile: () => files.has(path),
         isDirectory: () => directories.has(path),
-        size: path === recipientPath && scenario.oversizeStat ? 12289 : (files.get(path)?.length ?? 0),
+        size: files.get(path)?.length ?? 0,
       };
     },
     mkdirSync(path) {
@@ -184,10 +185,11 @@ async function fixture(scenario = {}) {
         return { operation, exitCode, permission: null };
       },
     },
+    "./stage-diagnostic-recipient.mjs": scenario.missingExport ? {} : { stageDiagnosticRecipient: recipient },
     "./stage-private-diagnostic.mjs": {
       sealStageDiagnostic(options) {
         seals.push(structuredClone(options));
-        if (scenario.cryptoFailure || options.publicKey !== publicKey) throw new Error(canary);
+        if (scenario.cryptoFailure || options.publicKey.trim() !== publicKey.trim()) throw new Error(canary);
         return {
           schemaVersion: 1,
           kind: "encrypted-stage-command-diagnostic",
@@ -217,6 +219,33 @@ async function fixture(scenario = {}) {
     fetch: deny,
     console: { log: deny, error: deny, warn: deny },
   });
+  if (!scenario.missingExport) {
+    context.recipientSeed = recipient;
+    context.recipientShape =
+      recipient && typeof recipient === "object"
+        ? Array.isArray(recipient)
+          ? "array"
+          : Object.getPrototypeOf(recipient) === null
+            ? "null"
+            : Object.getPrototypeOf(recipient) === Object.prototype
+              ? "ordinary"
+              : "inherited"
+        : "primitive";
+    // Real imported literals belong to the controller realm; preserve descriptors and invalid shape controls there.
+    mocks["./stage-diagnostic-recipient.mjs"].stageDiagnosticRecipient = vm.runInContext(
+      `(() => {
+      const seed = recipientSeed, shape = recipientShape;
+      if (shape === 'primitive') return seed;
+      if (shape === 'array') return Array.from(seed);
+      const target = shape === 'null' ? Object.create(null) : shape === 'inherited' ? Object.create({}) : {};
+      for (const key of Reflect.ownKeys(seed)) Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(seed, key));
+      return Object.isFrozen(seed) ? Object.freeze(target) : target;
+    })()`,
+      context,
+    );
+    delete context.recipientSeed;
+    delete context.recipientShape;
+  }
   const module = new vm.SourceTextModule(source, {
     context,
     identifier: controllerUrl.href,
@@ -280,17 +309,23 @@ function retained(f, operation, exitCode) {
     assert(f.events.indexOf(`write:${name}`) > cleaned, "Diagnostic retention requires completed private cleanup");
 }
 
-test("verified context and fixed checkout recipient bind each failed Terraform operation after cleanup", async () => {
+test("verified context and fixed passive module recipient bind each failed Terraform operation after cleanup", async () => {
   for (const operation of ["terraform-init", "terraform-plan", "terraform-show", "terraform-apply"]) {
     const exitCode = operation === "terraform-init" ? 255 : 1;
-    const recipient = JSON.stringify({ schemaVersion: 1, publicKey }).padEnd(12288, " ");
+    const selectedKey = operation === "terraform-init" ? publicKey.padEnd(8192, " ") : publicKey;
+    const recipient = Object.freeze(
+      Object.assign(operation === "terraform-plan" ? Object.create(null) : {}, {
+        schemaVersion: 1,
+        publicKey: selectedKey,
+      }),
+    );
     const f = await fixture({ operation, exitCode, recipient });
     await failed(f);
     retained(f, operation, exitCode);
-    assert.deepEqual(f.reads, [recipientPath]);
+    assert.deepEqual(f.reads, []);
     assert.equal(f.seals.length, 1);
     assert.deepEqual(f.seals[0], {
-      publicKey,
+      publicKey: selectedKey,
       operation,
       exitCode,
       context: { sourceRevision, runId: 7001, runAttempt: 3 },
@@ -342,7 +377,16 @@ test("failure capture preserves stdout tail stderr head and truthful independent
   }
 });
 
-test("success nonTerraform spawn-null and unverified inputs produce no encrypted artifact", async () => {
+test("missing recipient export blocks startup and success nonTerraform null or unverified work produces no artifact", async () => {
+  available();
+  const observedEffects = {};
+  await assert.rejects(
+    fixture({ missingExport: true, observedEffects }),
+    /does not provide an export named 'stageDiagnosticRecipient'/u,
+  );
+  assert.deepEqual(observedEffects.events, []);
+  assert.deepEqual(observedEffects.reads, []);
+  assert.deepEqual(observedEffects.seals, []);
   for (const scenario of [{ exitCode: 0 }, { nonTerraform: true }, { spawnFailure: true }, { inputsFailure: true }]) {
     const f = await fixture(scenario);
     if (scenario.exitCode === 0) await f.main();
@@ -360,24 +404,56 @@ test("success nonTerraform spawn-null and unverified inputs produce no encrypted
   }
 });
 
-test("missing malformed substituted oversized or symlink recipient cannot reach sealing or leak raw text", async () => {
-  const scenarios = [
-    { missingRecipient: true },
-    { recipient: "{" },
-    { recipient: JSON.stringify({ schemaVersion: 2, publicKey }) },
-    { recipient: JSON.stringify({ schemaVersion: 1, publicKey, extra: canary }) },
-    { recipient: JSON.stringify({ publicKey }) },
-    { recipient: JSON.stringify({ schemaVersion: 1 }) },
-    { recipient: JSON.stringify({ schemaVersion: 1, publicKey: 123 }) },
-    { recipient: JSON.stringify({ schemaVersion: 1, publicKey: "" }) },
-    { recipient: JSON.stringify({ schemaVersion: 1, publicKey: "x".repeat(8193) }) },
-    { oversizeStat: true },
-    ...[join(root, "infra"), join(root, "infra/cloud"), join(root, "infra/cloud/diagnostics"), recipientPath].map(
-      (symlink) => ({ symlink }),
-    ),
+test("closed module recipient refuses missing rootshape extra field and invalid or oversized key before sealing", async () => {
+  let accessorEffects = 0;
+  const hidden = { schemaVersion: 1, publicKey };
+  Object.defineProperty(hidden, "unreviewed", { value: canary });
+  const accessorKey = { schemaVersion: 1 };
+  Object.defineProperty(accessorKey, "publicKey", {
+    enumerable: true,
+    get() {
+      accessorEffects++;
+      return publicKey;
+    },
+  });
+  const accessorSchema = { publicKey };
+  Object.defineProperty(accessorSchema, "schemaVersion", {
+    enumerable: true,
+    get() {
+      accessorEffects++;
+      return 1;
+    },
+  });
+  const invalid = [
+    undefined,
+    null,
+    [],
+    false,
+    "substituted-recipient",
+    {},
+    { schemaVersion: 2, publicKey },
+    { schemaVersion: 1, publicKey, extra: canary },
+    { schemaVersion: 1, publicKey, [Symbol("unreviewed")]: canary },
+    hidden,
+    accessorKey,
+    accessorSchema,
+    Object.create({ schemaVersion: 1, publicKey }),
+    { publicKey },
+    { schemaVersion: 1 },
+    ...[
+      undefined,
+      null,
+      123,
+      false,
+      Buffer.from(publicKey),
+      new String(publicKey),
+      "",
+      "x".repeat(8193),
+      "🙂".repeat(2049),
+    ].map((publicKey) => ({ schemaVersion: 1, publicKey })),
   ];
-  for (const scenario of scenarios) {
-    const f = await fixture(scenario);
+  for (const recipient of invalid) {
+    const f = await fixture({ recipient });
     await failed(f);
     assert.equal(f.seals.length, 0);
     assert(!f.writes.has("private-command-failure.json"));
@@ -386,13 +462,14 @@ test("missing malformed substituted oversized or symlink recipient cannot reach 
       exitCode: 1,
       permission: null,
     });
-    if (scenario.symlink || scenario.oversizeStat) assert.deepEqual(f.reads, []);
+    assert.deepEqual(f.reads, []);
   }
+  assert.equal(accessorEffects, 0, "Imported recipient accessors must never execute");
 });
 
 test("bad public key or crypto exception preserves the independent closed command failure", async () => {
   for (const scenario of [
-    { recipient: JSON.stringify({ schemaVersion: 1, publicKey: "synthetic-bad-public-key" }) },
+    { recipient: Object.freeze({ schemaVersion: 1, publicKey: "synthetic-bad-public-key" }) },
     { cryptoFailure: true },
   ]) {
     const f = await fixture(scenario);
