@@ -128,7 +128,15 @@ for (const [name, job] of Object.entries(jobs)) {
     }
   }
 }
-assert(!read(".github/workflows/ci.yml").includes("secrets."), "No secrets in foundation workflows");
+// Mask the stage's existing billing identifiers before runner step headers; allow no other secret context.
+const stageConfigurationSlot = "${{ secrets.STAGE_DEPLOYMENT_CONFIG }}";
+const workflowText = read(".github/workflows/ci.yml");
+assert.equal(jobs["deploy-stage"].env.STAGE_DEPLOYMENT_CONFIG, stageConfigurationSlot);
+assert.equal(workflowText.split(stageConfigurationSlot).length, 2, "Require exactly one masked configuration slot");
+assert(
+  !/\bsecrets\b/i.test(workflowText.replace(stageConfigurationSlot, "")),
+  "No other secret references in foundation workflows",
+);
 const upload = delivery.steps.find((step) => step.uses?.startsWith("actions/upload-artifact@"));
 assert.equal(upload?.with?.["retention-days"], 7);
 assert.equal(upload.with["if-no-files-found"], "error");
@@ -144,6 +152,8 @@ assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
 assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));

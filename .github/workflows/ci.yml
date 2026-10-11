@@ -516,7 +516,7 @@ jobs:
     env:
       CI_BASE_REF: ${{ github.event.before }}
       GATE_ADMISSION_SHA256: ${{ needs.validate-product.outputs.acceptance-admission-sha256 }}
-      STAGE_DEPLOYMENT_CONFIG: ${{ vars.STAGE_DEPLOYMENT_CONFIG }}
+      STAGE_DEPLOYMENT_CONFIG: ${{ secrets.STAGE_DEPLOYMENT_CONFIG }}
       GIT_OPTIONAL_LOCKS: "0"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

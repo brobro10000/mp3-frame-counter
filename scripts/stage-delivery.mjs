@@ -4,8 +4,9 @@
  * Inputs are the same-run bundle, independent admission output, closed repository configuration and step-scoped tokens.
  * Verify performs GitHub reads; push transfers existing images; deploy applies only a reviewed existing-service update
  * and runs the frozen stage suite. There is no bootstrap, arbitrary destination, production or rebuild operation.
- * Only sanitized identity evidence enters .artifacts/stage. Credentials, Docker configuration, plans and Terraform
- * state remain in memory/private temporary storage, cleaned on every path. Failures stop progression with fixed errors.
+ * Only sanitized identity evidence and closed command diagnostics enter .artifacts/stage. Credentials, Docker
+ * configuration, plans and Terraform state stay in memory/private temporary storage, cleaned on every path.
+ * Failures stop progression with fixed errors; raw provider output is never retained or printed.
  */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -41,6 +42,7 @@ import { canonical } from "./release-manifest.mjs";
 import { readRequiredAcceptanceProfileProjection } from "./acceptance-profile-source.mjs";
 import { inspectCap, renderDesiredCap } from "../infra/cloud/bootstrap/cap-reconciler.mjs";
 import { parseStageConfig, requireStagePlan, requireStageServingRevision } from "./stage-delivery-policy.mjs";
+import { stageCommandFailure } from "./stage-command-failure.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const evidenceDirectory = join(root, ".artifacts", "stage");
@@ -49,6 +51,7 @@ const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 const roles = ["api", "frontend"];
 const interrupted = new AbortController();
 let credentials;
+let commandFailure;
 for (const signal of ["SIGINT", "SIGTERM"]) process.once(signal, () => interrupted.abort());
 
 /** Reject symlink traversal and nonregular or oversized records before reading fixed checkout-owned inputs. */
@@ -103,12 +106,15 @@ function terraformExecutable() {
   throw new Error("TERRAFORM_UNAVAILABLE");
 }
 
-/** Bound, stop and reap a fixed child/process group; output is returned only in memory and never printed. */
-async function run(executable, args, { cwd = root, env, input, timeout = 120000, codes = [0] } = {}) {
+/** Bound and reap a fixed process group; raw output stays in memory, with only a closed failure record retained. */
+async function run(executable, args, { cwd = root, env, input, timeout = 120000, codes = [0], operation } = {}) {
   assert(!interrupted.signal.aborted);
   return await new Promise((resolveRun, reject) => {
     const child = spawn(executable, args, { cwd, env, detached: true, stdio: ["pipe", "pipe", "pipe"] });
     const chunks = [];
+    const stderrChunks = [];
+    let stderrBytes = 0;
+    let stderrTruncated = false;
     let bytes = 0;
     let failed = false;
     let escalation;
@@ -130,8 +136,19 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
     for (const stream of [child.stdout, child.stderr])
       stream.on("data", (chunk) => {
         bytes += chunk.length;
-        if (bytes > 16 * 1024 * 1024) stop();
-        else if (stream === child.stdout) chunks.push(chunk);
+        if (bytes > 16 * 1024 * 1024) {
+          stderrTruncated = true;
+          stop();
+        } else if (stream === child.stdout) chunks.push(chunk);
+        else if (operation) {
+          const remaining = 60 * 1024 - stderrBytes;
+          if (chunk.length > remaining) stderrTruncated = true;
+          if (remaining > 0) {
+            const captured = Buffer.from(chunk.subarray(0, remaining));
+            stderrBytes += captured.length;
+            stderrChunks.push(captured);
+          }
+        }
       });
     child.stdin.on("error", stop);
     child.once("error", () => {
@@ -142,8 +159,22 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
       clearTimeout(timer);
       clearTimeout(escalation);
       interrupted.signal.removeEventListener("abort", stop);
-      if (failed || !codes.includes(code)) reject(new Error("STAGE_COMMAND_FAILED"));
-      else resolveRun({ code, stdout: Buffer.concat(chunks).toString("utf8") });
+      if (failed || !codes.includes(code)) {
+        if (operation)
+          try {
+            // A spawn failure has no process exit status; truncated text cannot prove a complete denial line.
+            const exitCode = Number.isInteger(code) && code >= 0 && code <= 255 ? code : null;
+            commandFailure = stageCommandFailure(
+              operation,
+              exitCode,
+              stderrTruncated ? "" : Buffer.concat(stderrChunks).toString("utf8"),
+            );
+          } catch {
+            commandFailure = undefined;
+          }
+        stderrChunks.length = 0;
+        reject(new Error("STAGE_COMMAND_FAILED"));
+      } else resolveRun({ code, stdout: Buffer.concat(chunks).toString("utf8") });
     });
     child.stdin.end(input);
   });
@@ -615,7 +646,7 @@ async function deploy(values, privateDirectory) {
       `-backend-config=bucket=${config.stageStateBucket}`,
       `-backend-config=prefix=${config.stageStatePrefix}`,
     ],
-    { cwd: tf, env },
+    { cwd: tf, env, operation: "terraform-init" },
   );
   const planned = await run(
     terraform,
@@ -628,9 +659,11 @@ async function deploy(values, privateDirectory) {
       "-var-file=inputs.json",
       "-out=stage.tfplan",
     ],
-    { cwd: tf, env, codes: [0, 2], timeout: 180000 },
+    { cwd: tf, env, codes: [0, 2], timeout: 180000, operation: "terraform-plan" },
   );
-  const plan = JSON.parse((await run(terraform, ["show", "-json", "stage.tfplan"], { cwd: tf, env })).stdout);
+  const plan = JSON.parse(
+    (await run(terraform, ["show", "-json", "stage.tfplan"], { cwd: tf, env, operation: "terraform-show" })).stdout,
+  );
   requireStagePlan(plan, config, imageRefs, bundle.origin.sourceRevision);
   assert.equal(planned.code === 2, plan.applyable);
   if (planned.code === 2)
@@ -638,6 +671,7 @@ async function deploy(values, privateDirectory) {
       cwd: tf,
       env,
       timeout: 300000,
+      operation: "terraform-apply",
     });
   record("plan.json", { status: "applied-or-no-change", changed: planned.code === 2, sha256: sha256(canonical(plan)) });
   const observed = () => observe(config, token, images, bundle.origin.sourceRevision);
@@ -724,6 +758,8 @@ async function main() {
     } catch {
       failure = true;
     }
+  // Emit only the closed diagnostic after private Terraform/credential storage has been removed successfully.
+  if (failure && commandFailure && cleanup === "passed") record("command-failure.json", commandFailure);
   record(`${command}-outcome.json`, { command, status: failure ? "failed" : "passed", cleanup });
   assert(!failure, "STAGE_DELIVERY_FAILED");
 }

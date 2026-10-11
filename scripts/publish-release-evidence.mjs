@@ -329,6 +329,12 @@ export function requireReleaseWorkflow(workflow) {
     "Only the established jobs and optional bounded stage job are admitted",
   );
   if (hasStage) {
+    // Preserve historical reservations; current checkout policy requires the exact masked configuration variant.
+    const configurationSource = workflow.jobs["deploy-stage"].env?.STAGE_DEPLOYMENT_CONFIG;
+    assert(
+      ["${{ vars.STAGE_DEPLOYMENT_CONFIG }}", "${{ secrets.STAGE_DEPLOYMENT_CONFIG }}"].includes(configurationSource),
+      "Stage configuration must use one reviewed exact source without fallback",
+    );
     // Exact finite job shape keeps source/artifact verification ahead of OIDC and confines each token to its consumer.
     const authentication = (id, accountOutput) => ({
       id,
@@ -356,7 +362,7 @@ export function requireReleaseWorkflow(workflow) {
         env: {
           CI_BASE_REF: "${{ github.event.before }}",
           GATE_ADMISSION_SHA256: "${{ needs.validate-product.outputs.acceptance-admission-sha256 }}",
-          STAGE_DEPLOYMENT_CONFIG: "${{ vars.STAGE_DEPLOYMENT_CONFIG }}",
+          STAGE_DEPLOYMENT_CONFIG: configurationSource,
           GIT_OPTIONAL_LOCKS: "0",
         },
         steps: [
