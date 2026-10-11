@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { fixture, fixtureBytes, LIMIT, manifest } from "../lib/fixtures.ts";
 
-assert.equal(manifest.contractRevision, "hosted-v1");
+assert.equal(manifest.contractRevision, "hosted-health-v1");
 assert.equal(new Set(manifest.fixtures.map((entry) => entry.id)).size, manifest.fixtures.length);
 for (const entry of manifest.fixtures) {
   const bytes = fixtureBytes(entry.id);

@@ -178,7 +178,7 @@ test("HS-16 externally aborted upload permits later complete upload", async ({ h
 });
 
 test("HS-17 public frontend health remains service-local", async ({ hostedHttp }) => {
-  const response = await hostedHttp.request("/healthz");
+  const response = await hostedHttp.request("/health");
   assert.equal(response.status, 200);
   assert.deepEqual(assertJson(response), { status: "ok" });
 });

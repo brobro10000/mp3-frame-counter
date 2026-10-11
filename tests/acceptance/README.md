@@ -1,10 +1,12 @@
 # Independent acceptance package
 
-This package contains the independent `hosted-v1` candidate: all 72 preserved docs-v1 local cases, 22 stage cases and
-three production smoke cases. The immutable docs-v1 suite remains required until separate reviewed successor binding and
-activation. Hosted execution also requires the trusted launcher and verified environment identity; discovery alone
-establishes neither. The package never imports product implementation, reads private samples or uses a Docker socket.
-Application and acceptance lockfiles remain separate, without workspaces.
+This package contains the independent `hosted-health-v1` candidate: all 72 preserved local cases, 22 stage cases and
+three production smoke cases. The immutable hosted-v1 suite remains required until separate reviewed successor binding
+and product activation. The [health successor contract](../../docs/testing/contracts/hosted-health-v1.md) changes only
+HS-17's public request to `/health`; local `/healthz`, fixture bytes and every other assertion remain unchanged. Hosted
+execution requires the trusted launcher and verified environment identity; discovery alone establishes neither. The
+package never imports product implementation, reads private samples or uses a Docker socket. Application and acceptance
+lockfiles remain separate, without workspaces.
 
 Use pinned Node 24.20.0/npm 11.19.0. From the repository root:
 
@@ -165,7 +167,10 @@ specs outside reviewed directories and writes only discovery evidence. Normal ho
 `.artifacts/hosted-stage-result.json` or `.artifacts/hosted-production-result.json`; the trusted launcher independently
 combines these rows with provider observations and its own cleanup before evaluating a deployment gate.
 
-## Candidate validation — 2026-10-10
+## Historical hosted-v1 candidate validation — 2026-10-10
+
+The following dated evidence belongs to the predecessor hosted-v1 candidate. It is retained history and does not claim
+validation, product acceptance or hosted execution for hosted-health-v1.
 
 The final pinned Linux amd64 `npm run check` passed: TypeScript, 46 original fixture reconstructions, original negative
 controls, 52 transport controls, 46 docs controls, 95 hosted controls and exact 72/22/3 discovery. No application target
