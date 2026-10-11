@@ -45,7 +45,7 @@ assert.equal(workflow.concurrency["cancel-in-progress"], "${{ github.event_name 
 const jobs = workflow.jobs;
 assert.deepEqual(
   Object.keys(jobs).sort(),
-  ["control-plane", "deliver-foundation", "publish-release", ...mandatoryJobs].sort(),
+  ["control-plane", "deliver-foundation", "publish-release", "deploy-stage", ...mandatoryJobs].sort(),
 );
 requireReleaseWorkflow(workflow);
 const gate = jobs["control-plane"];
@@ -107,11 +107,14 @@ assert.equal(
   "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready != 'true' }}",
 );
 assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
-// Enforce bounded hosted jobs and immutable Actions; the separately checked publisher alone receives write permission.
+// Enforce bounded hosted jobs and immutable Actions; publisher content writes and stage OIDC are separately confined.
 for (const [name, job] of Object.entries(jobs)) {
   assert.equal(job["runs-on"], "ubuntu-24.04");
-  assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= (name === "validate-product" ? 30 : 10));
-  if (!["publish-release", "validate-foundation", "validate-product"].includes(name))
+  assert(
+    job["timeout-minutes"] > 0 &&
+      job["timeout-minutes"] <= (["validate-product", "deploy-stage"].includes(name) ? 30 : 10),
+  );
+  if (!["publish-release", "deploy-stage", "validate-foundation", "validate-product"].includes(name))
     assert.equal(job.permissions, undefined);
   assert.equal(job["continue-on-error"], undefined);
   assert.equal(job.strategy, undefined);

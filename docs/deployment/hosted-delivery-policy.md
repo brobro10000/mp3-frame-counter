@@ -1,5 +1,9 @@
 # Hosted delivery boundary and dormant IaC admission
 
+**V1 scope amendment, 2026-10-11:** [bounded delivery](v1-delivery.md) permits only the explicitly listed service-scoped
+probe/stage IAM memberships in runtime. Federation and cost authority stay in access; product/governance admission
+remains separate. Earlier exclusions below remain applicable outside that narrow amendment.
+
 Dated 2026-10-10. This is the HOSTED-DELIVERY-POLICY / LINE-03 decision, under the owner's
 [roadmap authority](../phases/roadmap-execution-authorization.md). It preserves the
 [hosted-profile protocol](../testing/hosted-profile-policy.md), all 72 required local cases and separate human approval

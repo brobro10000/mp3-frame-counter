@@ -315,6 +315,97 @@ export function requireReleaseWorkflow(workflow) {
   requirePreflightWorkflow(workflow);
   assert.deepEqual(workflow.permissions, { contents: "read" });
   assert.equal(workflow.concurrency.group, "mvp-${{ github.event.pull_request.number || github.run_id }}");
+  const hasStage = Object.hasOwn(workflow.jobs, "deploy-stage");
+  assert.deepEqual(
+    Object.keys(workflow.jobs).sort(),
+    [
+      "control-plane",
+      "deliver-foundation",
+      "publish-release",
+      "validate-foundation",
+      "validate-product",
+      ...(hasStage ? ["deploy-stage"] : []),
+    ].sort(),
+    "Only the established jobs and optional bounded stage job are admitted",
+  );
+  if (hasStage) {
+    // Exact finite job shape keeps source/artifact verification ahead of OIDC and confines each token to its consumer.
+    const authentication = (id, accountOutput) => ({
+      id,
+      uses: "google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093",
+      with: {
+        project_id: "${{ steps.verify-stage.outputs.project-id }}",
+        workload_identity_provider: "${{ steps.verify-stage.outputs.wif-provider }}",
+        service_account: `\${{ steps.verify-stage.outputs.${accountOutput} }}`,
+        token_format: "access_token",
+        access_token_lifetime: "3600s",
+        create_credentials_file: false,
+        export_environment_variables: false,
+      },
+    });
+    assert.deepEqual(
+      workflow.jobs["deploy-stage"],
+      {
+        name: "deploy-stage",
+        needs: ["publish-release", "validate-product"],
+        if: "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.STAGE_DELIVERY_ENABLED == 'true' && vars.STAGE_DEPLOYMENT_CONFIG != '' && needs.validate-product.outputs.release-ready == 'true' && needs.publish-release.outputs.handoff-ready == 'true' }}",
+        "runs-on": "ubuntu-24.04",
+        "timeout-minutes": 30,
+        permissions: { contents: "read", actions: "read", "id-token": "write" },
+        concurrency: { group: "deploy-stage", "cancel-in-progress": false },
+        env: {
+          CI_BASE_REF: "${{ github.event.before }}",
+          GATE_ADMISSION_SHA256: "${{ needs.validate-product.outputs.acceptance-admission-sha256 }}",
+          STAGE_DEPLOYMENT_CONFIG: "${{ vars.STAGE_DEPLOYMENT_CONFIG }}",
+          GIT_OPTIONAL_LOCKS: "0",
+        },
+        steps: [
+          {
+            uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            with: { ref: "${{ github.sha }}", "fetch-depth": 0, "persist-credentials": false },
+          },
+          {
+            uses: "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+            with: { "node-version-file": ".nvmrc", "package-manager-cache": false },
+          },
+          {
+            uses: "hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e",
+            with: { terraform_version: "1.13.3", terraform_wrapper: false },
+          },
+          {
+            uses: "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c",
+            with: { name: "${{ needs.validate-product.outputs.release-artifact }}", path: ".artifacts/release-input" },
+          },
+          {
+            id: "verify-stage",
+            run: "node scripts/stage-delivery.mjs verify",
+            env: { GITHUB_TOKEN: "${{ github.token }}" },
+          },
+          authentication("registry-auth", "registry-writer"),
+          {
+            run: "node scripts/stage-delivery.mjs push",
+            env: { REGISTRY_ACCESS_TOKEN: "${{ steps.registry-auth.outputs.access_token }}" },
+          },
+          authentication("stage-auth", "stage-deployer"),
+          {
+            run: "node scripts/stage-delivery.mjs deploy",
+            env: { STAGE_ACCESS_TOKEN: "${{ steps.stage-auth.outputs.access_token }}" },
+          },
+          {
+            uses: "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+            if: "${{ always() }}",
+            with: {
+              name: "stage-${{ github.sha }}-${{ github.run_attempt }}",
+              path: ".artifacts/stage",
+              "if-no-files-found": "ignore",
+              "retention-days": 30,
+            },
+          },
+        ],
+      },
+      "Stage delivery must preserve the reviewed fixed workflow and credential boundary",
+    );
+  }
   const product = workflow.jobs["validate-product"];
   const mainOnly = "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}";
   for (const command of ["node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"]) {
@@ -422,8 +513,12 @@ export function requireReleaseWorkflow(workflow) {
   for (const [name, job] of Object.entries(workflow.jobs)) {
     if (["validate-foundation", "validate-product"].includes(name))
       assert.deepEqual(job.permissions, { contents: "read", "pull-requests": "read" });
-    else if (name !== "publish-release")
-      assert.equal(job.permissions, undefined, "Only publisher may override read-only permissions");
+    else if (!["publish-release", "deploy-stage"].includes(name))
+      assert.equal(
+        job.permissions,
+        undefined,
+        "Only the reviewed publisher and stage jobs may override default permissions",
+      );
     assert.equal(job.env?.GITHUB_TOKEN, undefined, "Do not expose a job-wide publication token");
     assert.equal(job.env?.GATE_REVIEW_TOKEN, undefined, "Do not expose a job-wide review token");
     for (const step of job.steps) {
@@ -434,8 +529,14 @@ export function requireReleaseWorkflow(workflow) {
         assert.equal(step.env.GATE_REVIEW_TOKEN, "${{ github.token }}");
       }
       if (step.env?.GITHUB_TOKEN !== undefined) {
-        assert.equal(name, "publish-release", "PR validators must not receive publication credentials");
-        assert.equal(step.run, "node scripts/publish-release.mjs");
+        assert(
+          ["publish-release", "deploy-stage"].includes(name),
+          "Only publisher or stage verification may receive GitHub credentials",
+        );
+        assert.equal(
+          step.run,
+          name === "deploy-stage" ? "node scripts/stage-delivery.mjs verify" : "node scripts/publish-release.mjs",
+        );
         assert.equal(step.env.GITHUB_TOKEN, "${{ github.token }}");
       }
     }
