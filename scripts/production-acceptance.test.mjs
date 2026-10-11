@@ -511,6 +511,15 @@ test("missing failed incomplete or substituted stage custody cannot reach child 
   }
 });
 
+test("stage workflow revision must match the original release before provider child or credential effects", async (t) => {
+  const f = fixture(t),
+    run = await load(f);
+  f.options.stage.expected.run.workflowRevision = f.options.stage.record.run.workflowRevision = "0".repeat(40);
+  assert.equal(validateHostedAcceptance(f.options.stage).run.workflowRevision, "0".repeat(40));
+  await assert.rejects(run(f.options), sanitized);
+  noExternalEffects(f);
+});
+
 test("original admission and required complete three-case projection cannot be replaced by a pending or smaller suite", async (t) => {
   const mutations = [
     (f) => {

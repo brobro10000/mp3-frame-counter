@@ -97,6 +97,7 @@ function authority({
   assert.equal(validated.inventory.length, 22);
   assert.equal(validated.tests.length, 22);
   assert.equal(validated.sourceRevision, bundle.origin.sourceRevision);
+  assert.equal(validated.run.workflowRevision, bundle.origin.sourceRevision);
   assert.equal(validated.contractRevision, evidence.contractRevision);
   same(validated.release, release);
   same(validated.images, images);
