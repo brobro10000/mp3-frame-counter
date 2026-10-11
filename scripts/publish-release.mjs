@@ -308,7 +308,7 @@ function requireFinalizationEvidence(bundle, input, publicationSha256) {
   assert.equal(origin.sourceRevision, manifest.sourceRevision, "Bundle origin source differs");
   assert.equal(origin.workflowRevision, manifest.sourceRevision, "Original workflow source differs");
   assert(
-    ["hosted-v1", "hosted-health-v1"].includes(manifest.identity.evidence.contractRevision),
+    ["hosted-v1", "hosted-health-v1", "hosted-reasonless-v1"].includes(manifest.identity.evidence.contractRevision),
     "Required hosted suite is missing",
   );
   assert.equal(manifest.identity.evidence.baselinePublication, "protected-main");

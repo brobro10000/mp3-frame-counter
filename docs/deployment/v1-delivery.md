@@ -187,3 +187,22 @@ The subsequent [PR #44](https://github.com/brobro10000/mp3-frame-counter/pull/44
 [PR #45](https://github.com/brobro10000/mp3-frame-counter/pull/45) activated it with the frontend-local `/health` alias.
 The current required revision is `hosted-health-v1`; the 72/22/3 inventories and original evidence remain preserved.
 This completed contract migration does not establish a passing hosted run.
+
+## Reasonless browser-error reader prerequisite — 2026-10-11
+
+The [main52 run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38134841865) published v0.3.52 and
+applied its stage revision, then recorded 20/22 hosted cases passing. HS-09 URL behavior and HS-02 browser recovery
+failed; original custody and successful cleanup remain preserved. These failures block production promotion.
+
+A separate direct HTTPS browser diagnostic observed HTTP/3's exact `400 ()` console display for the expected garbage
+upload. The page showed its JSON error, restored controls and completed a subsequent nine-frame upload. There were no
+page, foreign-origin, redirect, request or observer errors, and owned cleanup passed. Its origin came from original
+main51 custody; live release identity was not verified. This diagnostic does not satisfy hosted acceptance.
+
+The frozen browser observer recognizes only `400 (Bad Request)`. Delivery readers now admit the named future
+`hosted-reasonless-v1` revision through their existing source, admission, profile and custody guards. This dormant
+prerequisite edits no suite or registry and activates no contract. An independent candidate must preserve both exact
+console classes and the finite URL/method/status/time/single-use correlation. Follow the separate
+[candidate and binding process](../testing/acceptance-transition.md), then activate it with the genuine pending
+upload-ingress fix in [PR #53](https://github.com/brobro10000/mp3-frame-counter/pull/53). Require fresh complete stage
+execution before recovery proof, exact-candidate human production approval, production smoke and v1.0.0 finalization.

@@ -294,7 +294,7 @@ async function inputs() {
   });
   assert(
     projection &&
-      ["hosted-v1", "hosted-health-v1"].includes(resolution.required.contractRevision) &&
+      ["hosted-v1", "hosted-health-v1", "hosted-reasonless-v1"].includes(resolution.required.contractRevision) &&
       projection.required.contractRevision === resolution.required.contractRevision,
   );
   const material = publicationMaterial(bundle);
