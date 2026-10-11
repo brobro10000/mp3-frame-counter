@@ -1,14 +1,18 @@
 ---
-title: Tested artifacts and automatic GitHub release without deployment
+title: Tested software releases, optional stage delivery and supervised V1 finalization
 query: >-
   Show the implemented CI and release-only flow. Distinguish PR validation from
   protected-main publication, parallel foundation/product checks from the
   terminal control-plane gate, and the same-run exact tested image export from
   publication. Include frozen baseline verification, complete acceptance,
   immutable artifact/provenance checks, version/tag identity, draft asset
-  verification and safe identical retries. Do not add deployment, registry push,
-  provider provisioning or production approval; those are absent from the
-  current release implementation. For the current integrated application, show
+  verification and safe identical retries. Distinguish the optional dependent
+  stage job from owner-supervised production deployment and fixed V1 finalization.
+  Stage requires enablement and an existing authenticated runtime. Every
+  production deployment requires actual human approval of the exact candidate;
+  finalization requires passing production smoke and demonstrated recovery.
+  Metadata-only finalization retries never deploy, rebuild or upload a CI handoff.
+  For the current integrated application, show
   independent Docker image builds, the two running Compose containers and host
   acceptance processes, then export of those exact tested images. Images and
   archives are artifacts, not extra running services. Earlier source-only phases
@@ -38,7 +42,10 @@ references:
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
   - 'File: /release-policy.json'
-generationTime: '2026-10-11T02:29:48.138Z'
+  - 'File: /scripts/stage-delivery.mjs'
+  - 'File: /scripts/stage-acceptance.mjs'
+  - 'File: /docs/deployment/v1-delivery.md'
+generationTime: '2026-10-11T03:43:32.334Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -68,3 +75,8 @@ flowchart TD
     RELEASE --> HANDOFF["Upload verified publisher handoff"]
     HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
     RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement and provisioned runtime"]
+    DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity"]
+    STAGECHECK --> APPROVE["Human approves exact production candidate"]
+    APPROVE --> PROD["Owner deploys the same image pair<br/>3 production smoke cases and demonstrated recovery"]
+    PROD --> FINALIZE["Owner calls fixed same-source V1 finalizer<br/>original admission and authenticated evidence"]
+    FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
