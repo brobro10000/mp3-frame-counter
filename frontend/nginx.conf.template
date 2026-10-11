@@ -135,10 +135,12 @@ http {
             return 405 '{"error":"Use GET for this health check."}';
         }
 
-        location = /file-upload {
+        # Send normalized upload aliases to the API so it can reject their untouched raw paths with JSON.
+        location ~* ^/file-upload(?:/|$) {
             # A variable defers DNS lookup until each request; startup and health do not depend on the API.
             set $api_upstream "@@API_UPSTREAM@@";
-            proxy_pass http://$api_upstream;
+            # Preserve raw spelling and query parameters; location matching must not rewrite the public API contract.
+            proxy_pass http://$api_upstream$request_uri;
             proxy_http_version 1.1;
             proxy_set_header Host $host;
             proxy_set_header Connection "";
