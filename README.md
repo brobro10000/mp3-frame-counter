@@ -5,6 +5,20 @@ and returns exactly `{ "frameCount": <positive integer> }`. A static NGINX front
 separate non-root containers. Uploads are limited to **20 MiB**, processed in memory and never retained. The parser does
 not decode audio or use a runtime parsing library.
 
+**Current published candidate:** [v0.3.37](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.37),
+source `07c020c40f4a0238da937b82f24e4ef50cb37824`. Its existing
+[main CI, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38103007563/attempts/1) passed 120
+application unit tests and all 72 required docs-v1 local acceptance cases with cleanup. Fastify and offline Redoc are
+shipped; hosted-v1 is bound but pending product activation. No application deployment or hosted acceptance is claimed.
+These results do not establish a new walkthrough of the instructions below or a later source revision. Final
+clean-checkout verification, evaluator access and external submission remain pending.
+
+See the [implemented tradeoffs](docs/architecture/decisions.md#submission-tradeoffs--2026-10-11-utc),
+[assessment requirements](docs/requirements/assessment.md) and [current roadmap](docs/roadmap/README.md). Hosting and a
+`1.0.0` release are separate from the assessment submission.
+
+## Historical release milestones
+
 The [V1 release-only milestone](docs/validation/v1-closure.md) is verified at merged source `ce50762b`: **60 independent
 acceptance cases**, **75 parser/API unit tests** and all mandatory checks passed on protected main. CI published
 [release `v0.1.6`](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.1.6), and a publisher-only retry
@@ -27,19 +41,25 @@ milestone.
 
 **Documentation release, 2026-10-10:** v0.2.24 shipped offline Redoc at `/docs/` and OpenAPI 3.0.3 at
 `/docs/openapi.yaml`. The renderer is packaged in the API image; NGINX applies its scoped policy through the same
-origin. Protected-main CI passed 120 units and all 72 required docs-v1 external cases. The latest verified release is
+origin. Protected-main CI passed 120 units and all 72 required docs-v1 external cases. A subsequent milestone was
 [v0.3.28](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.28), containing the independent hosted
-acceptance candidate. Its separate binding is under verification; stage and production execution remain future work.
-Read the [current phase record](docs/phases/next-iteration.md) and [binding evidence](docs/validation/hosted-binding.md)
-for current prerequisites. The [dormant hosted evidence validator](docs/deployment/hosted-evidence.md) has passed local
-checks; [its validation record](docs/validation/hosted-evidence.md) separates those results from pending CI and
-publication. No application service is deployed.
+acceptance candidate. Its separate binding was then under verification; stage and production execution remain future
+work. Read the [current phase record](docs/phases/next-iteration.md) and
+[binding evidence](docs/validation/hosted-binding.md) for current prerequisites. The
+[dormant hosted evidence validator](docs/deployment/hosted-evidence.md) has passed local checks;
+[its validation record](docs/validation/hosted-evidence.md) separates those results from pending CI and publication. No
+application service is deployed.
 
 ## Local application
 
-Install Docker with Compose. Both images build from source without host dependencies or generated output:
+Use Git, Make and Docker with Compose. Both images build from source without host Node/npm or generated output. A
+private-repository clone requires access granted by the owner. Start from a full-history checkout of the published
+candidate:
 
 ```sh
+git clone https://github.com/brobro10000/mp3-frame-counter.git
+cd mp3-frame-counter
+git checkout --detach v0.3.37
 make up
 # Open http://127.0.0.1:8080 and http://127.0.0.1:8080/docs/
 make ps
@@ -58,22 +78,28 @@ Read the [precise acceptance contract](docs/testing/acceptance-contract.md) for 
 
 ## Development and verification
 
-Use repository-pinned Node.js **24.20.0** and npm **11.19.0**, plus Git, tar and Docker Compose:
+For application acceptance, use Node.js **24.20.0** and npm **11.19.0**, Git with full history, Make, host `tar` and
+Docker Compose. The upload example below also uses `curl`. Local acceptance supports macOS/Linux; Linux must already
+have Chromium's system libraries. The controller downloads its pinned browser but does not install local OS packages or
+run sudo. See [browser preparation](docs/testing/acceptance-browser-setup.md#commands-and-environment). Initial setup
+needs network access for npm packages, browsers and container base images; no cloud credentials, private sample, Codex
+or private plugin is required.
+
+Install the pinned runtime first; nvm is one option. If its npm differs, install npm 11.19.0 before `npm ci`:
 
 ```sh
 nvm install
 nvm use
+npm install --global npm@11.19.0
 npm ci
-npm run mermaid:install
-make check
+make e2e
 ```
 
-`make check` runs formatting, workflow lint, policy, portability, Mermaid rendering and tooling checks, then mandatory
-phase checks: independent harness validation, application unit tests, TypeScript build and complete container/browser
-acceptance. `make e2e` repeats the phase controller. It builds an isolated temporary Compose project, binds ephemeral
-loopback ports, runs all frozen acceptance cases in Chromium, exercises controlled API faults and cleans up even after
-failure. It may download pinned npm/browser dependencies and public base images. No private sample, GitHub login, Codex
-or private plugin is required. Do not run the fault suite against production.
+`make e2e` runs the unchanged phase controller: independent harness validation, application unit tests, TypeScript build
+and complete container/browser acceptance. It builds an isolated temporary Compose project, binds ephemeral loopback
+ports, runs all frozen acceptance cases in Chromium, exercises controlled API faults and cleans up even after failure.
+It may download pinned npm/browser dependencies and public base images. No private sample, GitHub login, Codex or
+private plugin is required. Do not run the fault suite against production.
 
 `make e2e-check` validates only the standalone harness, fixtures, negative controls and discovery; it is not an
 application acceptance result. `npm run test:unit`, `npm run typecheck` and `npm run build` provide focused checks.
@@ -100,17 +126,60 @@ implementers cannot change expected outcomes or select an older suite to pass. T
 Git tree outside the application checkout and verifies ancestry and every frozen byte. Zero tests, skipped cases and
 failed checks fail closed.
 
-For a small local upload with an independently known count:
+### Known-count upload without a private sample
+
+After the pinned Node setup above, start the local application and decode the committed synthetic fixture:
 
 ```sh
-make smoke FILE="relative/path/to/audio.mp3" EXPECTED=9
-make validate-sample
+make up
+mkdir -p .artifacts
+node --input-type=module <<'JS'
+import { readFileSync, writeFileSync } from 'node:fs';
+const text = readFileSync('tests/acceptance/fixtures/tone-cbr.base64', 'utf8');
+writeFileSync('.artifacts/tone-cbr.mp3', Buffer.from(text, 'base64'));
+JS
+curl --fail -i -H 'Content-Type: audio/mpeg' \
+  --data-binary @.artifacts/tone-cbr.mp3 http://127.0.0.1:8080/file-upload
+# Expected: HTTP 200, JSON content type, {"frameCount":9}
+# Also select .artifacts/tone-cbr.mp3 at http://127.0.0.1:8080/ and choose Analyze MP3.
+make down
 ```
 
-The latter requires the ignored supplied sample, verifies its recorded size/hash and compares the public upload to the
-independent **6,090 physical-frame** baseline. MediaInfo reports 6,089 audio frames plus a complete Xing frame; the
-[oracle record](docs/validation/sample-baseline.md) documents the distinction. A clone has permitted self-contained
-fixtures instead of private sample bytes. Neither smoke command substitutes for complete acceptance.
+The independent [fixture provenance](tests/acceptance/fixtures/README.md) records nine physical frames in 3,456 bytes;
+the expected answer is not inferred from the application. `make smoke FILE=.artifacts/tone-cbr.mp3 EXPECTED=9` is an
+optional command-line assertion while the application is running. Adjust the URLs if using another frontend port.
+
+Optional `make validate-sample` requires the ignored supplied sample, verifies its recorded size/hash and compares the
+public upload to **6,090 physical frames**. MediaInfo excludes its complete Xing-bearing frame and reports 6,089 audio
+frames; the [oracle record](docs/validation/sample-baseline.md) accounts for both. Neither smoke example replaces full
+acceptance. Supported metadata is limited by the [r3 contract](docs/testing/acceptance-contract.md); there is no audio
+decoding, CRC verification or corruption recovery. The inclusive 20,971,520-byte cap and two admitted uploads bound
+resource use; they are not a general throughput guarantee.
+
+### Full repository governance checks
+
+`make check` additionally runs formatting, workflow lint, policy, portability, Mermaid rendering and tooling tests.
+Install Terraform **1.13.3** on PATH. Initialize both pinned Google-provider roots as CI does so native mocked tests can
+use the installed provider, including the bootstrap filesystem mirror:
+
+```sh
+terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly
+terraform -chdir=infra/cloud/bootstrap validate -no-color
+terraform -chdir=infra/cloud/access init -backend=false -input=false -lockfile=readonly
+terraform -chdir=infra/cloud/access validate -no-color
+npm run mermaid:install
+make check
+```
+
+Use this setup only in a fresh checkout; it downloads the locked providers without accessing remote state. The tests use
+credential-free native mocks, not live plans or applies. Provider installation needs Terraform registry/download access.
+Do not supply cloud credentials or initialize an operational backend for these checks.
+
+Mermaid uses its separately pinned Chrome and requires its system libraries and a working browser sandbox. On Ubuntu
+with the documented AppArmor restriction, use `aa-exec --profile=chrome npm run validate`, then `make e2e`, instead of
+`make check`; the existing Chrome profile must be installed. See
+[toolchain setup](docs/toolchain.md#mermaid-rendering-tools). Neither local browser installer installs OS libraries.
+These full-governance prerequisites do not apply to Docker-only application use.
 
 ## Requirements, CI and delivery
 
