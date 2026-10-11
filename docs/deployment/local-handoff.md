@@ -106,6 +106,7 @@ below require the pinned Node runtime, Docker, `shasum` and authenticated GitHub
 Browser download is an alternative to the `gh release download` step. Replace `v0.x.y` with the selected tag:
 
 ```sh
+set -e
 release_tag='v0.x.y'
 git checkout --detach "$release_tag"
 release_bundle="$PWD/.artifacts/release-$release_tag"
@@ -123,6 +124,7 @@ The following snippet validates the original preparation bytes, requires its exa
 checks the loaded image IDs/platform and writes an ignored image override. It does not retag, rebuild or publish:
 
 ```sh
+set -e
 node --input-type=module - "$release_bundle" <<'JS'
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -143,7 +145,7 @@ for (const service of ['api', 'frontend']) {
   }));
   assert.equal(inspected.length, 1);
   verifyImageInspection(artifact.localImageId, inspected[0]);
-  services[service] = { image: artifact.localImageId, pull_policy: 'never' };
+  services[service] = { image: artifact.localImageId, platform: 'linux/amd64', pull_policy: 'never' };
 }
 writeFileSync(join(directory, 'compose.images.json'), JSON.stringify({ services }, null, 2) + '\n');
 JS
@@ -202,7 +204,7 @@ plan or apply. Local verification does not confer CI publication authority.
 | Symptom                                | Check                                                                                                                 |
 | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Port 8080 is occupied                  | Stop your earlier source/release project or choose `FRONTEND_PORT=8081`.                                              |
-| Startup times out                      | Read `make ps` and `make logs`; Docker, package downloads and both service health checks must work.                   |
+| Startup times out                      | Source: `make ps`/`make logs`. Release: matching `mp3-release` Compose `ps`/`logs`; check both service health checks. |
 | Upload shows a JSON error              | Use MPEG-1 Layer III, raw bytes and the supported metadata subset within 20 MiB.                                      |
 | Inspector cannot display a response    | If the page shows a frame count, it received and parsed JSON. Inspector cache eviction is separate from API delivery. |
 | Release checksum/source/image mismatch | Stop and retain the original evidence; do not rebuild over the selected release or replace its files.                 |
@@ -211,6 +213,10 @@ plan or apply. Local verification does not confer CI publication authority.
 Use `make down` for the source project and the matching `mp3-release` command above for release images. Do not run
 global Docker prune or remove unrelated projects. `.artifacts/tone-cbr.mp3` is an ignored local fixture copy; the
 supplied assessment MP3 remains private and optional.
+
+For release diagnostics, keep the startup command's project, environment and Compose files; replace `up` and its flags
+with `ps` or `logs`. Use `docker compose -p mp3-release -f compose.yaml -f compose.release.yaml ps` (or `logs`) for the
+received bundle. For the optional engineer override, retain its `-f "$release_bundle/compose.images.json"` instead.
 
 This guide describes reproducible commands; a final handoff records the actual source, suite, image IDs and outcomes. Do
 not infer fresh React acceptance, protected-main publication or production success from historical evidence.
