@@ -53,9 +53,9 @@ make up
 ```
 
 `make up` builds and starts **both** runtime containers: the NGINX frontend and Fastify API server. It waits up to 90
-seconds for container readiness, verifies that both are running and healthy, then requires a successful bounded HTTP
-ping to `/healthz`. It prints the browser URLs and exits successfully only after those checks pass. Initial builds need
-internet access to download locked dependencies and base images.
+seconds for container readiness, verifies that both are running and healthy, then requires **HTTP 200** from a bounded
+ping to `/healthz`. It prints the browser URLs and returns to the shell only after those checks pass; both services
+continue running in the background. Initial builds need internet access to download locked dependencies and base images.
 
 Open the [frontend](http://127.0.0.1:8080/), [Redoc](http://127.0.0.1:8080/docs/) or
 [OpenAPI specification](http://127.0.0.1:8080/docs/openapi.yaml). The server stays private to the Compose network;
