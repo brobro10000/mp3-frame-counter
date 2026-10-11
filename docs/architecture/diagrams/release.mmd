@@ -9,11 +9,19 @@ query: >-
   trusted-base acceptance admission before head-owned commands. All four caller
   results feed the always-running control-plane gate. This diagram describes
   the prepared workflow source, not evidence of a successful activation run.
+  Derive the current graph from the PR head coordinator and reusable workflow
+  files, with the CI workflow guide as current scope. Historical two-job
+  branches in compatibility readers and the three logical publication checks
+  are replay/provenance data, not the current four callers or nine leaf jobs.
+  Do not restore the base branch's Foundation/Product diagram body.
   Preserve historical two-job workflow replay through source-bound policy;
   never replace required acceptance with a unit lane or candidate controls.
-  Base acceptance delegates to the unchanged complete controller, including
-  unit/build checks, exact suite extraction, browser preparation, all 72 frozen
-  local cases, image identities and cleanup. Build separate frontend and API
+  Base acceptance delegates to the source-bound controller: exact suite
+  extraction, browser preparation, all 72 frozen local cases, image identities
+  and cleanup. Only admitted split CI delegates host unit/build checks to the
+  mandatory application/server workers; local and legacy runs retain complete
+  checks. The foundation tooling shard installs its own pinned Chrome and uses
+  the GitHub runner's Chrome profile for renderer tests. Build separate frontend and API
   images, run exactly two Compose application containers and test them with
   host Playwright/Chromium. On main, export those exact tested images on the
   acceptance runner and upload their immutable same-run bundle. Images and
@@ -45,6 +53,8 @@ references:
   - 'File: /scripts/acceptance-preflight.mjs'
   - 'File: /scripts/acceptance-runtime.mjs'
   - 'File: /scripts/ci-gate.mjs'
+  - 'File: /docs/testing/ci-workflows.md'
+  - 'File: /docs/testing/ci-visibility.md'
   - 'File: /frontend/Dockerfile'
   - 'File: /server/Dockerfile'
   - 'File: /compose.yaml'
@@ -58,7 +68,7 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T15:40:20.834Z'
+generationTime: '2026-10-11T16:13:53Z'
 ---
 flowchart TD
     EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
@@ -66,7 +76,7 @@ flowchart TD
     subgraph LINTER["Linter caller: validate-foundation"]
         LPREF["Each linter worker: trusted-base admission, then locked npm ci<br/>read-only review token confined to preflight"]
         LPREF --> LCHECK["checks: format, workflow lint, policy, portability,<br/>Mermaid render and complete gate tests<br/>credential-free Terraform fmt, init and validate"]
-        LPREF --> LF["tooling-foundation<br/>8 required files"]
+        LPREF --> LF["tooling-foundation<br/>8 required files; own pinned Chrome/profile"]
         LPREF --> LA["tooling-acceptance<br/>13 required files"]
         LPREF --> LP["tooling-publication<br/>9 required files"]
         LPREF --> LD["tooling-delivery<br/>16 required files; own pinned Terraform/provider setup"]
@@ -88,7 +98,7 @@ flowchart TD
     end
 
     subgraph ACCEPTANCE["Base acceptance E2E caller: validate-product"]
-        BPREF["Trusted-base admission, then locked npm ci<br/>emit exact source/base decision and digest"] --> SETUP["Unchanged complete phase controller: select and extract exact suites<br/>prepare package-local Chromium, bounded launch/close probe<br/>record setup; run units/builds and separate candidate controls"]
+        BPREF["Trusted-base admission, then locked npm ci<br/>emit exact source/base decision and digest"] --> SETUP["Source-bound controller: select and extract exact suites<br/>prepare package-local Chromium, bounded launch/close probe<br/>record setup; separate candidate controls; host units owned by their workers"]
         SETUP --> BUILD["Build two independent Docker images<br/>frontend: React static bundle with NGINX<br/>API: TypeScript build stage to minimal Fastify/Node runtime"]
         BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium runs all 72 frozen local cases<br/>unsharded acceptance; exact image identity and cleanup"]
         TEST --> KIND{"Successful application main push?"}

@@ -4,6 +4,8 @@
  * Run at the repository root after npm ci. Trusted admission, actual source/base and phase monotonicity are checked
  * before tests; the root test:tooling inventory must still equal the full closed policy union exactly once.
  * Delivery additionally requires pinned Terraform 1.13.3 and its provider fixtures, installed by its own workflow.
+ * Foundation installs its own pinned Mermaid browser; GitHub's Ubuntu runner executes those tests through its
+ * Chrome AppArmor profile. Neither shard relies on a different worker's tools or browser cache.
  * Tests may create disposable histories/fixtures or ignored local outputs; ordinary test cleanup remains mandatory.
  * Unknown shards, extra args, omitted/added/duplicate files, missing tools and test failures fail the whole worker.
  * This runner does not write GitHub state, invoke cloud credentials, provision resources or publish/deploy software.
@@ -40,7 +42,25 @@ try {
     assert.equal(result.status, 0, "Delivery tooling requires its own Terraform installation");
     assert.equal(JSON.parse(result.stdout).terraform_version, "1.13.3", "Unexpected delivery Terraform version");
   }
-  const result = spawnSync(process.execPath, ["--experimental-vm-modules", "--test", ...ciToolingShards[shard]], {
+  if (shard === "foundation") {
+    const installation = spawnSync("npm", ["run", "mermaid:install"], {
+      cwd: root,
+      env: process.env,
+      stdio: "inherit",
+      timeout: 360000,
+    });
+    if (installation.error) throw installation.error;
+    assert.equal(installation.status, 0, "Foundation tooling requires its own pinned Mermaid browser");
+  }
+  const chromeProfile = shard === "foundation" && process.env.GITHUB_ACTIONS === "true";
+  const commandName = chromeProfile ? "aa-exec" : process.execPath;
+  const args = [
+    ...(chromeProfile ? ["--profile=chrome", process.execPath] : []),
+    "--experimental-vm-modules",
+    "--test",
+    ...ciToolingShards[shard],
+  ];
+  const result = spawnSync(commandName, args, {
     cwd: root,
     env: process.env,
     stdio: "inherit",

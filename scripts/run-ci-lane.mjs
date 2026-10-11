@@ -1,7 +1,7 @@
 /**
  * Run one closed CI visibility lane without replacing mandatory acceptance or its lifecycle controller.
  * Usage: node scripts/run-ci-lane.mjs acceptance|application|server, from the repository root with pinned Node/npm.
- * Acceptance delegates, without selector arguments, to unchanged run-ci-phase.mjs: trusted suite extraction, browser
+ * Acceptance delegates, without selector arguments, to run-ci-phase.mjs: trusted suite extraction, browser
  * preparation, candidate controls, phase checks, E2E/image identity and cleanup remain that controller's responsibility.
  * Application/server lanes validate trusted admission and phase monotonicity before their real builds and closed unit
  * files. Neither produces acceptance or release evidence; the same-run terminal gate also requires acceptance success.
@@ -77,7 +77,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     assert(["acceptance", "application", "server"].includes(lane), "Unknown CI lane");
     const root = process.cwd();
     if (lane === "acceptance") {
-      // Preserve the complete original controller, including intentional repeated units/builds and teardown.
+      // The controller derives any lane deduplication from actual admission and its complete committed CI graph.
       run(process.execPath, ["scripts/run-ci-phase.mjs"], root);
     } else {
       requireLaneContext(root);

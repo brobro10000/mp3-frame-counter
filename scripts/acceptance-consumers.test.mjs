@@ -266,8 +266,15 @@ process.exit(47);
   put(".gitignore", ".artifacts/\n");
   json("package.json", {
     private: true,
-    scripts: { "test:unit": "node unused.mjs", build: "node unused.mjs", "test:e2e": "node unused.mjs" },
+    scripts: {
+      "test:unit": "node unused.mjs",
+      build: "node unused.mjs",
+      "test:e2e": "node unused.mjs",
+      "test:gate": "node --test scripts/ci-gate.test.mjs",
+    },
   });
+  // Historical CI fixtures retain their real committed workflow; missing source policy cannot authorize a fallback.
+  put(".github/workflows/ci.yml", dedupSource(".github/workflows/ci.yml", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf"));
   put("README.md", "Synthetic consumer fixture.\n");
   commit("foundation");
   const browser = browserPackage();
@@ -829,4 +836,275 @@ test("historical foundation and acceptance phases gain no browser installation p
       );
     else assert.deepEqual(f.commands(), []);
   }
+});
+
+/**
+ * Independent deduplication inputs are immutable reviewed workflow bytes, not expected resolver output. These owned
+ * histories and inert commands establish authority and consumer ordering only; they do not execute application tests.
+ */
+const dedupSourceRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const dedupSourceRevision = "c91b4ea3805c7825563e974588681ee8a86c5dbc";
+const dedupSnapshotBytes = readFileSync(new URL("./fixtures/ci-dedup-inputs.mjs", import.meta.url));
+assert.equal(sha256(dedupSnapshotBytes), "0647ed71b0a194a1bba5b4f45f0f1d830ce3243819327b935091446bb4dfbd5d");
+const { ciDedupInputs } = await import("./fixtures/ci-dedup-inputs.mjs");
+assert.equal(ciDedupInputs.schemaVersion, 1);
+assert.equal(ciDedupInputs.sourceRevision, dedupSourceRevision);
+const dedupWorkflowPaths = [
+  ".github/workflows/ci.yml",
+  ".github/workflows/linter.yml",
+  ".github/workflows/base-acceptance-e2e.yml",
+  ".github/workflows/application-tests.yml",
+  ".github/workflows/server-tests.yml",
+];
+const { resolveAcceptance: resolveDedupFixtureAcceptance } = await import("./acceptance-baseline.mjs");
+const { stringify: stringifyDedupYaml } = await import("yaml");
+
+function dedupSource(path, revision = dedupSourceRevision) {
+  if (revision === dedupSourceRevision) {
+    if (path === "package.json") return JSON.stringify({ scripts: ciDedupInputs.packageScripts });
+    assert(Object.hasOwn(ciDedupInputs.workflows, path), "Unknown immutable deduplication workflow input");
+    return ciDedupInputs.workflows[path];
+  }
+  assert.equal(revision, "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf");
+  assert.equal(path, ".github/workflows/ci.yml");
+  return execFileSync("git", ["--no-replace-objects", "show", `${revision}:${path}`], {
+    cwd: dedupSourceRoot,
+    encoding: "utf8",
+    timeout: 10000,
+    maxBuffer: 256 * 1024,
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+}
+
+function dedupFixture(t, { legacy = false } = {}) {
+  const f = fixture(t);
+  const paths = legacy ? dedupWorkflowPaths.slice(0, 1) : dedupWorkflowPaths;
+  for (const path of paths) {
+    f.put(path, dedupSource(path, legacy ? "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf" : dedupSourceRevision));
+  }
+  const pkg = JSON.parse(readFileSync(join(f.root, "package.json"), "utf8"));
+  const reviewed = JSON.parse(dedupSource("package.json"));
+  // Keep product declarations unchanged; only independent gate/tool inventory inputs enter this governance commit.
+  pkg.scripts["test:gate"] = reviewed.scripts["test:gate"];
+  pkg.scripts["test:tooling"] = reviewed.scripts["test:tooling"];
+  f.put("package.json", `${JSON.stringify(pkg, null, 2)}\n`);
+  f.visibilityRevision = f.commit("Synthetic reviewed CI family input; no actual CI authority");
+  return f;
+}
+
+function dedupAdmission(f, baseRevision = f.product) {
+  const original = f.ci();
+  const sourceRevision = f.git("--no-replace-objects", "rev-parse", "HEAD");
+  const record = structuredClone(original.admission.record);
+  Object.assign(record.context, {
+    sourceRevision,
+    sourceTree: f.git("--no-replace-objects", "rev-parse", `${sourceRevision}^{tree}`),
+    baseRevision,
+    workflowRevision: sourceRevision,
+    toolingRevision: baseRevision,
+  });
+  // Reuse the original validator to construct synthetic admission, never the proposed command-plan oracle.
+  record.resolution = resolveDedupFixtureAcceptance(f.root, { sourceRevision, trustedBase: baseRevision });
+  writeFileSync(original.env.GATE_ADMISSION_PATH, `${JSON.stringify(record, null, 2)}\n`);
+  return {
+    ...original.env,
+    CI_BASE_REF: baseRevision,
+    GITHUB_SHA: sourceRevision,
+    GITHUB_WORKFLOW_SHA: sourceRevision,
+    GITHUB_JOB: "validate-product",
+    GATE_ADMISSION_SHA256: sha256(canonical(record)),
+  };
+}
+
+function dedupProbe(f, mode = "resolve") {
+  const path = join(f.root, ".artifacts/dedup-probe.mjs");
+  f.put(
+    ".artifacts/dedup-probe.mjs",
+    `import assert from "node:assert/strict";
+const subject = await import(${JSON.stringify(new URL("./run-ci-phase.mjs", import.meta.url).href)});
+assert.equal(typeof subject.resolvePhaseExecution, "function", "The real phase resolver export must exist");
+${
+  mode === "import"
+    ? 'console.log("DEDUP_IMPORT_INERT");'
+    : `const plan = subject.resolvePhaseExecution(process.cwd(), process.env);
+assert(!(plan instanceof Promise), "Phase resolution remains synchronous");
+assert.deepEqual(Object.keys(plan).sort(), ["phase", "rootScripts", "selection"]);
+console.log("DEDUP_PLAN=" + JSON.stringify(plan));`
+}
+`,
+  );
+  return path;
+}
+
+function dedupPlan(f, env = {}) {
+  const result = f.invoke(dedupProbe(f), env);
+  requireSuccess(result);
+  const line = result.stdout.split("\n").find((value) => value.startsWith("DEDUP_PLAN="));
+  assert(line, "The actual synchronous resolver must return its closed plan");
+  return JSON.parse(line.slice("DEDUP_PLAN=".length));
+}
+
+function dedupRootScripts(f) {
+  return f
+    .commands()
+    .filter((c) => c.command === "npm" && c.cwd === f.root)
+    .map((c) => c.args.join(" "));
+}
+
+function dedupRefusal(f, env) {
+  const result = f.invoke(phaseScript, env);
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0, "Invalid deduplication authority must refuse, not run a successful fallback");
+  assert.deepEqual(f.commands(), [], "Refusal must precede installation, browser setup and product commands");
+  assert.deepEqual(readdirSync(f.temporary), []);
+}
+
+test("dedup: the synchronous phase resolver is available and importing it has no command or setup effects", (t) => {
+  const f = dedupFixture(t);
+  requireSuccess(f.invoke(dedupProbe(f, "import")));
+  assert.deepEqual(f.commands(), []);
+  assert.deepEqual(readdirSync(f.temporary), []);
+  assert.equal(existsSync(join(f.root, ".artifacts/acceptance-browser-setup.json")), false);
+  const plan = dedupPlan(f);
+  assert.equal(plan.phase, "integration");
+  assert.deepEqual(plan.rootScripts, ["test:unit", "build", "test:e2e"]);
+  assert.equal(plan.selection.localSelection.kind, "local-acceptance-resolution");
+  assert.equal(plan.selection.admission, undefined);
+  assert.deepEqual(f.commands(), [], "Resolution reads authority without running acceptance");
+});
+
+test("dedup: admitted split CI runs only root E2E after the original required-suite browser controls", (t) => {
+  const f = dedupFixture(t);
+  const env = dedupAdmission(f);
+  requireSuccess(f.invoke(phaseScript, env));
+  assert.deepEqual(dedupRootScripts(f), ["run test:e2e"]);
+  requireBrowserOrder(f.commands(), requiredMarker, { ci: process.platform === "linux" });
+  const requiredCheck = f.commands().findIndex((c) => c.command === "npm" && c.args.join(" ") === "run check");
+  const e2e = f.commands().findIndex((c) => c.command === "npm" && c.cwd === f.root);
+  assert(requiredCheck < e2e);
+  assert.equal(f.commands()[e2e].trustedMarker, requiredMarker);
+  assert.deepEqual(readdirSync(f.temporary), []);
+  const plan = dedupPlan(f, env);
+  assert.deepEqual(plan.rootScripts, ["test:e2e"]);
+  assert.equal(plan.selection.admission.record.context.sourceRevision, env.GITHUB_SHA);
+  assert.equal(plan.selection.admission.sha256, env.GATE_ADMISSION_SHA256);
+});
+
+test("dedup: local split and admitted legacy CI retain all root units, host builds and E2E", (t) => {
+  for (const legacy of [false, true]) {
+    const f = dedupFixture(t, { legacy });
+    const env = legacy ? dedupAdmission(f) : { CI_VISIBILITY_VARIANT: "reusable-v1", CI_SKIP_UNIT_BUILD: "true" };
+    if (legacy) delete env.GITHUB_JOB;
+    requireSuccess(f.invoke(phaseScript, env));
+    assert.deepEqual(dedupRootScripts(f), ["run test:unit", "run build", "run test:e2e"]);
+    const plan = dedupPlan(f, env);
+    assert.deepEqual(plan.rootScripts, ["test:unit", "build", "test:e2e"]);
+    assert.equal(Boolean(plan.selection.admission), legacy);
+  }
+});
+
+test("dedup: wrong or absent reusable acceptance job identity refuses before any child work", (t) => {
+  const available = dedupFixture(t);
+  requireSuccess(available.invoke(phaseScript, dedupAdmission(available)));
+  for (const job of [undefined, "application", "server", "control-plane"]) {
+    const f = dedupFixture(t);
+    const env = dedupAdmission(f);
+    if (job === undefined) delete env.GITHUB_JOB;
+    else env.GITHUB_JOB = job;
+    dedupRefusal(f, env);
+  }
+});
+
+test("dedup: committed application and server ownership must pass the full graph, not its layout classifier", (t) => {
+  const available = dedupFixture(t);
+  requireSuccess(available.invoke(phaseScript, dedupAdmission(available)));
+  for (const mutation of ["application-caller", "server-caller", "application-command", "server-condition", "gate"]) {
+    const f = dedupFixture(t);
+    if (mutation.endsWith("caller")) {
+      const workflow = parse(readFileSync(join(f.root, dedupWorkflowPaths[0]), "utf8"));
+      delete workflow.jobs[mutation === "application-caller" ? "application-tests" : "server-tests"];
+      f.put(dedupWorkflowPaths[0], stringifyDedupYaml(workflow));
+    } else if (mutation === "gate") {
+      const pkg = JSON.parse(readFileSync(join(f.root, "package.json"), "utf8"));
+      pkg.scripts["test:gate"] = "node --test scripts/ci-gate.test.mjs";
+      f.put("package.json", `${JSON.stringify(pkg)}\n`);
+    } else {
+      const path = mutation === "application-command" ? dedupWorkflowPaths[3] : dedupWorkflowPaths[4];
+      const workflow = parse(readFileSync(join(f.root, path), "utf8"));
+      const job = workflow.jobs[mutation === "application-command" ? "application" : "server"];
+      if (mutation === "application-command") job.steps.at(-1).run = "echo skipped frontend units";
+      else job.if = "false";
+      f.put(path, stringifyDedupYaml(workflow));
+    }
+    f.commit(`Synthetic invalid ownership ${mutation}`);
+    dedupRefusal(f, dedupAdmission(f));
+  }
+});
+
+test("dedup: deleted or malformed committed inputs and missing original declarations cannot omit mandatory work", (t) => {
+  const available = dedupFixture(t);
+  requireSuccess(available.invoke(phaseScript, dedupAdmission(available)));
+  for (const mutation of ["missing-worker", "malformed-worker", "tooling", "test:unit", "build", "test:e2e"]) {
+    const f = dedupFixture(t);
+    if (mutation === "missing-worker") rmSync(join(f.root, dedupWorkflowPaths[4]));
+    else if (mutation === "malformed-worker") f.put(dedupWorkflowPaths[3], "jobs: [unterminated\n");
+    else {
+      const pkg = JSON.parse(readFileSync(join(f.root, "package.json"), "utf8"));
+      if (mutation === "tooling")
+        pkg.scripts["test:tooling"] = "node --experimental-vm-modules --test scripts/phase-policy.test.mjs";
+      else delete pkg.scripts[mutation];
+      f.put("package.json", `${JSON.stringify(pkg)}\n`);
+    }
+    f.commit(`Synthetic invalid committed input ${mutation}`);
+    dedupRefusal(f, dedupAdmission(f, f.visibilityRevision));
+  }
+});
+
+test("dedup: admission source, workflow and run mismatches refuse; working-tree layout bluff cannot select commands", (t) => {
+  const available = dedupFixture(t);
+  requireSuccess(available.invoke(phaseScript, dedupAdmission(available)));
+  for (const [field, value] of [
+    ["GITHUB_SHA", "a".repeat(40)],
+    ["GITHUB_WORKFLOW_SHA", "a".repeat(40)],
+    ["GITHUB_RUN_ID", "42002"],
+    ["GATE_ADMISSION_SHA256", "a".repeat(64)],
+  ]) {
+    const f = dedupFixture(t);
+    dedupRefusal(f, { ...dedupAdmission(f), [field]: value });
+  }
+  const legacy = dedupFixture(t, { legacy: true });
+  const env = dedupAdmission(legacy);
+  for (const path of dedupWorkflowPaths) legacy.put(path, dedupSource(path));
+  requireSuccess(legacy.invoke(phaseScript, env));
+  assert.deepEqual(dedupRootScripts(legacy), ["run test:unit", "run build", "run test:e2e"]);
+});
+
+test("dedup: optimized candidate controls stay separate and precede required-suite E2E; selectors remain forbidden", (t) => {
+  const f = dedupFixture(t);
+  const candidate = f.candidate();
+  const env = dedupAdmission(f, f.visibilityRevision);
+  requireSuccess(f.invoke(phaseScript, env));
+  assert.deepEqual(dedupRootScripts(f), ["run test:e2e"]);
+  requireBrowserOrder(f.commands(), candidateMarker, { ci: process.platform === "linux" });
+  requireBrowserOrder(f.commands(), requiredMarker, { ci: process.platform === "linux" });
+  const checks = f.commands().filter((c) => c.command === "npm" && c.args.join(" ") === "run check");
+  assert.deepEqual(
+    checks.map((c) => c.marker),
+    [candidateMarker, requiredMarker],
+  );
+  const evidence = JSON.parse(readFileSync(join(f.root, ".artifacts/acceptance-candidate.json"), "utf8"));
+  assert.equal(evidence.suiteCommit, candidate);
+  assert.equal(evidence.productAcceptance, false);
+  assert.equal(f.commands().find((c) => c.cwd === f.root).trustedMarker, requiredMarker);
+  const rejected = dedupFixture(t);
+  const result = spawnSync(process.execPath, [phaseScript, "--skip-unit-build"], {
+    cwd: rejected.root,
+    env: { ...rejected.env, ...dedupAdmission(rejected) },
+    encoding: "utf8",
+    timeout: 20000,
+    maxBuffer: 2 * 1024 * 1024,
+  });
+  assert.equal(result.error, undefined);
+  assert.notEqual(result.status, 0);
+  assert.deepEqual(rejected.commands(), []);
 });
