@@ -180,5 +180,5 @@ portable values, never a comment parser. Runtime package policy changes require 
 This candidate is independently reviewable before implementation and is separate from the required suite in the main
 checkout. Candidate oracle checks, owned negative controls and discovery are not product acceptance, hosted evidence,
 review approval or activation. Record command/version/results, contract hash and exact suite/manifest identities in the
-[authoring record](../backend-audio-authoring.md). Publication/binding need separately authorized remote actions and
-actual protected-main squash/review identities. This document invents none of them.
+[authoring record](../../../tests/acceptance/authoring/backend-audio-v1.md). Publication/binding need separately
+authorized remote actions and actual protected-main squash/review identities. This document invents none of them.

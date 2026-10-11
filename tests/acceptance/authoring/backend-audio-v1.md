@@ -377,3 +377,14 @@ The final 98-file candidate source-content digest is `ead081e7a8dca1d14fa97e3054
 Errors predicate SHA-256: `8352597153e0ac8682c534a036f66e29685dc544a01e4625d60a8b34a1849c4c`. OpenAPI predicate:
 `fca4f983cbac0e8582aeda1845eaa91e39652e3f3685ba8c55f4171ac7107320`. R2 retains its original contract identity. Actual
 main integration, current CI, independent companion review, candidate merge and separate binding remain pending.
+
+## Admission location note — 2026-10-11 (non-normative)
+
+This authoring record moved from `docs/testing/backend-audio-authoring.md` to
+`tests/acceptance/authoring/backend-audio-v1.md` to place it within the candidate suite admitted by the unchanged
+trusted resolver. Every preceding authoring-record byte is preserved; the normative contract changes only the
+authoring-record link destination.
+
+The previously recorded 98-file source digest describes the suite before this move. Adding this record to the suite
+produces a 99-file source inventory. The coordinator will record its current suite identity in an external manifest
+using actual Git objects, without adding a self-referential hash to this record.
