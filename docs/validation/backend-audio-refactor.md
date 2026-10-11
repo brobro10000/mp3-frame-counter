@@ -307,15 +307,16 @@ candidate pass cannot honestly be reported as its normal required CI result.
 
 ## Shipment preparation and independent oracle correction — 2026-10-11
 
-The owner now authorizes normal commit/push, companion review and protected merges, followed by a product freeze and
-README-discoverable handoff. CI prerequisite PR #62 is open; it preserves the product, frozen acceptance and registry.
-The product is temporarily stacked on its reviewed feature head; this is not protected-main adoption or suite binding.
+The owner authorized normal commit/push, companion review and protected merges, followed by a product freeze and
+README-discoverable handoff. During this preparation stage, CI prerequisite PR #62 was open; its scope preserved the
+product, frozen acceptance and registry. The product was temporarily stacked on its reviewed feature head; this was not
+protected-main adoption or suite binding.
 
 A fresh independent candidate audit found four OpenAPI predicate omissions. Nine red mutation controls were added before
-minimally correcting required DTO fields, finite error codes, mandatory upload HEAD and semantic header values. The full
-candidate harness passed 41 recipes, 176 semantic rejections, 52 transport, 46 docs and 95 hosted owned controls, with
-unchanged 72/22/3 inventory and historical fixtures. Final acceptance content digest is
-`522822eebad85da226b805d24277e4f8becdbf45d6907eb3af301cd5affc7886`; contract SHA-256 remains
+minimally correcting required DTO fields, finite error codes, mandatory upload HEAD and semantic header values. At this
+preparation stage, the full candidate harness passed 41 recipes, 176 semantic rejections, 52 transport, 46 docs and 95
+hosted owned controls, with unchanged 72/22/3 inventory and historical fixtures. Its preparation-stage acceptance
+content digest was `522822eebad85da226b805d24277e4f8becdbf45d6907eb3af301cd5affc7886`; contract SHA-256 was
 `5e42ee2d789d03e8510e58c486f643ed105e60202d61e1eb91e9a126d3698b7e`. The strengthened spec oracle accepts the existing
 generated application specification. The earlier full product run retains its original candidate identity; that run is
 not relabeled as proof against the later digest. Actual final-source required CI must establish that proof.
@@ -331,3 +332,28 @@ supported material defect. GitNexus staged analysis reports expected critical re
 upload/lifecycle and browser response flows; direct route/factory ownership and meaningful unit/socket/external cases
 were reviewed. Some parser calls through module facades are not resolved by the graph, so a zero graph edge count is not
 proof of isolation. Product approval and required exact-source acceptance remain pending; this stack is a draft only.
+
+## Prerequisite completion and remaining admission — 2026-10-11
+
+These prerequisite outcomes are separate from the local product evidence and preparation snapshots above. Both PRs
+merged through normal owner controls after automated companion approval of their exact heads.
+
+- [PR #62](https://github.com/brobro10000/mp3-frame-counter/pull/62) merged at
+  `e1616c52a3a0a777216678dc76403d293471a783` after
+  [review 5484835840](https://github.com/brobro10000/mp3-frame-counter/pull/62#pullrequestreview-5484835840).
+  [Protected-main CI 38172536686](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38172536686) succeeded
+  and published [v0.3.61](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.61).
+- [PR #65](https://github.com/brobro10000/mp3-frame-counter/pull/65) merged at
+  `ccc5274bd823c5651a07cba013faf9c3b010ac2b` after
+  [review 5484890799](https://github.com/brobro10000/mp3-frame-counter/pull/65#pullrequestreview-5484890799).
+  [Protected-main CI 38173697596](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38173697596) succeeded
+  and published [v0.4.62](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.62), GitHub release
+  `409915883`, with ten assets.
+
+The product branch includes the PR #65 merge. At this update, independent candidate
+[PR #64](https://github.com/brobro10000/mp3-frame-counter/pull/64) is at `ab860273770ac7a0f95dbc4e0b414971ad034537`,
+with [CI 38178258514](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38178258514) pending. Candidate
+merge, actual suite binding and product review/adoption remain pending. The prerequisite releases do not establish
+acceptance or publication of the audio-count implementation. Run `mp3-e2e-45286-140fd7c71318` retains its original
+unrecorded source/suite revisions and is not relabeled as required CI evidence. Cloud delivery remains paused;
+production v1.0.0 remains deferred.
