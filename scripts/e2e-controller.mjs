@@ -39,13 +39,16 @@ export function isolatedCompose(input, project, root, ports) {
   config.networks = { default: { name: `${project}_default` } };
   for (const [name, service] of Object.entries(config.services)) {
     assert(service.build && typeof service.build === "object", `${name} must build from its independent context`);
-    const context = name === "api" ? root : join(root, "frontend");
+    // The browser build may consume the shared root lockfile only through its exact reviewed Dockerfile.
+    // Keep the historical frontend-only context readable; neither variant admits other directories or Dockerfiles.
+    const sharedFrontendRoot = name === "frontend" && resolve(service.build.context) === resolve(root);
+    const context = name === "api" || sharedFrontendRoot ? root : join(root, "frontend");
     assert.equal(
       resolve(service.build.context),
       resolve(context),
       `${name}: build context escaped its owned directory`,
     );
-    const dockerfile = name === "api" ? "server/Dockerfile" : "Dockerfile";
+    const dockerfile = name === "api" ? "server/Dockerfile" : sharedFrontendRoot ? "frontend/Dockerfile" : "Dockerfile";
     assert.equal(service.build.dockerfile ?? "Dockerfile", dockerfile, `${name}: unexpected Dockerfile`);
     assert.equal(service.build.dockerfile_inline, undefined, "Use the reviewed independently built Dockerfile");
     assert(service.scale === undefined || service.scale === 1, "Exactly one container per service");

@@ -13,8 +13,9 @@ Fastify-only. Historical cloud evidence, failures, state and cost controls remai
 resources were deleted or that costs are zero.
 
 The production `v1.0.0` finalization gate is unchanged and remains pending while hosting is deferred. Local MVP closure
-and submission readiness must not be labeled a verified production release. Read the current handoff amendment in
-`docs/deployment/v1-delivery.md`; older cloud-priority instructions are historical for this task.
+and submission readiness must not be labeled a verified production release. The local startup handoff will be supplied
+in the separately scoped frontend PR. This execution boundary supersedes older cloud-priority instructions for the
+current task.
 
 ## Primary users
 

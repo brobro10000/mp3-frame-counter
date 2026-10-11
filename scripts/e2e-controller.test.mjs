@@ -58,6 +58,124 @@ test("isolation replaces inherited fixed ports and image/network names without m
   }
 });
 
+/** Model the one reviewed root-lock frontend build, without reading any application Dockerfile or building an image. */
+const rootFrontendConfig = () => {
+  const source = config();
+  source.services.frontend.build = { context: process.cwd(), dockerfile: "frontend/Dockerfile" };
+  return source;
+};
+
+test("root-context frontend admits only its explicit Dockerfile and preserves isolated input and service boundaries", () => {
+  const source = rootFrontendConfig();
+  const before = structuredClone(source);
+  const isolated = isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts);
+  assert.deepEqual(source, before);
+  assert.deepEqual(Object.keys(isolated.services).sort(), ["api", "frontend"]);
+  assert.deepEqual(isolated.services.api.build, { context: process.cwd(), dockerfile: "server/Dockerfile" });
+  assert.deepEqual(isolated.services.frontend.build, { context: process.cwd(), dockerfile: "frontend/Dockerfile" });
+  assert.deepEqual(isolated.networks, { default: { name: "mp3-e2e-test-123_default" } });
+  for (const [name, service] of Object.entries(isolated.services)) {
+    assert.equal(service.read_only, true);
+    assert.equal(service.user, name === "api" ? "10001:10001" : "101:101");
+    assert.equal(service.image, `mp3-e2e-test-123-${name}:tested`);
+    assert.deepEqual(service.ports, [
+      {
+        target: name === "api" ? 3000 : 8080,
+        published: String(fixedPorts[name]),
+        host_ip: "127.0.0.1",
+        protocol: "tcp",
+      },
+    ]);
+  }
+});
+
+test("legacy frontend context retains both default and explicit local Dockerfile without input mutation", () => {
+  for (const explicit of [false, true]) {
+    const source = config();
+    if (explicit) source.services.frontend.build.dockerfile = "Dockerfile";
+    const before = structuredClone(source);
+    const isolated = isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts);
+    assert.deepEqual(source, before);
+    assert.deepEqual(isolated.services.frontend.build, source.services.frontend.build);
+  }
+});
+
+test("root-context frontend rejects missing, foreign, absolute and traversing Dockerfile selections", () => {
+  for (const dockerfile of [
+    undefined,
+    "Dockerfile",
+    "server/Dockerfile",
+    join(process.cwd(), "frontend", "Dockerfile"),
+    "../frontend/Dockerfile",
+    "frontend/../frontend/Dockerfile",
+  ]) {
+    const source = rootFrontendConfig();
+    if (dockerfile === undefined) delete source.services.frontend.build.dockerfile;
+    else source.services.frontend.build.dockerfile = dockerfile;
+    const before = structuredClone(source);
+    assert.throws(() => isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts));
+    assert.deepEqual(source, before);
+  }
+});
+
+test("legacy frontend context rejects the root-qualified Dockerfile rather than broadening path matching", () => {
+  const source = config();
+  source.services.frontend.build.dockerfile = "frontend/Dockerfile";
+  const before = structuredClone(source);
+  assert.throws(() => isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts));
+  assert.deepEqual(source, before);
+});
+
+test("frontend rejects all contexts outside the two reviewed repository locations", () => {
+  for (const context of [join(process.cwd(), ".."), join(process.cwd(), "server"), join(process.cwd(), "other")]) {
+    const source = rootFrontendConfig();
+    source.services.frontend.build.context = context;
+    const before = structuredClone(source);
+    assert.throws(() => isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts));
+    assert.deepEqual(source, before);
+  }
+});
+
+test("frontend root-lock support does not alter the API root and server Dockerfile contract", () => {
+  const mutations = [
+    (source) => (source.services.api.build.context = join(process.cwd(), "server")),
+    (source) => (source.services.api.build.dockerfile = "frontend/Dockerfile"),
+    (source) => delete source.services.api.build.dockerfile,
+  ];
+  for (const mutate of mutations) {
+    const source = config();
+    mutate(source);
+    const before = structuredClone(source);
+    assert.throws(() => isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts));
+    assert.deepEqual(source, before);
+  }
+});
+
+test("admitted root-context frontend retains non-root, read-only, network, two-service and build-secret guards", () => {
+  // Require the new positive case before treating any subsequent rejection as evidence about its safety guards.
+  isolatedCompose(rootFrontendConfig(), "mp3-e2e-test-123", process.cwd(), fixedPorts);
+  const mutations = [
+    (source) => (source.services.frontend.user = "0:0"),
+    (source) => (source.services.frontend.read_only = false),
+    (source) => (source.services.frontend.network_mode = "host"),
+    (source) => (source.networks.default.external = true),
+    (source) => (source.services.extra = structuredClone(source.services.api)),
+    (source) => (source.services.frontend.build.additional_contexts = { private: "../private" }),
+    (source) => (source.services.frontend.build.ssh = ["default"]),
+    (source) => (source.services.frontend.build.secrets = ["private"]),
+    (source) => (source.services.frontend.secrets = ["private"]),
+    (source) => (source.secrets = { private: { file: "/private" } }),
+    (source) => (source.services.frontend.build.dockerfile_inline = "FROM forbidden"),
+  ];
+  for (const mutate of mutations) {
+    const source = rootFrontendConfig();
+    mutate(source);
+    const before = structuredClone(source);
+    assert.throws(() => isolatedCompose(source, "mp3-e2e-test-123", process.cwd(), fixedPorts));
+    assert.deepEqual(source, before);
+  }
+});
+
 test("unsafe mounts, host networking, root identity, external networks and extra services fail before lifecycle", () => {
   const mutations = [
     (value) => (value.services.api.volumes = [{ type: "bind", source: "/var/run/docker.sock", target: "/socket" }]),
