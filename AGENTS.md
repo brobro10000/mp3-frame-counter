@@ -9,6 +9,10 @@ The owner authorized continued roadmap execution on 2026-10-10, including scoped
 and automatic stage delivery. Follow docs/phases/roadmap-execution-authorization.md and bounded cards in
 docs/phases/next-iteration.md. Production deployment/promotion requires human intervention for the exact candidate.
 
+The owner's latest priority is the bounded production V1 in docs/deployment/v1-delivery.md. Reuse existing release
+verification and hosted acceptance; defer generalized delivery frameworks and optional hardening. The three current
+completion cards supersede earlier next-step ordering without weakening required checks or the human production gate.
+
 ## Primary users
 
 - Assessment owner using and evaluating the application

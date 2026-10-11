@@ -1,4 +1,4 @@
-# Purpose: prepare protected state storage, a Docker registry and narrowly scoped delivery identities.
+# Purpose: prepare protected state storage, a Docker registry and narrowly scoped federated delivery identities.
 # A reviewed apply creates exactly these access resources and writes private state; it creates no application service.
 # Use only after current cost-control readback. Unexpected resources, permission failures or replacement plans block use.
 # Teardown requires a separate protection/retention amendment; never remove safeguards to force an ordinary destroy.
@@ -82,7 +82,8 @@ resource "google_artifact_registry_repository" "images" {
   }
 }
 
-# Identities have no keys or external impersonation bindings. Runtime accounts receive no application API roles.
+# Identities have no keys. Only the two explicitly bound delivery accounts accept federation below.
+# Runtime accounts receive no application API roles.
 resource "google_service_account" "identity" {
   for_each = toset([
     "mp3-registry-writer",
@@ -150,4 +151,88 @@ resource "google_service_account_iam_member" "stage_probe_minter" {
   member             = google_service_account.identity["mp3-stage-deployer"].member
 
   depends_on = [google_project_service.required["iamcredentials.googleapis.com"]]
+}
+
+# GitHub's fixed issuer can enter this dedicated pool only through the exact protected-main push workflow below.
+# Numeric repository and owner inputs bind identity independently of repository-name reuse.
+resource "google_iam_workload_identity_pool" "github" {
+  project                   = var.project_id
+  workload_identity_pool_id = "mp3-github"
+  display_name              = "MP3 GitHub delivery"
+  disabled                  = false
+
+  depends_on = [google_project_service.required["iam.googleapis.com"]]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_iam_workload_identity_pool_provider" "github" {
+  project                            = var.project_id
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github"
+  display_name                       = "Protected main push"
+  disabled                           = false
+
+  attribute_mapping = {
+    "google.subject"          = "assertion.sub"
+    "attribute.repository_id" = "assertion.repository_id"
+  }
+  attribute_condition = "assertion.repository_id == '${var.github_repository_id}' && assertion.repository_owner_id == '${var.github_owner_id}' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == '${var.github_repository}/.github/workflows/ci.yml@refs/heads/main' && assertion.event_name == 'push'"
+
+  # Omit custom audiences: only the standard provider-resource audience is accepted.
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Federation never reaches production accounts or the probe directly. Stage mints only its existing probe ID token.
+resource "google_service_account_iam_member" "github_federated" {
+  for_each = toset(["mp3-registry-writer", "mp3-stage-deployer"])
+
+  service_account_id = google_service_account.identity[each.value].name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository_id/${var.github_repository_id}"
+
+  depends_on = [google_iam_workload_identity_pool_provider.github]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+# Single-project budget reads and quota usage cannot alter the retained cap or alert budget.
+# This is project-scoped read authority, not per-budget isolation or billing-account administration.
+resource "google_project_iam_custom_role" "stage_cost_read" {
+  project     = var.project_id
+  role_id     = "mp3StageCostRead"
+  title       = "MP3 stage cost readiness"
+  description = "Read dedicated project budgets and use its quota for bounded stage delivery."
+  stage       = "GA"
+  permissions = [
+    "resourcemanager.projects.get",
+    "billing.resourcebudgets.read",
+    "serviceusage.services.use",
+  ]
+
+  depends_on = [google_project_service.required["iam.googleapis.com"]]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "google_project_iam_member" "stage_cost_reader" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.stage_cost_read.name
+  member  = google_service_account.identity["mp3-stage-deployer"].member
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

@@ -1,0 +1,77 @@
+# Bounded V1 delivery
+
+Adopted by the coordinator on 2026-10-11 under the owner's instruction to prioritize an acceptable MVP and reach V1.
+This amendment narrows the extended roadmap's implementation scope. Historical plans and deferred work remain retained.
+
+## Completion boundary
+
+V1 consists of the existing MP3 application and same-origin API documentation, reproducible two-container deployment,
+automatic stage delivery after successful software publication, passing real hosted stage acceptance, an exact
+human-approved production deployment, production smoke and a demonstrated recovery procedure. Keep the current upload
+contract, all local acceptance and the frozen hosted suite. No new product features belong on this path.
+
+Required sequence:
+
+1. Finish the reviewed IAM correction and protected access-state migration; verify unchanged cost controls.
+2. Add the smallest scoped federation, Cloud Run IaC and direct dependent stage job that use the existing identities,
+   registry and state buckets. Validate the actual stage service and all 22 frozen stage cases.
+3. Present the exact verified candidate to the owner. After human approval, deploy the same two image digests to
+   production, run the three frozen production smoke cases, prove recovery and finalize the same source as v1.0.0.
+
+Production application deployment remains a human gate, including authenticated or no-traffic candidates. A manual
+owner-invoked operation is acceptable for V1 if an enforced private-repository environment gate is unavailable; describe
+that limitation accurately. Stage credentials must have no production authority. Do not represent readiness as
+deployment.
+
+## Reuse existing delivery evidence
+
+Use a job directly dependent on successful `publish-release` and `validate-product` in the existing main-push workflow.
+Download the complete same-run prepared bundle using the pinned artifact action and the trusted product output name.
+Check out the exact source with full history. Reuse `verifyReleaseBundle` and the independently transported original
+admission digest, then compare its asset identities with the published release selected by the verified manifest.
+Release failure blocks stage; stage failure preserves the software release and blocks promotion.
+
+Transfer the exact tested images from their verified Docker archives without rebuilding. Record the registry digests,
+source and applied configuration. Use existing required-suite selection and isolated extraction for hosted execution.
+Read the destination and revision from the configured provider resource, validate identity before and after tests, and
+send short-lived credentials only to that origin. Preserve cleanup and exact frozen inventories. Failed or incomplete
+checks block promotion. Retain the previous good revision and serialize deployment/recovery.
+
+The same-run workflow, protected main and GitHub artifact service supply acquisition authority for this bounded path. No
+arbitrary URL, tag, artifact run or alternate acceptance suite may be selected by PR input. The tokenless metadata
+replay module and generalized authenticated handoff adapter are deferred; do not implement parallel evidence
+authorities. The existing publisher and handoff utilities remain available and their historical records remain
+unchanged.
+
+## Explicit deferrals
+
+Defer reusable acquisition/replay infrastructure, automatic publication backfill, expanded queue syntax, additional
+release-line milestones and optional platform abstractions. The partial metadata-replay tests are preserved as
+unreviewed, uncalibrated work outside the V1 branch; they are not release evidence. Compatible maintenance and future
+hardening can resume after V1. Do not defer an observed defect, secret handling, required acceptance, cost readiness,
+exact image identity, recoverability or the human production decision merely to obtain a passing status.
+
+## Delivery practice
+
+Keep three detailed cards only. Merge a clean approved PR promptly after its required checks and prerequisites pass,
+then immediately refresh its dependents onto actual merged main. Use disjoint agents for independent expectations,
+implementation and review. Combine delivery plumbing into one governance/setup PR and one directly dependent runtime PR,
+preserving the existing product/governance admission boundary. Run meaningful focused checks and required CI; do not
+repeat already current checks without a change or unresolved failure. Claim each implemented, published and deployed
+state only from observed evidence.
+
+## Bounded service IAM amendment
+
+The runtime root may own the service's two additive IAM memberships: its corresponding probe's `roles/run.invoker`, and,
+only for stage, the stage deployer's service-scoped `roles/run.admin`. This explicit exception supersedes the
+runtime-IAM exclusion in the earlier hosted-delivery policy. It permits no public principal, project-wide Run grant,
+federation or cost policy in runtime. Owner credentials create the initial service and memberships in dependency order;
+subsequent automation must target that existing stage service/state and preserve authenticated invocation. Production
+has no automated stage membership. Independent source/plan expectations must enforce the exact roles and identities.
+
+Federation stays in the existing access root, restricted to numeric repository/owner identities, protected main and the
+exact main-push workflow. Only registry-writer and stage-deployer identities receive federation membership. A dedicated
+project custom role may grant stage `resourcemanager.projects.get`, `billing.resourcebudgets.read` and required quota
+usage via `serviceusage.services.use`; it cannot change budgets, billing or the cap. This permits reading single-project
+budgets in the dedicated project, not per-budget IAM isolation. The delivery code reads only the two retained cost
+identities. No billing-account viewer/admin role or production federation belongs in V1.

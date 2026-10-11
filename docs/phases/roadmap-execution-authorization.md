@@ -68,3 +68,13 @@ stage or release automation is ready.
 Record each PR, reviewed head, companion run, merge SHA, CI attempt, published version and deployment result as they
 occur. Preserve failed reviews and tests. The PLAN-01 verification section remains a dated record of documentation
 authoring; it is not a restriction on the operations authorized here or proof that later checks passed.
+
+## V1 completion priority — 2026-10-11
+
+The owner subsequently directed the team to prioritize an acceptable MVP and reach V1, rather than continue spending
+hours on the extended delivery roadmap. The coordinator adopts the
+[bounded V1 delivery scope](../deployment/v1-delivery.md). Preserve the working product, required acceptance, normal
+companion review/owner merge, cost controls, IaC and the human production gate. Defer reusable acquisition/replay
+infrastructure, expanded queue/reconciliation and optional hardening. Use the existing verified release bundle and
+existing hosted suite; do not replace them with a new delivery framework. This changes implementation ordering and
+scope, not the definition of verified production or evidence already recorded.
