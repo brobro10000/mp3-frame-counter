@@ -29,3 +29,28 @@ The tests explicitly initialize with `-backend=false`. These source/mock checks 
 migration, locking or cloud IAM propagation. Exact-head CI, companion approval, actual main publication and the private
 operational migration/readback remain separate pending evidence. No application service or production candidate is
 deployed by this source amendment.
+
+## Registry-default correction after actual provider readback
+
+The original published access root created all 23 declared resources. The first real Terraform readback failed its
+no-change criterion: zero creates, one in-place update and zero destroys, solely re-adding the optional false Docker
+configuration. An independent authenticated GET confirmed the registry omits `dockerConfig`. Pinned provider-source
+review explained the representation mismatch; no speculative update or ignored-change exception was applied.
+
+Root adopted a narrow omission amendment. An independent author changed only the exact Docker-list oracle and added one
+native-plan control group. Its first full run had 21 groups: twelve passed, eight failed at the newly required empty
+list and one exposed the author's incorrect expectation for an empty mock block. That nullable-field fixture correction
+was retained separately; the named control then passed, proving an omitted valid counterpart, false/true/empty override
+refusals and two ignored-change refusals. Both original failures remain preserved. Independent review found no
+actionable expectation defect; final test SHA256: `7dc50f99c67bcceb99b0a279f2c1231eec497cfc6e2478468b45264cdec9c0ee`.
+
+After freeze `56d5fae`, root removed the optional source block and added its purpose comment. All twenty-one focused
+tests then passed, with no skips; log SHA256: `fd51aa56a16a36f4ebb51d68f6f4d748275bcc904c62944c37b9cf3e96f1d41d`.
+Independent source review found no actionable finding; memo SHA256:
+`4828d903c657bbab775539193dfc9becfc2a70d15b7e4a2ae24ca48751c1d5b3`.
+
+The actual API/IAM inventory made 28 successful reads and passed 111 of 112 checks. New resource identities, seven
+declared direct grants and five outputs matched. Its project-IAM check found the default Compute Editor grant and
+additional Google service-agent roles, so the original audit remains failed pending **ACCESS-IAM-DEFAULTS**. Source
+normalization does not establish a fresh no-change plan or fix inherited IAM. These operational gates still precede
+remote-state migration; no application deployment is claimed.
