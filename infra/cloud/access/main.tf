@@ -153,6 +153,18 @@ resource "google_service_account_iam_member" "stage_probe_minter" {
   depends_on = [google_project_service.required["iamcredentials.googleapis.com"]]
 }
 
+# Optional owner access mints only the existing probe ID tokens; it grants no Run or access-token authority.
+# Supplying this member does not approve any production application deployment.
+resource "google_service_account_iam_member" "owner_probe_minter" {
+  for_each = var.owner_probe_member == null ? {} : local.environments
+
+  service_account_id = google_service_account.identity["mp3-${each.value}-probe"].name
+  role               = "roles/iam.serviceAccountOpenIdTokenCreator"
+  member             = var.owner_probe_member
+
+  depends_on = [google_project_service.required["iamcredentials.googleapis.com"]]
+}
+
 # GitHub's fixed issuer can enter this dedicated pool only through the exact protected-main push workflow below.
 # Numeric repository and owner inputs bind identity independently of repository-name reuse.
 resource "google_iam_workload_identity_pool" "github" {

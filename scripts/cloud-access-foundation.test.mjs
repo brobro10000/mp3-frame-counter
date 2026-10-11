@@ -58,6 +58,7 @@ const resourceBlocks = [
   "google_project_iam_custom_role.stage_cost_read",
   "google_project_iam_member.stage_cost_reader",
 ];
+const ownerProbeResource = "google_service_account_iam_member.owner_probe_minter";
 const githubDefaults = {
   github_repository: "synthetic-owner/synthetic-repository",
   github_repository_id: "123456789",
@@ -78,6 +79,7 @@ const alternate = {
   region: "europe-west1",
   registry_id: "release-images-2",
 };
+const ownerProbeInput = { ...defaults, owner_probe_member: "user:synthetic.owner@example.invalid" };
 const sorted = (values) => [...values].sort();
 const email = (project, id) => `${id}@${project}.iam.gserviceaccount.com`;
 const accountName = (project, id) => `projects/${project}/serviceAccounts/${email(project, id)}`;
@@ -85,6 +87,7 @@ const registryName = ({ project_id, region, registry_id }) =>
   `projects/${project_id}/locations/${region}/repositories/${registry_id}`;
 const registryUri = ({ project_id, region, registry_id }) => `${region}-docker.pkg.dev/${project_id}/${registry_id}`;
 const index = (base, key) => `${base}[${JSON.stringify(key)}]`;
+const ownerProbeAddresses = ["stage", "production"].map((name) => index(ownerProbeResource, name));
 const poolName = (input) =>
   `projects/${input.project_id === defaults.project_id ? "123456789012" : "210987654321"}/locations/global/workloadIdentityPools/mp3-github`;
 const providerName = (input) => `${poolName(input)}/providers/github`;
@@ -248,9 +251,19 @@ function sourceContract(source) {
   if (google.children.some((node) => node.name === "user_project_override"))
     assert.equal(expression(google, "user_project_override"), "true");
   const variables = nodes.filter((node) => node.name === "variable");
+  // The historical root remains independently replayable; only a complete optional amendment is admitted.
+  const ownerSelected =
+    variables.some((node) => node.labels[0] === "owner_probe_member") ||
+    nodes.some((node) => node.name === "resource" && node.labels.join(".") === ownerProbeResource);
   assert.deepEqual(
     sorted(variables.map((node) => node.labels[0])),
-    sorted(["project_id", "region", "registry_id", ...Object.keys(githubDefaults)]),
+    sorted([
+      "project_id",
+      "region",
+      "registry_id",
+      ...Object.keys(githubDefaults),
+      ...(ownerSelected ? ["owner_probe_member"] : []),
+    ]),
   );
   for (const name of ["project_id", "region", "registry_id", ...Object.keys(githubDefaults)]) {
     const variable = one(variables, "variable", [name]);
@@ -260,12 +273,29 @@ function sourceContract(source) {
       assert(!variable.children.some((node) => node.name === "default"));
     else assert.equal(expression(variable, "default"), JSON.stringify(defaults[name]));
   }
+  if (ownerSelected) {
+    const owner = one(variables, "variable", ["owner_probe_member"]);
+    assert.equal(expression(owner, "type"), "string");
+    assert.equal(expression(owner, "default"), "null", "Owner access must default to dormant");
+    if (owner.children.some((node) => node.name === "nullable")) assert.equal(expression(owner, "nullable"), "true");
+    assert(children(owner, "validation").length > 0, "Owner principal needs bounded syntax validation");
+    assert(
+      owner.children.every((node) => ["description", "type", "default", "nullable", "validation"].includes(node.name)),
+    );
+  }
   assert.deepEqual(
     sorted(nodes.filter((node) => node.name === "output").map((node) => node.labels[0])),
     sorted(outputs),
   );
   const resources = nodes.filter((node) => node.name === "resource");
-  assert.deepEqual(sorted(resources.map((node) => node.labels.join("."))), sorted(resourceBlocks));
+  assert.deepEqual(
+    sorted(resources.map((node) => node.labels.join("."))),
+    sorted([...resourceBlocks, ...(ownerSelected ? [ownerProbeResource] : [])]),
+  );
+  if (ownerSelected) {
+    const mint = one(resources, "resource", ["google_service_account_iam_member", "owner_probe_minter"]);
+    assert.equal(expression(mint, "depends_on"), '[google_project_service.required["iamcredentials.googleapis.com"]]');
+  }
   for (const resource of resources) {
     assert(!resource.children.some((node) => node.name === "provider"), "Resource provider overrides forbidden");
     const protectedType = [
@@ -434,7 +464,7 @@ function mocked(source, runs, verbose = true) {
   }
 }
 
-function resources(plan) {
+function resources(plan, input = defaults) {
   assert(Array.isArray(plan.resource_changes), "Missing complete resource changes");
   const pairs = plan.resource_changes.map((row) => {
     assert.equal(row.mode, "managed");
@@ -467,12 +497,13 @@ function resources(plan) {
     "google_project_iam_member.stage_cost_reader",
   ];
   assert.equal(expected.length, 29);
+  if (input.owner_probe_member != null) expected.push(...ownerProbeAddresses);
   assert.deepEqual(sorted(result.keys()), sorted(expected), "Unexpected/missing managed instance");
   return result;
 }
 
 function apiContract(plan, input) {
-  const rows = resources(plan);
+  const rows = resources(plan, input);
   for (const api of apis) {
     const value = rows.get(index("google_project_service.required", api));
     assert.equal(value.project, input.project_id);
@@ -482,7 +513,7 @@ function apiContract(plan, input) {
   }
 }
 function bucketContract(plan, input) {
-  const rows = resources(plan);
+  const rows = resources(plan, input);
   for (const state of states) {
     const value = rows.get(index("google_storage_bucket.state", state));
     assert.equal(value.project, input.project_id);
@@ -504,7 +535,7 @@ function bucketContract(plan, input) {
   }
 }
 function registryContract(plan, input) {
-  const value = resources(plan).get("google_artifact_registry_repository.images");
+  const value = resources(plan, input).get("google_artifact_registry_repository.images");
   assert.equal(value.project, input.project_id);
   assert.equal(value.location, input.region);
   assert.equal(value.repository_id, input.registry_id);
@@ -518,7 +549,7 @@ function registryContract(plan, input) {
   assert.equal(value.vulnerability_scanning_config[0].enablement_config, "DISABLED");
 }
 function identityContract(plan, input) {
-  const rows = resources(plan);
+  const rows = resources(plan, input);
   for (const id of accounts) {
     const value = rows.get(index("google_service_account.identity", id));
     assert.equal(value.project, input.project_id);
@@ -529,7 +560,7 @@ function identityContract(plan, input) {
   }
 }
 function iamContract(plan, input) {
-  const rows = resources(plan);
+  const rows = resources(plan, input);
   const member = (id) => `serviceAccount:${email(input.project_id, id)}`;
   const repositoryGrant = (address, role, id) => {
     const value = rows.get(address);
@@ -641,9 +672,28 @@ function federationValues(rows, input) {
   assert.deepEqual(grant.condition ?? [], []);
 }
 function federationContract(plan, input) {
-  federationValues(resources(plan), input);
+  federationValues(resources(plan, input), input);
+}
+/** The owner gets only identity-token minting on the two probes; no service or project authority is implied. */
+function ownerProbeContract(plan, input) {
+  const rows = resources(plan, input);
+  if (input.owner_probe_member == null) {
+    for (const address of ownerProbeAddresses) assert(!rows.has(address));
+    return;
+  }
+  for (const [environment, prefix] of [
+    ["stage", "stage"],
+    ["production", "prod"],
+  ]) {
+    const grant = rows.get(index(ownerProbeResource, environment));
+    assert.equal(grant.service_account_id, accountName(input.project_id, `mp3-${prefix}-probe`));
+    assert.equal(grant.role, "roles/iam.serviceAccountOpenIdTokenCreator");
+    assert.equal(grant.member, input.owner_probe_member);
+    assert.deepEqual(grant.condition ?? [], []);
+  }
 }
 const checks = [
+  ownerProbeContract,
   apiContract,
   bucketContract,
   registryContract,
@@ -1125,4 +1175,270 @@ test("federation oracle has a literal valid counterpart and rejects each trust r
     mutate(copy);
     assert.throws(() => federationValues(copy, defaults), { code: "ERR_ASSERTION" });
   }
+});
+
+let ownerPlans;
+function positiveOwnerPlans() {
+  if (ownerPlans instanceof Error) throw ownerPlans;
+  if (!ownerPlans) {
+    try {
+      const inputs = [ownerProbeInput, { ...alternate, owner_probe_member: "user:Owner.Name+Stage@Example.INVALID" }];
+      ownerPlans = mocked(
+        sourceFiles(),
+        inputs.map((input, i) => runBlock(`owner_positive_${i}`, input)),
+      );
+      assert.equal(ownerPlans.length, inputs.length);
+      ownerPlans.forEach((run, i) => complete(run.plan, inputs[i]));
+    } catch (error) {
+      ownerPlans = error;
+      throw error;
+    }
+  }
+  return ownerPlans;
+}
+
+test("owner probe source introduces only a validated nullable default-null input and fixed API-ready binding", () => {
+  const nodes = sourceContract(sourceFiles());
+  const variable = one(nodes, "variable", ["owner_probe_member"]);
+  assert.equal(expression(variable, "type"), "string");
+  assert.equal(expression(variable, "default"), "null");
+  if (variable.children.some((node) => node.name === "nullable"))
+    assert.equal(expression(variable, "nullable"), "true");
+  const grant = one(nodes, "resource", ["google_service_account_iam_member", "owner_probe_minter"]);
+  assert.equal(expression(grant, "depends_on"), '[google_project_service.required["iamcredentials.googleapis.com"]]');
+});
+
+test("omitted and explicit-null owner access preserve the exact 29 resources and six output values", () => {
+  const original = positivePlans()[0].plan;
+  complete(original, defaults);
+  const input = { ...defaults, owner_probe_member: null };
+  const plans = mocked(sourceFiles(), [runBlock("owner_explicit_null", input)]);
+  assert.equal(plans.length, 1);
+  complete(plans[0].plan, input);
+  assert.deepEqual(sorted(resources(plans[0].plan, input).keys()), sorted(resources(original).keys()));
+  assert.deepEqual(plans[0].plan.output_changes, original.output_changes);
+});
+
+test("explicit owner access creates exactly two token-only probe grants in default and portable alternate projects", () => {
+  const plans = positiveOwnerPlans();
+  assert.equal(plans.length, 2);
+  assert.equal(resources(plans[0].plan, ownerProbeInput).size, 31);
+  const ordinary = positivePlans()[0].plan;
+  const rows = resources(plans[0].plan, ownerProbeInput);
+  for (const address of ownerProbeAddresses) rows.delete(address);
+  assert.deepEqual(sorted(rows.keys()), sorted(resources(ordinary).keys()));
+  // Each original row passes all prior configured-value predicates; randomized mock-only metadata is not evidence.
+  assert.deepEqual(plans[0].plan.output_changes, ordinary.output_changes);
+});
+
+test("owner mailbox boundary accepts 64-byte local and 254-byte total ASCII email without changing scope", () => {
+  const mailbox = `${"a".repeat(64)}@${"b".repeat(63)}.${"c".repeat(63)}.${"d".repeat(61)}`;
+  assert.equal(mailbox.length, 254);
+  const input = { ...defaults, owner_probe_member: `user:${mailbox}` };
+  const plans = mocked(sourceFiles(), [runBlock("owner_mailbox_maximum", input)]);
+  assert.equal(plans.length, 1);
+  complete(plans[0].plan, input);
+});
+
+test("malformed owner principals fail their own validation while null remains an accepted absence", () => {
+  const domain63 = "d".repeat(63);
+  const invalid = [
+    "",
+    " ",
+    "allUsers",
+    "allAuthenticatedUsers",
+    "owner@example.invalid",
+    "group:owner@example.invalid",
+    "domain:example.invalid",
+    "serviceAccount:owner@example.invalid",
+    "principal://iam.googleapis.com/example",
+    "user:https://example.invalid",
+    "User:owner@example.invalid",
+    "user: owner@example.invalid",
+    "user:owner@example.invalid ",
+    "user:owner@example.invalid\n",
+    "user:owner\n@example.invalid",
+    "user:owner@example.invalid\t",
+    'user:"owner"@example.invalid',
+    "user:é@example.invalid",
+    "user:owner@exämple.invalid",
+    "user:@example.invalid",
+    "user:owner@",
+    "user:owner@example",
+    "user:owner@example.x",
+    "user:owner@example.123",
+    "user:.owner@example.invalid",
+    "user:owner.@example.invalid",
+    "user:owner..name@example.invalid",
+    "user:owner@-example.invalid",
+    "user:owner@example-.invalid",
+    "user:owner@example..invalid",
+    `user:owner@${"d".repeat(64)}.invalid`,
+    `user:${"a".repeat(65)}@example.invalid`,
+    `user:${"a".repeat(64)}@${domain63}.${domain63}.${"d".repeat(62)}`,
+    'user:owner@example.invalid" role = "roles/owner',
+    7,
+    true,
+  ];
+  const runs = invalid.map((owner_probe_member, i) =>
+    runBlock(
+      `invalid_owner_${i}`,
+      {
+        project_id: defaults.project_id,
+        owner_probe_member,
+      },
+      "owner_probe_member",
+    ),
+  );
+  assert.deepEqual(mocked(sourceFiles(), runs, false), []);
+});
+
+test("owner grant oracle has a literal token-only counterpart and rejects altered roles, targets and members", () => {
+  const plan = structuredClone(positivePlans()[0].plan);
+  for (const [environment, prefix] of [
+    ["stage", "stage"],
+    ["production", "prod"],
+  ]) {
+    plan.resource_changes.push({
+      address: index(ownerProbeResource, environment),
+      mode: "managed",
+      type: "google_service_account_iam_member",
+      provider_name: "registry.terraform.io/hashicorp/google",
+      change: {
+        actions: ["create"],
+        before: null,
+        after: {
+          service_account_id: accountName(defaults.project_id, `mp3-${prefix}-probe`),
+          role: "roles/iam.serviceAccountOpenIdTokenCreator",
+          member: ownerProbeInput.owner_probe_member,
+          condition: [],
+        },
+      },
+    });
+  }
+  complete(plan, ownerProbeInput);
+  const mutations = [
+    ...[
+      "roles/iam.serviceAccountTokenCreator",
+      "roles/iam.serviceAccountUser",
+      "roles/run.invoker",
+      "roles/run.admin",
+      "roles/editor",
+      "roles/owner",
+    ].map((role) => (copy) => {
+      copy.resource_changes.find((row) => row.address === ownerProbeAddresses[0]).change.after.role = role;
+    }),
+    ...["mp3-stage-runtime", "mp3-prod-runtime", "mp3-stage-deployer", "mp3-prod-deployer", "mp3-prod-probe"].map(
+      (id) => (copy) => {
+        copy.resource_changes.find((row) => row.address === ownerProbeAddresses[0]).change.after.service_account_id =
+          accountName(defaults.project_id, id);
+      },
+    ),
+    (copy) => {
+      copy.resource_changes.find((row) => row.address === ownerProbeAddresses[1]).change.after.service_account_id =
+        accountName("foreign-project-123", "mp3-prod-probe");
+    },
+    ...[
+      "allUsers",
+      "user:other@example.invalid",
+      `serviceAccount:${email(defaults.project_id, "mp3-prod-deployer")}`,
+    ].map((member) => (copy) => {
+      copy.resource_changes.find((row) => row.address === ownerProbeAddresses[1]).change.after.member = member;
+    }),
+    (copy) => {
+      copy.resource_changes.find((row) => row.address === ownerProbeAddresses[0]).change.after.condition = [
+        { expression: "true" },
+      ];
+    },
+    (copy) => {
+      copy.resource_changes = copy.resource_changes.filter((row) => row.address !== ownerProbeAddresses[0]);
+    },
+    (copy) => {
+      copy.resource_changes.push(
+        structuredClone(copy.resource_changes.find((row) => row.address === ownerProbeAddresses[0])),
+      );
+    },
+    (copy) => {
+      copy.resource_changes.push({
+        ...structuredClone(copy.resource_changes[0]),
+        address: "google_project_iam_member.owner_extra",
+        type: "google_project_iam_member",
+      });
+    },
+    (copy) => {
+      copy.output_changes.owner_token = {
+        actions: ["create"],
+        after: "synthetic-forbidden",
+        after_unknown: false,
+        after_sensitive: false,
+      };
+    },
+  ];
+  for (const mutate of mutations) {
+    const changed = structuredClone(plan);
+    mutate(changed);
+    assert.throws(() => complete(changed, ownerProbeInput), { code: "ERR_ASSERTION" });
+  }
+  assert.throws(() => complete(plan, defaults), { code: "ERR_ASSERTION" }, "Dormant input cannot admit owner grants");
+});
+
+test("actual owner configuration role controls reach plans then reject broader minting or service authority", () => {
+  complete(positiveOwnerPlans()[0].plan, ownerProbeInput);
+  const roles = [
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/iam.serviceAccountUser",
+    "roles/run.invoker",
+    "roles/run.admin",
+    "roles/owner",
+  ];
+  for (const [i, role] of roles.entries()) {
+    const changed = mutateAttribute(sourceFiles(), ownerProbeResource, ["role"], JSON.stringify(role));
+    const plans = mocked(changed, [runBlock(`unsafe_owner_role_${i}`, ownerProbeInput)]);
+    assert.equal(plans.length, 1, "Role control must reach a real mock plan");
+    assert.throws(() => complete(plans[0].plan, ownerProbeInput), { code: "ERR_ASSERTION" });
+  }
+});
+
+test("actual owner target and member controls reject nonprobe or crossed identity grants after planning", () => {
+  complete(positiveOwnerPlans()[0].plan, ownerProbeInput);
+  for (const [i, id] of ["mp3-stage-runtime", "mp3-prod-runtime", "mp3-stage-deployer", "mp3-prod-probe"].entries()) {
+    const changed = mutateAttribute(
+      sourceFiles(),
+      ownerProbeResource,
+      ["service_account_id"],
+      `google_service_account.identity[${JSON.stringify(id)}].name`,
+    );
+    const plans = mocked(changed, [runBlock(`unsafe_owner_target_${i}`, ownerProbeInput)]);
+    assert.equal(plans.length, 1);
+    assert.throws(() => complete(plans[0].plan, ownerProbeInput), { code: "ERR_ASSERTION" });
+  }
+  for (const [i, member] of ["user:other@example.invalid", "allUsers"].entries()) {
+    const changed = mutateAttribute(sourceFiles(), ownerProbeResource, ["member"], JSON.stringify(member));
+    const plans = mocked(changed, [runBlock(`unsafe_owner_member_${i}`, ownerProbeInput)]);
+    assert.equal(plans.length, 1);
+    assert.throws(() => complete(plans[0].plan, ownerProbeInput), { code: "ERR_ASSERTION" });
+  }
+});
+
+test("optional owner source refuses missing API readiness, private defaults and extra authority before initialization", () => {
+  const source = sourceFiles();
+  const nodes = sourceContract(source);
+  one(nodes, "variable", ["owner_probe_member"]);
+  one(nodes, "resource", ["google_service_account_iam_member", "owner_probe_minter"]);
+  for (const changed of [
+    mutateAttribute(source, ownerProbeResource, ["depends_on"], "[]"),
+    {
+      ...source,
+      "variables.tf": source["variables.tf"].replace(
+        /(variable\s+"owner_probe_member"\s*\{[\s\S]*?default\s*=\s*)null/,
+        '$1"user:tracked-owner@example.invalid"',
+      ),
+    },
+    {
+      ...source,
+      "main.tf": `${source["main.tf"]}\nresource "google_project_iam_member" "owner_extra" {\n project = var.project_id\n role = "roles/run.admin"\n member = var.owner_probe_member\n}\n`,
+    },
+    { ...source, "outputs.tf": `${source["outputs.tf"]}\noutput "owner_member" { value = var.owner_probe_member }\n` },
+  ])
+    assert.throws(() => sourceContract(changed), { code: "ERR_ASSERTION" });
 });
