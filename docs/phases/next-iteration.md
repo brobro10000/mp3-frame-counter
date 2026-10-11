@@ -16,10 +16,12 @@ remains in its immutable source. Main run 38084476141 passed and published v0.2.
 [completion evidence](#profile-declarations-protected-main-completion) verifies that prerequisite. The direct dependent
 was immediately reconciled onto actual merged main while publication was verified in parallel.
 
-The next three-card window is **PUBLISHER-HANDOFF**, **ACCESS-BACKEND** and **SAME-RUN-HANDOFF**. The first adds a
-publisher receipt and immutable Actions artifact; the second protects existing access state after its reviewed initial
-creation; the third validates the direct successful publisher handoff. Launcher, registry transfer, federation and
-runtime delivery remain separate future scope.
+The next three-card window is **ACCESS-BACKEND**, **ACCESS-IAM-DEFAULTS** and the first pure unit of
+**SAME-RUN-HANDOFF**. PUBLISHER-HANDOFF merged as PR #33 at `781b334230d956485abbc508fcfe5de2b2684305`; its actual main
+publication and new producer artifact are verified below. PR #34 was immediately reconciled onto that main and
+retargeted, with fresh required checks. The IAM correction belongs to local bootstrap so remote-state trust does not
+create a backend dependency cycle. Authenticated acquisition/replay, launcher, registry, federation and runtime delivery
+remain separate future scope.
 
 Merge an approved PR as soon as its required checks and prerequisites pass. Immediately reconcile and retarget its
 direct dependents onto the actual merged main, then refresh their checks and companion review. Avoid accumulating
@@ -327,51 +329,46 @@ real provider readback remain separate operational evidence. The original bounde
 
 <a id="pr-card-3--publisher-handoff-emit-an-authenticated-publisher-receipt"></a>
 
-## PR card 1 — PUBLISHER-HANDOFF: Emit an authenticated publisher receipt
+<a id="pr-card-1--publisher-handoff-emit-an-authenticated-publisher-receipt"></a>
 
-**Outcome:** after verified software publication, emit a bounded immutable Actions artifact and fixed successful-step
-receipt binding its exact ID, archive digest and raw handoff hash. Same-run job outputs expose validated locators.
-Historical acquisition and stage deployment remain separate; no self-hashed file becomes authority by itself.
+### PUBLISHER-HANDOFF protected-main completion
 
-**Prerequisites:** verified v0.3.30 publication; owner roadmap authority; independent review of the
-[closed handoff contract](../deployment/publisher-handoff.md), followed by independently authored expectations before
-implementation. This governance work can proceed beside ACCESS-FOUNDATION and requires no cloud resource or token.
+[PR #33](https://github.com/brobro10000/mp3-frame-counter/pull/33) merged at **2026-10-11 00:16:26Z** as
+`781b334230d956485abbc508fcfe5de2b2684305`, sole parent `30ad90cdb27be67e5bfb01197e9b3a40a81e1904`, tree
+`9001a9048c69fc137db0bc35f635bb7638695869`, identical to reviewed head `64e30f081a8d076d0afc88ee4383ae334c7dbfea`.
+Companion `brobro1000` posted
+[automated approval 5481299949](https://github.com/brobro10000/mp3-frame-counter/pull/33#pullrequestreview-5481299949)
+after a clean complete review. Owner `brobro10000` merged normally with passing checks and no unresolved conversations.
+[PR run 38096791531, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38096791531) passed 655
+tooling tests, twenty gate tests, nineteen Mermaid renders, 120 units and all 72 required external cases with cleanup.
+Root rehashed the independent audit's nineteen records and matched 195 exact log citations. Audit SHA256:
+`4ab446d0667097e759dc21aa91345967ed8ad0765775523b0a69df76ecf4d52c`. The earlier bot-superseded run remains cancelled.
 
-**Owned executable paths:** new `scripts/publisher-handoff.mjs` and `.test.mjs`; existing `scripts/publish-release.mjs`,
-`scripts/publish-release-evidence.mjs` (workflow guard only unless a small shared validator is justified),
-`scripts/publish-release.test.mjs`, `.github/workflows/ci.yml` and one tooling registration in `package.json`. The old
-`acceptance-publication.test.mjs` and `release-allocation-publication.test.mjs` fixtures may gain observed numeric IDs
-required by the additive result contract; preserve their original decisions and byte goldens. Independent author owns
-tests/expected decisions; separate implementer owns the emitter/receipt/guard/workflow changes. Root owns narrow phase,
-contract, validation and release-process prose. Serialize shared workflow/publisher edits.
+[Main run 38097867539, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38097867539) passed
+validation and publication at **00:23:20Z**, including 655 tooling tests, twenty gate tests, nineteen Mermaid renders,
+120 units and all 72 required cases with scoped cleanup. Release **409290121**, **v0.3.33**, published at **00:23:15Z**
+with ten assets and `deployed: false`. Root verified source/base/run/admission, required docs-v1, pending hosted-v1,
+configuration/image metadata and all eight downloaded metadata assets. Original admission SHA256 is
+`0c1f78be7e4d2e906516de59c83aea7f7488a92ad6a5440f5e0560a205617cf3`; metadata-verification SHA256 is
+`6c3c6c851e0d0732f6948d3c6c8909f3a9a9ef18484b8b16277fa8938120f102`. Neither Docker image archive was downloaded.
 
-**Read-only:** ten existing release assets and their generation functions, reservation/bundle/preparation schemas,
-acceptance source/bindings/resolver, product, dependencies, infrastructure, release triggers and mandatory job
-identities. No deployment consumer, registry transfer, OIDC permission, cloud call or new workflow job.
+The publisher's upload and receipt steps succeeded. Actions artifact **11686528154**, **3,558 bytes**, has archive
+SHA256 `922b4bdb0f1da1376b40e67609e94d578f36354a292a5ad6012ba914a4bd8f34`, raw handoff SHA256
+`c6269a29611b2de805707d4795ed5fad0e8581e18bfdc8357c7ec1f6f648dbcf`, and observed expiry **2027-01-09T00:16:29Z**. Root
+downloaded that exact artifact through authenticated GitHub CLI, checked both hashes, fixed STORE framing/CRC and the
+new pure reader, then matched its original/publisher contexts and all ten asset IDs, names, sizes and hashes to the
+verified release. Cross-binding record SHA256: `9f30fbfea4c6808888f9bca28274c066a63583515f97f9110f4aa6f533a8b60a`. This
+establishes an observed live producer and archive compatibility; it does not implement the future CI acquisition/replay
+adapter or prove hosted delivery.
 
-**Required behavior:** follow the closed two-API contract and fixed receipt CLI. Bind original admission context/digest
-separately from a later publisher attempt; retain observed numeric repository/asset identities. Write the fixed private
-handoff only after successful publication. Upload only that file with the pinned action, no overwrite, requested 90-day
-retention; bind exact uploader outputs in the fixed receipt step. Missing/failed receipt gives no usable handoff. A
-failed handoff never rolls back a published release or rewrites its bytes. Retry may emit a new attempt-specific handoff
-only after the existing release and original bundle are reverified.
+The completed source
+[card](https://github.com/brobro10000/mp3-frame-counter/blob/781b334230d956485abbc508fcfe5de2b2684305/docs/phases/next-iteration.md#pr-card-1--publisher-handoff-emit-an-authenticated-publisher-receipt)
+and [implementation evidence](../validation/publisher-handoff.md) preserve its bounded history. The software release
+remains independent of deployment; no application service or production candidate was deployed.
 
-**Test first:** independent literal records and synthetic GitHub observations cover closed schema/purity, original vs
-publisher attempts, raw vs canonical hashes, all ten asset identities, publication ordering/failures, exact fixed CLI
-file/context/output custody, workflow/permission wiring and collision/retry failures. Preserve a real missing-API red;
-review expectations before separate implementation. Historical step-log/API compatibility and archive acquisition are
-explicit future-reader tests, not claimed passing behavior here.
+<a id="pr-card-2--access-backend-protect-access-state-in-its-operations-bucket"></a>
 
-**Validation and review:** focused publisher/handoff tests, then complete tooling, workflow/policy/format/portability
-and ordinary mandatory product acceptance. Exact-head companion approval precedes owner merge. Verify actual main
-publication still has ten original assets; observe the additional Actions artifact/receipt/job outputs separately. A
-source or mock pass is not a live producer or historical-authentication pass.
-
-**Rollback and stop:** an emitter/upload failure leaves the software release intact and blocks delivery. Preserve failed
-receipts and immutable artifacts; no deletion/overwrite fallback. Stop before historical downloader, registry, stage,
-production, reconciliation/backfill or release-finalization implementation. Production retains human intervention.
-
-## PR card 2 — ACCESS-BACKEND: Protect access state in its operations bucket
+## PR card 1 — ACCESS-BACKEND: Protect access state in its operations bucket
 
 **Outcome:** one empty GCS backend declaration supports an explicitly configured private state migration. Normalize the
 registry’s optional mutable-tag default so provider readback converges. Resource scope, five source files, provider
@@ -416,47 +413,96 @@ force-copy, create two authorities, silently discard state or expose bucket/cred
 backup; any migration back requires its own reviewed plan. Stop before federation, service creation, registry transfer
 or application deployment. This does not grant production deployment authority.
 
-## PR card 3 — SAME-RUN-HANDOFF: Validate the direct publisher delivery input
+## PR card 2 — ACCESS-IAM-DEFAULTS: Remove inherited project Editor access
 
-**Outcome:** a bounded consumer validates a successful publisher's exact artifact and receipt in the same workflow
-attempt, then replays original admission and required profile declarations. This is an eligibility boundary, not a
-network destination, cloud credential, image transfer or deployment authorization.
+**Outcome:** the local bootstrap root owns one empty `roles/editor` binding, eliminating the observed broad default
+account grant before access-state migration. Preserve the original seven bootstrap resources and all unrelated IAM.
 
-**Prerequisites:** published PUBLISHER-HANDOFF with observed live artifact/receipt; published source projection and
-hosted evidence helpers. Root adopts a closed consumer contract after independent design review, then an independent
-author establishes expected decisions before implementation. Historical log retrieval remains a separate unresolved
-adapter.
+**Prerequisites:** published access foundation and retained failed IAM readback; adopted
+[closed correction contract](../deployment/bootstrap-iam.md); independent expected decisions and review before
+implementation. Parallel source authoring may proceed while PR #34 validates. Actual IAM mutation requires this source's
+publication, fresh workload/cost/policy inventory and an independently reviewed saved plan against existing local state.
 
-**Owned scope:** a new narrow consumer helper and independent tests, one tooling registration, and focused contract and
-validation documentation. Shared publisher/workflow changes, if later needed for acquisition, require a separate bounded
-card. Preserve existing publisher bytes, immutable suites, admission/resolver rules and product code.
+**Owned paths:** `infra/cloud/bootstrap/main.tf`, new independent `scripts/cloud-bootstrap-iam.test.mjs`, one tooling
+registration, its mandatory policy assertion, bootstrap README and narrow contract/phase/validation prose. Root owns
+shared registration/policy/docs. The independent author owns expected plans and refusal controls; root implements only
+after their review/freeze.
 
-**Required behavior:** require direct successful `needs.publish-release` custody and all four fixed receipt outputs;
-match current publisher run/attempt/source/repository. Permit an earlier original validation attempt only through its
-separately authenticated original context and external admission digest. Validate exact artifact ID, archive digest, raw
-handoff hash and bounded archive contents before parsing. Reject extra files, traversal, links, malformed or oversized
-data. Replay original admission before reading the required declaration projection; null, candidate or pending hosted
-profiles are ineligible. Never select an older suite, convenient historical attempt or caller URL.
+**Read-only:** existing cap and access tests/source, bootstrap variables/outputs/versions/lockfile, workflows, product,
+dependencies, frozen suites and original cloud evidence. No service account keys, federation, service deployment,
+backend override, project-wide policy or unrelated grant.
 
-**Independent expectations:** valid same-run delivery and earlier original-validation retry; failed/missing publisher,
-stale attempt/source/repository, output substitution, archive/raw hash mismatch, malformed archive/content, release
-identity mismatch and profile/admission substitution. Distinguish structural tests, authenticated acquisition and live
-execution; a caller-supplied receipt alone is never external authentication.
+**Required behavior:** add solely `google_project_iam_binding.no_project_editors` using the managed project reference,
+literal `roles/editor`, empty members, Resource Manager API dependency and `prevent_destroy = true`. No condition or
+provider override. Bootstrap has eight resources and its original two sensitive outputs; access remains 23 resources. Do
+not use the display-name-dependent DEPRIVILEGE resource or rename the account. Keep bootstrap state local through this
+operation, avoiding a circular dependency on the access root's remote backend.
 
-**Validation/review:** focused deterministic tests followed by complete tooling/policy checks and mandatory CI. Review
-all authority transitions independently; obtain fresh companion approval before owner merge. Verify exact main
-publication without claiming a hosted test occurred.
+**Test first:** independent isolated native mocks for both provider aliases, two synthetic project targets, exact
+addresses/outputs/budget/API/protection/pin expectations and structural lifecycle/dependency checks. Preserve a real
+red. Valid counterparts precede mutations for extra resources/policies, another role/member/condition/project, missing
+or false safeguards, hidden backend and executable escape. These prove source decisions, not live IAM convergence.
 
-**Rollback and stop:** keep the unused consumer dormant until its acquisition/invocation path is separately reviewed.
-Stop before historical reconciliation, registry writes, provider destinations, stage workflow activation or production.
-A failed or missing handoff blocks delivery while preserving the software release.
+**Validation/review:** focused new tests, unchanged relevant cap/access checks, format/policy/portability and mandatory
+CI. Independent source review and exact-head companion approval precede normal owner merge. Verify actual publication
+before applying a reviewed saved plan. The plan may add only the empty Editor binding; the original seven resources must
+be no-op. Re-read complete project policy and scoped grants afterward, then require a bootstrap no-change plan.
+
+**Operational gate and recovery:** refresh zero Run-service/disabled Compute observations and exact cost controls.
+Disabled Compute is a bounded inventory limit, not proof of no instances. Changed workload or policy evidence stops this
+narrow correction. Preserve unrelated owner/service-agent tuples; do not automatically regrant Editor on recovery. A
+privilege regrant needs an explicit new owner decision. Preserve failed evidence and local state. Registry-default
+convergence is separately required before backend migration.
+
+**Stop:** no access-state migration, federation, runtime or production deployment in this card. Advance those separately
+after the respective operational prerequisites; every production deployment retains human intervention.
+
+<a id="pr-card-3--same-run-handoff-validate-the-direct-publisher-delivery-input"></a>
+
+## PR card 3 — SAME-RUN-HANDOFF: Validate direct publisher artifact consistency
+
+**Outcome:** the first pure unit validates supplied successful same-attempt publisher outputs, projected artifact
+metadata and exact archive bytes. It returns frozen consistency evidence, preserving original admission context for
+later replay. This deliberately bounded unit does not complete the broader authenticated consumer phase.
+
+**Prerequisites:** published handoff/source-projection/evidence helpers and observed live producer artifact before
+consumer integration. Root adopts the closed API and observed STORE-only archive format after independent review;
+independent expectations freeze before separate implementation. Pure authoring may proceed beside producer verification.
+
+**Owned scope:** new `scripts/same-run-handoff.mjs`, independent `.test.mjs`, one tooling registration and narrow
+contract/validation prose. Shared publisher/workflow, acquisition and replay changes require a later bounded card.
+Preserve existing publisher bytes, immutable suites, admission/resolver rules, infrastructure and product code.
+
+**Required behavior:** enforce closed context/outputs/metadata, success plus ready, exact current attempt and
+repository, source, run and base identities. Validate exact artifact ID/name, actual bounded ZIP SHA against external
+output/metadata, then the one-file pinned STORE framing/CRC and raw handoff SHA. Reuse publisher validators and return
+fresh deep-frozen JSON without input mutation, ambient I/O or authority markers. Refuse all failures with one sanitized
+TypeError. An older original validation attempt may remain unchanged; an older publisher attempt cannot satisfy current
+custody.
+
+**Independent expectations:** literal unequal identities and an independent CRC/writer oracle; exact result, boundary
+positives, all closed-field/type/custody failures, coherent substitutions, stale attempts, raw/archive hash separation,
+UTF-8/BOM/JSON and every record/framing/CRC refusal, immutable input/output checks and denied-capability VM
+observations. Preserve the missing-API red and distinguish it from executed behavioral refusals. Synthetic consistency
+is not GitHub authentication or a hosted pass.
+
+**Validation/review:** focused deterministic tests, complete tooling/policy and mandatory CI; independent source review
+and fresh companion approval before owner merge. Verify exact main publication. The later authenticated acquisition
+adapter must prove fixed direct-needs wiring, trusted run/repository identity, bounded exact-ID fetches, safe credential
+separation/redirects and freshness. It then re-observes release identities and replays original admission before reading
+required profiles; null/candidate/pending profiles remain ineligible. None of that later behavior is claimed here.
+
+**Rollback and stop:** leave the pure helper dormant until separately reviewed acquisition/replay and workflow consumers
+exist. No artifact network request, registry transfer, provider target, stage workflow or production execution. A
+missing or failed prerequisite blocks delivery while preserving the software release and original evidence.
 
 ## Provisional work after the three-card window
 
-Expand only when prerequisite evidence exists: trusted launcher execution and coherent promotion-consumer migration;
-exact tested-image registry transfer; publication reconciliation/backfill before handoff expiry; narrowly scoped
-federation/service IAM; runtime pair/configuration IaC; active post-publisher stage workflow and observed stage
-acceptance/recovery; production gate/finalization support. These packages remain provisional, with no guessed PRs/SHAs.
+Expand only when prerequisite evidence exists: authenticated same-run acquisition/original admission replay; trusted
+launcher execution and coherent promotion-consumer migration; exact tested-image registry transfer; publication
+reconciliation/backfill before handoff expiry; narrowly scoped federation/service IAM; runtime pair/configuration IaC;
+active post-publisher stage workflow and observed stage acceptance/recovery; production gate/finalization support. These
+packages remain provisional, with no guessed PRs/SHAs.
 
 Use sibling/stacked branches for disjoint authoring, then reconcile actual squash ancestry and obtain fresh
 checks/review for each main-target PR. Serialize shared policy, bindings, Git operations and environment changes. A
