@@ -81,7 +81,7 @@ flowchart TD
     DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity<br/>validated run workflow revision matches source revision"]
     STAGECHECK --> SCUSTODY["Preserve and revalidate original stage custody<br/>actual launch, result, observations and cleanup"]
     SCUSTODY --> RECOVERY["Demonstrate same-candidate stage recovery<br/>restore access and retain fresh passing stage custody"]
-    RECOVERY --> APPROVE["Present the exact verified candidate and recovery evidence to the owner"]
+    RECOVERY --> APPROVE["Human approves exact production candidate and recovery evidence"]
     APPROVE --> PROD["Owner deploys the same image pair"]
     PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases"]
     BRIDGE --> CUSTODY["Preserve and revalidate original production custody<br/>authenticate original result and lifecycle evidence"]
