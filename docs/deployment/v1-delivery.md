@@ -46,10 +46,10 @@ unchanged.
 The ordinary CI publisher remains the software-release writer. A narrow exception permits the authenticated numeric
 repository owner to call `finalizeV1Release(bundle, evidence, api, generatedDirectory)` from the existing publisher for
 fixed same-source `v1.0.0`, after supervised production completion. The caller must first verify the original bundle
-with its independent admission digest, resolve the required hosted-v1 projection from that source, and authenticate the
-human approval, provider observations and demonstrated recovery. Hashes bind these supplied facts; they cannot establish
-approval. The finalizer also observes the actual owner identity, original successful checks, protected-main ancestry,
-published candidate tag and ten exact SHA-256/size identities, and rehashes the local bytes before writes.
+with its independent admission digest, resolve the required hosted profile projection from that source, and authenticate
+the human approval, provider observations and demonstrated recovery. Hashes bind these supplied facts; they cannot
+establish approval. The finalizer also observes the actual owner identity, original successful checks, protected-main
+ancestry, published candidate tag and ten exact SHA-256/size identities, and rehashes the local bytes before writes.
 
 Supply the closed `{projection, stage, production, approval, recovery, operation, productionStartedAt}` evidence record.
 Both hosted inputs use the existing `validateHostedAcceptance` shape with their original suite results, launch IDs,
@@ -97,3 +97,16 @@ project custom role may grant stage `resourcemanager.projects.get`, `billing.res
 usage via `serviceusage.services.use`; it cannot change budgets, billing or the cap. This permits reading single-project
 budgets in the dedicated project, not per-budget IAM isolation. The delivery code reads only the two retained cost
 identities. No billing-account viewer/admin role or production federation belongs in V1.
+
+## Cloud Run public health compatibility — 2026-10-11
+
+The real authenticated stage serves the UI, documentation and known-count upload, while the provider rejects public
+`/healthz` before the request reaches NGINX. Google documents reserved ending-z paths and recommends avoiding them in
+[Cloud Run's known issues](https://docs.cloud.google.com/run/docs/known-issues#reserved-url-paths). Internal container
+probes and local `/healthz` behavior remain valid; those observations do not pass the frozen public HS-17 case.
+
+The delivery consumers support exactly the historical `hosted-v1` and proposed `hosted-health-v1` revisions, with exact
+required admission/declaration/report equality and unchanged 72/22/3 inventories. This compatibility adds no successor
+binding or activation. Independently author and review the narrow successor, bind its actual protected-main merge, then
+add the frontend-local `/health` alias as the activating product change. Preserve the original contract, suite Git
+objects and failed hosted evidence. A candidate or pending binding cannot satisfy stage acceptance or finalization.

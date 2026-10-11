@@ -307,7 +307,10 @@ function requireFinalizationEvidence(bundle, input, publicationSha256) {
   const { manifest, origin } = bundle;
   assert.equal(origin.sourceRevision, manifest.sourceRevision, "Bundle origin source differs");
   assert.equal(origin.workflowRevision, manifest.sourceRevision, "Original workflow source differs");
-  assert.equal(manifest.identity.evidence.contractRevision, "hosted-v1", "Required hosted-v1 suite is missing");
+  assert(
+    ["hosted-v1", "hosted-health-v1"].includes(manifest.identity.evidence.contractRevision),
+    "Required hosted suite is missing",
+  );
   assert.equal(manifest.identity.evidence.baselinePublication, "protected-main");
   assert.deepEqual(
     manifest.identity.evidence.acceptance,
@@ -325,7 +328,11 @@ function requireFinalizationEvidence(bundle, input, publicationSha256) {
   const declarations = validateAcceptanceProfiles(projection.declarationInput);
   assert.deepEqual(projection.required, declarations, "Required profile projection differs from its declarations");
   assert.equal(declarations.mode, "profiles-v1");
-  assert.equal(declarations.contractRevision, "hosted-v1");
+  assert.equal(
+    declarations.contractRevision,
+    manifest.identity.evidence.contractRevision,
+    "Required hosted declaration revision differs from the original release",
+  );
   finalizationHash(projection.profilesSha256);
   finalizationFields(projection.inventorySha256, ["stage", "production"]);
   for (const [profile, count] of [

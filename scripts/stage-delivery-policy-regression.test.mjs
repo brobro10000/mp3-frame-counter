@@ -112,3 +112,48 @@ test("both observed and planned containers reject automatic base-image enrollmen
       assert.throws(() => check(value), `${side} container ${index}`);
     }
 });
+
+// Cloud Run IAM state uses a fully qualified service name; both accepted representations must name this exact target.
+test("stage IAM names accept the trusted full resource on both sides and retain short-name compatibility", () => {
+  for (const update of [false, true]) {
+    check(plan(update));
+    const value = plan(update);
+    for (const row of value.resource_changes.slice(1))
+      for (const side of ["before", "after"]) row.change[side].name = resource;
+    check(value);
+  }
+});
+
+test("stage IAM names reject coherent foreign full names rather than trusting the final basename", () => {
+  check(plan());
+  for (const index of [1, 2])
+    for (const name of [
+      "projects/foreign-project/locations/us-central1/services/mp3-stage",
+      "projects/synthetic-stage-123/locations/europe-west1/services/mp3-stage",
+      "projects/synthetic-stage-123/locations/us-central1/services/mp3-production",
+      `${resource}-other`,
+      `${resource}/../mp3-stage`,
+      `https://run.googleapis.com/v2/${resource}`,
+    ]) {
+      const value = plan();
+      for (const side of ["before", "after"]) value.resource_changes[index].change[side].name = name;
+      assert.deepEqual(value.resource_changes[index].change.before, value.resource_changes[index].change.after);
+      assert.throws(() => check(value), `IAM row ${index}: ${name}`);
+    }
+});
+
+test("stage IAM name changes on either side remain refused by the unchanged membership/no-op guard", () => {
+  check(plan());
+  for (const index of [1, 2])
+    for (const side of ["before", "after"])
+      for (const name of [
+        "projects/foreign-project/locations/us-central1/services/mp3-stage",
+        "projects/synthetic-stage-123/locations/europe-west1/services/mp3-stage",
+        "projects/synthetic-stage-123/locations/us-central1/services/mp3-production",
+        `${resource}-other`,
+      ]) {
+        const value = plan();
+        value.resource_changes[index].change[side].name = name;
+        assert.throws(() => check(value), `IAM row ${index} ${side}: ${name}`);
+      }
+});
