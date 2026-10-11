@@ -1,6 +1,10 @@
 # Next iteration: phase instructions and three PR cards
 
-**Current state, 2026-10-11:** SAME-RUN-HANDOFF published
+**Current priority, 2026-10-11:** the owner narrowed delivery to an acceptable production V1. Follow the
+[bounded scope](../deployment/v1-delivery.md) and the three completion cards at the end. Earlier ordering below records
+progression and is superseded where it would add nonessential framework work before V1.
+
+**Earlier state, 2026-10-11:** SAME-RUN-HANDOFF published
 [v0.3.35](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.35) from main
 `bcdda0505e42120201e7377888dda44a05fb39a3` after passing main CI. Docs-v1 remains required and hosted-v1 remains bound
 and pending. No application service is deployed. The initial access resources exist, but failed IAM/default readbacks
@@ -394,143 +398,86 @@ PR #37 merged at `72081b34b4e591691f2171cb4de893313f469a8b` on 2026-10-11 at 01:
 [run 38100736309](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38100736309) passed and the companion
 [approved its exact head](https://github.com/brobro10000/mp3-frame-counter/pull/37#pullrequestreview-5481468739). All
 708 tooling tests, 120 units and 72 required local cases passed. PR #36 was immediately reconciled onto this actual
-main. Fresh dependent checks/review and verified prerequisite publication remain required; the original failed admission
-run remains historical evidence. No live IAM change or state migration is established by the merge.
+main. Its main run 38101567859 passed and published v0.3.36. The original failed admission run remains historical
+evidence. PR #36 then passed fresh CI and companion review and merged at `07c020c40f4a0238da937b82f24e4ef50cb37824` on
+2026-10-11 at 01:47:24Z. The V1 branch immediately refreshed to that actual main. Main run 38103007563 passed and
+published v0.3.37 at 01:53:59Z; no live IAM change or state migration is established by either merge.
 
-## PR card 1 — BOOTSTRAP-IAM-ADMISSION: Classify the two corrective bootstrap paths
+## Current V1 completion window — 2026-10-11
 
-**Outcome:** trusted-base admission recognizes only `infra/cloud/bootstrap/main.tf` as governance and only its exact
-`README.md` as documentation. All other bootstrap paths retain existing closed classification.
+The owner's [V1 priority amendment](../deployment/v1-delivery.md) supersedes the extended next-card ordering. Earlier
+cards remain available in Git history. PR #37 is published as v0.3.36; PR #36 is published as v0.3.37. The working
+application already passes its required local acceptance. No hosted stage or production result is claimed.
 
-**Prerequisite and reason:** PR #36's first CI run 38099688956 failed before any head-owned command because the older
-bootstrap predates the transition gate. Preserve that correct refusal. The owner authorizes minimal prerequisite work;
-root adopts the [narrow admission contract](../testing/bootstrap-iam-admission.md). Immediately refresh PR #36 after
-this policy PR merges; verify prerequisite publication before merging the dependent. No head-owned shortcut may admit
-its own implementation.
+## PR card 1 — Finish IAM and protected state
 
-**Owned scope:** independent appended cases in `scripts/acceptance-transitions.test.mjs`, two literal cases in
-`scripts/acceptance-transitions.mjs`, and targeted contract/phase/validation prose. All Terraform, workflows, product,
-frozen suites/contracts/registry, package/dependency files and release logic are read-only in this card.
+**Outcome:** remove only the reviewed inherited Editor grant, preserve unrelated policies/cost controls, and move the
+existing access state into its protected backend with verified parity, locking and a normal no-change plan.
 
-**Test first:** use independent literal paths and temporary Git histories. Require valid governance/documentation
-counterparts, unchanged required/pending suite identities and persistent descendant applicability. Reject neighboring
-filenames/extensions and nonregular files. Preserve candidate/binding/product restrictions on the governance path; prove
-mixed-change controls reach their intended guard rather than merely failing unclassified-path lookup. Record and review
-the initial red before a different implementer adds the exact rules.
+**Scope:** PR #36 companion approval, owner merge and actual publication are complete. Apply only its independently
+reviewed saved plan, read back policies and verify the local bootstrap's eight resources. Then complete state-only
+migration for the unchanged 23-resource access root. Root owns cloud mutations; a separate reviewer checks the saved
+plan. Preserve original failures and recovery copies. No application or production deployment occurs here.
 
-**Validation and review:** focused transition tests, affected admission/consumer tests and mandatory CI. Independently
-review expectations and implementation, then obtain exact-head companion approval. Root merges through normal controls
-and verifies actual-main publication. Refresh dependent PR #36 immediately after merge and obtain fresh checks/review.
+**Exit:** actual IAM preservation and no drift, protected access-state parity/locking and 23 no-op resources. Failed or
+ambiguous operations remain stopped until their actual state is known. Advance direct dependents immediately after
+merge.
 
-**Rollback and stop:** before dependent history exists, revert coherently. After publication, preserve historical
-resolution when repairing policy. Classification does not establish safe Terraform contents, authorize resource removal,
-mutate IAM, activate hosted acceptance or permit deployment. Stop before the separate IAM implementation.
+## PR card 2 — Deliver the MVP automatically to stage
 
-## PR card 2 — ACCESS-IAM-DEFAULTS: Remove inherited project Editor access
+**Outcome:** an eligible published main release automatically deploys its exact tested image pair to authenticated
+stage, and the frozen hosted stage suite records 22 passing cases with stable observed identity and cleanup.
 
-**Outcome:** the local bootstrap root owns one empty `roles/editor` binding, eliminating the observed broad default
-account grant before access-state migration. Preserve the original seven bootstrap resources and all unrelated IAM.
+**Scope:** one governance/setup PR and its directly dependent runtime PR reuse the existing release verifier, isolated
+suite extraction and hosted protocol. Existing admission requires this product/governance separation. Add only the
+required scoped federation/access grants, two-container runtime IaC, dependent workflow job, registry transfer, provider
+identity binding and launcher. Write independent expectations before implementation, preserve frozen suites, and keep
+stage identities unable to deploy production. Use same-run bundle provenance and compare the actual release assets; no
+generalized metadata acquisition/replay framework. Keep software publication independent of stage.
 
-**Prerequisites:** published access foundation and retained failed IAM readback; adopted
-[closed correction contract](../deployment/bootstrap-iam.md); independent expected decisions and review before
-implementation. Parallel source authoring may proceed while PR #34 validates. Actual IAM mutation requires this source's
-publication, fresh workload/cost/policy inventory and an independently reviewed saved plan against existing local state.
+**Validation:** focused credential-free tests, normal mandatory CI, exact-head companion review, actual-main
+publication, reviewed IaC application and real stage acceptance. Check inclusive 20 MiB ingress, docs/CSP and immutable
+image identity through the existing suite. Demonstrate a recoverable prior revision or first-deployment withdrawal.
+Failed stage blocks promotion and preserves the release. Root serializes integration and cloud changes; agents own
+disjoint test/source paths.
 
-**Owned paths:** `infra/cloud/bootstrap/main.tf`, new independent `scripts/cloud-bootstrap-iam.test.mjs`, one tooling
-registration, its mandatory policy assertion, bootstrap README and narrow contract/phase/validation prose. Root owns
-shared registration/policy/docs. The independent author owns expected plans and refusal controls; root implements only
-after their review/freeze.
+**Exit:** one real successful automatic stage run with source, suite, release, configuration and both digest identities.
+Produce an exact candidate for human review. Stop before any production application deployment.
 
-**Read-only:** existing cap and access tests/source, bootstrap variables/outputs/versions/lockfile, workflows, product,
-dependencies, frozen suites and original cloud evidence. No service account keys, federation, service deployment,
-backend override, project-wide policy or unrelated grant.
+## PR card 3 — Human-approved production and v1.0.0
 
-**Required behavior:** add solely `google_project_iam_binding.no_project_editors` using the managed project reference,
-literal `roles/editor`, empty members, Resource Manager API dependency and `prevent_destroy = true`. No condition or
-provider override. Bootstrap has eight resources and its original two sensitive outputs; access remains 23 resources. Do
-not use the display-name-dependent DEPRIVILEGE resource or rename the account. Keep bootstrap state local through this
-operation, avoiding a circular dependency on the access root's remote backend.
+**Outcome:** deploy the verified stage image pair to production after the owner's exact approval, pass all three frozen
+production smoke cases, retain recovery evidence and finalize v1.0.0 on the same source and artifacts.
 
-**Test first:** independent isolated native mocks for both provider aliases, two synthetic project targets, exact
-addresses/outputs/budget/API/protection/pin expectations and structural lifecycle/dependency checks. Preserve a real
-red. Valid counterparts precede mutations for extra resources/policies, another role/member/condition/project, missing
-or false safeguards, hidden backend and executable escape. These prove source decisions, not live IAM convergence.
+**Scope:** a small owner-invoked production operation or supported environment gate, the production IaC configuration,
+identity/smoke/recovery checks and additive finalization through the existing release authority. No automatic production
+promotion and no new features. Ordinary v0.x releases remain immutable. No image rebuild, version reinterpretation or
+new acceptance oracle. A finalization-only failure leaves healthy production intact and permits metadata retry.
 
-**Validation/review:** focused new tests, unchanged relevant cap/access checks, format/policy/portability and mandatory
-CI. Independent source review and exact-head companion approval precede normal owner merge. Verify actual publication
-before applying a reviewed saved plan. The plan may add only the empty Editor binding; the original seven resources must
-be no-op. Re-read complete project policy and scoped grants afterward, then require a bootstrap no-change plan.
+**Validation and stop:** independently review the candidate and operation, obtain human approval, observe actual
+provider convergence and passing smoke, verify recovery and publish finalization provenance. If approval is pending,
+present the candidate and stop production work while completing other unblocked V1 tasks. Declare V1 complete only after
+these observations; capture deferred work separately for the next iteration.
 
-**Operational gate and recovery:** refresh zero Run-service/disabled Compute observations and exact cost controls.
-Disabled Compute is a bounded inventory limit, not proof of no instances. Changed workload or policy evidence stops this
-narrow correction. Preserve unrelated owner/service-agent tuples; do not automatically regrant Editor on recovery. A
-privilege regrant needs an explicit new owner decision. Preserve failed evidence and local state. Registry-default
-source/state/API reconciliation precedes state-only backend migration; an exact-source locked no-change plan immediately
-follows it before any access-resource mutation or migration-complete claim. Follow the
-[operational ordering clarification](../deployment/cloud-access-foundation.md#operational-ordering-clarification--2026-10-11).
+### ACCESS-IAM-DEFAULTS publication — 2026-10-11
 
-**Stop:** no access-state migration, federation, runtime or production deployment in this card. Advance those separately
-after the respective operational prerequisites; every production deployment retains human intervention.
+[PR #36](https://github.com/brobro10000/mp3-frame-counter/pull/36) merged at `07c020c40f4a0238da937b82f24e4ef50cb37824`
+after exact-head automated companion approval and required checks.
+[Main run 38103007563](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38103007563), attempt 1, passed 720
+tooling checks, 120 units and all 72 required local cases with cleanup. Release
+[v0.3.37](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.37), ID 409332421, published at 01:53:59Z.
+Root verified source/base, original admission, release identities and all eight metadata asset hashes. Image archives
+were not downloaded or rehashed. Docs-v1 remains required; hosted-v1 remains pending. Publication authorizes the
+reviewed prerequisite operation; it is not evidence of an IAM apply, stage deployment or hosted acceptance.
 
-## PR card 3 — ACCESS-BACKEND: Protect access state in its operations bucket
+### IAM operation completion — 2026-10-11
 
-**Outcome:** one empty GCS backend declaration supports an explicitly configured private state migration. Normalize the
-registry’s optional mutable-tag default so provider readback converges. Resource scope, five source files, provider
-pins, IAM and all destruction protections remain unchanged.
+The reviewed saved plan from v0.3.37 applied successfully. Twenty fixed API readbacks verified that only the reviewed
+unconditional project Editor binding was removed; unrelated IAM and the USD 75 Cloud Run cap / USD 100 all-service alert
+budget were preserved. The resulting eight-resource bootstrap plan has eight no-op actions and two unchanged outputs.
+The provider normalized the empty Editor members set from null to an empty list during refresh.
 
-**Prerequisites:** published access foundation; independent expectation amendment and source review before companion
-review. Initial access creation uses its original published local-state root, fresh cost readback and an independently
-reviewed saved create plan. Actual migration waits for successful resource/IAM readback and this amendment's
-publication.
-
-**Owned paths:** `infra/cloud/access/versions.tf`, the default-only `main.tf` correction, the existing
-`scripts/cloud-access-foundation.test.mjs`, and narrow access contract/validation documentation. Independent author
-changes the structural backend expectations before a separate implementer adds exactly one direct-child, empty
-`backend "gcs" {}` in the sole Terraform block. No other infrastructure file, dependency, workflow, application or
-acceptance evidence changes.
-
-**Observed corrective prerequisite:** the authorized 23-resource access apply succeeded, but its first readback planned
-one in-place registry change: re-adding `docker_config { immutable_tags = false }`. The pinned provider omits that empty
-false block and reads absence back as an empty list. Preserve this failure. After independent expectation amendment,
-remove the optional block, retain mutable tags and verify actual API/default parity plus a fresh no-change plan. Do not
-add `ignore_changes`, alter tags or apply a speculative repair.
-
-**Test first:** retain all existing mocked resource/IAM/protection expectations except the independently reviewed
-registry-default normalization. Require an absent optional Docker configuration and reject explicit overrides; preserve
-a new correction red before source removal. Require the empty GCS block; reject missing, duplicate, wrong-type,
-misplaced, populated and nested-content backends. A valid synthetic counterpart proves the exception is reachable.
-Preserve the missing-backend red before implementation. Keep CI initialization explicitly `-backend=false`;
-credential-free tests must not access remote state.
-
-**Validation/review:** focused structural/native mock tests, pinned format/locked init/validate, complete repository
-checks and normal mandatory CI. Independent source review and exact-head companion approval precede owner merge; verify
-actual main publication before operational migration.
-
-**Operational follow-through:** first reconcile **ACCESS-IAM-DEFAULTS**: the observed default Compute Editor grant can
-inherit bucket access. A separately reviewed correction must preserve owner/service-agent access and establish workload
-dependencies before remote state is trusted. Then root preserves the existing private state and backup, configures only
-the actual operations bucket and unused prefix outside Git, and performs the reviewed state migration with existing
-short-lived owner credentials. Verify lineage/resource identities, versioned object, locking and a no-change plan. Never
-force-copy, create two authorities, silently discard state or expose bucket/credential inputs in tracked files.
-
-**Rollback and stop:** before migration, revert coherently. After migration, retain the remote authority and restricted
-backup; any migration back requires its own reviewed plan. Stop before federation, service creation, registry transfer
-or application deployment. This does not grant production deployment authority.
-
-## Provisional work after the three-card window
-
-Expand only when prerequisite evidence exists: authenticated same-run acquisition/original admission replay; trusted
-launcher execution and coherent promotion-consumer migration; exact tested-image registry transfer; publication
-reconciliation/backfill before handoff expiry; narrowly scoped federation/service IAM; runtime pair/configuration IaC;
-active post-publisher stage workflow and observed stage acceptance/recovery; production gate/finalization support. These
-packages remain provisional, with no guessed PRs/SHAs.
-
-Use sibling/stacked branches for disjoint authoring, then reconcile actual squash ancestry and obtain fresh
-checks/review for each main-target PR. Serialize shared policy, bindings, Git operations and environment changes. A
-dependency's pending CI does not stop independent authoring; it does stop claiming that dependency verified or merging
-work that requires it.
-
-Before billable setup, read back the dedicated USD 75 shared Cloud Run cap and USD 100 project alert budget. Before
-hosting, prove scoped federation/invocation, exact registry content and real ingress/resource behavior. Every production
-application deployment requires human intervention for its exact candidate; do not operate the owner dispatch to
-impersonate that gate. Production identity/smoke and additive same-source/image finalization precede `v1.0.0`.
+The original follow-up failure (local Python CA lookup) and subsequent normalization refusal remain retained in private
+operator evidence. Apply was not retried. Verification used the system CA bundle and a narrow empty-set normalization.
+The completed private review digest is `44c6262de0a00cbdef42b90a63ec3567c17b3f2bff8b01a674bbf183933761ab`. Access-state
+migration and all hosted application execution remain pending.

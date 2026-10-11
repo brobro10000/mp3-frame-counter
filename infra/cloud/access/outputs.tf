@@ -25,3 +25,8 @@ output "service_account_names" {
   description = "Fully qualified dedicated service-account names, keyed by fixed account ID."
   value       = { for account_id, identity in google_service_account.identity : account_id => identity.name }
 }
+
+output "workload_identity_provider" {
+  description = "Exact GitHub provider resource name for protected-main stage and registry federation."
+  value       = google_iam_workload_identity_pool_provider.github.name
+}
