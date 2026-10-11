@@ -10,23 +10,17 @@
  */
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { lstatSync, readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { lstatSync, readFileSync } from "node:fs";
+import { isAbsolute, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { git, repositoryFiles } from "./acceptance-baseline.mjs";
 import { readAcceptanceProfileSource } from "./acceptance-profile-source.mjs";
 import { runtimeAcceptance } from "./acceptance-runtime.mjs";
 import { requireMonotonicPhase, requiredRootScripts } from "./phase-policy.mjs";
 
-const unitFiles = Object.freeze({
-  application: Object.freeze(["tests/unit/frontend-response.test.ts"]),
-  server: Object.freeze([
-    "tests/unit/docs-build.test.ts",
-    "tests/unit/docs.test.ts",
-    "tests/unit/http.test.ts",
-    "tests/unit/mp3.test.ts",
-  ]),
-});
+import { parse } from "yaml";
+import { readBackendSourceCi, requireBackendSourceCi } from "./backend-source-ci.mjs";
+import { requireBackendUnitLayout } from "./backend-unit-layout.mjs";
 
 /** Validate exact event-base/admission authority and reject removal of the integrated application's phase boundary. */
 export function requireLaneContext(root, env = process.env) {
@@ -48,19 +42,46 @@ export function requireLaneContext(root, env = process.env) {
   });
 }
 
-/** Require every unit file to have an explicit owner; absent, added, symlinked or special files cannot silently pass. */
-function requireUnitInventory(root) {
-  const directory = join(root, "tests/unit");
-  assert.deepEqual(
-    readdirSync(directory)
-      .filter((file) => /\.test\.ts$/.test(file))
-      .map((file) => `tests/unit/${file}`)
-      .sort(),
-    Object.values(unitFiles).flat().sort(),
-    "Unit inventory changed; independently assign every new file to a lane",
+/** Use actual checkout files with exact committed ancestry; deleting source cannot restore historical ownership. */
+function ownedUnitInput(root) {
+  const source = git(root, ["--no-replace-objects", "rev-parse", "HEAD"]).trim();
+  const committed = readBackendSourceCi(root, source, process.env.CI_BASE_REF || source);
+  const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  const linter = parse(readFileSync(join(root, ".github/workflows/linter.yml"), "utf8"));
+  const prefix = "node --experimental-vm-modules --test ";
+  assert(typeof pkg.scripts?.["test:tooling"] === "string" && pkg.scripts["test:tooling"].startsWith(prefix));
+  const deletedPaths = new Set(
+    git(root, ["--no-replace-objects", "ls-files", "--deleted", "-z"]).split("\0").filter(Boolean),
   );
+  const input = {
+    sourceFiles: repositoryFiles(root).filter((path) => !deletedPaths.has(path)),
+    ancestorFiles: [committed.sourceFiles, ...committed.ancestorFiles],
+    packageScripts: pkg.scripts,
+    linterCommands: linter.jobs.checks.steps.at(-1).run,
+    toolingFiles: pkg.scripts["test:tooling"].slice(prefix.length).split(" "),
+  };
+  requireBackendSourceCi(input);
+  return { sourceFiles: input.sourceFiles, ancestorFiles: input.ancestorFiles };
+}
+
+/** Require every unit file to have an explicit owner; absent, added, symlinked or special files cannot silently pass. */
+function requireUnitInventory(root, input) {
+  const { unitFiles } = requireBackendUnitLayout(input);
   for (const file of Object.values(unitFiles).flat())
     assert(lstatSync(join(root, file)).isFile(), `Unit test must be a regular file: ${file}`);
+}
+
+/** Build once at the pinned root, then run exactly owned units from their application's directory; no shell. */
+export function runCiUnitLane(root, lane, input, execute) {
+  assert(typeof root === "string" && isAbsolute(root) && resolve(root) === root && !/[\x00-\x1f\x7f]/.test(root));
+  assert(["application", "server"].includes(lane), "Unknown unit lane");
+  assert.equal(typeof execute, "function", "Unit lane needs an executor");
+  const { layout, unitFiles } = requireBackendUnitLayout(input);
+  const directory = lane === "server" ? "server" : "frontend";
+  const cwd = layout === "localized" ? join(root, directory) : root;
+  const files = unitFiles[lane].map((file) => relative(cwd, join(root, file)));
+  execute("npm", ["run", `build:${directory}`], { cwd: root });
+  execute(process.execPath, ["--test", ...files], { cwd });
 }
 
 /** Execute only the declared commands without a shell, inheriting visible logs and preserving failures. */
@@ -81,9 +102,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       run(process.execPath, ["scripts/run-ci-phase.mjs"], root);
     } else {
       requireLaneContext(root);
-      requireUnitInventory(root);
-      run("npm", ["run", `build:${lane === "application" ? "frontend" : "server"}`], root);
-      run(process.execPath, ["--test", ...unitFiles[lane]], root);
+      const input = ownedUnitInput(root);
+      requireUnitInventory(root, input);
+      runCiUnitLane(root, lane, input, (command, args, { cwd }) => run(command, args, cwd));
     }
     console.log(`${lane} lane passed; this does not independently establish acceptance, publication or deployment.`);
   } catch (error) {

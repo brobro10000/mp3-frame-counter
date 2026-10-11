@@ -9,10 +9,11 @@
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { parse } from "yaml";
 import { mandatoryJobs } from "./ci-gate.mjs";
-import { ciToolingShards, requireCiVisibilityPolicy } from "./ci-visibility-policy.mjs";
+import { selectCiToolingShards, requireCiVisibilityPolicy } from "./ci-visibility-policy.mjs";
+import { repositoryFiles } from "./acceptance-baseline.mjs";
 import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
 import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
 import { requireReleasePolicyCheckout } from "./release-manifest.mjs";
@@ -68,7 +69,52 @@ assert(
 );
 for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
   assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
-assert.deepEqual([...toolingFiles].sort(), Object.values(ciToolingShards).flat().sort(), "Tooling coverage differs");
+selectCiToolingShards(toolingFiles);
+const exactSource =
+  githubSource || execFileSync("git", ["--no-replace-objects", "rev-parse", "HEAD"], { encoding: "utf8" }).trim();
+const sourceMarkers = [
+  "server/src/app.ts",
+  "tests/unit/app.test.ts",
+  "server/tests/app.test.ts",
+  "server/tests/docs-build.test.ts",
+  "server/tests/docs.test.ts",
+  "server/tests/http.test.ts",
+  "server/tests/mp3.test.ts",
+  "frontend/tests/frontend-response.test.ts",
+  "server/src/contracts/mp3.ts",
+  "server/src/documentation/generate.ts",
+  "scripts/backend-source-ci.mjs",
+  "scripts/run-backend-source-checks.mjs",
+  "scripts/backend-unit-layout.mjs",
+];
+const sourceHistory = execFileSync(
+  "git",
+  ["--no-replace-objects", "log", "--first-parent", "--format=%H", exactSource, "--", ...sourceMarkers],
+  { encoding: "utf8", timeout: 30_000, maxBuffer: 8 * 1024 * 1024 },
+).trim();
+const deletedPaths = new Set(
+  execFileSync("git", ["--no-replace-objects", "ls-files", "--deleted", "-z"], { encoding: "utf8" })
+    .split("\0")
+    .filter(Boolean),
+);
+// The local unstaged view includes untracked additions but excludes removed index entries; ancestry stays exact.
+const workingFiles = repositoryFiles(process.cwd()).filter((path) => !deletedPaths.has(path));
+// Governance-only fixtures and pre-split history have no application inventory. Adoption cannot be deleted away.
+const requireSourceInventory =
+  sourceHistory !== "" ||
+  workingFiles.some((path) => sourceMarkers.includes(path) && !path.startsWith("scripts/")) ||
+  (callsReusable && detectPhase(workingFiles) === "integration");
+if (requireSourceInventory) {
+  const { readBackendSourceCi, requireBackendSourceCi } = await import("./backend-source-ci.mjs");
+  const sourceMetadata = readBackendSourceCi(process.cwd(), exactSource, process.env.CI_BASE_REF || exactSource);
+  requireBackendSourceCi({
+    sourceFiles: workingFiles,
+    ancestorFiles: [sourceMetadata.sourceFiles, ...sourceMetadata.ancestorFiles],
+    packageScripts: pkg.scripts,
+    linterCommands: reusableWorkflows[".github/workflows/linter.yml"]?.jobs?.checks?.steps?.at(-1)?.run,
+    toolingFiles,
+  });
+}
 assert.equal(pkg.scripts["test:gate"], "node --test scripts/ci-gate.test.mjs scripts/ci-visibility-policy.test.mjs");
 const ciPolicy = requireCiVisibilityPolicy({
   workflow,
@@ -219,7 +265,17 @@ assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node ru
 assert.equal(pkg.packageManager, `npm@${pkg.engines.npm}`);
 assert.equal(execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), pkg.engines.npm);
 assert.deepEqual(lock.packages[""].devDependencies, pkg.devDependencies);
-requireRuntimeDependencyPolicy(pkg, lock);
+const selectedBackendGraph =
+  Object.keys(pkg.dependencies ?? {}).some((name) => name !== "fastify") ||
+  ["ky", "@redocly/cli", "oxlint"].some((name) => Object.hasOwn(pkg.devDependencies, name));
+if (
+  requireSourceInventory ||
+  selectedBackendGraph ||
+  existsSync(new URL("./backend-contract-policy.mjs", import.meta.url))
+) {
+  const { requireBackendContractPolicy } = await import("./backend-contract-policy.mjs");
+  requireBackendContractPolicy(pkg, lock);
+} else requireRuntimeDependencyPolicy(pkg, lock);
 requireDocsToolPolicy(pkg, lock);
 requireFrontendToolPolicy(pkg, lock);
 assert.equal(pkg.workspaces, undefined, "Use one root package plus the isolated acceptance exception");
@@ -237,6 +293,9 @@ const allowedDevelopmentTools = new Set([
   "@types/react",
   "@types/react-dom",
   "vite",
+  "ky",
+  "@redocly/cli",
+  "oxlint",
 ]);
 assert(
   Object.keys(pkg.devDependencies).every((name) => allowedDevelopmentTools.has(name)),

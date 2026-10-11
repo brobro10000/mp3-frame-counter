@@ -14,21 +14,22 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { lstatSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { ciToolingShards } from "./ci-visibility-policy.mjs";
+import { selectCiToolingShards } from "./ci-visibility-policy.mjs";
 import { requireLaneContext } from "./run-ci-lane.mjs";
 
 try {
   assert.equal(process.argv.length, 2, "Tooling shards accept no caller arguments or skip flags");
   const shard = process.env.CI_TOOLING_SHARD;
-  assert(Object.hasOwn(ciToolingShards, shard), "Unknown or absent CI_TOOLING_SHARD");
   const root = process.cwd();
   requireLaneContext(root);
-  const files = Object.values(ciToolingShards).flat();
-  assert.equal(new Set(files).size, files.length, "Tooling policy contains duplicate files");
   const prefix = "node --experimental-vm-modules --test ";
   const command = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).scripts?.["test:tooling"];
   assert(typeof command === "string" && command.startsWith(prefix), "Missing canonical tooling inventory");
   const declared = command.slice(prefix.length).split(" ");
+  const ciToolingShards = selectCiToolingShards(declared);
+  assert(Object.hasOwn(ciToolingShards, shard), "Unknown or absent CI_TOOLING_SHARD");
+  const files = Object.values(ciToolingShards).flat();
+  assert.equal(new Set(files).size, files.length, "Tooling policy contains duplicate files");
   assert.deepEqual([...declared].sort(), [...files].sort(), "Tooling inventory differs from the reviewed full union");
   for (const file of files)
     assert(lstatSync(join(root, file)).isFile(), `Tooling test must be a regular file: ${file}`);
