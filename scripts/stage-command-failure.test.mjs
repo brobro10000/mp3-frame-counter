@@ -97,6 +97,63 @@ test("the polling wrapper cannot turn other errors echoes or split text into rea
     });
 });
 
+test("the exact resource-may-not-exist qualifier preserves the closed provider-denial record", () => {
+  const classify = subject();
+  const currentDenial = denial.replace("(or it may not exist).", "(or resource may not exist).");
+  const wrapped = `Error: Error waiting for Updating Service: error while retrieving operation: ${currentDenial}`;
+  const code7 = `Error: Error waiting for Updating Service: Error code 7, message: ${currentDenial.slice("googleapi: Error 403: ".length)}`;
+  const messages = [currentDenial, wrapped, code7, wrapped.replaceAll("'", '"'), `╷\n│ ${wrapped}\n│\n╵`];
+  for (const operation of commands)
+    for (const stderr of messages) {
+      for (const exitCode of [1, 255])
+        assert.deepEqual(classify(operation, exitCode, stderr), {
+          operation,
+          exitCode,
+          permission: "run.operations.get",
+        });
+      for (const exitCode of [0, null])
+        assert.deepEqual(classify(operation, exitCode, stderr), { operation, exitCode, permission: null });
+      const rendered = JSON.stringify(classify(operation, 1, stderr));
+      assert.ok(!rendered.includes(resource));
+      assert.ok(!rendered.includes(stderr));
+    }
+});
+
+test("the resource qualifier extension rejects near misses other permissions echoes and split text", () => {
+  const classify = subject();
+  assert.equal(classify("terraform-apply", 1, denial).permission, "run.operations.get");
+  const currentDenial = denial.replace("(or it may not exist).", "(or resource may not exist).");
+  const wrapped = `Error: Error waiting for Updating Service: error while retrieving operation: ${currentDenial}`;
+  const messages = [
+    ...[
+      "or the resource may not exist",
+      "or resource might not exist",
+      "or resource may exist",
+      "or resource does not exist",
+    ].map((qualifier) => wrapped.replace("or resource may not exist", qualifier)),
+    ...["run.operations.list", "run.services.update", "run.operations.getIamPolicy", "RUN.OPERATIONS.GET"].map(
+      (permission) => wrapped.replace("run.operations.get", permission),
+    ),
+    wrapped.replace(" denied ", " granted "),
+    wrapped.replace("Error 403", "Error 401"),
+    wrapped.replace("error while retrieving operation", "error while retrieving revision"),
+    wrapped.replace("'run.operations.get' denied", "'run.operations.get'\ndenied"),
+    wrapped.replace("or resource may not exist", "or resource may\nnot exist"),
+    wrapped.replace(`'${resource}'`, "''"),
+    wrapped.slice(0, -1),
+    `${wrapped} Additional diagnostic text.`,
+    `echo "${wrapped}"`,
+    `"${wrapped}"`,
+    JSON.stringify({ printed: wrapped }),
+  ];
+  for (const stderr of messages)
+    assert.deepEqual(classify("terraform-apply", 1, stderr), {
+      operation: "terraform-apply",
+      exitCode: 1,
+      permission: null,
+    });
+});
+
 test("unrelated grants other permissions quoted echoes and split messages do not prove read denial", () => {
   const classify = subject();
   const messages = [

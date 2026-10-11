@@ -627,7 +627,12 @@ function federationValues(rows, input) {
   assert.equal(role.stage, "GA");
   assert.deepEqual(
     sorted(role.permissions),
-    sorted(["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use"]),
+    sorted([
+      "resourcemanager.projects.get",
+      "billing.resourcebudgets.read",
+      "serviceusage.services.use",
+      "run.operations.get",
+    ]),
   );
   const grant = rows.get("google_project_iam_member.stage_cost_reader");
   assert.equal(grant.project, value.project_id);
@@ -778,7 +783,7 @@ for (const [label, check] of [
   ["seven protected dedicated identities", identityContract],
   ["exact narrow non-authoritative IAM tuples", iamContract],
   ["closed nonsecret identity outputs", outputContract],
-  ["main-push-only federation and stage-only read/usage authority", federationContract],
+  ["main-push-only federation and stage-principal project read/usage authority", federationContract],
 ]) {
   test(`mocked default and alternate inputs preserve ${label}`, () => {
     const plans = positivePlans();
@@ -907,7 +912,7 @@ for (const [label, address, path, replacement, check] of [
     "cost write escalation",
     "google_project_iam_custom_role.stage_cost_read",
     ["permissions"],
-    '["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use", "billing.budgets.update"]',
+    '["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use", "run.operations.get", "billing.budgets.update"]',
     federationContract,
   ],
   [
@@ -1045,7 +1050,12 @@ test("federation oracle has a literal valid counterpart and rejects each trust r
         project: defaults.project_id,
         role_id: "mp3StageCostRead",
         stage: "GA",
-        permissions: ["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use"],
+        permissions: [
+          "resourcemanager.projects.get",
+          "billing.resourcebudgets.read",
+          "serviceusage.services.use",
+          "run.operations.get",
+        ],
       },
     ],
     [
@@ -1084,13 +1094,31 @@ test("federation oracle has a literal valid counterpart and rejects each trust r
       copy.get(index("google_service_account_iam_member.github_federated", "mp3-registry-writer")).role =
         "roles/iam.serviceAccountTokenCreator";
     },
-    (copy) => {
-      copy.get("google_project_iam_custom_role.stage_cost_read").permissions.push("billing.budgets.update");
-    },
-    (copy) => {
+    ...[
+      "resourcemanager.projects.get",
+      "billing.resourcebudgets.read",
+      "serviceusage.services.use",
+      "run.operations.get",
+    ].map((permission) => (copy) => {
+      const role = copy.get("google_project_iam_custom_role.stage_cost_read");
+      role.permissions = role.permissions.filter((value) => value !== permission);
+    }),
+    ...[
+      "billing.budgets.update",
+      "run.operations.list",
+      "run.services.update",
+      "run.routes.invoke",
+      "run.operations.get",
+    ].map((permission) => (copy) => {
+      copy.get("google_project_iam_custom_role.stage_cost_read").permissions.push(permission);
+    }),
+    ...["mp3-prod-deployer", "mp3-prod-probe", "mp3-prod-runtime"].map((principal) => (copy) => {
       copy.get("google_project_iam_member.stage_cost_reader").member =
-        `serviceAccount:${email(defaults.project_id, "mp3-prod-deployer")}`;
-    },
+        `serviceAccount:${email(defaults.project_id, principal)}`;
+    }),
+    ...["roles/run.admin", "roles/editor", "roles/owner"].map((role) => (copy) => {
+      copy.get("google_project_iam_member.stage_cost_reader").role = role;
+    }),
   ];
   for (const mutate of mutations) {
     const copy = structuredClone(rows);

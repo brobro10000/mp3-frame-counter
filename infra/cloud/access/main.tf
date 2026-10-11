@@ -206,18 +206,19 @@ resource "google_service_account_iam_member" "github_federated" {
   }
 }
 
-# Single-project budget reads and quota usage cannot alter the retained cap or alert budget.
-# This is project-scoped read authority, not per-budget isolation or billing-account administration.
+# Project budget reads, quota usage and operation polling cannot alter cost controls or production services.
+# Known operations anywhere in this project are readable; this is not per-service or per-budget isolation.
 resource "google_project_iam_custom_role" "stage_cost_read" {
   project     = var.project_id
   role_id     = "mp3StageCostRead"
   title       = "MP3 stage cost readiness"
-  description = "Read dedicated project budgets and use its quota for bounded stage delivery."
+  description = "Read dedicated project budgets and Cloud Run operations; use quota for bounded stage delivery."
   stage       = "GA"
   permissions = [
     "resourcemanager.projects.get",
     "billing.resourcebudgets.read",
     "serviceusage.services.use",
+    "run.operations.get",
   ]
 
   depends_on = [google_project_service.required["iam.googleapis.com"]]

@@ -53,6 +53,20 @@ failure never expose raw output or turn failure into success. See the
 [recipient custody and inspection guide](stage-diagnostics.md). This adds no cloud access or production authority and
 does not establish the cause of a prior failed run.
 
+**Observed failure, 2026-10-11:** authenticated local decryption of main source
+`0edf286fec9416cc0cfa0eeafc65c952e2591aa2`,
+[run 38127133310, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38127133310), established a
+complete native Terraform error denying `run.operations.get` on the intended project/region operation. Its exact
+qualifier was `(or resource may not exist).`; the previous classifier recognized only `(or it may not exist).` Retain
+the original `permission: null` record. Extend only that exact qualifier while preserving anchored framing, typed JSON,
+bounds and echo/fragment refusal. This is observed failure evidence, not a successful stage test.
+
+Apply only the independently tested
+[operation-read amendment](v1-delivery.md#observed-operation-poll-correction--2026-10-11) through reviewed IaC. Its
+project-wide read scope includes known production operations, without mutation or invocation. The failed apply advanced
+the service despite failing its poll; review a refresh-only saved plan to reconcile computed state before retry, without
+changing runtime or IAM. Require exact role/cost readback and a fresh automatic 22-case stage pass before promotion.
+
 The current checkout policy permits only this one exact secret reference. Historical release verification still admits
 the original variable-backed workflow without rewriting its bytes or reservations. This change protects future output;
 existing logs retain their original content. See
