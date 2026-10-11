@@ -181,7 +181,12 @@ function packageKinds(before, after) {
   const newScripts = newPackage.scripts ?? {};
   for (const name of new Set([...Object.keys(oldScripts), ...Object.keys(newScripts)])) {
     if (oldScripts[name] !== newScripts[name]) {
-      kinds.add(["build", "typecheck", "test:unit", "start", "dev"].includes(name) ? "product" : "governance");
+      // Only the two reviewed component builds join product commands; arbitrary build-prefixed commands stay governance.
+      kinds.add(
+        ["build", "build:server", "build:frontend", "typecheck", "test:unit", "start", "dev"].includes(name)
+          ? "product"
+          : "governance",
+      );
     }
   }
   const { scripts: ignoredOld, ...oldFields } = oldPackage;
