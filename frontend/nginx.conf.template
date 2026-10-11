@@ -112,6 +112,15 @@ http {
             return 504 '{"error":"Documentation service timed out. Please try again."}';
         }
 
+        # Cloud Run reserves some ending-z paths; keep public health independent of the private API.
+        location = /health {
+            default_type application/json;
+            error_page 405 =405 @health_method;
+            if ($request_method != GET) {
+                return 405;
+            }
+            return 200 '{"status":"ok"}';
+        }
         location = /healthz {
             default_type application/json;
             error_page 405 =405 @health_method;
