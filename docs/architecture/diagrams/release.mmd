@@ -30,7 +30,9 @@ query: >-
   numerically. Before each standalone suite check, show exact suite selection,
   locked npm installation, package-local Chromium preparation and a bounded
   launch/close probe. Keep candidate controls and preparation evidence separate
-  from required product acceptance.
+  from required product acceptance. Show the dated current delivery pause as
+  informational: software releases continue while stage delivery is disabled,
+  and this pause is not a publication failure.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /scripts/run-ci-phase.mjs'
@@ -89,3 +91,4 @@ flowchart TD
     FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
     PROBE["Optional owner probe ID-token permission<br/>supervised hosted checks"] --> RECOVERY
     PROBE --> BRIDGE
+    RELEASE -.-> PAUSE["Current delivery pause<br/>stage disabled; software releases continue"]
