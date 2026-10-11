@@ -61,3 +61,8 @@ passed. Expand only the next three cards and leave later packages provisional.
 
 Record implemented, tested, reviewed, merged, published and deployed states separately. Stop at the card's reviewable
 handoff. Prior unattended P1–P5 authority does not authorize a new implementation card, merge, override or deployment.
+
+For the [backend-audiotarget](../requirements/backend-audio-refactor.md), own product code/tests only. Do not alter the
+frozen suite, oracle, policy expectations or applicability to obtain a pass. Raw Buffer ownership/admission, TypeBox
+projection, offline docs and no-retention controls stay mandatory; do not resume cloud or perform remote writes under
+the attachment.

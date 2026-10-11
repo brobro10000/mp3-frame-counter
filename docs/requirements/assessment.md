@@ -34,6 +34,20 @@ subsequently merged at `ce50762b`; exact main CI repeated those checks and publi
 [V1 closure](../validation/v1-closure.md) records assets, an identical publisher retry and remaining limits; the
 [execution status](../validation/execution-status.md) preserves chronology. Deployment remains deferred.
 
+## Current backend amendment and handoff — 2026-10-11
+
+The [owner amendment](backend-audio-refactor.md) preserves the assessment source and exact default JSON shape, while
+selecting computed audio count and canonical coded errors for this successor. Its identified sample result is 6089 audio
+= 6090 physical minus one supported Xing carrier; the employer's numeric oracle remains unconfirmed. Historical counts
+below retain their original physical convention and dated evidence.
+
+Use the [criterion-by-criterion handoff](../handoff/evaluation.md) for current TypeScript/Fastify/TypeBox/React source,
+localized unit tests, independent acceptance, error handling, measured resource limits and approach. The
+[known gaps](../handoff/known-gaps.md) map remaining uncertainty to provisional follow-up. Local proof is in the
+[verification record](../validation/backend-audio-refactor.md); successor binding, merge and publication must be
+recorded separately before this target is declared shipped. Major product work freezes after its reviewed merge. Hosting
+and production v1.0.0 remain deferred, independent of local assessment handoff.
+
 ## Objective and scope
 
 Build a TypeScript API that accepts an MP3 file and returns its correct frame count. The assessment also evaluates
@@ -127,3 +141,9 @@ Replace pending status with links to the relevant implementation and tests as wo
 verified only after recording the command, actual result and tested revision. An evaluation criterion can remain
 partially evidenced; a plan, source capture, passing foundation CI or retained historical orchestrator report is not
 proof that the application meets it. Preserve IDs and source provenance when revising this registry.
+
+## Local owner successor target — 2026-10-11
+
+The records above describe the released physical-count contract. The [new owner amendment](backend-audio-refactor.md)
+adopts computed audio counts, optional diagnostics and coded errors; it does not rewrite the external assignment or
+historical results. Its local implementation awaits reviewed policy/candidate adoption and actual suite binding.

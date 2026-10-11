@@ -1,6 +1,6 @@
 /**
  * Exercise the real offline docs generator with isolated copies of its fixed inputs and installed Redoc artifacts.
- * Run after locked acquisition with `node --test tests/unit/docs-build.test.ts`; no installs, renderer execution or
+ * Run after locked acquisition with `node --test server/tests/docs-build.test.ts`; no installs, renderer execution or
  * network are needed. Each child has a 20-second/one-MiB bound, and test teardown removes only its owned temporary root.
  * Mutations never touch active dist output, original package bytes, acceptance fixtures or another test's inputs.
  */
@@ -25,6 +25,7 @@ import type { TestContext } from "node:test";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const input = "server/src/docs/";
+const specification = "dist/openapi.json";
 const vendor = "node_modules/redoc/";
 const originalPath = `${vendor}bundles/redoc.standalone.js`;
 const originalHash = "dcaf76612bc4a3fbcc923a8966dee2f6146a5f32e5ce1b6f02dd60cbbf89500b";
@@ -46,9 +47,8 @@ function fixture(context: TestContext) {
   context.after(() => rmSync(root, { recursive: true, force: true }));
   for (const relative of [
     "server/src/build-docs.mjs",
-    ...["openapi.json", "index.html", "init.js", "docs.css", "redoc-logo-mini.svg", "provenance.json"].map(
-      (name) => `${input}${name}`,
-    ),
+    specification,
+    ...["index.html", "init.js", "docs.css", "redoc-logo-mini.svg", "provenance.json"].map((name) => `${input}${name}`),
     ...[
       "package.json",
       "LICENSE",
@@ -89,7 +89,11 @@ function failing(f: ReturnType<typeof fixture>, reason: RegExp, args: string[] =
   assert.match(String(result.stderr), /Documentation generation failed:/);
   assert.match(String(result.stderr), reason);
   assert.equal(existsSync(f.output), false, "Failed generation must invalidate stale output");
-  assert.deepEqual(readdirSync(join(f.root, "dist")), [], "Failed generation must remove owned staging output");
+  assert.deepEqual(
+    readdirSync(join(f.root, "dist")),
+    ["openapi.json"],
+    "Failed generation must remove owned staging output",
+  );
 }
 
 /** Return all generated relative file names recursively; unexpected filesystem entries fail instead of disappearing. */
@@ -142,7 +146,7 @@ describe("Documentation generation", () => {
       assert.deepEqual(before[`retained/${retained}`], readFileSync(join(f.root, vendor, source!)));
     assert.deepEqual(
       JSON.parse(before["openapi.yaml"]!.toString()),
-      JSON.parse(readFileSync(join(f.root, input, "openapi.json"), "utf8")),
+      JSON.parse(readFileSync(join(f.root, specification), "utf8")),
     );
     const manifest = JSON.parse(before["retained/generation.json"]!.toString());
     assert.equal(manifest.schemaVersion, 1);
@@ -214,7 +218,7 @@ describe("Documentation generation", () => {
         path: `${input}redoc-logo-mini.svg`,
         change: (bytes: Buffer) => {
           const result = Buffer.from(bytes);
-          result[0] ^= 1;
+          result[0] = result.readUInt8(0) ^ 1;
           return result;
         },
         reason: /Docs logo hash mismatch/,
@@ -276,14 +280,14 @@ describe("Documentation generation", () => {
       await context.test(name, (child) => {
         const f = fixture(child);
         passing(f.run());
-        const path = join(f.root, input, "openapi.json");
+        const path = join(f.root, specification);
         const spec = JSON.parse(readFileSync(path, "utf8"));
         spec["x-build-reference"] = { $ref: reference };
         writeFileSync(path, JSON.stringify(spec));
         failing(f, reason);
       });
     const f = fixture(context);
-    const path = join(f.root, input, "openapi.json");
+    const path = join(f.root, specification);
     const spec = JSON.parse(readFileSync(path, "utf8"));
     spec.components.schemas["own/name~value"] = { type: "string" };
     spec["x-build-reference"] = { $ref: "#/components/schemas/own~1name~0value" };

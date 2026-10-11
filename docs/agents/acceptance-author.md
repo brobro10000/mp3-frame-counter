@@ -63,3 +63,8 @@ For admission evidence, preserve the original source/base and authenticated revi
 controls from required product acceptance, and `localSelection` from CI `acceptanceAdmission`. Review temporary-history
 and negative-control expectations independently of the gate implementation; no locally fabricated observation can
 authorize binding or publication.
+
+For the [backend-audiosuccessor](../requirements/backend-audio-refactor.md), preserve physical fixture identities and
+add independently derived audio/exclusion expectations. Author in the separate candidate before product implementation;
+actual review/merge/binding remains required. Future target failures are candidate evidence, never active product
+acceptance.

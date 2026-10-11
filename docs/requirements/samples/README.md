@@ -32,3 +32,6 @@ MediaInfo 26.10 reporting 6,089 audio frames, reconciled with one complete Xing-
 inspected bytes and FFprobe packet boundaries. The physical count is 6,090.
 [P3 parser results](../../validation/p3-parser.md) and the [P4 public upload](../../validation/p4-integration.md) agree;
 neither supplied the oracle expectation.
+
+The [local audio-count successor](../backend-audio-refactor.md) displays 6,089 audio frames and preserves 6,090 physical
+frames as diagnostics. The file identity and historical physical truth above are unchanged.

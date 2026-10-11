@@ -105,3 +105,10 @@ cannot prove, reconciled supplied-sample evidence, independent image builds, all
 criteria and a reproducible handoff. Observe protected-main CI and the resulting tag/private GitHub release before
 claiming automatic release completion. Deployment, candidate verification, production approval and hosted recovery are
 deferred. CI success, human review, merge, publication and deployed success remain distinct states.
+
+## Local successor target — 2026-10-11
+
+The [backend audio-count amendment](requirements/backend-audio-refactor.md) preserves the original assessment and local
+Docker handoff, while changing the owner-defined count convention, errors and diagnostic representation. Local
+implementation is not a new release or production v1.0.0. Review/binding prerequisites remain explicit in the
+[refactor handoff](validation/backend-audio-refactor.md).

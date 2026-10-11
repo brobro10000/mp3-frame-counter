@@ -5,6 +5,7 @@ WORKDIR /build
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 COPY frontend ./frontend
+COPY server/src/contracts ./server/src/contracts
 RUN --network=none npm run build:frontend
 
 # The pinned unprivileged NGINX base supplies the shell and standard tools; no runtime package install is needed.

@@ -1,0 +1,12 @@
+# Offline semantic validation of the generated API; operation schemas/examples remain canonical application inputs.
+extends:
+  - recommended
+rules:
+  info-license: off
+  operation-summary: error
+  no-unresolved-refs: error
+  no-invalid-media-type-examples: error
+  operation-4xx-response: off
+  security-defined: off
+  # Explicit unsupported method/HEAD operations truthfully have only 405; do not invent a 200 response.
+  operation-2xx-response: off

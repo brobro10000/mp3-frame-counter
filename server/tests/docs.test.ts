@@ -1,13 +1,13 @@
 /**
- * Exercise finite docs routing and fail-closed readiness with the real generated assets. Run after `npm run build`
- * through `node --test tests/unit/docs.test.ts`; temporary source/compiled layouts and loopback listeners are removed
+ * Exercise finite docs routing and fail-closed readiness with the real generated assets. Run after `npm run build:server`
+ * through `node --test server/tests/docs.test.ts`; temporary source/compiled layouts and loopback listeners are removed
  * after each case. No acceptance fixture, renderer mock or missing-output fallback supplies a passing resource.
  */
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { once } from "node:events";
-import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { Agent, request } from "node:http";
 import type { ClientRequest, IncomingHttpHeaders } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -16,7 +16,8 @@ import { join } from "node:path";
 import { describe, test } from "node:test";
 import type { TestContext } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { createApiServer } from "../../server/src/http.ts";
+import { createApiServer } from "../src/http.ts";
+import { isApiError } from "../src/contracts/errors.ts";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const publicResources = [
@@ -70,9 +71,10 @@ function expectError(reply: Reply, status: number): void {
   assert.equal(reply.status, status);
   assert.match(reply.headers["content-type"] ?? "", /^application\/json(?:;|$)/);
   const value = JSON.parse(reply.body.toString("utf8"));
-  assert.deepEqual(Object.keys(value), ["error"]);
+  assert.deepEqual(Object.keys(value), ["code", "error"]);
   assert.equal(typeof value.error, "string");
   assert.ok(value.error.trim());
+  assert.ok(isApiError(value, status), "Finite docs errors use the same closed public catalogue");
 }
 
 describe("Documentation serving and readiness", () => {
@@ -223,9 +225,11 @@ describe("Documentation serving and readiness", () => {
     const moduleDirectory = layout === "source" ? "server/src" : "dist";
     const extension = layout === "source" ? "ts" : "js";
     await mkdir(join(directory, moduleDirectory), { recursive: true });
-    for (const name of ["http", "docs", "errors", "mp3"]) {
-      const relative = `${moduleDirectory}/${name}.${extension}`;
-      await cp(join(repository, relative), join(directory, relative));
+    for (const entry of await readdir(join(repository, moduleDirectory), { withFileTypes: true })) {
+      const relative = `${moduleDirectory}/${entry.name}`;
+      if ((entry.isDirectory() && entry.name !== "docs") || (entry.isFile() && entry.name.endsWith(`.${extension}`))) {
+        await cp(join(repository, relative), join(directory, relative), { recursive: true });
+      }
     }
     if (includeAssets) {
       await mkdir(join(directory, "dist/docs/assets"), { recursive: true });

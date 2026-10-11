@@ -101,15 +101,15 @@ http {
         # Named errors inherit all four server headers, whose policy still follows the original request namespace.
         location @docs_too_large {
             default_type application/json;
-            return 413 '{"error":"The request body exceeds the allowed size."}';
+            return 413 '{"code":"UPLOAD_TOO_LARGE","error":"The upload exceeds the 20 MiB (20,971,520-byte) limit."}';
         }
         location @docs_unavailable {
             default_type application/json;
-            return 502 '{"error":"Documentation service is unavailable. Please try again."}';
+            return 502 '{"code":"UPSTREAM_UNAVAILABLE","error":"API documentation is unavailable. Please try again."}';
         }
         location @docs_timeout {
             default_type application/json;
-            return 504 '{"error":"Documentation service timed out. Please try again."}';
+            return 504 '{"code":"UPSTREAM_TIMEOUT","error":"API documentation timed out. Please try again."}';
         }
 
         # Cloud Run reserves some ending-z paths; keep public health independent of the private API.
@@ -132,7 +132,11 @@ http {
         location @health_method {
             default_type application/json;
             add_header Allow GET always;
-            return 405 '{"error":"Use GET for this health check."}';
+            add_header Cache-Control "no-store" always;
+            add_header X-Content-Type-Options "nosniff" always;
+            add_header Referrer-Policy "no-referrer" always;
+            add_header Content-Security-Policy $public_content_security_policy always;
+            return 405 '{"code":"METHOD_NOT_ALLOWED","error":"This method is not allowed for the requested resource."}';
         }
 
         # Send normalized upload aliases to the API so it can reject their untouched raw paths with JSON.
@@ -155,6 +159,8 @@ http {
             proxy_connect_timeout 5s;
             proxy_send_timeout 5s;
             proxy_read_timeout 5s;
+            proxy_hide_header Cache-Control;
+            proxy_hide_header X-Content-Type-Options;
             error_page 413 =413 @upload_too_large;
             error_page 502 =502 @upstream_unavailable;
             error_page 504 = @upstream_timeout;
@@ -163,18 +169,18 @@ http {
         # Local ingress failures get usable JSON; actual API errors pass through without replacement.
         location @upload_too_large {
             default_type application/json;
-            return 413 '{"error":"File exceeds the 20 MiB (20971520-byte) limit."}';
+            return 413 '{"code":"UPLOAD_TOO_LARGE","error":"The upload exceeds the 20 MiB (20,971,520-byte) limit."}';
         }
         location @upstream_unavailable {
             default_type application/json;
-            return 502 '{"error":"Analysis service is unavailable. Please try again."}';
+            return 502 '{"code":"UPSTREAM_UNAVAILABLE","error":"Analysis service is unavailable. Please try again."}';
         }
         location @upstream_timeout {
             default_type application/json;
             if ($upstream_not_connected) {
-                return 502 '{"error":"Analysis service is unavailable. Please try again."}';
+                return 502 '{"code":"UPSTREAM_UNAVAILABLE","error":"Analysis service is unavailable. Please try again."}';
             }
-            return 504 '{"error":"Analysis service timed out. Please try again."}';
+            return 504 '{"code":"UPSTREAM_TIMEOUT","error":"Analysis service timed out. Please try again."}';
         }
         location / {
             try_files $uri $uri/ =404;

@@ -1,7 +1,7 @@
 /**
  * Verify an explicit local MP3 upload through the frontend, optionally checking the independently recorded sample.
  * Usage: BASE_URL=http://127.0.0.1:8080 FILE=relative/path EXPECTED=9 node scripts/smoke-local.mjs
- * SAMPLE_BASELINE=1 instead checks the private sample's fixed hash/size and independent 6090-frame expectation.
+ * SAMPLE_BASELINE=1 instead checks the private sample's fixed hash/size and independent 6089-audio-frame expectation.
  * Reads at most 20 MiB, sends raw bytes once to a loopback origin, rejects redirects and checks exact JSON/status.
  * No file contents, paths, filenames or credentials are logged; no files/settings are written. Errors exit nonzero.
  * This small check does not replace the complete frozen acceptance suite or authorize production requests.
@@ -19,7 +19,7 @@ try {
   const sample = process.env.SAMPLE_BASELINE === "1";
   const file = process.env.FILE || (sample ? "docs/requirements/samples/assessment-sample.mp3" : undefined);
   assert(file, "FILE must identify the local input");
-  const expected = sample ? 6090 : Number(process.env.EXPECTED);
+  const expected = sample ? 6089 : Number(process.env.EXPECTED);
   assert(Number.isSafeInteger(expected) && expected > 0, "EXPECTED must be an independent positive frame count");
   const handle = await open(file, "r");
   let bytes;

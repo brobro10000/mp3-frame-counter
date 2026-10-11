@@ -10,7 +10,7 @@ export function AnalysisIntro() {
         <br />
         <em>accounted for.</em>
       </h1>
-      <p className="intro-copy">Choose an MP3 and find its exact physical frame count. One file, one clear result.</p>
+      <p className="intro-copy">Choose an MP3 and find its audio frame count, with physical and carrier details.</p>
       <div className="format-note">
         <span className="note-line" aria-hidden="true" />
         <p>

@@ -122,3 +122,10 @@ features.
    requirement IDs stable; mark superseded items and link replacements instead of reusing or deleting their IDs.
 5. Preserve raw sources and sample identity. New source versions need new provenance and an explicit reconciliation of
    affected requirements. Keep historical orchestrator outputs separate from current implementation evidence.
+
+Current owner target: [backend audio-count amendment](backend-audio-refactor.md). Original assessment and historical
+physical-count evidence remain unchanged; activation needs the independent successor and policy transition.
+
+The later [shipment and freeze amendment](backend-audio-refactor.md#later-shipment-and-handoff-authority--2026-10-11)
+authorizes reviewed normal merges of the completed refactor and handoff. It preserves actual successor binding,
+independent evidence and paused cloud delivery.
