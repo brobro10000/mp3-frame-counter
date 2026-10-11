@@ -89,7 +89,7 @@ function authority({
       assert.equal(images[role][field], bundle.manifest.artifacts[role][field]);
   }
   const evidence = bundle.manifest.identity.evidence;
-  assert(["hosted-v1", "hosted-health-v1"].includes(evidence.contractRevision));
+  assert(["hosted-v1", "hosted-health-v1", "hosted-reasonless-v1"].includes(evidence.contractRevision));
   assert.equal(evidence.baselinePublication, "protected-main");
   same(evidence.acceptance, { status: "passed", planned: 72, passed: 72, failed: 0, skipped: 0 });
   const validated = validateHostedAcceptance(stage);
@@ -422,7 +422,7 @@ export async function runProductionAcceptance(options) {
     });
     assert(
       projection &&
-        ["hosted-v1", "hosted-health-v1"].includes(baseline.contractRevision) &&
+        ["hosted-v1", "hosted-health-v1", "hosted-reasonless-v1"].includes(baseline.contractRevision) &&
         projection.required.contractRevision === baseline.contractRevision,
     );
     assert.equal(baseline.contractRevision, bundle.manifest.identity.evidence.contractRevision);

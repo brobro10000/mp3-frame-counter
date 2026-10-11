@@ -1,5 +1,5 @@
 /**
- * Independent governance expectations for the bounded hosted-health-v1 successor at existing delivery consumers.
+ * Independent governance expectations for the bounded health and reasonless-console successors at delivery consumers.
  * Run pinned Node: node --test scripts/hosted-health-consumers.test.mjs. Actual private consumer functions/selection
  * blocks are evaluated with fixed synthetic admission and source-reader boundaries; no entry point is imported.
  * Existing literal finalization fixture builders and real pure declaration/evidence validators calibrate 72/22/3.
@@ -16,6 +16,8 @@ import { validateHostedAcceptance } from "./hosted-evidence.mjs";
 
 const oldRevision = "hosted-v1";
 const nextRevision = "hosted-health-v1";
+const reasonlessRevision = "hosted-reasonless-v1";
+const approvedRevisions = [oldRevision, nextRevision, reasonlessRevision];
 const source = "a".repeat(40);
 const suiteCommit = "b".repeat(40);
 const suiteTree = "c".repeat(40);
@@ -38,6 +40,7 @@ function slice(value, begin, end) {
 const controllerSource = text("./stage-delivery.mjs");
 const launcherSource = text("./stage-acceptance.mjs");
 const publisherSource = text("./publish-release.mjs");
+const productionSource = text("./production-acceptance.mjs");
 const historicalFixtureSource = text("./publish-release-finalization.test.mjs");
 const fixtureBuilderSource =
   slice(historicalFixtureSource, "function declarations()", "function fixture(t)") +
@@ -178,7 +181,7 @@ async function controllerSelection(requiredRevision, projection, pendingRevision
 }
 
 /** Execute the unchanged launcher authority block up to extraction; downstream installation/authentication is absent. */
-function launcherSelection(requiredRevision, projection, pendingRevision) {
+function launcherSelection(requiredRevision, projection, pendingRevision, consumerSource = launcherSource) {
   const resolution = {
     required: { contractRevision: requiredRevision },
     ...(pendingRevision ? { pendingBinding: { contractRevision: pendingRevision } } : {}),
@@ -202,7 +205,13 @@ function launcherSelection(requiredRevision, projection, pendingRevision) {
     "context",
     "git",
     "env",
-    `${slice(launcherSource, "    const resolution = verifyAcceptanceAdmission(", "    assert.equal(bundle.manifest.sourceRevision")}\nreturn { baseline, projection };`,
+    `${slice(
+      consumerSource,
+      "    const resolution = verifyAcceptanceAdmission(",
+      consumerSource === productionSource
+        ? "    assert.equal(baseline.contractRevision"
+        : "    assert.equal(bundle.manifest.sourceRevision",
+    )}\nreturn { baseline, projection };`,
   );
   let value, error;
   try {
@@ -244,6 +253,47 @@ const finalization = new Function(
   `${slice(publisherSource, "function finalizationFields(", "/**\n * Add fixed same-source v1.0.0")}\nreturn requireFinalizationEvidence;`,
 )(assert, validateAcceptanceProfiles, validateHostedAcceptance, (n) => assert(Number.isSafeInteger(n) && n > 0));
 
+/** Evaluate actual pure origin/authority boundaries without importing the runner or introducing any callback effects. */
+const requireOriginalOrigin = new Function(
+  "assert",
+  `${slice(text("./publish-release-evidence.mjs"), "export function requireOrigin(", "/** Verify the closed report envelope").replace("export function", "function")}\nreturn requireOrigin;`,
+)(assert);
+const productionAuthority = new Function(
+  "assert",
+  "validateHostedAcceptance",
+  "requireOrigin",
+  `${slice(productionSource, "function fields(", "/** Refuse symlink ancestry")}\nreturn authority;`,
+)(assert, validateHostedAcceptance, requireOriginalOrigin);
+
+/** Supply literal original CI, complete stage custody and owner-operation claims; these never prove a human event. */
+function productionAuthorityInput(f) {
+  const bundle = clone(f.bundle);
+  bundle.origin = {
+    schemaVersion: 1,
+    repository: "synthetic/private-mp3",
+    sourceRevision: source,
+    baseRevision: "e".repeat(40),
+    runId: 7001,
+    attempt: 1,
+    workflow: ".github/workflows/ci.yml",
+    workflowRevision: source,
+  };
+  const admissionSha256 = "d".repeat(64);
+  bundle.acceptanceAdmission = { sha256: admissionSha256 };
+  const { id, attempt, sourceRevision } = f.input.operation;
+  return {
+    bundle,
+    admissionSha256,
+    currentContext: clone(bundle.origin),
+    images: clone(f.stage.expected.images),
+    release: clone(f.stage.expected.release),
+    stage: clone(f.stage),
+    approval: clone(f.input.approval),
+    operation: { id, attempt, sourceRevision },
+    productionStartedAt: f.input.productionStartedAt,
+  };
+}
+
 /** Check real schema calibration before each consumer decision so unrelated fixture defects cannot create false red. */
 function calibrated(contractRevision) {
   const f = fixture(contractRevision);
@@ -258,10 +308,10 @@ function calibrated(contractRevision) {
 }
 
 test("historical and successor literal fixtures preserve the 72/22/3 declaration and report matrix", () => {
-  for (const revision of [oldRevision, nextRevision, "unapproved-hosted-v9"]) calibrated(revision);
+  for (const revision of [...approvedRevisions, "unapproved-hosted-v9"]) calibrated(revision);
 });
 
-for (const revision of [oldRevision, nextRevision]) {
+for (const revision of approvedRevisions) {
   test(`stage controller accepts only required ${revision} selection`, async () => {
     const { projection } = calibrated(revision);
     const result = await controllerSelection(revision, projection);
@@ -305,6 +355,19 @@ for (const revision of [oldRevision, nextRevision]) {
     });
     assert.equal(json({ bundle: f.bundle, input: f.input }), before);
   });
+  test(`production launcher permits required ${revision} before isolated extraction`, () => {
+    const { projection } = calibrated(revision);
+    const result = launcherSelection(revision, projection, undefined, productionSource);
+    assert.ifError(result.error);
+    assert.equal(result.value.baseline.contractRevision, revision);
+    assert.deepEqual(result.calls, { admission: 1, projection: 1 });
+  });
+  test(`production authority retains complete ${revision} source-bound stage custody before effects`, () => {
+    const input = productionAuthorityInput(calibrated(revision));
+    const before = json(input);
+    assert.deepEqual(productionAuthority(input), validateHostedAcceptance(input.stage));
+    assert.equal(json(input), before);
+  });
 }
 
 test("controller refuses pending, unbound, unknown and mismatched required projection before publication material", async () => {
@@ -318,6 +381,9 @@ test("controller refuses pending, unbound, unknown and mismatched required proje
     ["unapproved-hosted-v9", unknown],
     [oldRevision, successor],
     [nextRevision, old],
+    [reasonlessRevision, null, reasonlessRevision],
+    [reasonlessRevision, successor],
+    [nextRevision, calibrated(reasonlessRevision).projection, reasonlessRevision],
   ]) {
     const result = await controllerSelection(required, projection, pending);
     assert(result.error, `Controller accepted ${required} with ${projection?.required.contractRevision ?? "null"}`);
@@ -337,6 +403,9 @@ test("launcher refuses pending, unbound, unknown and mismatched required project
     ["unapproved-hosted-v9", unknown],
     [oldRevision, successor],
     [nextRevision, old],
+    [reasonlessRevision, null, reasonlessRevision],
+    [reasonlessRevision, successor],
+    [nextRevision, calibrated(reasonlessRevision).projection, reasonlessRevision],
   ])
     assert(
       launcherSelection(required, projection, pending).error,
@@ -346,11 +415,15 @@ test("launcher refuses pending, unbound, unknown and mismatched required project
 });
 
 test("finalizer rejects unknown revisions, declaration/manifest mismatch and a non-required baseline", () => {
-  for (const revision of [oldRevision, nextRevision, "unapproved-hosted-v9"]) {
+  for (const revision of [...approvedRevisions, "unapproved-hosted-v9"]) {
     const f = calibrated(revision);
     if (revision === "unapproved-hosted-v9") assert.throws(() => finalization(f.bundle, f.input, f.publicationSha256));
     else {
-      for (const bad of [revision === oldRevision ? nextRevision : oldRevision, "docs-v1", "unapproved-hosted-v9"]) {
+      for (const bad of [
+        ...approvedRevisions.filter((entry) => entry !== revision),
+        "docs-v1",
+        "unapproved-hosted-v9",
+      ]) {
         const bundle = clone(f.bundle);
         bundle.manifest.identity.evidence.contractRevision = bad;
         assert.throws(() => finalization(bundle, f.input, f.publicationSha256));
@@ -364,5 +437,59 @@ test("finalizer rejects unknown revisions, declaration/manifest mismatch and a n
         assert.throws(() => finalization(f.bundle, input, f.publicationSha256));
       }
     }
+  }
+});
+
+test("production selection refuses pending-only, unknown and revision-mismatched projections", () => {
+  const current = calibrated(nextRevision).projection;
+  const future = calibrated(reasonlessRevision).projection;
+  const unknown = calibrated("unapproved-hosted-v9").projection;
+  for (const [required, projection, pending] of [
+    ["docs-v1", future, reasonlessRevision],
+    [reasonlessRevision, null, reasonlessRevision],
+    [reasonlessRevision, current],
+    [nextRevision, future, reasonlessRevision],
+    ["unapproved-hosted-v9", unknown],
+  ])
+    assert(launcherSelection(required, projection, pending, productionSource).error);
+  assert.ifError(launcherSelection(nextRevision, current, reasonlessRevision, productionSource).error);
+});
+
+test("production authority rejects unknown, stale, mixed and incomplete original stage custody", () => {
+  const unknown = productionAuthorityInput(calibrated("unapproved-hosted-v9"));
+  assert.throws(() => productionAuthority(unknown));
+  const controls = [
+    (input) => {
+      input.stage = clone(calibrated(nextRevision).stage);
+    },
+    (input) => {
+      const stale = "0".repeat(40);
+      input.stage.record.sourceRevision =
+        input.stage.expected.sourceRevision =
+        input.stage.suiteResult.sourceRevision =
+          stale;
+      assert.equal(validateHostedAcceptance(input.stage).sourceRevision, stale);
+    },
+    (input) => {
+      input.stage.record.run.workflowRevision = input.stage.expected.run.workflowRevision = "0".repeat(40);
+      assert.equal(validateHostedAcceptance(input.stage).run.workflowRevision, "0".repeat(40));
+    },
+    (input) => {
+      input.bundle.manifest.identity.evidence.baselinePublication = "candidate";
+    },
+    (input) => {
+      input.stage.record.tests.pop();
+    },
+    (input) => {
+      input.stage.parentCleanup = "failed";
+    },
+    (input) => {
+      input.currentContext.sourceRevision = "0".repeat(40);
+    },
+  ];
+  for (const change of controls) {
+    const input = productionAuthorityInput(calibrated(reasonlessRevision));
+    change(input);
+    assert.throws(() => productionAuthority(input));
   }
 });

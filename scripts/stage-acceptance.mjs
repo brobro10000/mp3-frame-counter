@@ -268,7 +268,7 @@ export async function runStageAcceptance(options) {
     });
     assert(
       projection &&
-        ["hosted-v1", "hosted-health-v1"].includes(baseline.contractRevision) &&
+        ["hosted-v1", "hosted-health-v1", "hosted-reasonless-v1"].includes(baseline.contractRevision) &&
         projection.required.contractRevision === baseline.contractRevision,
     );
     assert.equal(bundle.manifest.sourceRevision, context.sourceRevision);
