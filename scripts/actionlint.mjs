@@ -1,8 +1,9 @@
 /**
  * Validate the foundation workflow with a pinned, checksum-verified actionlint release.
  * Run `npm run lint:workflows` from the repository root using the pinned Node.js runtime and `tar` on PATH.
- * Reads `.github/workflows/ci.yml`; supports macOS and Linux on x64 and arm64. On a cache miss, downloads from GitHub
- * with a 30-second timeout, verifies the bytes, then caches the archive and executable under `.cache/actionlint/`.
+ * Reads every Git-tracked YAML file under `.github/workflows/`; new untracked files need separate explicit validation.
+ * Supports macOS and Linux on x64 and arm64. On a cache miss, downloads from GitHub with a 30-second timeout, verifies
+ * the bytes, then caches the archive and executable under `.cache/actionlint/`.
  * Prints the tool version and lint diagnostics; download, integrity, extraction, or lint failures exit nonzero.
  * Validates workflow syntax and expressions, but does not run jobs or external shellcheck/pyflakes checks.
  */
@@ -47,5 +48,15 @@ if (downloaded) await writeFile(archive, bytes);
 execFileSync("tar", ["-xzf", archive, "-C", dir, "actionlint"]);
 await chmod(`${dir}/actionlint`, 0o755);
 console.log(execFileSync(`${dir}/actionlint`, ["-version"], { encoding: "utf8" }).trim());
-// External shellcheck/pyflakes are not part of the pinned toolchain; actionlint still validates workflow syntax.
-execFileSync(`${dir}/actionlint`, ["-shellcheck=", "-pyflakes=", ".github/workflows/ci.yml"], { stdio: "inherit" });
+// Discover tracked files without a shell; NUL separation preserves path boundaries and cannot interpolate filenames.
+const workflows = execFileSync("git", ["--no-replace-objects", "ls-files", "-z", "--", ".github/workflows"], {
+  encoding: "utf8",
+  timeout: 30000,
+  maxBuffer: 1024 * 1024,
+})
+  .split("\0")
+  .filter((file) => file.startsWith(".github/workflows/") && /\.ya?ml$/.test(file))
+  .sort();
+if (!workflows.length) throw new Error("No tracked workflow YAML files to validate");
+// External shellcheck/pyflakes are not part of the pinned toolchain; every discovered workflow remains mandatory.
+execFileSync(`${dir}/actionlint`, ["-shellcheck=", "-pyflakes=", ...workflows], { stdio: "inherit" });

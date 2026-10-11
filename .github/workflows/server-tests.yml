@@ -1,0 +1,178 @@
+name: Server tests
+on:
+  workflow_call: {}
+permissions:
+  contents: read
+jobs:
+  server:
+    name: server
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: read
+    env:
+      CI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - name: Validate acceptance admission
+        id: acceptance-preflight
+        shell: bash --noprofile --norc -euo pipefail {0}
+        env:
+          CI_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+          GATE_REVIEW_TOKEN: ${{ github.token }}
+          NODE_OPTIONS: ""
+          BASH_ENV: ""
+          ENV: ""
+        run: |
+          # Validate the event and extract trusted code before any head-owned installation or command.
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import { execFileSync, spawnSync } from "node:child_process";
+          import { createHash } from "node:crypto";
+          import { appendFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+          import { dirname, join, relative } from "node:path";
+          import { pathToFileURL } from "node:url";
+          const token = process.env.GATE_REVIEW_TOKEN;
+          delete process.env.GATE_REVIEW_TOKEN;
+          try {
+            const env = process.env;
+            const root = realpathSync(env.GITHUB_WORKSPACE);
+            assert.equal(realpathSync(process.cwd()), root);
+            const git = (...args) => execFileSync("git", ["--no-replace-objects", ...args], {
+              cwd: root, encoding: "utf8", timeout: 30000, maxBuffer: 32 * 1024 * 1024,
+              stdio: ["ignore", "pipe", "pipe"],
+            }).trim();
+            const source = env.GITHUB_SHA;
+            const base = env.CI_BASE_REF;
+            for (const value of [source, base]) assert(/^[a-f0-9]{40}$/.test(value ?? "") && !/^0+$/.test(value));
+            assert.notEqual(source, base);
+            assert.equal(env.CI, "true");
+            assert.equal(env.GITHUB_ACTIONS, "true");
+            assert.equal(env.GITHUB_SERVER_URL, "https://github.com");
+            assert.equal(env.GITHUB_API_URL, "https://api.github.com");
+            assert.equal(env.GITHUB_WORKFLOW_SHA, source);
+            assert(/^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9][A-Za-z0-9_.-]*$/.test(env.GITHUB_REPOSITORY ?? ""));
+            assert.equal(env.GITHUB_WORKFLOW_REF, `${env.GITHUB_REPOSITORY}/.github/workflows/ci.yml@${env.GITHUB_REF}`);
+            for (const field of ["GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT"])
+              assert(/^[1-9]\d*$/.test(env[field] ?? "") && Number.isSafeInteger(Number(env[field])));
+            assert.equal(git("rev-parse", "HEAD"), source);
+            assert.equal(git("status", "--porcelain"), "");
+            assert.equal(git("rev-parse", "--is-shallow-repository"), "false");
+            assert(git("rev-list", "--first-parent", source).split("\n").includes(base));
+            const event = JSON.parse(readFileSync(env.GITHUB_EVENT_PATH, "utf8"));
+            assert.equal(event.repository?.full_name, env.GITHUB_REPOSITORY);
+            if (env.GITHUB_EVENT_NAME === "push") {
+              assert.equal(env.GITHUB_REF, "refs/heads/main");
+              assert.equal(event.ref, "refs/heads/main");
+              assert.equal(event.before, base);
+              assert.equal(event.after, source);
+            } else {
+              assert.equal(env.GITHUB_EVENT_NAME, "pull_request");
+              const match = /^refs\/pull\/([1-9]\d*)\/merge$/.exec(env.GITHUB_REF ?? "");
+              assert(match && Number.isSafeInteger(Number(match[1])));
+              assert.equal(event.number, Number(match[1]));
+              assert.equal(event.pull_request?.base?.sha, base);
+              assert.equal(event.pull_request?.base?.ref, "main");
+              assert.deepEqual(git("rev-list", "--parents", "-n", "1", source).split(" "),
+                [source, base, event.pull_request?.head?.sha]);
+            }
+            const outside = (path) => {
+              const relation = relative(root, realpathSync(path));
+              assert(relation === ".." || relation.startsWith("../"), "Trusted files must stay outside the checkout");
+            };
+            outside(env.RUNNER_TEMP);
+            outside(dirname(env.GITHUB_OUTPUT));
+            const trusted = mkdtempSync(join(realpathSync(env.RUNNER_TEMP), "mp3-admission-"));
+            mkdirSync(join(trusted, "scripts"), { mode: 0o700 });
+            const registryPath = "docs/testing/acceptance-transitions.json";
+            const introduced = git("log", "--first-parent", "--format=%H", base, "--", registryPath) !== "";
+            const extract = (name) => {
+              const path = `scripts/${name}`;
+              const entry = git("ls-tree", base, "--", path);
+              assert(/^(100644|100755) blob [a-f0-9]{40}\t/.test(entry), "Missing regular trusted module");
+              const bytes = execFileSync("git", ["--no-replace-objects", "show", `${base}:${path}`], {
+                cwd: root, maxBuffer: 1024 * 1024, stdio: ["ignore", "pipe", "pipe"],
+              });
+              writeFileSync(join(trusted, path), bytes, { flag: "wx", mode: 0o600 });
+            };
+            if (introduced) {
+              for (const name of ["acceptance-preflight.mjs", "acceptance-admission.mjs", "acceptance-transitions.mjs",
+                "acceptance-review-observations.mjs", "acceptance-review-http.mjs", "acceptance-baseline.mjs", "phase-policy.mjs"])
+                extract(name);
+              const result = spawnSync(process.execPath, [join(trusted, "scripts/acceptance-preflight.mjs")], {
+                cwd: root, env: { ...env, GATE_REVIEW_TOKEN: token }, stdio: "inherit", timeout: 180000,
+              });
+              assert(!result.error && result.status === 0, "Trusted admission command failed");
+            } else {
+              // One reviewed transition installs dormant policy; only the old trusted verifier is executable here.
+              extract("acceptance-baseline.mjs");
+              extract("phase-policy.mjs");
+              const { verifyBaseline } = await import(pathToFileURL(join(trusted, "scripts/acceptance-baseline.mjs")));
+              const genesis = verifyBaseline(root, base);
+              assert.equal(genesis.publicationStatus, "protected-main");
+              const registryRaw = execFileSync("git", ["--no-replace-objects", "show", `${source}:${registryPath}`], {
+                cwd: root, maxBuffer: 1024 * 1024, stdio: ["ignore", "pipe", "pipe"],
+              });
+              assert.deepEqual(JSON.parse(registryRaw), { schemaVersion: 1, transitions: [] });
+              const changed = git("diff", "--name-only", "-z", base, source).split("\0").filter(Boolean);
+              for (const path of changed) {
+                assert(!/[\x00-\x1f\x7f\\]/.test(path));
+                const entry = git("ls-tree", source, "--", path);
+                assert(!entry || /^(100644|100755) blob [a-f0-9]{40}\t/.test(entry));
+                if (path === registryPath) continue;
+                if (path === "package.json") {
+                  const before = JSON.parse(git("show", `${base}:${path}`));
+                  const after = JSON.parse(git("show", `${source}:${path}`));
+                  for (const pkg of [before, after]) {
+                    assert(pkg.scripts && typeof pkg.scripts === "object" && !Array.isArray(pkg.scripts));
+                    assert(Object.values(pkg.scripts).every((command) => typeof command === "string"));
+                  }
+                  for (const name of ["build", "typecheck", "test:unit", "start", "dev"])
+                    assert.equal(before.scripts?.[name], after.scripts?.[name]);
+                  delete before.scripts; delete after.scripts;
+                  assert.deepEqual(before, after);
+                  continue;
+                }
+                assert(!["docs/testing/baseline.json", "docs/testing/acceptance-contract.md"].includes(path));
+                assert(/^scripts\/[^\0]+\.(?:mjs|js|ts|py|sh)$/.test(path) ||
+                  /^\.github\/(?:workflows\/[^/]+\.ya?ml|dependabot\.ya?ml|pull_request_template\.md)$/.test(path) ||
+                  /^(?:README|AGENTS|LICENSE|CHANGELOG)\.md$/.test(path) ||
+                  /^(?:docs|agents)\/(?:[^/]+\/)*[^/]+\.(?:md|mmd|txt)$/.test(path) ||
+                  /^docs\/validation\/artifacts\/[A-Za-z0-9._-]+\.json$/.test(path) ||
+                  ["Makefile", ".npmrc", ".nvmrc", ".gitignore", ".prettierignore", ".prettierrc.json",
+                    ".editorconfig", ".mermaidignore", "docs/main-ruleset.json", "docs/review-ruleset.json"].includes(path),
+                  "Bootstrap requires a separate governance/documentation change");
+              }
+              const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+              const canonical = (value) => Array.isArray(value) ? `[${value.map(canonical).join(",")}]` :
+                value && typeof value === "object" ? `{${Object.keys(value).sort().map((key) =>
+                  `${JSON.stringify(key)}:${canonical(value[key])}`).join(",")}}` : JSON.stringify(value);
+              const record = { schemaVersion: 1, kind: "ci-acceptance-admission", context: {
+                repository: env.GITHUB_REPOSITORY, eventName: env.GITHUB_EVENT_NAME, ref: env.GITHUB_REF,
+                sourceRevision: source, sourceTree: git("rev-parse", `${source}^{tree}`), baseRevision: base,
+                workflowRevision: source, toolingRevision: base,
+                runId: Number(env.GITHUB_RUN_ID), attempt: Number(env.GITHUB_RUN_ATTEMPT),
+              }, observedReviews: [], resolution: { genesis, required: genesis, candidate: null, pendingBinding: null,
+                admission: "bootstrap", bindingCommit: null, activationCommit: null, policySha256: hash(registryRaw) } };
+              const path = join(trusted, "admission.json");
+              writeFileSync(path, `${JSON.stringify(record)}\n`, { flag: "wx", mode: 0o600 });
+              appendFileSync(env.GITHUB_OUTPUT, `admission-path=${path}\nadmission-sha256=${hash(canonical(record))}\n`);
+            }
+          } catch {
+            console.error("Trusted acceptance admission failed; no head-owned command was admitted.");
+            process.exitCode = 1;
+          }
+          NODE
+      - run: npm ci
+      - run: node scripts/run-ci-lane.mjs server
+        env:
+          GATE_ADMISSION_PATH: ${{ steps.acceptance-preflight.outputs.admission-path }}
+          GATE_ADMISSION_SHA256: ${{ steps.acceptance-preflight.outputs.admission-sha256 }}

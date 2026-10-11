@@ -1,45 +1,53 @@
 ---
 title: >-
-  Tested software releases, optional stage delivery and supervised V1
-  finalization
+  Same-run CI lanes and tested software releases; hosted delivery paused
 query: >-
-  Show the implemented CI and release-only flow. Distinguish PR validation from
-  protected-main publication, parallel foundation/product checks from the
-  terminal control-plane gate, and the same-run exact tested image export from
-  publication. Include frozen baseline verification, complete acceptance,
-  immutable artifact/provenance checks, version/tag identity, draft asset
-  verification and safe identical retries. Distinguish the optional dependent
-  stage job from owner-supervised production deployment and fixed V1
-  finalization. Stage requires enablement and an existing authenticated runtime.
-  Every production deployment requires actual human approval of the exact
-  candidate; finalization requires passing production smoke and demonstrated
-  recovery. Metadata-only finalization retries never deploy, rebuild or upload a
-  CI handoff. For the current integrated application, show independent Docker
-  image builds, the two running Compose containers and host acceptance
-  processes, then export of those exact tested images. Images and archives are
-  artifacts, not extra running services. Earlier source-only phases have a
-  separate foundation-delivery path outside this view. Both validation jobs
-  perform trusted-base acceptance admission before head-owned commands.
-  Candidate harness checks remain separate from required product E2E; carry the
-  preflight digest through the original same-run release bundle. Foundation
-  includes credential-free Terraform formatting, initialization and validation;
-  keep these checks inside its mandatory gate, with no cloud apply. Allocate the
-  version from the exact tested source's committed release policy and global
-  first-parent ordinal. Preserve legacy identities and schema-1 bytes; new
-  policy-bound evidence uses schema 2. Compare stable latest versions
-  numerically. Before each standalone suite check, show exact suite selection,
-  locked npm installation, package-local Chromium preparation and a bounded
-  launch/close probe. Keep candidate controls and preparation evidence separate
-  from required product acceptance. Show the dated current delivery pause as
-  informational: software releases continue while stage delivery is disabled,
-  and this pause is not a publication failure.
+  Show the four reusable callers defined by this CI activation: Linter, Server
+  tests, Application tests and Base acceptance E2E. The Linter caller requires
+  checks and all four tooling shards: foundation, acceptance, publication and
+  delivery, containing the unchanged 46-file union. Each executing worker runs
+  trusted-base acceptance admission before head-owned commands. All four caller
+  results feed the always-running control-plane gate. This diagram describes
+  the prepared workflow source, not evidence of a successful activation run.
+  Preserve historical two-job workflow replay through source-bound policy;
+  never replace required acceptance with a unit lane or candidate controls.
+  Base acceptance delegates to the unchanged complete controller, including
+  unit/build checks, exact suite extraction, browser preparation, all 72 frozen
+  local cases, image identities and cleanup. Build separate frontend and API
+  images, run exactly two Compose application containers and test them with
+  host Playwright/Chromium. On main, export those exact tested images on the
+  acceptance runner and upload their immutable same-run bundle. Images and
+  archives are artifacts, not additional services. Show the publisher requiring
+  all original-attempt leaf jobs, preflight evidence, exact source, suite and
+  bundle hashes; read layout from the original source rather than moving HEAD.
+  Retain three logical checks in immutable publication provenance. Allocate
+  versions from the tested source policy and global first-parent ordinal,
+  verify version/tag identity and every draft asset, and permit only identical
+  retries. Earlier source-only foundation delivery is outside this view.
+  Software releases continue while stage delivery is disabled. Show the pause
+  as informational, with hosted stage acceptance, recovery and production
+  finalization explicitly deferred. Resuming stage requires enablement and an
+  existing authenticated runtime. Every production deployment requires an
+  actual human approval of the exact candidate and demonstrated recovery;
+  finalization requires passing production smoke and original custody. Fixed
+  same-source v1.0.0 finalization and metadata retries never rebuild or redeploy.
 references:
   - 'File: /.github/workflows/ci.yml'
+  - 'File: /.github/workflows/linter.yml'
+  - 'File: /.github/workflows/server-tests.yml'
+  - 'File: /.github/workflows/application-tests.yml'
+  - 'File: /.github/workflows/base-acceptance-e2e.yml'
+  - 'File: /scripts/ci-visibility-policy.mjs'
+  - 'File: /scripts/run-tooling-shard.mjs'
+  - 'File: /scripts/run-ci-lane.mjs'
   - 'File: /scripts/run-ci-phase.mjs'
   - 'File: /scripts/acceptance-browser-setup.mjs'
   - 'File: /scripts/acceptance-preflight.mjs'
   - 'File: /scripts/acceptance-runtime.mjs'
   - 'File: /scripts/ci-gate.mjs'
+  - 'File: /frontend/Dockerfile'
+  - 'File: /server/Dockerfile'
+  - 'File: /compose.yaml'
   - 'File: /scripts/publish-release-bundle.mjs'
   - 'File: /scripts/prepare-release.mjs'
   - 'File: /scripts/publish-release.mjs'
@@ -50,45 +58,78 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T14:49:07.528Z'
+generationTime: '2026-10-11T15:17:00.000Z'
 ---
 flowchart TD
-    EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
-    PREF --> F["Foundation: format, lint, policy, portability, Mermaid and tooling tests<br/>credential-free bootstrap/access Terraform format, init and validate"]
-    EVENT --> PREP["Product trusted-base admission<br/>emit exact source/base decision and digest"]
-    PREP --> SETUP["Select and extract exact suites; locked npm ci<br/>prepare package-local Chromium and verify launch/close<br/>write setup evidence, then run each standalone check"]
-    SETUP --> P["Product: run unit/build checks<br/>candidate controls and readiness are not product acceptance"]
-    P --> BUILD["Build two independent Docker images<br/>frontend: static assets with NGINX<br/>API: TypeScript build stage to minimal Node runtime"]
-    BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium tests their real HTTP boundary"]
-    TEST --> KIND{"Successful application main push?"}
-    KIND -->|"Yes"| B["Export exact tested images on producing runner; upload immutable same-run bundle"]
-    KIND -->|"PR"| RESULT["No application bundle export"]
-    F --> G{"Terminal gate: all mandatory jobs succeeded?"}
-    B --> G
-    RESULT --> G
-    G -->|"No"| STOP["Fail checks; no release"]
-    G -->|"Yes"| MAIN{"Protected-main push?"}
-    MAIN -->|"No: PR"| REVIEW["Checks available for independent review and protected merge"]
-    MAIN -->|"Yes: verified application bundle"| VERIFY["Serialized publisher verifies source, admitted required suite,<br/>original preflight digest, same-run checks and bundle hashes"]
+    EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
+
+    subgraph LINTER["Linter caller: validate-foundation"]
+        LPREF["Each linter worker: trusted-base admission, then locked npm ci<br/>read-only review token confined to preflight"]
+        LPREF --> LCHECK["checks: format, workflow lint, policy, portability,<br/>Mermaid render and complete gate tests<br/>credential-free Terraform fmt, init and validate"]
+        LPREF --> LF["tooling-foundation<br/>8 required files"]
+        LPREF --> LA["tooling-acceptance<br/>13 required files"]
+        LPREF --> LP["tooling-publication<br/>9 required files"]
+        LPREF --> LD["tooling-delivery<br/>16 required files; own pinned Terraform/provider setup"]
+        LCHECK --> LOK["Linter caller succeeds only when all five workers succeed<br/>four shards preserve all 46 tooling files; fail-fast disabled"]
+        LF --> LOK
+        LA --> LOK
+        LP --> LOK
+        LD --> LOK
+    end
+
+    subgraph SERVER["Server tests caller: server-tests"]
+        SPREF["Trusted-base admission, then locked npm ci"] --> STEST["Strict TypeScript API/docs build<br/>parser, HTTP, docs and docs-build unit tests"]
+        STEST --> SOK["Server tests caller result"]
+    end
+
+    subgraph APPLICATION["Application tests caller: application-tests"]
+        APREF["Trusted-base admission, then locked npm ci"] --> ATEST["Strict TypeScript React/Vite build<br/>frontend response-boundary unit tests"]
+        ATEST --> AOK["Application tests caller result"]
+    end
+
+    subgraph ACCEPTANCE["Base acceptance E2E caller: validate-product"]
+        BPREF["Trusted-base admission, then locked npm ci<br/>emit exact source/base decision and digest"] --> SETUP["Unchanged complete phase controller: select and extract exact suites<br/>prepare package-local Chromium, bounded launch/close probe<br/>record setup; run units/builds and separate candidate controls"]
+        SETUP --> BUILD["Build two independent Docker images<br/>frontend: React static bundle with NGINX<br/>API: TypeScript build stage to minimal Fastify/Node runtime"]
+        BUILD --> TEST["Run frontend and API as two Compose containers<br/>host Playwright/Chromium runs all 72 frozen local cases<br/>unsharded acceptance; exact image identity and cleanup"]
+        TEST --> KIND{"Successful application main push?"}
+        KIND -->|"Yes"| BUNDLE["Export exact tested images on acceptance runner<br/>upload immutable same-run release bundle"]
+        KIND -->|"PR"| PRRESULT["No application bundle export"]
+        BUNDLE --> BOK["Base acceptance E2E caller result<br/>release artifact and admission digest outputs"]
+        PRRESULT --> BOK
+    end
+
+    EVENT --> LPREF
+    EVENT --> SPREF
+    EVENT --> APREF
+    EVENT --> BPREF
+    LOK --> G{"control-plane: always runs<br/>all four caller results successful?"}
+    SOK --> G
+    AOK --> G
+    BOK --> G
+    G -->|"No, missing or skipped"| STOP["Fail mandatory checks; no publication"]
+    G -->|"Yes"| MAIN{"Protected-main application push?"}
+    MAIN -->|"No: PR"| REVIEW["Current checks for independent companion review<br/>and separately authorized protected merge"]
+    MAIN -->|"Yes"| VERIFY["Serialized publisher downloads the same-run acceptance bundle<br/>source-bound layout verifies all nine original-attempt leaf jobs<br/>preflights, admitted suite, source and artifact hashes"]
+    BUNDLE -->|"Exact image archives; no publisher rebuild"| VERIFY
     VERIFY --> DRAFT["Resolve tested source policy and global ordinal<br/>create or verify exact version tag and private draft release"]
-    DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256"]
-    ASSETS --> RELEASE["Publish verified GitHub release: released-not-deployed"]
-    VERIFY -.->|"Mismatch"| FAIL["Stop and preserve state; never overwrite conflicting content"]
+    DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256<br/>preserve three logical publication checks"]
+    ASSETS --> RELEASE["Publish verified GitHub software release<br/>released-not-deployed"]
+    VERIFY -.->|"Mismatch"| FAIL["Stop; retain failure evidence and existing content"]
     DRAFT -.->|"Conflict or interruption"| FAIL
     ASSETS -.->|"Failure"| FAIL
-    FAIL -.->|"Retry only with identical source and bytes"| VERIFY
-    RELEASE --> HANDOFF["Upload verified publisher handoff"]
-    HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
-    RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement, existing stage runtime and operation-read permission"]
-    DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity<br/>validated run workflow revision matches source revision"]
-    STAGECHECK --> SCUSTODY["Preserve and revalidate original stage custody<br/>actual launch, result, observations and cleanup"]
-    SCUSTODY --> RECOVERY["Demonstrate same-candidate stage recovery<br/>restore access and retain fresh passing stage custody"]
-    RECOVERY --> APPROVE["Human approves exact production candidate and recovery evidence"]
-    APPROVE --> PROD["Owner deploys the same image pair"]
-    PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases"]
-    BRIDGE --> CUSTODY["Preserve and revalidate original production custody<br/>authenticate original result and lifecycle evidence"]
-    CUSTODY --> FINALIZE["Owner calls fixed same-source V1 finalizer<br/>original admission and authenticated evidence<br/>reads producing source's committed CI layout through explicit root"]
-    FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
-    PROBE["Optional owner probe ID-token permission<br/>supervised hosted checks"] --> RECOVERY
-    PROBE --> BRIDGE
-    RELEASE -.-> PAUSE["Current delivery pause<br/>stage disabled; software releases continue"]
+    FAIL -.->|"Retry identical source and bytes only"| VERIFY
+    RELEASE --> HANDOFF["Upload verified publisher handoff<br/>record its same-run artifact receipt"]
+    RELEASE -.-> PAUSE["Current owner delivery pause: stage disabled<br/>software releases continue; production V1 remains pending"]
+
+    subgraph HOSTED["Deferred hosted deployment: no execution or passing hosted evidence claimed"]
+        DEPLOY["If resumed: optional main-only stage delivery<br/>enablement, authenticated runtime and operation-read permission"] --> STAGECHECK["22 frozen stage cases and stable environment identity<br/>source-bound original workflow/run and image pair"]
+        STAGECHECK --> SCUSTODY["Preserve and revalidate original seven-field stage custody<br/>actual launch, result, observations and cleanup"]
+        SCUSTODY --> RECOVERY["Demonstrate same-candidate stage recovery<br/>restore access; retain fresh passing stage custody"]
+        RECOVERY --> APPROVE["Actual human approves exact production candidate<br/>source, images, configuration, exposure and recovery evidence"]
+        APPROVE --> PROD["Owner-supervised deployment of the same image pair"]
+        PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 frozen production smoke cases"]
+        BRIDGE --> CUSTODY["Preserve and revalidate original production custody<br/>authenticate original result and lifecycle evidence"]
+        CUSTODY --> FINALIZE["Owner calls fixed same-source V1 finalizer with exact repository root<br/>original admission and authenticated evidence"]
+        FINALIZE --> V1["Additive v1.0.0 finalization<br/>metadata-only retries never redeploy"]
+    end
+    HANDOFF -.->|"Future only, after explicit resume"| DEPLOY
