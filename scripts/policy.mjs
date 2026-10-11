@@ -143,6 +143,7 @@ assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"))
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));
 assert(
   pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
   "Missing mandatory docs-tool-policy tests",
