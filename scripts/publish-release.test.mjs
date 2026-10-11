@@ -63,7 +63,7 @@ const contextEnv = (source = "1".repeat(40), base = "2".repeat(40)) => ({
 });
 const writeJson = (path, data) => writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`);
 
-async function fixture(t) {
+async function fixture(t, workflowBytes = null) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), "release-publication-test-")));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const git = (...args) =>
@@ -95,6 +95,7 @@ async function fixture(t) {
     sourceConfigurationPaths.map((path) => [path, Buffer.from(`Synthetic ${path}\n`)]),
   );
   for (const [path, bytes] of Object.entries(configFiles)) put(path, bytes);
+  if (workflowBytes !== null) put(".github/workflows/ci.yml", workflowBytes);
   const source = commit("product");
   const context = publicationContext(contextEnv(source, base));
   const report = {
@@ -662,7 +663,13 @@ async function handoffPublisherCLI(t) {
     existsSync(new URL("./publisher-handoff.mjs", import.meta.url)),
     "Missing publisher handoff implementation; availability red only",
   );
-  const f = await fixture(t);
+  // This historical CLI source includes the original committed workflow so the real reader needs no selection bypass.
+  const workflowBytes = execFileSync(
+    "git",
+    ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+    { cwd: fileURLToPath(new URL("../", import.meta.url)), timeout: 30_000, maxBuffer: 128 * 1024 },
+  );
+  const f = await fixture(t, workflowBytes);
   const context = {
     repository: repo,
     eventName: "push",
@@ -707,9 +714,25 @@ async function handoffPublisherCLI(t) {
     import { registerHooks, syncBuiltinESMExports } from 'node:module';
     import http from 'node:http'; import https from 'node:https'; import net from 'node:net';
     import tls from 'node:tls'; import child from 'node:child_process';
+    const readGit=child.execFileSync;
     const deny=()=>{throw new Error('Forbidden synthetic publisher network or subprocess');};
     for(const mod of [http,https,net,tls,child]) for(const key of ['request','get','connect','createConnection',
       'exec','execFile','spawn','fork','execSync','execFileSync','spawnSync']) if(typeof mod[key]==='function') mod[key]=deny;
+    child.execFileSync=(command,args,options)=>{
+      assert.equal(command,'git');
+      assert.equal(options?.cwd,${JSON.stringify(f.root)});
+      assert.equal(options?.encoding,'utf8');
+      assert.equal(options?.timeout,30000);
+      assert.equal(options?.maxBuffer,256*1024);
+      assert.deepEqual(options?.stdio,['ignore','pipe','pipe']);
+      const source=${JSON.stringify(f.context.sourceRevision)};
+      const allowed=[['--no-replace-objects','cat-file','-t',source],
+        ['--no-replace-objects','ls-tree',source,'--','.github/workflows/ci.yml'],
+        ['--no-replace-objects','show',source+':.github/workflows/ci.yml']];
+      assert(allowed.some(value=>JSON.stringify(value)===JSON.stringify(args)),
+        'Only exact-source historical workflow Git reads are allowed');
+      return readGit(command,args,options);
+    };
     syncBuiltinESMExports();
     registerHooks({ resolve(specifier,context,next) {
       if(specifier==='./publish-release-evidence.mjs' && context.parentURL===${JSON.stringify(scriptUrl.href)})
@@ -757,7 +780,7 @@ async function handoffPublisherCLI(t) {
   for (const job of state.jobs)
     job.steps = [{ name: "Validate acceptance admission", status: "completed", conclusion: "success" }];
   const env = {
-    PATH: dirname(process.execPath),
+    PATH: `${dirname(process.execPath)}:/usr/bin:/bin`,
     LANG: "C.UTF-8",
     ...contextEnv(f.context.sourceRevision, f.context.baseRevision),
     GITHUB_RUN_ATTEMPT: "3",

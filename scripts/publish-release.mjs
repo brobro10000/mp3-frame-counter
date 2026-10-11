@@ -217,8 +217,12 @@ async function publishReleaseContent(bundle, api, prefix, notes, assets, release
   return { release, reused, verifiedAssets };
 }
 
-/** Injected API permits deterministic publication-failure tests; the CLI always uses real authenticated GitHub. */
-export async function publishRelease(bundle, api, generatedDirectory) {
+/**
+ * Publish through observed GitHub evidence; injected APIs permit deterministic failure/retry tests.
+ * Real callers supply { root } for original-source CI job selection. The CLI always supplies its explicit cwd;
+ * omitted root preserves only historical direct API replay, never expanded reusable-worker verification.
+ */
+export async function publishRelease(bundle, api, generatedDirectory, { root } = {}) {
   const { manifest, origin } = bundle;
   const tag = `v${manifest.version}`;
   const prefix = `/repos/${origin.repository}`;
@@ -229,7 +233,7 @@ export async function publishRelease(bundle, api, generatedDirectory) {
     api.list(`/actions/runs/${origin.runId}/attempts/${origin.attempt}/jobs`, "jobs"),
   ]);
   const comparison = await api.request("GET", `${prefix}/compare/${origin.sourceRevision}...${branch?.commit?.sha}`);
-  requireObservedChecks(bundle, repository, branch, comparison, run, jobs);
+  requireObservedChecks(bundle, repository, branch, comparison, run, jobs, { root });
   observedId(repository.id);
   observedId(repository.owner?.id);
   const material = publicationMaterial(bundle);
@@ -474,9 +478,10 @@ function requireFinalizationEvidence(bundle, input, publicationSha256) {
  * It observes the numeric authenticated repository owner, original protected-main checks and ten published asset
  * identities, rehashes local bytes, then copies those bytes unchanged and adds finalization.json. Only GitHub release
  * metadata is written. Failed drafts retain their state; identical metadata retries never deploy or rebuild anything.
- * The ordinary CI CLI is unchanged and cannot invoke this owner-supervised exception.
+ * Real callers supply { root } separately from immutable evidence to verify the original source's required CI jobs.
+ * The ordinary CI CLI cannot invoke this owner-supervised exception; omitted root preserves historical API replay only.
  */
-export async function finalizeV1Release(bundle, evidence, api, generatedDirectory) {
+export async function finalizeV1Release(bundle, evidence, api, generatedDirectory, { root } = {}) {
   finalizationFields(evidence, [
     "projection",
     "stage",
@@ -512,7 +517,7 @@ export async function finalizeV1Release(bundle, evidence, api, generatedDirector
     api.list("/releases"),
   ]);
   const comparison = await api.request("GET", `${prefix}/compare/${origin.sourceRevision}...${branch?.commit?.sha}`);
-  requireObservedChecks(verified, repository, branch, comparison, run, jobs);
+  requireObservedChecks(verified, repository, branch, comparison, run, jobs, { root });
   observedId(repository.id);
   observedId(repository.owner?.id);
   observedId(actor?.id);
@@ -698,7 +703,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       expectedAdmissionSha256: process.env.GATE_ADMISSION_SHA256,
     });
     const directory = requireArtifactPath(root, ".artifacts");
-    const result = await publishRelease(bundle, githubApi(context.repository, process.env.GITHUB_TOKEN), directory);
+    const result = await publishRelease(bundle, githubApi(context.repository, process.env.GITHUB_TOKEN), directory, {
+      root,
+    });
     if (bundle.acceptanceAdmission) {
       const handoff = createPublisherHandoff(handoffInput(bundle, context, process.env.GATE_ADMISSION_SHA256, result));
       const sha256 = persistHandoff(root, handoff);
