@@ -9,7 +9,8 @@ query: >-
   Group NGINX inside the frontend Docker container and API plus parser inside the API Docker container. The API and
   parser share one Node process; browser JavaScript runs outside Docker. Never draw the parser as a third container.
 references:
-  - "File: /frontend/app.js"
+  - "File: /frontend/src/App.tsx"
+  - "File: /frontend/src/response.ts"
   - "File: /frontend/nginx.conf.template"
   - "File: /server/src/http.ts"
   - "File: /server/src/mp3.ts"
@@ -19,7 +20,7 @@ references:
 ---
 sequenceDiagram
     actor User
-    participant Browser as Browser runs app.js
+    participant Browser as Browser runs compiled React
     box rgb(224,242,254) Frontend Docker container
         participant Frontend as NGINX :8080
     end

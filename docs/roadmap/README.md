@@ -1,5 +1,11 @@
 # Versioned roadmap to verified production
 
+**Current priority — 2026-10-11:** the owner has paused Cloud Run delivery to finish the local React/TypeScript MVP and
+assessment handoff. The existing automatic software publisher remains active; stage delivery is disabled. Use the
+[local handoff](../deployment/local-handoff.md) and
+[dated delivery amendment](../deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11). Production
+v1.0.0 remains gated and deferred. The progression and observations below retain their dated historical scope.
+
 **Later execution authority, 2026-10-10:** the owner authorized continued implementation, companion-reviewed merges and
 automatic stage delivery. [The execution amendment](../phases/roadmap-execution-authorization.md) supersedes the
 documentation-only restrictions below. Production deployment/promotion retains a human approval gate; the planning

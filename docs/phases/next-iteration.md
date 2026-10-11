@@ -1,5 +1,20 @@
 # Next iteration: phase instructions and three PR cards
 
+## Current local-MVP execution window — 2026-10-11
+
+The owner superseded the cloud-first priority with the minimal React/TypeScript browser migration and a reproducible
+local release handoff. The bounded work is:
+
+1. Adopt the separately reviewed browser-tool policy; preserve the Fastify-only API runtime and required acceptance.
+2. Compile typed React components into the existing NGINX image, preserving the raw API, UI behavior and strict CSP.
+3. Verify local browser/API/docs and exact-image startup, document the handoff and verify normal software publication.
+
+Review and normally merge safe open PRs in parallel, reconciling dependents onto actual main. Cloud delivery is paused;
+no apply, stage rollout or production deployment belongs to this window. The production v1.0.0 gate remains unchanged.
+Read the [local handoff](../deployment/local-handoff.md) and
+[dated deferral](../deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11). Older windows below are
+historical; they do not restart deferred cloud work.
+
 **Current priority, 2026-10-11:** the owner narrowed delivery to an acceptable production V1. Follow the
 [bounded scope](../deployment/v1-delivery.md) and the three completion cards at the end. Earlier ordering below records
 progression and is superseded where it would add nonessential framework work before V1.

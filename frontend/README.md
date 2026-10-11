@@ -1,41 +1,44 @@
-# MP3 browser and proxy
+# Browser and NGINX frontend
 
-This directory is the complete frontend image build context. It contains static HTML/CSS/JavaScript and an unprivileged
-NGINX proxy; it needs no npm install, bundler, sibling API files or external assets.
+The React/TypeScript interface lets a user choose one MP3, click **Analyze MP3**, read its physical frame count and
+retry after an error. It sends the selected file as a raw same-origin `audio/mpeg` POST to `/file-upload`. Both controls
+are disabled while pending; the browser waits for and reads the API response before showing a result. Its 45-second
+deadline bounds a stalled request. Client size feedback is advisory; NGINX and the API enforce the inclusive 20 MiB
+limit.
+
+The build compiles React into static same-origin assets. NGINX serves those assets; React executes in the browser. No
+development server, npm process or extra container runs in production. The root application lockfile owns the frontend
+dependencies; the independent acceptance package keeps its separate lockfile.
+
+Run the complete application from the repository root with `make up`, then open
+[http://127.0.0.1:8080/](http://127.0.0.1:8080/). Build the frontend image independently from the same root:
 
 ```sh
-docker build --platform linux/amd64 -t mp3-frontend frontend
+docker build --platform linux/amd64 -f frontend/Dockerfile -t mp3-frontend .
 ```
 
-The root Compose configuration supplies the two-service environment. The image runs as UID/GID `101:101`, supports a
-read-only root filesystem, and requires writable ephemeral `/tmp` (use tmpfs locally). Its entrypoint writes and checks
-`/tmp/nginx.conf` before starting NGINX in the foreground. PID and temporary paths also remain under `/tmp`.
+Use `make down` to stop the source Compose project. See the [local handoff](../docs/deployment/local-handoff.md) for
+exact tested-image startup.
 
-| Input          | Default    | Contract                                                                                           |
-| -------------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| `PORT`         | `8080`     | Integer `1024`–`65535`; the host must route traffic to this container port.                        |
-| `API_UPSTREAM` | `api:3000` | DNS hostname/IPv4 and port, or `[IPv6]:port`; no scheme, path, query, credentials or NGINX syntax. |
+## Proxy configuration
 
-The upstream default is for local Compose only. Managed environments must explicitly provide the matching private API
-host and port. DNS resolvers come from runtime `/etc/resolv.conf`, with IPv6 literals bracketed for NGINX; no Compose
-resolver address is hardcoded. The variable upstream resolves dynamically with a one-second validity period. NGINX
-startup and `GET /healthz` do not require a reachable API. Invalid configuration fails startup without printing its
-values. DNS resolution and each upstream connect/read/send inactivity timeout are five seconds.
+The runtime uses UID/GID `101:101`, a read-only root filesystem and an ephemeral writable `/tmp`. Its entrypoint
+validates configuration and writes `/tmp/nginx.conf` before starting NGINX in the foreground.
 
-The browser submits only after **Analyze MP3**, sends the real File as a raw same-origin `audio/mpeg` POST, and uses
-text rendering for every result and error. It disables both controls while pending and permits retry after every
-outcome. A 45-second browser deadline bounds an otherwise stalled request. Client size feedback is advisory; NGINX and
-the API enforce the inclusive 20 MiB actual-body limit. No filename, upload or result is stored in browser persistence.
+| Input          | Default    | Meaning                                                                            |
+| -------------- | ---------- | ---------------------------------------------------------------------------------- |
+| `PORT`         | `8080`     | Container listening port; integer `1024`–`65535`.                                  |
+| `API_UPSTREAM` | `api:3000` | Private hostname/IPv4 plus port, or `[IPv6]:port`; no scheme, path or credentials. |
 
-The upload location preserves methods, bytes, query strings and API statuses/JSON. It disables request/response
-buffering, upstream retry, caching and storage; HTTP/1.1 upstream forwarding keeps chunked uploads streaming. Local
-ingress 413/502/504 failures receive JSON errors. Access logging is disabled, and error logs never include upload
-bodies. An upstream connection that cannot be established is unavailable (502), including a connection timeout; a
-timeout after connection establishment remains 504. NGINX connection timing distinguishes these without a retry. NGINX
-uses one worker, 128 connections, ten-second keepalive and a thirty-second request-body inactivity timeout. Graceful
-shutdown allows active clients five seconds to drain before closing connections, within the container's seven-second
-stop deadline. These are bounded local settings, not throughput guarantees or a total upload deadline.
+Compose supplies `api:3000`; another host must explicitly supply its matching private upstream. Runtime DNS comes from
+`/etc/resolv.conf`. Upload forwarding preserves raw bytes, methods, query strings and API JSON. It disables buffering,
+retry, caching and storage and uses HTTP/1.1 upstream forwarding. Local 413/502/504 ingress failures receive JSON. The
+docs namespace proxies the API's packaged Redoc assets under its separate CSP.
 
-See [acceptance r3](../docs/testing/acceptance-contract.md) and [frontend evidence](../docs/validation/p4-frontend.md).
-No source or configuration review alone establishes full local acceptance, managed ingress compatibility or release
-completion; those require the controller's actual independent checks.
+No filename, upload or result is stored in browser persistence. Access logging is disabled. Resource limits, deadlines
+and shutdown settings are bounded safeguards, not a throughput guarantee.
+
+Read the [architecture](../docs/architecture/v1.md), [API guide](../server/README.md),
+[raw acceptance contract](../docs/testing/acceptance-contract.md) and
+[historical frontend evidence](../docs/validation/p4-frontend.md). The latter describes the earlier static
+implementation; this React migration needs fresh acceptance and release evidence.

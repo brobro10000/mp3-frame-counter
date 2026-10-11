@@ -7,3 +7,14 @@
 !server/src
 !server/src/**
 !server/Dockerfile
+# The frontend build shares the locked build tools; only its source enters the root build context.
+!frontend
+!frontend/src
+!frontend/src/**
+!frontend/index.html
+!frontend/styles.css
+!frontend/tsconfig.json
+!frontend/vite.config.ts
+!frontend/Dockerfile
+!frontend/entrypoint.sh
+!frontend/nginx.conf.template

@@ -1,5 +1,18 @@
 # Application releases without deployment
 
+## Local MVP priority and hosting deferral — 2026-10-11
+
+The owner's latest instruction pauses Cloud Run work for the deadline and prioritizes a minimal React/TypeScript UI,
+local startup and an exact tested-image handoff. Apply the [local guide](../deployment/local-handoff.md) and
+[delivery amendment](../deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11) before the historical
+execution wording below. APP-REL-001–006 remain active; mandatory local acceptance, review and artifact integrity are
+unchanged. Automatic stage delivery is intentionally disabled, while protected-main software releases continue.
+
+Existing authenticated stage and cloud resources remain. Hosting is deferred because of the deadline and unresolved IAM
+verification/hosted acceptance, not because Cloud Run cannot run the application. No production application has been
+deployed, no cloud teardown is claimed and no production `1.0.0` is finalized. A local MVP closure preserves the future
+requirement for complete hosted verification, recovery, exact-candidate human production approval and smoke.
+
 **Later amendment, 2026-10-10:** [roadmap execution](../phases/roadmap-execution-authorization.md) resumes hosted work
 and authorizes automatic stage deployment with human intervention for production. Software releases remain independent
 of deployment. The release-only policy and evidence below describe the earlier milestone and retain their historical
