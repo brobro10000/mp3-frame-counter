@@ -148,6 +148,10 @@ assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));
 assert(
+  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/publish-release-finalization.test.mjs"),
+  "Missing mandatory V1 finalization tests",
+);
+assert(
   pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
   "Missing mandatory docs-tool-policy tests",
 );

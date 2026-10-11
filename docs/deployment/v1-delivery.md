@@ -43,6 +43,28 @@ replay module and generalized authenticated handoff adapter are deferred; do not
 authorities. The existing publisher and handoff utilities remain available and their historical records remain
 unchanged.
 
+The ordinary CI publisher remains the software-release writer. A narrow exception permits the authenticated numeric
+repository owner to call `finalizeV1Release(bundle, evidence, api, generatedDirectory)` from the existing publisher for
+fixed same-source `v1.0.0`, after supervised production completion. The caller must first verify the original bundle
+with its independent admission digest, resolve the required hosted-v1 projection from that source, and authenticate the
+human approval, provider observations and demonstrated recovery. Hashes bind these supplied facts; they cannot establish
+approval. The finalizer also observes the actual owner identity, original successful checks, protected-main ancestry,
+published candidate tag and ten exact SHA-256/size identities, and rehashes the local bytes before writes.
+
+Supply the closed `{projection, stage, production, approval, recovery, operation, productionStartedAt}` evidence record.
+Both hosted inputs use the existing `validateHostedAcceptance` shape with their original suite results, launch IDs,
+wrapper outcomes, observations and cleanup. Require all 72 local, 22 stage and three production cases. The approval
+binds source, registry pair, both configurations, production resource, exposure and recovery evidence; stage precedes
+approval, approval precedes production deployment, and smoke/recovery precede finalization. The distinct owner operation
+retains its original `finalizedAt` on retries. Every production deployment still needs its own human event, including
+authenticated and no-traffic candidates.
+
+Finalization copies the ten original asset bytes unchanged and adds only `finalization.json`. Historical 0.x manifests,
+checksums and notes retain their original meaning; the additive record carries the V1 evidence. The existing draft,
+upload-only-missing, observed digest/size verification and publish-last mechanics apply. Conflicts fail before GitHub
+writes, identical retries are read-only, and metadata publication failure is retried without redeployment. This exported
+API performs no provider, image or deployment operations and adds no CLI override or automatic production job.
+
 ## Explicit deferrals
 
 Defer reusable acquisition/replay infrastructure, automatic publication backfill, expanded queue syntax, additional
