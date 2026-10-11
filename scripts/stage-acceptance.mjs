@@ -1,5 +1,5 @@
 /**
- * Run the required frozen hosted-v1 stage suite against a controller-observed, authenticated stage destination.
+ * Run the required frozen hosted stage suite against a controller-observed, authenticated stage destination.
  * Import runStageAcceptance({ root, bundle, admissionSha256, currentContext, images, release, observe, mint,
  * evidenceDirectory }); import is inert. The controller authenticates publication/provider observations and supplies
  * the independent product digest. This module replays original admission, installs the isolated locked suite/browser,
@@ -154,7 +154,7 @@ function envelope(expected, observations, result, launchId, wrapperOutcome, pare
       profile: "stage",
       status,
       sourceRevision: expected.sourceRevision,
-      contractRevision: "hosted-v1",
+      contractRevision: expected.declarationInput.selectedContractRevision,
       suite: expected.suite,
       release: expected.release,
       images: expected.images,
@@ -266,7 +266,9 @@ export async function runStageAcceptance(options) {
       baseRevision: context.baseRevision,
     });
     assert(
-      projection && baseline.contractRevision === "hosted-v1" && projection.required.contractRevision === "hosted-v1",
+      projection &&
+        ["hosted-v1", "hosted-health-v1"].includes(baseline.contractRevision) &&
+        projection.required.contractRevision === baseline.contractRevision,
     );
     assert.equal(bundle.manifest.sourceRevision, context.sourceRevision);
     assert.equal(release.reservationSha256, bundle.manifest.reservationSha256);

@@ -210,7 +210,11 @@ async function inputs() {
     baseRevision: bundle.origin.baseRevision,
     selection: { baseline: resolution.required, resolution, admission },
   });
-  assert(projection && resolution.required.contractRevision === "hosted-v1");
+  assert(
+    projection &&
+      ["hosted-v1", "hosted-health-v1"].includes(resolution.required.contractRevision) &&
+      projection.required.contractRevision === resolution.required.contractRevision,
+  );
   const material = publicationMaterial(bundle);
   const identity = {
     schemaVersion: 1,
