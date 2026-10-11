@@ -42,3 +42,12 @@ These isolated tests copy only public source/lock files, install from the verifi
 credentials. They do not establish live policy preservation, workload absence, cost readiness or convergence. Exact-head
 CI, companion approval, merged publication, reviewed saved-plan application and independent IAM/no-drift readback are
 separate pending gates. Every production application deployment still requires human intervention.
+
+## State-migration ordering clarification
+
+Independent operational review identified a sequencing conflict: the published access source already declares GCS, so
+its final normal plan must follow backend initialization. The adopted clarification requires complete IAM convergence
+and source/state/API reconciliation first, followed by a state-only migration to the verified empty destination and
+immediate full parity, locking and no-change checks. It authorizes no access-resource mutation. Original failed
+readbacks remain retained. Review memo SHA256: `42362f1c51cb8bbb9ae5953bd3e406637feb2422b77b0845950bcf07b3ff0fd1`. No
+migration or new live observation occurred while preparing this source/documentation amendment.

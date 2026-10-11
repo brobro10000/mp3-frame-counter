@@ -20,9 +20,11 @@ The next three-card window is **ACCESS-BACKEND**, **ACCESS-IAM-DEFAULTS** and th
 **SAME-RUN-HANDOFF**. PUBLISHER-HANDOFF merged as PR #33 at `781b334230d956485abbc508fcfe5de2b2684305`; its actual main
 publication and new producer artifact are verified below. PR #34 was immediately reconciled onto that main, passed fresh
 checks and companion review, then merged at `40d9ae09e2ddf17c52b160094622537e0a28c683` on 2026-10-11 at 00:30:07Z. Its
-operational migration remains pending. The IAM correction belongs to local bootstrap so remote-state trust does not
-create a backend dependency cycle. Authenticated acquisition/replay, launcher, registry, federation and runtime delivery
-remain separate future scope.
+[main run 38098635997](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38098635997) then passed and
+published [v0.3.34](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.34). Its operational migration
+remains pending. The IAM correction belongs to local bootstrap so remote-state trust does not create a backend
+dependency cycle. Authenticated acquisition/replay, launcher, registry, federation and runtime delivery remain separate
+future scope.
 
 Merge an approved PR as soon as its required checks and prerequisites pass. Immediately reconcile and retarget its
 direct dependents onto the actual merged main, then refresh their checks and companion review. Avoid accumulating
@@ -453,7 +455,9 @@ be no-op. Re-read complete project policy and scoped grants afterward, then requ
 Disabled Compute is a bounded inventory limit, not proof of no instances. Changed workload or policy evidence stops this
 narrow correction. Preserve unrelated owner/service-agent tuples; do not automatically regrant Editor on recovery. A
 privilege regrant needs an explicit new owner decision. Preserve failed evidence and local state. Registry-default
-convergence is separately required before backend migration.
+source/state/API reconciliation precedes state-only backend migration; an exact-source locked no-change plan immediately
+follows it before any access-resource mutation or migration-complete claim. Follow the
+[operational ordering clarification](../deployment/cloud-access-foundation.md#operational-ordering-clarification--2026-10-11).
 
 **Stop:** no access-state migration, federation, runtime or production deployment in this card. Advance those separately
 after the respective operational prerequisites; every production deployment retains human intervention.
