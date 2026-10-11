@@ -44,3 +44,20 @@ Synthetic fully consistent inputs can pass. This pure helper cannot authenticate
 establish expiry/freshness, re-observe release assets, replay the original admission, select required hosted profiles or
 verify images/registry/provider identities. Its output confers no deployment authority. The broader phase is incomplete
 until those separately reviewed consumers exist. Every production application deployment retains its human gate.
+
+## Live producer compatibility observation
+
+After PUBLISHER-HANDOFF merged, main run **38097867539**, attempt 1, passed and published **v0.3.33**. Its successful
+publisher job emitted one receipt for artifact **11686528154**. Root's owner-authenticated exact-ID GitHub CLI capture
+obtained the actual 3,558-byte archive. Its SHA256 and the contained 3,420-byte JSON SHA256 exactly match the receipt
+and artifact API. The unchanged helper `f23932f5…` accepted that archive with independently observed current context and
+publisher outputs. Separate byte inspection checked payload length and CRC32 `91f724c8`.
+
+Root also verified all eight release metadata bytes and matched the handoff to original admission, publisher context,
+canonical reservation/publication identities, raw publication hash and all ten observed asset IDs/names/sizes/hashes.
+Capture verification SHA256: `209cf395f1062f0a62ea64c7169f7eedd56aa6e2b8baad24f7b8fc4c5854ade0`; cross-binding SHA256:
+`9f30fbfea4c6808888f9bca28274c066a63583515f97f9110f4aa6f533a8b60a`. See the
+[producer completion](../phases/next-iteration.md#publisher-handoff-protected-main-completion) for full source, artifact
+and release identities. This is an actual producer/archive observation; owner CLI transport does not implement trusted
+CI acquisition, expiry/redirect policy or the later original-admission consumer. No Docker archive was downloaded or
+hosted application test executed.

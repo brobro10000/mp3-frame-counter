@@ -18,7 +18,7 @@ was immediately reconciled onto actual merged main while publication was verifie
 
 The next three-card window is **ACCESS-BACKEND**, **ACCESS-IAM-DEFAULTS** and the first pure unit of
 **SAME-RUN-HANDOFF**. PUBLISHER-HANDOFF merged as PR #33 at `781b334230d956485abbc508fcfe5de2b2684305`; its actual main
-publication and new producer artifact remain pending observation. PR #34 was immediately reconciled onto that main and
+publication and new producer artifact are verified below. PR #34 was immediately reconciled onto that main and
 retargeted, with fresh required checks. The IAM correction belongs to local bootstrap so remote-state trust does not
 create a backend dependency cycle. Authenticated acquisition/replay, launcher, registry, federation and runtime delivery
 remain separate future scope.
@@ -331,7 +331,7 @@ real provider readback remain separate operational evidence. The original bounde
 
 <a id="pr-card-1--publisher-handoff-emit-an-authenticated-publisher-receipt"></a>
 
-### PUBLISHER-HANDOFF source merge
+### PUBLISHER-HANDOFF protected-main completion
 
 [PR #33](https://github.com/brobro10000/mp3-frame-counter/pull/33) merged at **2026-10-11 00:16:26Z** as
 `781b334230d956485abbc508fcfe5de2b2684305`, sole parent `30ad90cdb27be67e5bfb01197e9b3a40a81e1904`, tree
@@ -344,12 +344,27 @@ tooling tests, twenty gate tests, nineteen Mermaid renders, 120 units and all 72
 Root rehashed the independent audit's nineteen records and matched 195 exact log citations. Audit SHA256:
 `4ab446d0667097e759dc21aa91345967ed8ad0765775523b0a69df76ecf4d52c`. The earlier bot-superseded run remains cancelled.
 
-[Main run 38097867539](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38097867539) is pending
-observation; no live handoff or release is claimed yet. The completed source
+[Main run 38097867539, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38097867539) passed
+validation and publication at **00:23:20Z**, including 655 tooling tests, twenty gate tests, nineteen Mermaid renders,
+120 units and all 72 required cases with scoped cleanup. Release **409290121**, **v0.3.33**, published at **00:23:15Z**
+with ten assets and `deployed: false`. Root verified source/base/run/admission, required docs-v1, pending hosted-v1,
+configuration/image metadata and all eight downloaded metadata assets. Original admission SHA256 is
+`0c1f78be7e4d2e906516de59c83aea7f7488a92ad6a5440f5e0560a205617cf3`; metadata-verification SHA256 is
+`6c3c6c851e0d0732f6948d3c6c8909f3a9a9ef18484b8b16277fa8938120f102`. Neither Docker image archive was downloaded.
+
+The publisher's upload and receipt steps succeeded. Actions artifact **11686528154**, **3,558 bytes**, has archive
+SHA256 `922b4bdb0f1da1376b40e67609e94d578f36354a292a5ad6012ba914a4bd8f34`, raw handoff SHA256
+`c6269a29611b2de805707d4795ed5fad0e8581e18bfdc8357c7ec1f6f648dbcf`, and observed expiry **2027-01-09T00:16:29Z**. Root
+downloaded that exact artifact through authenticated GitHub CLI, checked both hashes, fixed STORE framing/CRC and the
+new pure reader, then matched its original/publisher contexts and all ten asset IDs, names, sizes and hashes to the
+verified release. Cross-binding record SHA256: `9f30fbfea4c6808888f9bca28274c066a63583515f97f9110f4aa6f533a8b60a`. This
+establishes an observed live producer and archive compatibility; it does not implement the future CI acquisition/replay
+adapter or prove hosted delivery.
+
+The completed source
 [card](https://github.com/brobro10000/mp3-frame-counter/blob/781b334230d956485abbc508fcfe5de2b2684305/docs/phases/next-iteration.md#pr-card-1--publisher-handoff-emit-an-authenticated-publisher-receipt)
-and [implementation evidence](../validation/publisher-handoff.md) retain its exact boundaries. Verify actual main
-publication, artifact and receipt before dependent delivery. The broad phase's live prerequisite remains distinct from
-this reviewed source merge.
+and [implementation evidence](../validation/publisher-handoff.md) preserve its bounded history. The software release
+remains independent of deployment; no application service or production candidate was deployed.
 
 <a id="pr-card-2--access-backend-protect-access-state-in-its-operations-bucket"></a>
 
@@ -441,6 +456,8 @@ convergence is separately required before backend migration.
 
 **Stop:** no access-state migration, federation, runtime or production deployment in this card. Advance those separately
 after the respective operational prerequisites; every production deployment retains human intervention.
+
+<a id="pr-card-3--same-run-handoff-validate-the-direct-publisher-delivery-input"></a>
 
 ## PR card 3 — SAME-RUN-HANDOFF: Validate direct publisher artifact consistency
 
