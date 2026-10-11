@@ -7,14 +7,14 @@ query: >-
   API container. Put both containers inside Docker's Compose network. Keep
   browser React page components, useMp3Analysis business state and the raw API
   service outside Docker, with the host controller and extracted Playwright
-  runner also outside Docker. App.tsx composes the page; Vite builds static assets.
-  Distinguish published loopback host port from internal
-  frontend port 8080 and private API port 3000, with a separate test-only
-  loopback binding for direct API diagnostics. Show source-defined runtime
-  users, read-only filesystems, temporary mounts and bounded in-process parsing.
-  Do not imply a third parser/test container, Node frontend runtime or cloud
-  deployment. Keep fixed API lifecycle readback and SIGTERM inside the host
-  controller; command acknowledgment does not prove graceful drain.
+  runner also outside Docker. App.tsx composes the page; Vite builds static
+  assets. Distinguish published loopback host port from internal frontend port
+  8080 and private API port 3000, with a separate test-only loopback binding for
+  direct API diagnostics. Show source-defined runtime users, read-only
+  filesystems, temporary mounts and bounded in-process parsing. Do not imply a
+  third parser/test container, Node frontend runtime or cloud deployment. Keep
+  fixed API lifecycle readback and SIGTERM inside the host controller; command
+  acknowledgment does not prove graceful drain.
 references:
   - 'File: /compose.yaml'
   - 'File: /frontend/Dockerfile'
@@ -34,15 +34,15 @@ references:
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
   - 'File: /scripts/e2e-controller.mjs'
-generationTime: '2026-10-11T13:20:27.232Z'
+generationTime: '2026-10-11T14:49:05.328Z'
 ---
 flowchart LR
-    B["User browser: compiled React<br/>page components, upload hook and API service"]
+    B["User browser<br/>app.js executes here"]
     subgraph DOCKER["Docker Engine: Compose project / private network"]
         subgraph FRONT["frontend container: NGINX image / UID 101"]
-            F["NGINX :8080<br/>serves compiled React assets, HTML and CSS"]
+            F["NGINX :8080<br/>serves HTML, CSS and app.js files"]
             FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
-            H["Compose probe /healthz<br/>hosted alias /health<br/>returns 200 {'status':'ok'}"]
+            H["Health Check<br/>location = /health<br/>returns 200 {'status':'ok'}"]
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
