@@ -1074,6 +1074,102 @@ const correction9Failures = correction9Results.filter((entry) => entry.status ==
 if (correction9Failures.length) console.error("EXCLUSION_DOMAIN", JSON.stringify(correction9Results));
 assert.deepEqual(correction9Failures, [], "EXCLUSION_DOMAIN missing semantic refusals");
 
+/**
+ * OAS 3.0.3 exclusive numeric limits remove equality when the respective boolean flag is true.
+ * Primary semantics: https://datatracker.ietf.org/doc/html/draft-wright-json-schema-validation-00#section-5.2
+ * These fixed endpoint controls retain valid opposite-value DTO examples; no general schema vocabulary is added.
+ */
+const correction10Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction10Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction10Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction10Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+
+/** Both numeric matcher branches keep inclusive endpoints and valid values beyond an exclusive endpoint. */
+for (const type of ["integer", "number"] as const) {
+  const inclusive = { type, minimum: 0, maximum: 1, exclusiveMinimum: false, exclusiveMaximum: false };
+  const outside = { type, minimum: -1, maximum: 2, exclusiveMinimum: true, exclusiveMaximum: true };
+  for (const value of [0, 1]) {
+    assert.ok(exampleMatches(spec, inclusive, value));
+    assert.ok(exampleMatches(spec, outside, value));
+  }
+  const lower = { type, minimum: 0, exclusiveMinimum: true };
+  const upper = { type, maximum: 1, exclusiveMaximum: true };
+  assert.ok(exampleMatches(spec, lower, 1));
+  assert.ok(exampleMatches(spec, upper, 0));
+  if (type === "number") {
+    assert.ok(exampleMatches(spec, lower, 0.5));
+    assert.ok(exampleMatches(spec, upper, 0.5));
+  }
+  correction10Rejected(`matcher ${type} exclusive lower endpoint 0`, () => assert.ok(exampleMatches(spec, lower, 0)));
+  correction10Rejected(`matcher ${type} exclusive upper endpoint 1`, () => assert.ok(exampleMatches(spec, upper, 1)));
+}
+
+/** Valid false flags and exclusive limits outside the literal domain preserve both exclusion DTOs and local aliases. */
+for (const [name, limits] of [
+  ["inclusive false", { minimum: 0, maximum: 1, exclusiveMinimum: false, exclusiveMaximum: false }],
+  ["exclusive outside", { minimum: -1, maximum: 2, exclusiveMinimum: true, exclusiveMaximum: true }],
+] as const)
+  for (const placement of ["direct", "allOf"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      const positive = structuredClone(taggedExamples);
+      const scalar: Record<string, unknown> = { type: "integer", enum: [0, 1] };
+      if (placement === "direct") Object.assign(scalar, limits);
+      else scalar.allOf = [{ type: "integer", ...limits }];
+      if (representation === "direct") alter(positive, correction9ExclusionPath, scalar);
+      else {
+        positive.components.schemas.CompatibleExclusiveExclusionAlias = scalar;
+        alter(positive, correction9ExclusionPath, { $ref: "#/components/schemas/CompatibleExclusiveExclusionAlias" });
+      }
+      const schema = controlSchemaAt(positive, correction9ExclusionPath);
+      for (const value of [0, 1])
+        assert.ok(exampleMatches(positive, schema, value), `${name} ${placement} ${representation}`);
+      for (const dto of [absentDetail(9), encodedVbrDetail])
+        assert.ok(exampleMatches(positive, controlSchemaAt(positive, correction9DetailPath), dto));
+      assertBackendSpec(positive);
+    }
+
+/** Exclude exactly the required endpoint while keeping the reported opposite-value example valid in every shape. */
+for (const refusedValue of [0, 1] as const)
+  for (const placement of ["direct", "allOf"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      const invalid = structuredClone(refusedValue === 0 ? spec : presentUnexercised);
+      const target = controlSchemaAt(invalid, correction9ExclusionPath);
+      assert.equal(target.type, "integer");
+      assert.deepEqual(target.enum, [0, 1]);
+      const boundName = refusedValue === 0 ? "minimum" : "maximum";
+      const exclusiveName = refusedValue === 0 ? "exclusiveMinimum" : "exclusiveMaximum";
+      const retainedValue = refusedValue === 0 ? 1 : 0;
+      if (placement === "direct") {
+        target[boundName] = refusedValue;
+        target[exclusiveName] = true;
+      } else target.allOf = [{ type: "integer", [boundName]: refusedValue, [exclusiveName]: true }];
+      if (representation === "referenced") {
+        invalid.components.schemas.RestrictiveExclusiveExclusionAlias = structuredClone(target);
+        alter(invalid, correction9ExclusionPath, { $ref: "#/components/schemas/RestrictiveExclusiveExclusionAlias" });
+      }
+      assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, correction9ExclusionPath), retainedValue));
+      const exampleValue = controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value"]);
+      assert.equal(
+        controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value", "analysis"])
+          .excludedMetadataFrameCount,
+        retainedValue,
+      );
+      assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, correction9DetailPath), exampleValue));
+      const side = refusedValue === 0 ? "lower" : "upper";
+      correction10Rejected(`schema ${placement}/${representation} exclusive ${side} endpoint ${refusedValue}`, () =>
+        assertBackendSpec(invalid),
+      );
+    }
+const correction10Failures = correction10Results.filter((entry) => entry.status === "missing-refusal");
+if (correction10Failures.length) console.error("EXCLUSIVE_ENDPOINTS", JSON.stringify(correction10Results));
+assert.deepEqual(correction10Failures, [], "EXCLUSIVE_ENDPOINTS missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

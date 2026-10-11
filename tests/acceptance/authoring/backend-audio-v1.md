@@ -541,3 +541,40 @@ RED/GREEN logs and final snapshots remain in the ignored correction directory.
 Every preceding authoring-record byte, original fixture, inventory, manifest, lockfile and normative contract remains
 unchanged. No product or governance input was edited. These are independent harness calibration results, not product or
 hosted acceptance. Fresh current CI, companion approval, actual candidate merge and separate binding remain required.
+
+## Harness correction 10 — 2026-10-11 (non-normative)
+
+Current-head [CI 38183278512](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38183278512), attempt 1,
+passed every mandatory job at `74cd93799213cc1a0bda90fc600adbaa9148a8af`. The complete candidate package passed 258
+semantic controls, 101/101 owned hosted controls and exact 72 local / 22 stage / 3 production discovery. Separately, 72
+required predecessor cases passed with scoped cleanup. These observations do not activate the successor or prove hosted
+execution; publication and delivery jobs were skipped on the PR.
+
+The subsequent companion run `20261011T232158-0aea69a1` completed with `request_changes` for F-001: the numeric example
+matcher ignored OpenAPI 3.0.3 exclusive bounds. The complete immutable report remains preserved with SHA-256
+`05e0d82fadd6ce3fba1fde2126606335ccec7192f2e7aaf4ad847f93f5271e2c`. The report assessed all 38 changed paths and passed
+its documentation gate. Its static finding was reproduced below; it is not a submitted approval.
+
+An independent control author added 12 cases before the separate matcher writer acted: four integer/number endpoint
+checks and eight exclusion-domain cases covering lower/upper endpoints, direct/reference schemas and composition. Valid
+inclusive false flags, exclusive bounds outside 0–1, fractional number values and opposite-value whole DTO examples
+preserve positive coverage. This correction used acceptance material and official standards only; prior product-review
+context was disclosed rather than claimed absent. The control author did not inspect or edit the matcher or execute
+checks in this correction. The matcher writer did not author the controls or read product implementation.
+
+The coordinator froze the formatted controls at SHA-256
+`8dfca1f5ab78a8a966628bbc9bdfd76abecc58123e16a6c6508e23929e7aba8f`; removing the 96-line insertion restores all 258
+preceding control bytes. With unchanged matcher `87cb78389c78c1721e9f103a1a3f59c502685cea971218218607dd89c03c266c`,
+focused execution exited 1 and reported all 12 missing refusals after completing prior controls and valid counterparts.
+Raw RED SHA-256: `422d0ba5ba72aa7fbbc1aa0c4bc77cc4518d33c7f6fdbdb9e1cbe186fed90890`.
+
+Only the four minimum/maximum comparisons in the integer/number matcher branches changed. Boolean true uses strict
+comparison; false or absent preserves inclusive comparison. Resolver, literal extraction and contract predicates remain
+unchanged. The final matcher SHA-256 is `0955bac6fc3a06491266107a8fe7a4fae5e35cb049f1f51d43a8996c75aa4304`. The
+coordinator ran final focused controls and strict candidate typechecking with Node 24.20.0: both exited 0, with 270
+semantic controls passing. Raw focused GREEN SHA-256:
+`1d43fb18ef6aac5251c378713b11332272e905530b7feff57db4143142c78f24`. The complete 270-control package has not run
+locally; fresh current-source CI remains required. Before identities, review/receipt copies and RED/GREEN evidence stay
+in the ignored correction directory. Every preceding authoring byte and the other immutable inputs remain unchanged. No
+product, governance or normative contract was edited. Calibration is not product or hosted acceptance, and actual
+candidate merge, separate binding and subsequent product adoption remain pending.

@@ -91,15 +91,19 @@ export function exampleMatches(spec, source, value) {
   if (type === "integer")
     return (
       Number.isSafeInteger(value) &&
-      (schema.minimum === undefined || value >= schema.minimum) &&
-      (schema.maximum === undefined || value <= schema.maximum)
+      (schema.minimum === undefined ||
+        (schema.exclusiveMinimum === true ? value > schema.minimum : value >= schema.minimum)) &&
+      (schema.maximum === undefined ||
+        (schema.exclusiveMaximum === true ? value < schema.maximum : value <= schema.maximum))
     );
   if (type === "number")
     return (
       typeof value === "number" &&
       Number.isFinite(value) &&
-      (schema.minimum === undefined || value >= schema.minimum) &&
-      (schema.maximum === undefined || value <= schema.maximum)
+      (schema.minimum === undefined ||
+        (schema.exclusiveMinimum === true ? value > schema.minimum : value >= schema.minimum)) &&
+      (schema.maximum === undefined ||
+        (schema.exclusiveMaximum === true ? value < schema.maximum : value <= schema.maximum))
     );
   if (type === "boolean") return typeof value === "boolean";
   if (type === "string")
