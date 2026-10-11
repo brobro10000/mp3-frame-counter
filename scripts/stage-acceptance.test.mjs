@@ -1,5 +1,6 @@
 /**
- * Focused local lifecycle checks for the stage launcher. Run pinned Node with `node --test` on this file.
+ * Focused local lifecycle checks for the stage launcher. Run pinned Node with
+ * `node --experimental-vm-modules --test scripts/stage-acceptance.test.mjs`.
  * The private owned-process helper is extracted for real credential-free Node children; no Git, npm, browser, provider
  * or target executes. A separately isolated module probe mocks admission/selection boundaries to prove that an absent
  * required hosted profile cannot reach installation or authentication. These are implementation lifecycle checks, not
