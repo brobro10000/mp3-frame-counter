@@ -104,10 +104,26 @@ independent author must amend the plan oracle to require an empty Docker-configu
 controls for explicit overrides before a separate implementer removes the three source lines. Preserve the original
 expectation and observed failure, all IAM/deletion safeguards and the exact 23-resource/five-output boundary.
 
-This extends ACCESS-BACKEND's source scope to `main.tf` only for that default normalization. Before remote migration,
-verify the actual API omits or reports false immutable tags and a fresh reviewed plan has no resource actions. If the
-correction needs any provider mutation, stop and review its exact plan separately. Terraform's original private state
-and the failed readback remain retained. Backend migration, locking and production deployment remain separate gates.
+This extends ACCESS-BACKEND's source scope to `main.tf` only for that default normalization. The original private state
+and failed readback remain retained. The operational ordering clarification below governs the actual migration; registry
+source normalization does not itself establish convergence or permit a provider mutation.
+
+### Operational ordering clarification — 2026-10-11
+
+The published source already declares GCS, so Terraform requires backend initialization before its normal plan. Before
+migration, reconcile the published source, retained local state and current API observations, including absent or false
+registry immutable tags, and complete the bootstrap IAM correction with its own no-change plan. Migrate only the
+existing access state into the verified empty destination. Immediately verify lineage, full state parity, object
+identity and locking, then require an exact-source refreshed no-change plan before any access-resource mutation or
+migration-complete claim. Any unexpected difference stops further operations and retains both custody records for
+reconciliation.
+
+This permits only a state-storage transition before the access convergence check. It does not permit a temporary backend
+override, competing state owner, speculative registry repair, `-reconfigure`, `-force-copy` or disabled locking. Keep
+the original failed readback and restricted recovery copies. Bootstrap remains its separate local owner. Backend
+migration, locking and every production deployment retain their separate gates.
+[Terraform backend lifecycle](https://developer.hashicorp.com/terraform/language/v1.13.x/backend),
+[initialization and migration](https://developer.hashicorp.com/terraform/cli/v1.13.x/commands/init).
 
 ## Additional operational gate: default project identities
 

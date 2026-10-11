@@ -986,3 +986,243 @@ test("hosted IaC paths: historical replay ignores later files but rejects unknow
   reject(unknown, unknownBase, unknownBase);
   reject(unknown, descendant, unknownBase);
 });
+
+// Bootstrap predates GATE-01. These independent literals reserve only the root-adopted IAM and Markdown paths.
+const bootstrapIamPath = "infra/cloud/bootstrap/main.tf";
+const bootstrapReadmePath = "infra/cloud/bootstrap/README.md";
+
+function bootstrapIamPendingFixture(t, existingPath) {
+  const f = fixture(t);
+  let predecessor = f.product;
+  if (existingPath) {
+    f.put(existingPath, "# Synthetic bootstrap file already present before transition policy.\n");
+    predecessor = f.commit("historical bootstrap precedes transition admission");
+  }
+  const base = f.bootstrap();
+  assert.equal(f.resolve(base, predecessor).admission, "bootstrap");
+  const candidate = f.candidate({ id: "hosted-v1", revision: "hosted-v1" });
+  const binding = f.bind(candidate);
+  const before = f.resolve(binding, candidate.record.suiteCommit, [candidate.observation]);
+  assert.equal(before.admission, "binding");
+  requireIdentity(before.required, f.genesis);
+  requireIdentity(before.pendingBinding, candidate.record);
+  assert.equal(before.activationCommit, null);
+  return { ...f, candidateState: candidate, binding, before };
+}
+
+function requireBootstrapPending(result, f, kind) {
+  assert.equal(result.admission, kind);
+  assert.deepEqual(result.required, f.before.required);
+  assert.deepEqual(result.pendingBinding, f.before.pendingBinding);
+  assert.equal(result.candidate, null);
+  assert.equal(result.bindingCommit, f.binding);
+  assert.equal(result.activationCommit, null);
+  assert.equal(result.policySha256, f.before.policySha256);
+}
+
+for (const [path, kind] of [
+  [bootstrapIamPath, "governance"],
+  [bootstrapReadmePath, "documentation"],
+]) {
+  for (const operation of ["addition", "change", "removal"]) {
+    test(`bootstrap IAM paths: exact ${path} ${operation} is ${kind} and preserves pending hosted identity`, (t) => {
+      const f = bootstrapIamPendingFixture(t, operation === "addition" ? undefined : path);
+      if (operation === "removal") rmSync(join(f.root, path));
+      else f.put(path, `# Synthetic bootstrap ${operation}; never executed or applied.\n`);
+      const source = f.commit(`${operation} the exact reserved bootstrap path`);
+      if (operation !== "removal") assert.match(f.git("ls-tree", source, "--", path), /^100644 blob /);
+      else assert.equal(f.git("ls-tree", source, "--", path), "");
+      requireBootstrapPending(f.resolve(source, f.binding), f, kind);
+      // Once admitted, trusted history must preserve the same identities on ordinary documentation descendants.
+      f.put("README.md", `Synthetic documentation after bootstrap ${operation}.\n`);
+      const descendant = f.commit("documentation cannot activate the pending hosted successor");
+      requireBootstrapPending(f.resolve(descendant, source), f, "documentation");
+    });
+  }
+  test(`bootstrap IAM paths: exact ${path} needs no pending successor`, (t) => {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    const before = f.resolve(base, f.product);
+    f.put(path, "# Synthetic standalone bootstrap change.\n");
+    const source = f.commit("reserved bootstrap path without a candidate");
+    const result = f.resolve(source, base);
+    assert.equal(result.admission, kind);
+    assert.deepEqual(result.required, before.required);
+    assert.equal(result.pendingBinding, null);
+    assert.equal(result.candidate, null);
+    assert.equal(result.bindingCommit, null);
+    assert.equal(result.activationCommit, null);
+  });
+}
+
+test("bootstrap IAM paths: the exact pair may accompany other governance without activating hosted acceptance", (t) => {
+  const f = bootstrapIamPendingFixture(t);
+  f.put(bootstrapIamPath, "# Synthetic operational IAM governance.\n");
+  f.put(bootstrapReadmePath, "# Synthetic governance explanation\n");
+  f.put("scripts/iam-expectations.mjs", "// Synthetic test/governance marker; never executed.\n");
+  const source = f.commit("bootstrap governance with its documentation and independent expectations");
+  requireBootstrapPending(f.resolve(source, f.binding), f, "governance");
+});
+
+test("bootstrap IAM paths: exact README may accompany product and cannot suppress normal hosted activation", (t) => {
+  const f = bootstrapIamPendingFixture(t);
+  f.put("server/src/parser.ts", "// Synthetic product input alone is a valid implementation.\n");
+  const product = f.commit("valid product counterpart");
+  const valid = f.resolve(product, f.binding);
+  assert.equal(valid.admission, "implementation");
+  requireIdentity(valid.required, f.candidateState.record);
+  f.put(bootstrapReadmePath, "# Documentation may accompany a product proposal\n");
+  const source = f.commit("documentation remains ordinary documentation beside product");
+  const result = f.resolve(source, f.binding);
+  assert.equal(result.admission, "implementation");
+  assert.deepEqual(result.required, valid.required);
+  assert.equal(result.pendingBinding, null);
+  assert.equal(result.candidate, null);
+  assert.equal(result.bindingCommit, f.binding);
+  assert.equal(result.activationCommit, source);
+});
+
+test("bootstrap IAM paths: exact README may accompany a separately reviewed binding", (t) => {
+  const f = fixture(t);
+  const base = f.bootstrap();
+  const candidate = f.candidate({ id: "hosted-v1", revision: "hosted-v1" });
+  assert.equal(f.resolve(candidate.record.suiteCommit, base).admission, "candidate");
+  f.put(bootstrapReadmePath, "# Documentation accompanying the independent binding\n");
+  const binding = f.bind(candidate);
+  const result = f.resolve(binding, candidate.record.suiteCommit, [candidate.observation]);
+  assert.equal(result.admission, "binding");
+  requireIdentity(result.required, f.genesis);
+  requireIdentity(result.pendingBinding, candidate.record);
+  assert.equal(result.candidate, null);
+  assert.equal(result.bindingCommit, binding);
+  assert.equal(result.activationCommit, null);
+});
+
+test("bootstrap IAM paths: main.tf mixed with product reaches the existing separate-admission refusal", (t) => {
+  for (const productPath of ["server/src/parser.ts", "infra/cloud/runtime/main.tf"]) {
+    const f = bootstrapIamPendingFixture(t);
+    f.put(productPath, "# Synthetic product-only counterpart; never executed.\n");
+    const product = f.commit("valid product-only counterpart");
+    const valid = f.resolve(product, f.binding);
+    assert.equal(valid.admission, "implementation");
+    requireIdentity(valid.required, f.candidateState.record);
+    f.put(bootstrapIamPath, "# Governance cannot join the same proposed product delta.\n");
+    const mixed = f.commit("product and bootstrap IAM governance in one proposed delta");
+    assert.throws(() => f.resolve(mixed, f.binding), /Product and governance changes require separate admission/);
+  }
+});
+
+for (const path of [bootstrapIamPath, bootstrapReadmePath]) {
+  test(`bootstrap IAM paths: ${path} cannot join an independent suite candidate`, (t) => {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    const candidate = f.candidate({ id: "hosted-v1", revision: "hosted-v1" });
+    const valid = f.resolve(candidate.record.suiteCommit, base);
+    assert.equal(valid.admission, "candidate");
+    requireIdentity(valid.candidate, candidate.record);
+    f.put(path, "# Unrelated path cannot join the suite-and-contract-only proposal.\n");
+    const mixed = f.commit("candidate plus unrelated bootstrap path");
+    assert.throws(() => f.resolve(mixed, base), /Candidate must contain only suite and contract changes/);
+  });
+}
+
+test("bootstrap IAM paths: main.tf mixed with binding reaches the existing separate-binding refusal", (t) => {
+  const f = bootstrapIamPendingFixture(t);
+  f.put(bootstrapIamPath, "# Bootstrap governance cannot join binding authority.\n");
+  const mixed = f.commit("binding and bootstrap governance in one proposed delta");
+  assert.throws(
+    () => f.resolve(mixed, f.candidateState.record.suiteCommit, [f.candidateState.observation]),
+    /Binding must be separate from suite, product and gate changes/,
+  );
+});
+
+test("bootstrap IAM paths: governance after an unbound candidate preserves that candidate without activating it", (t) => {
+  const f = fixture(t);
+  const base = f.bootstrap();
+  const candidate = f.candidate({ id: "hosted-v1", revision: "hosted-v1" });
+  const before = f.resolve(candidate.record.suiteCommit, base);
+  assert.equal(before.admission, "candidate");
+  f.put(bootstrapIamPath, "# Independent governance while the reviewed suite still awaits binding.\n");
+  const source = f.commit("governance leaves an unbound candidate unchanged");
+  const result = f.resolve(source, candidate.record.suiteCommit);
+  assert.equal(result.admission, "governance");
+  assert.deepEqual(result.required, before.required);
+  assert.deepEqual(result.candidate, before.candidate);
+  assert.equal(result.pendingBinding, null);
+  assert.equal(result.activationCommit, null);
+  f.put("server/src/parser.ts", "// Product must still wait for separate binding.\n");
+  const product = f.commit("product still cannot precede candidate binding");
+  assert.throws(() => f.resolve(product, source), /Product cannot change before candidate binding/);
+});
+
+test("bootstrap IAM paths: adjacent filenames and executable extensions remain unclassified", (t) => {
+  for (const path of [
+    "infra/cloud/bootstrap/versions.tf",
+    "infra/cloud/bootstrap/variables.tf",
+    "infra/cloud/bootstrap/outputs.tf",
+    "infra/cloud/bootstrap/.terraform.lock.hcl",
+    "infra/cloud/bootstrap/backend.tf",
+    "infra/cloud/bootstrap/override.tf",
+    "infra/cloud/bootstrap/main.tf.json",
+    "infra/cloud/bootstrap/main.tf.backup",
+    "infra/cloud/bootstrap/Main.tf",
+    "infra/cloud/bootstrap/README.mjs",
+    "infra/cloud/bootstrap/README.md.mjs",
+    "infra/cloud/bootstrap/readme.md",
+    "infra/cloud/bootstrap/modules/main.tf",
+    "infra/cloud/bootstrap/modules/README.md",
+    "infra/cloud/bootstrap-extra/main.tf",
+    "infra/cloud/Bootstrap/README.md",
+  ]) {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    f.put("README.md", "A valid ordinary documentation counterpart.\n");
+    const documentation = f.commit("known documentation remains admitted");
+    assert.equal(f.resolve(documentation, base).admission, "documentation");
+    f.put(path, "# Near-name paths do not inherit either exact reservation.\n");
+    const source = f.commit("unclassified bootstrap neighbor");
+    assert.throws(() => f.resolve(source, documentation), /Unclassified acceptance admission path:/);
+  }
+});
+
+test("bootstrap IAM paths: changing or removing a historical neighboring file remains unclassified", (t) => {
+  for (const operation of ["change", "removal"]) {
+    const f = fixture(t);
+    const path = "infra/cloud/bootstrap/variables.tf";
+    f.put(path, "# Existing pre-policy file is not a new path reservation.\n");
+    const historical = f.commit("historical unclassified bootstrap neighbor");
+    const base = f.bootstrap();
+    assert.equal(f.resolve(base, historical).admission, "bootstrap");
+    if (operation === "removal") rmSync(join(f.root, path));
+    else f.put(path, "# Changed unknown neighbor.\n");
+    const source = f.commit(`${operation} unclassified historical neighbor`);
+    assert.throws(() => f.resolve(source, base), /Unclassified acceptance admission path:/);
+  }
+});
+
+test("bootstrap IAM paths: both exact paths reject symlinks before path-kind admission", (t) => {
+  for (const path of [bootstrapIamPath, bootstrapReadmePath]) {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    f.put("README.md", "Valid regular documentation control.\n");
+    const regular = f.commit("regular blob counterpart");
+    assert.match(f.git("ls-tree", regular, "--", "README.md"), /^100644 blob /);
+    assert.equal(f.resolve(regular, base).admission, "documentation");
+    mkdirSync(dirname(join(f.root, path)), { recursive: true });
+    symlinkSync("../../../README.md", join(f.root, path));
+    const source = f.commit("reserved bootstrap path is a nonregular Git blob");
+    assert.match(f.git("ls-tree", source, "--", path), /^120000 blob /);
+    assert.throws(() => f.resolve(source, regular), /Requires regular file:/);
+  }
+});
+
+test("bootstrap IAM paths: later reserved files cannot substitute for an earlier historical selection", (t) => {
+  const f = fixture(t);
+  const base = f.bootstrap();
+  const before = f.resolve(base, f.product);
+  f.put(bootstrapIamPath, "# Later operational file.\n");
+  f.put(bootstrapReadmePath, "# Later operational documentation\n");
+  f.commit("later working HEAD is not selected historical authority");
+  f.json(manifestPath, { contractRevision: "uncommitted-wrong-suite" });
+  assert.deepEqual(f.resolve(base, f.product), before);
+});
