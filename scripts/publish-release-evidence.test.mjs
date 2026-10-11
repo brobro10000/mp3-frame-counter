@@ -1,14 +1,16 @@
 /**
  * Specify the bounded automatic-stage workflow guard independently of its implementation. Run with pinned Node:
- * `node --test scripts/publish-release-evidence.test.mjs`. Read the current CI YAML only to retain its existing trusted
- * preflight/publisher contract; construct the proposed stage job from literal adopted expectations, never helper output.
- * All mutations are in-memory objects. No Actions, provider, credentials, deployment, subprocess or network is used.
+ * `node --test scripts/publish-release-evidence.test.mjs`. Read immutable protected Git source 2ae305c through bounded
+ * read-only Git to retain historical preflight/publisher evidence. Construct the stage job from literal adopted
+ * expectations, never helper output. Mutations are in-memory objects. No Actions, provider, credentials, deployment or
+ * network is used; the sole subprocess reads the historical Git object without replacement refs.
  * Historical workflows without stage remain valid; a present stage job must preserve exact source/artifact custody,
  * gates and credential confinement. Each negative group first validates its positive counterpart, so an unavailable
  * stage guard is reported as a positive-availability failure rather than counted as successful rejection coverage.
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { parse } from "yaml";
 import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
@@ -19,7 +21,18 @@ const authAction = "google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fa
 
 /** Remove only the optional stage job to exercise historical replay against the unchanged mandatory/publisher jobs. */
 function historicalWorkflow() {
-  const workflow = parse(readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"));
+  const workflow = parse(
+    execFileSync(
+      "git",
+      ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+      {
+        cwd: fileURLToPath(new URL("../", import.meta.url)),
+        encoding: "utf8",
+        timeout: 30_000,
+        maxBuffer: 128 * 1024,
+      },
+    ),
+  );
   delete workflow.jobs["deploy-stage"];
   return workflow;
 }

@@ -10,7 +10,25 @@ import test from "node:test";
 import { parse } from "yaml";
 import { collectBindingObservations, requirePreflightWorkflow } from "./acceptance-preflight.mjs";
 
-const workflow = () => parse(readFileSync(".github/workflows/ci.yml", "utf8"));
+/** Project only the two legacy API roles from actual known leaves; the visibility suite checks the full family. */
+const workflow = () => {
+  const value = parse(readFileSync(".github/workflows/ci.yml", "utf8"));
+  if (!Object.values(value.jobs).some((job) => Object.hasOwn(job, "uses"))) return value;
+  const targets = {
+    "validate-foundation": [".github/workflows/linter.yml", "checks"],
+    "validate-product": [".github/workflows/base-acceptance-e2e.yml", "validate-product"],
+  };
+  const jobs = {};
+  for (const [name, [path, leaf]] of Object.entries(targets)) {
+    assert.equal(value.jobs[name]?.uses, `./${path}`, "Unknown local preflight caller");
+    assert.equal(value.jobs[name].steps, undefined, "A reusable caller cannot also execute inline steps");
+    const called = parse(readFileSync(path, "utf8"));
+    assert.deepEqual(Object.keys(called.on ?? {}), ["workflow_call"], "Unexpected reusable preflight event");
+    jobs[name] = called.jobs?.[leaf];
+    assert(Array.isArray(jobs[name]?.steps), "Missing actual executing preflight leaf");
+  }
+  return { ...value, jobs };
+};
 const validationJobs = ["validate-foundation", "validate-product"];
 const tokenExpression = "${{ github.token }}";
 const preflight = (job) => {

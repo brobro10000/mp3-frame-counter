@@ -38,9 +38,36 @@ const callsReusable = Object.values(workflow.jobs).some((job) => Object.hasOwn(j
 const reusableWorkflows = callsReusable
   ? Object.fromEntries(reusablePaths.map((path) => [path, parse(read(path))]))
   : {};
+const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const toolingPrefix = "node --experimental-vm-modules --test ";
 assert(pkg.scripts["test:tooling"].startsWith(toolingPrefix), "Require the pinned native tooling test command");
 const toolingFiles = pkg.scripts["test:tooling"].slice(toolingPrefix.length).split(" ");
+// Preserve specific mandatory-test diagnostics before either layout checks the complete finite tooling union.
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure-json.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic-controller.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/production-acceptance.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("--experimental-vm-modules"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));
+assert(
+  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/publish-release-finalization.test.mjs"),
+  "Missing mandatory V1 finalization tests",
+);
+assert(
+  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
+  "Missing mandatory docs-tool-policy tests",
+);
+assert(
+  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/frontend-tool-policy.test.mjs"),
+  "Missing mandatory frontend-tool-policy tests",
+);
+for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
+  assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
 assert.deepEqual([...toolingFiles].sort(), Object.values(ciToolingShards).flat().sort(), "Tooling coverage differs");
 assert.equal(pkg.scripts["test:gate"], "node --test scripts/ci-gate.test.mjs scripts/ci-visibility-policy.test.mjs");
 const ciPolicy = requireCiVisibilityPolicy({
@@ -50,7 +77,6 @@ const ciPolicy = requireCiVisibilityPolicy({
   gateCommand: pkg.scripts["test:gate"],
 });
 // Keep private inputs and generated caches out of source control; reviewed acceptance fixtures have their own scope.
-const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
 const forbidden =
   /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts|\.terraform)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key|tfplan|private\.json)$|\.tfstate($|\.)|\.tfvars($|\.)/i;
 assert(
@@ -187,31 +213,6 @@ assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:portabilit
 assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
 assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
 assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure-json.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic-controller.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/production-acceptance.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("--experimental-vm-modules"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
-assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));
-assert(
-  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/publish-release-finalization.test.mjs"),
-  "Missing mandatory V1 finalization tests",
-);
-assert(
-  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
-  "Missing mandatory docs-tool-policy tests",
-);
-assert(
-  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/frontend-tool-policy.test.mjs"),
-  "Missing mandatory frontend-tool-policy tests",
-);
-for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
-  assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");

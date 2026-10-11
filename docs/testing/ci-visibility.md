@@ -115,5 +115,29 @@ These results distinguish local policy evidence from the separate observed React
 trusted inline bootstrap were unchanged; reusable activation and actual nested-job observations remain a separate PR
 prerequisite. No complete-suite success, release publication or deployment is claimed here.
 
+The first [PR #58 full CI run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38144351575) tested head
+`2780be746038203a5e6fc8205e2314a76ec8ce6f` against the same protected base. All 55 gate cases and product acceptance
+passed; tooling reported 901 of 903 passing. Its two failures were a closed allocation fixture missing the newly
+imported visibility helper, and the new full-inventory check preceding the existing specific missing-docs-test
+diagnostic. The fixture prerequisite and check order were corrected while preserving the original assertions and strict
+inventory. This failed run remains evidence; a fresh exact-head run is required before merge.
+
+Independent fixture review also reproduced four activation compatibility failures before correction: two disposable
+metadata fixtures omitted the actual called workflow files, and two preflight fixtures expected inline caller steps.
+Only fixture inputs and closed caller-to-leaf lookup changed; all existing test bodies/assertions and bootstrap command
+bytes remained unchanged. The four files then passed 128 checks with current legacy inputs and 128 with prepared
+reusable inputs. The latter diagnostic redirects only the five workflow-file reads in those fixture constructors; it
+does not alter validators, commands, Git history or working workflows. Its raw log SHA-256 is
+`bf5afbc5ce55161bd385e647bf5b24113acfb8f08788a3e86d4a70603a86f37a`. This proves local fixture compatibility, not live
+Actions job identity or workflow activation.
+
+Four existing legacy publication/consumer controls now pin workflow bytes from protected source
+`2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf`, which are identical to this PR's trusted base workflow. Their assertions and
+mutations remain intact. Before correction, a prepared-workflow diagnostic reported 12 failures and two passes; after
+correction all 14 selected cases passed. The complete four-file run passed 68 checks without skips; its raw log SHA-256
+is `ac8db8c572d64e7a3a07f32720f6a6bd7fe58f9152f285a9e2536a062499dbcf`. These controls test the historical guard; the
+separately authored visibility suite tests the new finite family. Pinning historical inputs does not waive current
+workflow policy or observed source-bound jobs.
+
 See [acceptance admission](acceptance-transition.md), [release-only policy](../deployment/release-only.md),
 [deployment runbook](../deployment/runbook.md) and [current execution window](../phases/next-iteration.md).

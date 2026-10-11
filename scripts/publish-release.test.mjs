@@ -4,6 +4,7 @@
  * separately landed acceptance, exact committed product/configuration and prepared archives; tests remove all output.
  * Negative controls cover event/permission gates, ancestry/provisional evidence, artifact tampering, failed jobs,
  * conflicting tags/assets, partial publication and stale latest selection. No Docker, credentials or network are used.
+ * Legacy workflow guard mutations use immutable protected Git source 2ae305c, read through bounded read-only Git.
  */
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -400,8 +401,19 @@ test("historical releases and greater existing ordinals never become latest", as
   );
 });
 
-test("workflow policy confines writes/token to main publisher and exact post-gate artifact handoff", () => {
-  const workflow = parse(readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"));
+test("historical workflow policy confines writes/token to main publisher and exact post-gate artifact handoff", () => {
+  const workflow = parse(
+    execFileSync(
+      "git",
+      ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+      {
+        cwd: fileURLToPath(new URL("../", import.meta.url)),
+        encoding: "utf8",
+        timeout: 30_000,
+        maxBuffer: 128 * 1024,
+      },
+    ),
+  );
   requireReleaseWorkflow(workflow);
   for (const change of [
     (w) => {

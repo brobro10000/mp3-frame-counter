@@ -14,6 +14,7 @@ import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { parse } from "yaml";
 
 const moduleUrl = new URL("./docs-tool-policy.mjs", import.meta.url);
 const subject = existsSync(moduleUrl) ? await import(moduleUrl.href) : {};
@@ -558,6 +559,23 @@ function policyFixture(
     ".nvmrc",
   ])
     put(path, readFileSync(join(repository, path), "utf8"));
+  // A reusable source requires its complete actual family; legacy fixtures retain only their original workflow.
+  const reusablePaths = [
+    ".github/workflows/linter.yml",
+    ".github/workflows/base-acceptance-e2e.yml",
+    ".github/workflows/application-tests.yml",
+    ".github/workflows/server-tests.yml",
+  ];
+  const workflow = parse(readFileSync(join(repository, ".github/workflows/ci.yml"), "utf8"));
+  const calls = Object.values(workflow.jobs).filter((job) => Object.hasOwn(job, "uses"));
+  if (calls.length) {
+    assert.deepEqual(
+      calls.map((job) => job.uses).sort(),
+      reusablePaths.map((path) => `./${path}`).sort(),
+      "Fixture source must call exactly the reviewed local workflow family",
+    );
+    for (const path of reusablePaths) put(path, readFileSync(join(repository, path), "utf8"));
+  }
   const before = snapshot(sourcePackage);
   const pkg = snapshot(sourcePackage);
   delete pkg.dependencies;

@@ -94,6 +94,7 @@ async function fixture(t, { line = "0.2", consumer = false } = {}) {
     for (const name of [
       "publish-release-bundle",
       "publish-release-evidence",
+      "ci-visibility-policy",
       "release-manifest",
       "acceptance-baseline",
       "phase-policy",

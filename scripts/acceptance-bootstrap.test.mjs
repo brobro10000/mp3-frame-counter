@@ -59,7 +59,23 @@ function canonical(value) {
 /** Read the actual reviewed command; a missing step must fail a negative case rather than count as rejection. */
 function workflowStep(jobName) {
   const workflow = parse(readFileSync(join(project, ".github/workflows/ci.yml"), "utf8"));
-  const steps = workflow.jobs[jobName].steps.filter((step) => step.id === "acceptance-preflight");
+  assert(validationJobs.includes(jobName), "Unknown logical bootstrap job");
+  let job = workflow.jobs[jobName];
+  assert(job, "Missing actual bootstrap caller");
+  if (Object.hasOwn(job, "uses")) {
+    const targets = {
+      "validate-foundation": [".github/workflows/linter.yml", "checks"],
+      "validate-product": [".github/workflows/base-acceptance-e2e.yml", "validate-product"],
+    };
+    const [path, leaf] = targets[jobName];
+    assert.equal(job.uses, `./${path}`, "Unknown local bootstrap caller");
+    assert.equal(job.steps, undefined, "A reusable caller cannot also execute inline steps");
+    const called = parse(readFileSync(join(project, path), "utf8"));
+    assert.deepEqual(Object.keys(called.on ?? {}), ["workflow_call"], "Unexpected reusable bootstrap event");
+    job = called.jobs?.[leaf];
+  }
+  assert(Array.isArray(job?.steps), "Missing actual executing bootstrap leaf");
+  const steps = job.steps.filter((step) => step.id === "acceptance-preflight");
   assert.equal(steps.length, 1, `${jobName} must define its actual acceptance-preflight command`);
   assert.equal(typeof steps[0].run, "string");
   assert(steps[0].run.length > 0);
