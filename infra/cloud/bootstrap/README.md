@@ -23,9 +23,10 @@ The cap automatically resets next month. Both environments share its service-wid
 unrelated projects or subscriptions outside Google Cloud.
 [Google spend-cap behavior](https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps).
 
-Terraform owns only the project, APIs and alerts-only budget. The JSON template and Node reconciler own the separate
-cap. Released Google provider **8.6.0** lacks `spendCap` support; do not invent a provider block or import the cap under
-incomplete management. A later provider migration must transfer sole ownership after an independently reviewed plan.
+Terraform owns the project, APIs, alerts-only budget and the empty project Editor binding. The JSON template and Node
+reconciler own the separate cap. Released Google provider **8.6.0** lacks `spendCap` support; do not invent a provider
+block or import the cap under incomplete management. A later provider migration must transfer sole ownership after an
+independently reviewed plan.
 [Released provider resource source](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/services/billingbudgets/resource_billing_budget.go).
 
 The alert budget uses gross project costs and current-spend thresholds of 50%, 75%, 90% and 100%, plus a forecast 100%
@@ -45,7 +46,7 @@ email delivery is retained; the cap's project-owner notifications remain explici
 | ----------------------------- | ------------------------------------------------------------------------------------------------- |
 | `versions.tf`                 | Terraform 1.13.3 and Google provider 8.6.0 pins; bootstrap and quota-project provider separation. |
 | `variables.tf`                | Required private identities and explicit verification of USD billing currency.                    |
-| `main.tf`                     | Dedicated project, API dependencies and USD 100 alerts-only budget with destruction safeguards.   |
+| `main.tf`                     | Dedicated project, APIs, USD 100 alert and empty Editor binding with destruction safeguards.      |
 | `outputs.tf`                  | Private trusted identity handoff; no credentials in Terraform variables or outputs.               |
 | `cloud-run-cap.template.json` | Portable fixed USD 75 desired cap; actual project number rendered from trusted output.            |
 | `cap-reconciler.mjs`          | Default read-only verification; explicit initial creation after complete absence discovery.       |
@@ -82,11 +83,24 @@ When the token expires, obtain a new owner-authorized token in memory and retry 
 account keys or permanent credentials to make bootstrap work.
 [Provider authentication and quota configuration](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/website/docs/guides/provider_reference.html.markdown).
 
-## Reviewed execution sequence
+## Empty project Editor binding amendment — 2026-10-11
 
-The following commands describe the reproducible operator workflow. The initial run is recorded separately. Run within
-the reviewed bootstrap directory using a private operator session. Set `umask 077` before producing private files. Keep
-the directory on protected local storage. The checked-in `.gitignore` is a backup control, not encryption.
+The [IAM correction contract](../../../docs/deployment/bootstrap-iam.md) adds one authoritative, empty `roles/editor`
+binding to this local root. The original seven resources remain intact; the root now declares eight resources. This
+removes broad inherited access to protected state while preserving unrelated project roles and scoped resource grants.
+The declaration supplies drift detection; it is not continuous IAM enforcement. Its removal never restores Editor.
+
+Apply only after published-source review, fresh cost/workload/IAM reads and independent saved-plan review. For the
+existing bootstrap state, the plan must show seven no-op resources and only the empty binding addition. Preserve all
+unrelated policy tuples, verify the empty role and scoped grants, then require a no-change plan. No backend migration,
+service account rename, full project policy, new credential or deployment belongs to this correction. See the separate
+[validation record](../../../docs/validation/bootstrap-iam.md) for source evidence and remaining live gates.
+
+## Original bootstrap execution sequence
+
+The following commands describe the original seven-resource bootstrap workflow. Its initial run is recorded separately.
+Run within the reviewed bootstrap directory using a private operator session. Set `umask 077` before producing private
+files. Keep the directory on protected local storage. The checked-in `.gitignore` is a backup control, not encryption.
 
 1. Supply required variables through a private `bootstrap.tfvars`; leave credentials out. Confirm USD currency and
    billing readiness independently. Do not paste private inputs into PRs or review logs.

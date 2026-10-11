@@ -21,7 +21,9 @@ in that prerequisite order. The pure SAME-RUN-HANDOFF unit merged as PR #35; the
 reconciled onto actual main and encountered the closed path-classification gate described below. PUBLISHER-HANDOFF
 merged as PR #33 at `781b334230d956485abbc508fcfe5de2b2684305`; its actual main publication and new producer artifact
 are verified below. PR #34 was immediately reconciled onto that main, passed fresh checks and companion review, then
-merged at `40d9ae09e2ddf17c52b160094622537e0a28c683` on 2026-10-11 at 00:30:07Z. Its operational migration remains
+merged at `40d9ae09e2ddf17c52b160094622537e0a28c683` on 2026-10-11 at 00:30:07Z. Its
+[main run 38098635997](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38098635997) passed and published
+[v0.3.34](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.34). Its operational migration remains
 pending. The IAM correction belongs to local bootstrap so remote-state trust does not create a backend dependency cycle.
 Authenticated acquisition/replay, launcher, registry, federation and runtime delivery remain separate future scope.
 
@@ -385,6 +387,15 @@ published [v0.3.35](https://github.com/brobro10000/mp3-frame-counter/releases/ta
 archive was downloaded by this audit. The
 [completed pure-unit card](https://github.com/brobro10000/mp3-frame-counter/blob/bcdda0505e42120201e7377888dda44a05fb39a3/docs/phases/next-iteration.md#pr-card-3--same-run-handoff-validate-direct-publisher-artifact-consistency)
 remains in that immutable source. Authenticated acquisition/replay and hosted execution are still unimplemented.
+
+### Bootstrap admission prerequisite merge
+
+PR #37 merged at `72081b34b4e591691f2171cb4de893313f469a8b` on 2026-10-11 at 01:21:33Z after
+[run 38100736309](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38100736309) passed and the companion
+[approved its exact head](https://github.com/brobro10000/mp3-frame-counter/pull/37#pullrequestreview-5481468739). All
+708 tooling tests, 120 units and 72 required local cases passed. PR #36 was immediately reconciled onto this actual
+main. Fresh dependent checks/review and verified prerequisite publication remain required; the original failed admission
+run remains historical evidence. No live IAM change or state migration is established by the merge.
 
 ## PR card 1 — BOOTSTRAP-IAM-ADMISSION: Classify the two corrective bootstrap paths
 
