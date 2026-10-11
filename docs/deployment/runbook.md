@@ -38,6 +38,13 @@ still require the complete literal permission denial. See the
 [pinned operation waiter](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/tpgresource/common_operation.go).
 Synthetic wrapper coverage establishes diagnostic compatibility, not the cause of a historical deployment failure.
 
+Stage apply uses Terraform's [JSON UI](https://developer.hashicorp.com/terraform/internals/machine-readable-ui) with its
+already reviewed saved plan. Within the existing memory bounds, classify only complete typed Terraform error records;
+inspect their intact summary and detail separately. Ignore progress, `@message`, malformed packets and joined fragments.
+Human output can wrap diagnostic detail, as demonstrated with a provider-free pinned Terraform 1.13.3 probe; that probe
+does not identify the historical cloud error. Raw streams remain private and discarded, and the retained closed record
+does not add any permission or deployment authority.
+
 The current checkout policy permits only this one exact secret reference. Historical release verification still admits
 the original variable-backed workflow without rewriting its bytes or reservations. This change protects future output;
 existing logs retain their original content. See

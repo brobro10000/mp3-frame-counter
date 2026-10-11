@@ -164,10 +164,12 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
           try {
             // A spawn failure has no process exit status; truncated text cannot prove a complete denial line.
             const exitCode = Number.isInteger(code) && code >= 0 && code <= 255 ? code : null;
+            const stdout = Buffer.concat(chunks);
             commandFailure = stageCommandFailure(
               operation,
               exitCode,
               stderrTruncated ? "" : Buffer.concat(stderrChunks).toString("utf8"),
+              stderrTruncated || stdout.length > 65536 ? "" : stdout.toString("utf8"),
             );
           } catch {
             commandFailure = undefined;
@@ -667,7 +669,7 @@ async function deploy(values, privateDirectory) {
   requireStagePlan(plan, config, imageRefs, bundle.origin.sourceRevision);
   assert.equal(planned.code === 2, plan.applyable);
   if (planned.code === 2)
-    await run(terraform, ["apply", "-input=false", "-no-color", "-lock-timeout=60s", "stage.tfplan"], {
+    await run(terraform, ["apply", "-json", "-input=false", "-no-color", "-lock-timeout=60s", "stage.tfplan"], {
       cwd: tf,
       env,
       timeout: 300000,

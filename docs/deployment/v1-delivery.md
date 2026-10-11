@@ -65,6 +65,29 @@ upload-only-missing, observed digest/size verification and publish-last mechanic
 writes, identical retries are read-only, and metadata publication failure is retried without redeployment. This exported
 API performs no provider, image or deployment operations and adds no CLI override or automatic production job.
 
+### Owner-supervised production smoke bridge
+
+Import `runProductionAcceptance` from [scripts/production-acceptance.mjs](../../scripts/production-acceptance.mjs) only
+after the owner has approved the exact candidate and a separately authorized operation has deployed it. Supply the
+closed
+`{root, bundle, admissionSha256, currentContext, images, release, stage, approval, operation, productionStartedAt, observe, mint, evidenceDirectory}`
+interface. `currentContext` remains the original verified publisher CI identity. `operation` is exactly
+`{id, attempt, sourceRevision}`, with a distinct `owner-operation:` ID; the finalization instant is supplied later to
+the finalizer.
+
+The caller must independently verify original bundle/publication custody and authenticate the human event, provider
+reads and exposure/recovery bindings. An approval-shaped JSON object or matching hashes cannot establish authorization.
+Pass the full stage custody input accepted by `validateHostedAcceptance`, including its original result and lifecycle
+facts. The helper requires all 72 local and 22 stage obligations, resolves the original required frozen source, compares
+the observed production resource/configuration/image pair to the approved candidate, and runs only its three-case
+production wrapper. Provider and token callbacks must have bounded deadlines and authenticate the intended origin.
+
+The helper performs no deployment, IAM, exposure, traffic, provisioning or GitHub write. It returns the validated
+production envelope and retains only `production-acceptance-setup.json`, `production-suite-result.json` and
+`production-acceptance.json` under the caller's owned `.artifacts` directory. Preserve those original result/custody
+facts when preparing finalization evidence; do not reconstruct a passing result from an inventory. Missing, failed,
+drifting or unclean execution blocks finalization. Scoped local bridge tests are not hosted smoke or a human event.
+
 ## Explicit deferrals
 
 Defer reusable acquisition/replay infrastructure, automatic publication backfill, expanded queue syntax, additional

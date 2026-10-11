@@ -154,6 +154,9 @@ assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"))
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure-json.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/production-acceptance.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("--experimental-vm-modules"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-access-foundation.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/cloud-bootstrap-iam.test.mjs"));
