@@ -155,6 +155,8 @@ assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.m
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure-json.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic.test.mjs"));
+assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-private-diagnostic-controller.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/production-acceptance.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("--experimental-vm-modules"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("infra/cloud/bootstrap/cap-reconciler.test.mjs"));

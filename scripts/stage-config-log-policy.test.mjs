@@ -77,6 +77,8 @@ function fixture(t) {
     "scripts/publish-release-evidence.mjs",
     "scripts/stage-delivery.mjs",
     "scripts/stage-command-failure.mjs",
+    "scripts/stage-private-diagnostic.mjs",
+    "scripts/stage-diagnostic-recipient.mjs",
     ".github/workflows/ci.yml",
     "package.json",
   ])
