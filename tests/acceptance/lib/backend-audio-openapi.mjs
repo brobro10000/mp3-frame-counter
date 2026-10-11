@@ -192,6 +192,7 @@ export function assertBackendSpec(spec) {
   const xing = resolve(spec, analysis.properties.xing);
   const xingBranches = (xing.oneOf ?? xing.anyOf)?.map((branch) => resolve(spec, branch));
   assert.equal(xingBranches?.length, 2, "SPEC_SCHEMAS");
+  for (const branch of xingBranches) assert.equal(branch.type, "object", "SPEC_SCHEMAS");
   const present = xingBranches.find((branch) => literals(spec, branch.properties.status).includes("present"));
   const absent = xingBranches.find((branch) => literals(spec, branch.properties.status).includes("absent"));
   assert.ok(present && absent, "SPEC_SCHEMAS");
@@ -224,8 +225,25 @@ export function assertBackendSpec(spec) {
   );
   assert.deepEqual(literals(spec, present.properties.status), ["present"], "SPEC_SCHEMAS");
   assert.deepEqual(literals(spec, absent.properties.status), ["absent"], "SPEC_SCHEMAS");
+  assert.ok(exampleMatches(spec, xing, { status: "absent" }), "SPEC_SCHEMAS");
   assert.deepEqual(literals(spec, present.properties.marker).sort(), ["Info", "Xing"], "SPEC_SCHEMAS");
   assert.deepEqual(literals(spec, present.properties.seekTableEntryCount), [100], "SPEC_SCHEMAS");
+  for (const marker of ["Info", "Xing"])
+    assert.ok(
+      exampleMatches(spec, xing, {
+        status: "present",
+        marker,
+        frameOffsetBytes: 0,
+        frameLengthBytes: 182,
+        markerOffsetBytes: 21,
+        flags: 15,
+        declaredAudioFrameCount: 15,
+        declaredMpegStreamByteCount: 2160,
+        seekTableEntryCount: 100,
+        qualityValue: 0,
+      }),
+      "SPEC_SCHEMAS",
+    );
   // A successful present carrier leaves at least one audio frame: two minimum 96-byte spans. The largest marker
   // offset is 36. Leading ID3 padding can fill the remaining upload bytes, so these upper endpoints are attainable.
   for (const [field, maximum] of [
@@ -263,6 +281,7 @@ export function assertBackendSpec(spec) {
   assert.ok(warningBranches?.length >= 2, "SPEC_SCHEMAS");
   const warningCodes = [];
   for (const branch of warningBranches) {
+    assert.equal(branch.type, "object", "SPEC_SCHEMAS");
     assert.ok(!exampleMatches(spec, branch, null), "SPEC_SCHEMAS");
     assert.equal(branch.additionalProperties, false, "SPEC_SCHEMAS");
     const codes = literals(spec, branch.properties.code);
@@ -276,6 +295,11 @@ export function assertBackendSpec(spec) {
         ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue", "seekTable"],
         "SPEC_SCHEMAS",
       );
+    for (const code of codes) {
+      const truncated = code === "XING_OPTIONAL_FIELD_TRUNCATED";
+      for (const field of truncated ? literals(spec, branch.properties.field) : [undefined])
+        assert.ok(exampleMatches(spec, warningItems, truncated ? { code, field } : { code }), "SPEC_SCHEMAS");
+    }
   }
   assert.deepEqual(
     warningCodes.sort(),
@@ -294,6 +318,7 @@ export function assertBackendSpec(spec) {
       const status = resolve(spec, health.properties.status);
       assert.ok(status.type === undefined || status.type === "string", "SPEC_SCHEMAS");
       assert.deepEqual(literals(spec, health.properties.status), ["ok"], "SPEC_SCHEMAS");
+      assert.ok(exampleMatches(spec, health, { status: "ok" }), "SPEC_SCHEMAS");
     }
 
   const examples = Object.values(success.examples ?? {});

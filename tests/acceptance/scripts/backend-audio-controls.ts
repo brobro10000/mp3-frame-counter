@@ -681,6 +681,318 @@ const correction6Failures = correction6Results.filter((entry) => entry.status ==
 if (correction6Failures.length) console.error("CORRECTION6", JSON.stringify(correction6Results));
 assert.deepEqual(correction6Failures, [], "CORRECTION6 missing semantic refusals");
 
+/** Independent tagged object controls exercise branches omitted by the fixture's present/empty-warning example. */
+const mismatchRecipe = recipes.find((entry) => entry.id === "removed-final-frame");
+const truncatedRecipe = recipes.find((entry) => entry.id === "bounded-seek");
+assert.ok(mismatchRecipe?.expected);
+assert.ok(truncatedRecipe?.expected);
+assert.deepEqual(mismatchRecipe.expected.analysis.warnings, [
+  { code: "XING_DECLARED_FRAME_COUNT_MISMATCH" },
+  { code: "XING_DECLARED_STREAM_BYTES_MISMATCH" },
+]);
+assert.deepEqual(truncatedRecipe.expected.analysis.warnings, [
+  { code: "XING_OPTIONAL_FIELD_TRUNCATED", field: "seekTable" },
+]);
+const taggedAnalysisPath = [...schemaPath, "FrameDetail", "properties", "analysis", "properties"];
+const taggedObjectSchemas = [
+  ["absent Xing", [...taggedAnalysisPath, "xing", "oneOf", "0"], absentDetail(9).analysis.xing],
+  ["present Xing", [...taggedAnalysisPath, "xing", "oneOf", "1"], encodedVbrDetail.analysis.xing],
+  [
+    "mismatch warning",
+    [...taggedAnalysisPath, "warnings", "items", "oneOf", "0"],
+    mismatchRecipe.expected.analysis.warnings[0],
+  ],
+  [
+    "truncated-field warning",
+    [...taggedAnalysisPath, "warnings", "items", "oneOf", "1"],
+    truncatedRecipe.expected.analysis.warnings[0],
+  ],
+] as const;
+
+/** Positive DTO examples independently prove absent Xing and both nonempty warning alternatives remain representable. */
+const taggedExamples = structuredClone(spec);
+const taggedSuccess = controlSchemaAt(taggedExamples, samplePath);
+const taggedSuccessExamples = controlSchemaAt(taggedExamples, [...samplePath, "examples"]);
+for (const [name, value] of [
+  ["ownedAbsentXing", absentDetail(9)],
+  ["ownedMismatchWarnings", mismatchRecipe.expected],
+  ["ownedTruncatedWarning", truncatedRecipe.expected],
+] as const) {
+  assert.ok(exampleMatches(taggedExamples, taggedSuccess.schema, value));
+  taggedSuccessExamples[name] = {
+    summary: "Independent valid tagged object counterpart.",
+    value: structuredClone(value),
+  };
+}
+assertBackendSpec(taggedExamples);
+for (const [name, path, value] of taggedObjectSchemas) {
+  const baseline = controlSchemaAt(spec, path);
+  assert.equal(baseline.type, "object");
+  assert.ok(exampleMatches(spec, baseline, value));
+  for (const nonObject of [0, "absent", [], null]) assert.ok(!exampleMatches(spec, baseline, nonObject));
+
+  const annotated = structuredClone(taggedExamples);
+  const target = controlSchemaAt(annotated, path);
+  target.title = name;
+  target.description = "Independent tagged object domain annotation.";
+  assertBackendSpec(annotated);
+  const referenced = structuredClone(taggedExamples);
+  referenced.components.schemas.TaggedObjectAlias = structuredClone(target);
+  alter(referenced, path, { $ref: "#/components/schemas/TaggedObjectAlias" });
+  assertBackendSpec(referenced);
+}
+
+/** Both typeless and object-annotated warning unions retain valid nonempty warning examples through local aliases. */
+const warningUnionPath = [...taggedAnalysisPath, "warnings", "items"];
+assert.equal(controlSchemaAt(taggedExamples, warningUnionPath).type, undefined);
+for (const annotation of ["typeless", "object"] as const)
+  for (const representation of ["direct", "referenced"] as const) {
+    const annotated = structuredClone(taggedExamples);
+    const union = controlSchemaAt(annotated, warningUnionPath);
+    if (annotation === "object") {
+      union.type = "object";
+      union.nullable = true;
+      assert.ok(!exampleMatches(annotated, union, null));
+    }
+    union.description = "Equivalent tagged warning union with non-null object composition branches.";
+    if (representation === "referenced") {
+      annotated.components.schemas.AnnotatedWarningUnionAlias = structuredClone(union);
+      alter(annotated, warningUnionPath, { $ref: "#/components/schemas/AnnotatedWarningUnionAlias" });
+    }
+    assertBackendSpec(annotated);
+  }
+
+/** A valid absent-detail counterpart leaves the present branch unexercised, isolating its structural obligation. */
+const presentUnexercised = structuredClone(spec);
+const absentCounterpart = controlSchemaAt(presentUnexercised, [...samplePath, "examples", "detailedCount"]);
+assert.equal(
+  controlSchemaAt(presentUnexercised, [...samplePath, "examples", "detailedCount", "value", "analysis", "xing"]).status,
+  "present",
+);
+absentCounterpart.summary = "Independent absent carrier counterpart leaves present Xing unexercised.";
+absentCounterpart.value = absentDetail(9);
+assertBackendSpec(presentUnexercised);
+
+/** Collect all semantic refusals; validated fixture mutation/setup stays outside the checked predicate invocation. */
+const taggedDomainResults: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function taggedDomainRejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    taggedDomainResults.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    taggedDomainResults.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+for (const [name, path] of taggedObjectSchemas)
+  for (const damage of ["integer type", "missing type"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      // Keep the original sparse examples: augmenting them here would hide the structural predicate's missing checks.
+      const invalid = structuredClone(name === "present Xing" ? presentUnexercised : spec);
+      const target = controlSchemaAt(invalid, path);
+      assert.equal(target.type, "object");
+      if (damage === "integer type") target.type = "integer";
+      else {
+        assert.ok(Reflect.deleteProperty(target, "type"));
+        assert.ok(!Object.hasOwn(target, "type"));
+      }
+      if (representation === "referenced") {
+        invalid.components.schemas.DamagedTaggedObjectAlias = structuredClone(target);
+        alter(invalid, path, { $ref: "#/components/schemas/DamagedTaggedObjectAlias" });
+      }
+      taggedDomainRejected(`${representation} ${name} ${damage}`, () => assertBackendSpec(invalid));
+    }
+for (const representation of ["direct", "referenced"] as const) {
+  const invalid = structuredClone(spec);
+  assert.deepEqual(
+    controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value", "analysis"]).warnings,
+    [],
+  );
+  const union = controlSchemaAt(invalid, warningUnionPath);
+  assert.equal(union.type, undefined);
+  union.type = "integer";
+  if (representation === "referenced") {
+    invalid.components.schemas.DamagedWarningUnionAlias = structuredClone(union);
+    alter(invalid, warningUnionPath, { $ref: "#/components/schemas/DamagedWarningUnionAlias" });
+  }
+  taggedDomainRejected(`${representation} warning union integer type`, () => assertBackendSpec(invalid));
+}
+
+/** Unexercised tagged literals must admit their valid string values, not only list them in a contradictory enum. */
+for (const [name, path, literal] of [
+  ["absent status", [...taggedAnalysisPath, "xing", "oneOf", "0", "properties", "status"], "absent"],
+  [
+    "mismatch warning code",
+    [...taggedAnalysisPath, "warnings", "items", "oneOf", "0", "properties", "code"],
+    "XING_DECLARED_FRAME_COUNT_MISMATCH",
+  ],
+  [
+    "truncated warning field",
+    [...taggedAnalysisPath, "warnings", "items", "oneOf", "1", "properties", "field"],
+    "seekTable",
+  ],
+] as const) {
+  const baseline = controlSchemaAt(spec, path);
+  assert.equal(baseline.type, "string");
+  assert.ok(Array.isArray(baseline.enum) && baseline.enum.includes(literal));
+  assert.ok(exampleMatches(spec, baseline, literal));
+  for (const representation of ["direct", "referenced"] as const) {
+    const invalid = structuredClone(spec);
+    const target = controlSchemaAt(invalid, path);
+    target.type = "integer";
+    if (representation === "referenced") {
+      invalid.components.schemas.ContradictoryTaggedLiteralAlias = structuredClone(target);
+      alter(invalid, path, { $ref: "#/components/schemas/ContradictoryTaggedLiteralAlias" });
+    }
+    assert.ok(!exampleMatches(invalid, controlSchemaAt(invalid, path), literal));
+    taggedDomainRejected(`${representation} ${name} contradictory integer type`, () => assertBackendSpec(invalid));
+  }
+}
+
+/** A code's DTO determines field presence even when a schema partitions its warning literals into separate branches. */
+const frameMismatchCode = "XING_DECLARED_FRAME_COUNT_MISMATCH";
+const streamMismatchCode = "XING_DECLARED_STREAM_BYTES_MISMATCH";
+const optionalFieldCode = "XING_OPTIONAL_FIELD_TRUNCATED";
+const partitionedWarnings = structuredClone(taggedExamples);
+const partitionedItems = controlSchemaAt(partitionedWarnings, warningUnionPath);
+const codeOnlyBranch = controlSchemaAt(partitionedWarnings, [...warningUnionPath, "oneOf", "0"]);
+const fieldBranch = controlSchemaAt(partitionedWarnings, [...warningUnionPath, "oneOf", "1"]);
+assert.deepEqual(codeOnlyBranch.required, ["code"]);
+assert.deepEqual(fieldBranch.required, ["code", "field"]);
+const frameOnlyBranch = structuredClone(codeOnlyBranch);
+const streamOnlyBranch = structuredClone(codeOnlyBranch);
+controlSchemaAt(frameOnlyBranch, ["properties", "code"]).enum = [frameMismatchCode];
+controlSchemaAt(streamOnlyBranch, ["properties", "code"]).enum = [streamMismatchCode];
+partitionedItems.oneOf = [frameOnlyBranch, streamOnlyBranch, structuredClone(fieldBranch)];
+for (const representation of ["direct", "referenced"] as const) {
+  const positive = structuredClone(partitionedWarnings);
+  if (representation === "referenced") {
+    positive.components.schemas.PartitionedWarningUnionAlias = structuredClone(
+      controlSchemaAt(positive, warningUnionPath),
+    );
+    alter(positive, warningUnionPath, { $ref: "#/components/schemas/PartitionedWarningUnionAlias" });
+  }
+  assertBackendSpec(positive);
+}
+
+/** Prove the misplaced code requires an invalid field while the valid code-only DTO fails, before counting refusal. */
+const validFrameMismatch = { code: frameMismatchCode };
+const invalidFrameMismatch = { code: frameMismatchCode, field: "seekTable" };
+const originalWarningUnion = controlSchemaAt(spec, warningUnionPath);
+assert.ok(exampleMatches(spec, originalWarningUnion, validFrameMismatch));
+assert.ok(!exampleMatches(spec, originalWarningUnion, invalidFrameMismatch));
+for (const representation of ["direct", "referenced"] as const) {
+  const invalid = structuredClone(spec);
+  controlSchemaAt(invalid, [...warningUnionPath, "oneOf", "0", "properties", "code"]).enum = [streamMismatchCode];
+  controlSchemaAt(invalid, [...warningUnionPath, "oneOf", "1", "properties", "code"]).enum = [
+    frameMismatchCode,
+    optionalFieldCode,
+  ];
+  assert.deepEqual(
+    controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value", "analysis"]).warnings,
+    [],
+  );
+  if (representation === "referenced") {
+    invalid.components.schemas.MisgroupedWarningUnionAlias = structuredClone(
+      controlSchemaAt(invalid, warningUnionPath),
+    );
+    alter(invalid, warningUnionPath, { $ref: "#/components/schemas/MisgroupedWarningUnionAlias" });
+  }
+  const union = controlSchemaAt(invalid, warningUnionPath);
+  assert.ok(!exampleMatches(invalid, union, validFrameMismatch));
+  assert.ok(exampleMatches(invalid, union, invalidFrameMismatch));
+  taggedDomainRejected(`${representation} misgrouped mismatch code requires field`, () => assertBackendSpec(invalid));
+}
+
+/** Frozen stereo recipes provide valid whole-Xing witnesses for both markers with a selected 100-entry seek table. */
+const presentLiteralExamples = structuredClone(taggedExamples);
+const wholeXingPath = [...taggedAnalysisPath, "xing"];
+const presentLiteralExampleMap = controlSchemaAt(presentLiteralExamples, [...samplePath, "examples"]);
+for (const [id, marker] of [
+  ["Xing-stereo-plain", "Xing"],
+  ["Info-stereo-plain", "Info"],
+] as const) {
+  const recipe = recipes.find((entry) => entry.id === id);
+  assert.ok(recipe?.expected);
+  const xing = recipe.expected.analysis.xing;
+  assert.ok(xing.status === "present");
+  assert.equal(xing.marker, marker);
+  assert.equal(xing.flags, 15);
+  assert.equal(xing.seekTableEntryCount, 100);
+  assert.equal(xing.frameOffsetBytes, 0);
+  assert.equal(xing.frameLengthBytes, 384);
+  assert.equal(xing.markerOffsetBytes, 36);
+  assert.ok(exampleMatches(presentLiteralExamples, controlSchemaAt(presentLiteralExamples, wholeXingPath), xing));
+  presentLiteralExampleMap[`ownedPresent${marker}`] = {
+    summary: "Independent complete carrier with all selected optional fields.",
+    value: structuredClone(recipe.expected),
+  };
+}
+assertBackendSpec(presentLiteralExamples);
+
+/** A valid absent example isolates contradictory present literal types from incidental success-example coverage. */
+for (const [field, wrongType, literals] of [
+  ["status", "integer", ["present"]],
+  ["marker", "integer", ["Info", "Xing"]],
+  ["seekTableEntryCount", "string", [100]],
+] as const) {
+  const path = [...presentPath, field];
+  const baseline = controlSchemaAt(presentUnexercised, path);
+  assert.equal(baseline.type, field === "seekTableEntryCount" ? "integer" : "string");
+  assert.ok(Array.isArray(baseline.enum));
+  assert.deepEqual([...baseline.enum].sort(), [...literals].sort());
+  for (const literal of literals) assert.ok(exampleMatches(presentUnexercised, baseline, literal));
+  for (const representation of ["direct", "referenced"] as const) {
+    const invalid = structuredClone(presentUnexercised);
+    const target = controlSchemaAt(invalid, path);
+    target.type = wrongType;
+    if (representation === "referenced") {
+      invalid.components.schemas.DamagedPresentLiteralAlias = structuredClone(target);
+      alter(invalid, path, { $ref: "#/components/schemas/DamagedPresentLiteralAlias" });
+    }
+    for (const literal of literals) assert.ok(!exampleMatches(invalid, controlSchemaAt(invalid, path), literal));
+    taggedDomainRejected(`${representation} present ${field} contradictory ${wrongType} type`, () =>
+      assertBackendSpec(invalid),
+    );
+  }
+}
+
+/** Required health status remains representable under valid string constraints, never contradictory composition. */
+const healthObjectPath = [...schemaPath, "Health"];
+const healthStatusPath = [...healthObjectPath, "properties", "status"];
+const healthStatusBaseline = controlSchemaAt(spec, healthStatusPath);
+assert.equal(healthStatusBaseline.type, "string");
+assert.deepEqual(healthStatusBaseline.enum, ["ok"]);
+assert.ok(exampleMatches(spec, controlSchemaAt(spec, healthObjectPath), { status: "ok" }));
+for (const representation of ["direct", "referenced"] as const) {
+  const positive = structuredClone(spec);
+  const constrained = controlSchemaAt(positive, healthStatusPath);
+  constrained.allOf = [{ type: "string", minLength: 2, maxLength: 2 }];
+  if (representation === "referenced") {
+    positive.components.schemas.ConstrainedHealthStatusAlias = structuredClone(constrained);
+    alter(positive, healthStatusPath, { $ref: "#/components/schemas/ConstrainedHealthStatusAlias" });
+  }
+  assert.ok(exampleMatches(positive, controlSchemaAt(positive, healthObjectPath), { status: "ok" }));
+  assertBackendSpec(positive);
+
+  const invalid = structuredClone(spec);
+  const contradictory = controlSchemaAt(invalid, healthStatusPath);
+  assert.equal(contradictory.type, "string");
+  assert.deepEqual(contradictory.enum, ["ok"]);
+  contradictory.allOf = [{ type: "integer" }];
+  if (representation === "referenced") {
+    invalid.components.schemas.ContradictoryHealthStatusAlias = structuredClone(contradictory);
+    alter(invalid, healthStatusPath, { $ref: "#/components/schemas/ContradictoryHealthStatusAlias" });
+  }
+  assert.ok(!exampleMatches(invalid, controlSchemaAt(invalid, healthObjectPath), { status: "ok" }));
+  taggedDomainRejected(`${representation} health status contradictory integer composition`, () =>
+    assertBackendSpec(invalid),
+  );
+}
+const taggedDomainFailures = taggedDomainResults.filter((entry) => entry.status === "missing-refusal");
+if (taggedDomainFailures.length) console.error("TAGGED_OBJECT_DOMAINS", JSON.stringify(taggedDomainResults));
+assert.deepEqual(taggedDomainFailures, [], "TAGGED_OBJECT_DOMAINS missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

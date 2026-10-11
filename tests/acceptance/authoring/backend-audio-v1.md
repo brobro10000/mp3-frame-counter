@@ -464,3 +464,47 @@ calibration and discovery, not hosted execution, product acceptance or deploymen
 Every preceding authoring-record byte remains intact. Normative contract, original fixtures, manifest, inventory,
 lockfile, existing 216 semantic controls, OpenAPI predicate, product and governance bytes remain unchanged. Current CI,
 fresh companion approval, actual candidate merge and separate binding remain prerequisites to product adoption.
+
+## Harness correction 8 — 2026-10-11 (non-normative)
+
+The next exact-head companion review found that tagged Xing and warning schemas could declare the wrong JSON type while
+their structural/literal checks still passed. Sparse present-Xing/empty-warning examples concealed those branches. An
+independent control author added direct/reference object-domain mutations and valid absent/nonempty-warning, annotation,
+alias and composition counterparts. Before the separate predicate writer changed the checker, the coordinator ran the
+frozen controls: all 216 previous refusals and positive preconditions completed, then all 24 new mutations reported
+missing refusals. Raw RED log SHA-256: `bee998f25bf4ef1ddf51da62bee354824d8efa511ab9ba6a0b156206e09a9375`.
+
+A separate writer added resolved object-domain assertions and whole-Xing/whole-warning witnesses, preserving the
+matcher, reference resolver and literal extraction. The first full local calibration passed 240 controls, but
+independent review found the warning witness incorrectly selected field presence by branch. Two additional owned
+grouping controls proved that defect before repair: all 240 previous controls passed and both new refusals were missing.
+Raw RED SHA-256: `6f88166c3d169c0a7cee13f0ecc51a182dca6b96d8b0d95cc8919fa3668f0bf2`. The writer changed the witness to
+use each individual warning code; mismatch DTOs omit field and truncation DTOs exercise every admitted field.
+
+The next full local checkpoint passed strict types, 46 original fixtures, 41 recipes, 242 semantic refusals, 52
+transport controls, 46 docs controls, 101 hosted owned controls and exact 72/22/3 discovery. Raw full-check SHA-256:
+`ad5b5f6dceabe3f3a5d4c8601f7083fb14730332f26b0667e6a34d32023e65cd`. Its docs/hosted processes confirmed owned cleanup.
+This checkpoint did not authorize shipment: the finite-literal review found present status/marker/seek types could still
+escape behind an absent example, and health status could retain its enum while contradictory composition made the
+documented response impossible.
+
+Six independent present-literal mutations and two health-composition mutations reproduced those omissions before any
+further predicate edit: all 242 previous controls passed, then eight new refusals were missing. Raw RED SHA-256:
+`2bf005b84f1d9701e679584b824c147c49261e83a6abb5586ea6fb210b042161`. The separate writer added whole-Xing witnesses for
+both Info/Xing using the independent r2 example values, including seek count 100, and a whole-health status-ok witness.
+The finite-field review remains bounded; no general schema validator, mutable-example authority or new wire behavior was
+introduced.
+
+Final frozen controls SHA-256: `89833130964a420f77a30574f862dbf868633718aaf6119450e8d4219eb03291`. Removing the 312-line
+insertion reproduces every original control byte. Final predicate SHA-256:
+`e5e6209fc0146496ecd1cae79aa18ad727f523da8dd9c578b41b71dc4ffad096`. The coordinator inspected both diffs and ran
+`node scripts/backend-audio-controls.ts` and strict candidate typechecking with Node 24.20.0: both exited 0; all 250
+semantic refusals and positive counterparts passed. Raw focused GREEN SHA-256:
+`929c151cd8a6e4cb51213578e7042e05eef0a3e68e354d75be8f2419b3149279`. The complete 250-control package was not rerun
+locally; current-source CI must run it before review/merge. The earlier full checkpoints retain their exact scope.
+
+Before bytes, three RED logs, intermediate/full checkpoints, focused GREEN, process cleanup and frozen identities remain
+in the ignored correction directory. Every preceding authoring-record byte is intact. Normative contract, original
+fixtures, manifests, inventories, lockfile, product and governance bytes are unchanged. These results calibrate the
+independent harness; they are not product or hosted acceptance. Fresh current CI, companion approval, actual candidate
+merge and separate binding remain prerequisites to backend adoption.
