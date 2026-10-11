@@ -16,9 +16,9 @@ valid under its original convention.
 | Exact default success, opt-in diagnostics      | APP-REQ-002/003/006, APP-EVAL-001         | Default `{frameCount}` only; exactly one decoded `details=true` adds closed analysis.                       |
 | Canonical coded errors and raw/proxy parity    | APP-EVAL-001/005                          | Exact `{code,error}`, safe catalogue messages, correct statuses/headers and bodyless HEAD.                  |
 | Testable Fastify factory and scoped lifecycle  | APP-EVAL-002/006                          | No listener/assets/signals on construction; bounded admission, deadlines, cleanup and production readiness. |
-| Shared TypeBox DTOs and generated offline docs | APP-EVAL-002, APP-REQ-008                 | Strict compilation, schema serialization, deterministic OpenAPI, actual CSP-protected Redoc examples.       |
+| Shared TypeBox DTOs and generated offline docs | APP-EVAL-002/003/004                      | Strict compilation, schema serialization, deterministic OpenAPI, actual CSP-protected Redoc examples.       |
 | Existing React service uses Ky once            | APP-EVAL-002/005                          | Raw File, no retry, hook deadline through body consumption, coded outcomes, accessible metadata.            |
-| Two non-root containers and local handoff      | APP-EVAL-006/007, APP-REQ-007/008         | Independent builds, no retained uploads or cloud prerequisite; known-count local test.                      |
+| Two non-root containers and local handoff      | APP-EVAL-006/007, APP-SUB-002/003         | Independent builds, no retained uploads or cloud prerequisite; known-count local test.                      |
 
 The sample's new default is `{"frameCount":6089}`. Diagnostics retain physical `6090`, excluded `1`, the independently
 walked counts and separately labeled declarations. Preserve the original sample hash and fixture physical totals. VBRI

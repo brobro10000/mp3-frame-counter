@@ -1,6 +1,6 @@
 ---
 title: MP3 upload and result sequence
-updatedAt: "2026-10-11T19:43:31Z"
+updatedAt: "2026-10-11T20:21:19Z"
 query: >-
   Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, native raw bridge, real
   Fastify root, scoped upload plugin and pure parser. Separate page components, the upload-state hook and raw service.
@@ -11,11 +11,12 @@ query: >-
   admission once through handler finally, rejection and terminal hooks; disconnected clients have no JSON guarantee.
   Include local file validation, pending controls, the actual-byte 20 MiB bound and typed parser failures.
   Limit the JSON ingress-error branch to configured 413, 502 and 504 mappings. Separate response JSON validation from
-  other ingress responses without a JSON guarantee; unreadable JSON becomes a readable error. Separate this from
-  rejected fetches handled by the hook's timeout/network catch. Render current outcomes, ignore stale completions and
-  clear every admitted request's deadline in finally. Walk complete MPEG-1 Layer III frames; exclude only a recognized
-  leading Xing/Info carrier from audio count, retaining physical/excluded diagnostics. Declared totals never determine
-  the result. Shared schemas/code catalogue govern default/details and errors. Aborts never produce partial success.
+  other ingress responses without a JSON guarantee. The service catches fetch/body failures and returns typed
+  timeout, cancellation, network or invalid-response outcomes, preserving the hook-owned abort reason. The hook
+  renders only current outcomes and clears every admitted request's deadline in finally. Walk complete MPEG-1 Layer III
+  frames; exclude only a recognized leading Xing/Info carrier from audio count, retaining physical/excluded diagnostics.
+  Declared totals never determine the result. Shared schemas/code catalogue govern default/details and errors. Aborts
+  never produce partial success.
   Use the referenced implementation at the current revision as runtime authority. Historical architecture snapshots
   remain historical evidence. This diagram describes the local application, not a cloud deployment.
   Group NGINX inside the frontend Docker container and API plus parser inside the API Docker container. The API and
@@ -116,12 +117,13 @@ sequenceDiagram
             alt JSON is readable
                 Service->>Service: Interpret canonical success invariants or exact coded API error
                 Service-->>Hook: Typed count or readable error
-            else JSON is unreadable
-                Service-->>Hook: Readable response parse error
+            else Body read fails, aborts or JSON is unreadable
+                Service->>Service: Classify caller abort reason or body failure
+                Service-->>Hook: Typed timeout, cancelled, network or invalid-response outcome
             end
         else Fetch rejects, including abort
-            Service--xHook: Propagate rejected fetch
-            Hook->>Hook: Catch timeout or connection failure
+            Service->>Service: Preserve caller timeout/cancellation or classify network failure
+            Service-->>Hook: Typed timeout, cancelled or network outcome
         end
         alt Request generation is still current
             Hook-->>Browser: Render result and restore controls
