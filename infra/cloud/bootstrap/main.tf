@@ -98,3 +98,17 @@ resource "google_billing_budget" "application_total" {
     prevent_destroy = true
   }
 }
+
+# Keep the dedicated project's Editor role empty before trusting protected remote state. This binding
+# preserves unrelated roles and detects later drift; it does not continuously enforce IAM or restore grants on removal.
+resource "google_project_iam_binding" "no_project_editors" {
+  project = google_project.application.project_id
+  role    = "roles/editor"
+  members = []
+
+  depends_on = [google_project_service.bootstrap["cloudresourcemanager.googleapis.com"]]
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
