@@ -38,7 +38,7 @@ references:
   - 'File: /scripts/publish-release-evidence.mjs'
   - 'File: /scripts/release-manifest.mjs'
   - 'File: /release-policy.json'
-generationTime: '2026-10-11T02:29:48.138Z'
+generationTime: '2026-10-11T03:43:32.334Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -68,3 +68,5 @@ flowchart TD
     RELEASE --> HANDOFF["Upload verified publisher handoff"]
     HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
     RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement and provisioned runtime"]
+    RELEASE --> FINALIZE["Finalize V1 release with verified evidence and original admission"]
+    FINALIZE --> HANDOFF
