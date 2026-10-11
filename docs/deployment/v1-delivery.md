@@ -45,12 +45,15 @@ authorities. The existing publisher and handoff utilities remain available and t
 unchanged.
 
 The ordinary CI publisher remains the software-release writer. A narrow exception permits the authenticated numeric
-repository owner to call `finalizeV1Release(bundle, evidence, api, generatedDirectory)` from the existing publisher for
-fixed same-source `v1.0.0`, after supervised production completion. The caller must first verify the original bundle
-with its independent admission digest, resolve the required hosted profile projection from that source, and authenticate
-the human approval, provider observations and demonstrated recovery. Hashes bind these supplied facts; they cannot
-establish approval. The finalizer also observes the actual owner identity, original successful checks, protected-main
-ancestry, published candidate tag and ten exact SHA-256/size identities, and rehashes the local bytes before writes.
+repository owner to call `finalizeV1Release(bundle, evidence, api, generatedDirectory, { root })` from the existing
+publisher for fixed same-source `v1.0.0`, after supervised production completion. `root` is the exact checked-out
+repository used to verify the original bundle; the finalizer reads the producing source's committed CI layout through
+that explicit root. The four-argument form remains only for historical injected API replay and cannot establish the
+expanded live gates. The caller must first verify the original bundle with its independent admission digest, resolve the
+required hosted profile projection from that source, and authenticate the human approval, provider observations and
+demonstrated recovery. Hashes bind these supplied facts; they cannot establish approval. The finalizer also observes the
+actual owner identity, original successful checks, protected-main ancestry, published candidate tag and ten exact
+SHA-256/size identities, and rehashes the local bytes before writes.
 
 Supply the closed `{projection, stage, production, approval, recovery, operation, productionStartedAt}` evidence record.
 Both hosted inputs use the existing `validateHostedAcceptance` shape with their original suite results, launch IDs,

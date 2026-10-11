@@ -12,6 +12,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
 import { mandatoryJobs } from "./ci-gate.mjs";
+import { ciToolingShards, requireCiVisibilityPolicy } from "./ci-visibility-policy.mjs";
 import { detectPhase, requiredRootScripts } from "./phase-policy.mjs";
 import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
 import { requireReleasePolicyCheckout } from "./release-manifest.mjs";
@@ -26,132 +27,22 @@ requireReleasePolicyCheckout(process.cwd(), githubSource);
 
 const read = (path) => readFileSync(path, "utf8");
 const workflow = parse(read(".github/workflows/ci.yml"));
-// Keep private inputs and generated caches out of source control; reviewed acceptance fixtures have their own scope.
-const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
-const forbidden =
-  /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts|\.terraform)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key|tfplan|private\.json)$|\.tfstate($|\.)|\.tfvars($|\.)/i;
-assert(
-  !files.some((file) => forbidden.test(file) && !/^tests\/acceptance\/fixtures\/[a-z0-9_.-]+\.mp3$/.test(file)),
-  "Private inputs or caches must never be tracked",
-);
-const phase = detectPhase(files);
-assert.deepEqual(
-  files.filter((file) => /^\.github\/workflows\//.test(file)),
-  [".github/workflows/ci.yml"],
-);
-assert.deepEqual(workflow.on, { pull_request: { branches: ["main"] }, push: { branches: ["main"] } });
-assert.deepEqual(workflow.permissions, { contents: "read" });
-assert.equal(workflow.concurrency["cancel-in-progress"], "${{ github.event_name == 'pull_request' }}");
-// The terminal gate must cover every mandatory job and still run when an upstream dependency fails or skips.
-const jobs = workflow.jobs;
-assert.deepEqual(
-  Object.keys(jobs).sort(),
-  ["control-plane", "deliver-foundation", "publish-release", "deploy-stage", ...mandatoryJobs].sort(),
-);
-requireReleaseWorkflow(workflow);
-const gate = jobs["control-plane"];
-assert.equal(gate.name, "control-plane");
-assert.equal(gate.if, "${{ always() }}");
-assert.deepEqual(gate.needs, mandatoryJobs);
-assert.equal(gate.strategy, undefined);
-assert(
-  gate.steps.some((step) => step.run === "node scripts/ci-gate.mjs" && step.env?.NEEDS_JSON === "${{ toJSON(needs) }}"),
-);
-const validation = jobs["validate-foundation"];
-assert.equal(validation.if, undefined);
-const cloudValidation =
-  [
-    "terraform -chdir=infra/cloud/bootstrap fmt -check",
-    "terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly",
-    "terraform -chdir=infra/cloud/bootstrap validate -no-color",
-    "terraform -chdir=infra/cloud/access fmt -check",
-    "terraform -chdir=infra/cloud/access init -backend=false -input=false -lockfile=readonly",
-    "terraform -chdir=infra/cloud/access validate -no-color",
-  ].join("\n") + "\n";
-assert.deepEqual(
-  validation.steps.filter((step) => step.run).map((step) => step.run),
-  [
-    validation.steps.find((step) => step.id === "acceptance-preflight").run,
-    "npm ci",
-    cloudValidation,
-    "npm run mermaid:install",
-    "aa-exec --profile=chrome npm run validate",
-  ],
-);
-// Both cloud roots require credential-free schema checks; access tests use mocked plans without cloud mutations.
-assert.equal(validation.env, undefined);
-const terraformSetup = validation.steps.find((step) => step.uses?.startsWith("hashicorp/setup-terraform@"));
-assert.equal(terraformSetup?.uses, "hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e");
-assert.deepEqual(terraformSetup.with, { terraform_version: "1.13.3", terraform_wrapper: false });
-assert.equal(terraformSetup.if, undefined);
-assert.equal(terraformSetup.env, undefined);
-const terraformValidation = validation.steps.find((step) => step.run === cloudValidation);
-assert.equal(terraformValidation.if, undefined);
-assert.equal(terraformValidation.env, undefined);
-const product = jobs["validate-product"];
-assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
-assert.deepEqual(
-  product.steps.filter((step) => step.run).map((step) => step.run),
-  [
-    product.steps.find((step) => step.id === "acceptance-preflight").run,
-    "npm ci",
-    "node scripts/run-ci-phase.mjs",
-    "node scripts/publish-release-bundle.mjs",
-  ],
-);
-assert.equal(product.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
-assert.equal(product.env?.CI_BASE_REF, "${{ github.event.pull_request.base.sha || github.event.before }}");
-const delivery = jobs["deliver-foundation"];
-assert.deepEqual(delivery.needs, ["control-plane", "validate-product"]);
-assert.equal(
-  delivery.if,
-  "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready != 'true' }}",
-);
-assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
-// Enforce bounded hosted jobs and immutable Actions; publisher content writes and stage OIDC are separately confined.
-for (const [name, job] of Object.entries(jobs)) {
-  assert.equal(job["runs-on"], "ubuntu-24.04");
-  assert(
-    job["timeout-minutes"] > 0 &&
-      job["timeout-minutes"] <= (["validate-product", "deploy-stage"].includes(name) ? 30 : 10),
-  );
-  if (!["publish-release", "deploy-stage", "validate-foundation", "validate-product"].includes(name))
-    assert.equal(job.permissions, undefined);
-  assert.equal(job["continue-on-error"], undefined);
-  assert.equal(job.strategy, undefined);
-  for (const step of job.steps) {
-    assert.equal(step["continue-on-error"], undefined);
-    if (step.uses) assert(/^[\w-]+\/[\w-]+@[a-f0-9]{40}$/.test(step.uses), "Actions need immutable SHA pins");
-    if (step.uses?.startsWith("actions/checkout@")) assert.equal(step.with?.["persist-credentials"], false);
-    if (step.run) {
-      assert(!step.run.includes("${{"), "Pass event data through environment variables");
-      assert(!/\|\|\s*true|gh\s+pr\s+(review|merge)/.test(step.run), "No suppression or approval automation");
-    }
-  }
-}
-// Mask the stage's existing billing identifiers before runner step headers; allow no other secret context.
-const stageConfigurationSlot = "${{ secrets.STAGE_DEPLOYMENT_CONFIG }}";
-const workflowText = read(".github/workflows/ci.yml");
-assert.equal(jobs["deploy-stage"].env.STAGE_DEPLOYMENT_CONFIG, stageConfigurationSlot);
-assert.equal(workflowText.split(stageConfigurationSlot).length, 2, "Require exactly one masked configuration slot");
-assert(
-  !/\bsecrets\b/i.test(workflowText.replace(stageConfigurationSlot, "")),
-  "No other secret references in foundation workflows",
-);
-const upload = delivery.steps.find((step) => step.uses?.startsWith("actions/upload-artifact@"));
-assert.equal(upload?.with?.["retention-days"], 7);
-assert.equal(upload.with["if-no-files-found"], "error");
-assert.equal(upload.with.name, "foundation-${{ github.sha }}");
-assert.equal(upload.with.path, ".artifacts/*");
-assert.equal(upload.with["include-hidden-files"], true);
-// Ensure local validation and CI use the same exact tooling and integrity-checked npm dependency graph.
 const pkg = JSON.parse(read("package.json"));
-const lock = JSON.parse(read("package-lock.json"));
-assert.equal(pkg.scripts["check:portability"], "node scripts/check-portability.mjs");
-assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:portability"));
-assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
-assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
-assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
+const reusablePaths = [
+  ".github/workflows/linter.yml",
+  ".github/workflows/server-tests.yml",
+  ".github/workflows/application-tests.yml",
+  ".github/workflows/base-acceptance-e2e.yml",
+];
+const callsReusable = Object.values(workflow.jobs).some((job) => Object.hasOwn(job, "uses"));
+const reusableWorkflows = callsReusable
+  ? Object.fromEntries(reusablePaths.map((path) => [path, parse(read(path))]))
+  : {};
+const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" }).split("\0").filter(Boolean);
+const toolingPrefix = "node --experimental-vm-modules --test ";
+assert(pkg.scripts["test:tooling"].startsWith(toolingPrefix), "Require the pinned native tooling test command");
+const toolingFiles = pkg.scripts["test:tooling"].slice(toolingPrefix.length).split(" ");
+// Preserve specific mandatory-test diagnostics before either layout checks the complete finite tooling union.
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/mermaid.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-config-log-policy.test.mjs"));
 assert(pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/stage-command-failure.test.mjs"));
@@ -177,6 +68,151 @@ assert(
 );
 for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
   assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
+assert.deepEqual([...toolingFiles].sort(), Object.values(ciToolingShards).flat().sort(), "Tooling coverage differs");
+assert.equal(pkg.scripts["test:gate"], "node --test scripts/ci-gate.test.mjs scripts/ci-visibility-policy.test.mjs");
+const ciPolicy = requireCiVisibilityPolicy({
+  workflow,
+  reusableWorkflows,
+  toolingFiles,
+  gateCommand: pkg.scripts["test:gate"],
+});
+// Keep private inputs and generated caches out of source control; reviewed acceptance fixtures have their own scope.
+const forbidden =
+  /(^|\/)(node_modules|\.cache|\.mvp-workflow|\.mvp-orchestrator|\.codex|\.artifacts|\.terraform)(\/|$)|(^|\/)\.env($|\.)|\.(mp3|pem|key|tfplan|private\.json)$|\.tfstate($|\.)|\.tfvars($|\.)/i;
+assert(
+  !files.some((file) => forbidden.test(file) && !/^tests\/acceptance\/fixtures\/[a-z0-9_.-]+\.mp3$/.test(file)),
+  "Private inputs or caches must never be tracked",
+);
+const phase = detectPhase(files);
+assert.deepEqual(
+  files.filter((file) => /^\.github\/workflows\//.test(file)),
+  [".github/workflows/ci.yml", ...(callsReusable ? reusablePaths : [])].sort(),
+);
+assert.deepEqual(workflow.on, { pull_request: { branches: ["main"] }, push: { branches: ["main"] } });
+assert.deepEqual(workflow.permissions, { contents: "read" });
+assert.equal(workflow.concurrency["cancel-in-progress"], "${{ github.event_name == 'pull_request' }}");
+// The terminal gate must cover every mandatory job and still run when an upstream dependency fails or skips.
+const jobs = workflow.jobs;
+if (ciPolicy.variant === "legacy") {
+  assert.deepEqual(
+    Object.keys(jobs).sort(),
+    ["control-plane", "deliver-foundation", "publish-release", "deploy-stage", ...mandatoryJobs].sort(),
+  );
+  requireReleaseWorkflow(workflow);
+  const gate = jobs["control-plane"];
+  assert.equal(gate.name, "control-plane");
+  assert.equal(gate.if, "${{ always() }}");
+  assert.deepEqual(gate.needs, mandatoryJobs);
+  assert.equal(gate.strategy, undefined);
+  assert(
+    gate.steps.some(
+      (step) => step.run === "node scripts/ci-gate.mjs" && step.env?.NEEDS_JSON === "${{ toJSON(needs) }}",
+    ),
+  );
+  const validation = jobs["validate-foundation"];
+  assert.equal(validation.if, undefined);
+  const cloudValidation =
+    [
+      "terraform -chdir=infra/cloud/bootstrap fmt -check",
+      "terraform -chdir=infra/cloud/bootstrap init -backend=false -input=false -lockfile=readonly",
+      "terraform -chdir=infra/cloud/bootstrap validate -no-color",
+      "terraform -chdir=infra/cloud/access fmt -check",
+      "terraform -chdir=infra/cloud/access init -backend=false -input=false -lockfile=readonly",
+      "terraform -chdir=infra/cloud/access validate -no-color",
+    ].join("\n") + "\n";
+  assert.deepEqual(
+    validation.steps.filter((step) => step.run).map((step) => step.run),
+    [
+      validation.steps.find((step) => step.id === "acceptance-preflight").run,
+      "npm ci",
+      cloudValidation,
+      "npm run mermaid:install",
+      "aa-exec --profile=chrome npm run validate",
+    ],
+  );
+  // Both cloud roots require credential-free schema checks; access tests use mocked plans without cloud mutations.
+  assert.equal(validation.env, undefined);
+  const terraformSetup = validation.steps.find((step) => step.uses?.startsWith("hashicorp/setup-terraform@"));
+  assert.equal(terraformSetup?.uses, "hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e");
+  assert.deepEqual(terraformSetup.with, { terraform_version: "1.13.3", terraform_wrapper: false });
+  assert.equal(terraformSetup.if, undefined);
+  assert.equal(terraformSetup.env, undefined);
+  const terraformValidation = validation.steps.find((step) => step.run === cloudValidation);
+  assert.equal(terraformValidation.if, undefined);
+  assert.equal(terraformValidation.env, undefined);
+  const product = jobs["validate-product"];
+  assert.equal(product.if, undefined, "Phase validation itself must never be skipped");
+  assert.deepEqual(
+    product.steps.filter((step) => step.run).map((step) => step.run),
+    [
+      product.steps.find((step) => step.id === "acceptance-preflight").run,
+      "npm ci",
+      "node scripts/run-ci-phase.mjs",
+      "node scripts/publish-release-bundle.mjs",
+    ],
+  );
+  assert.equal(product.steps.find((step) => step.uses?.startsWith("actions/checkout@"))?.with?.["fetch-depth"], 0);
+  assert.equal(product.env?.CI_BASE_REF, "${{ github.event.pull_request.base.sha || github.event.before }}");
+}
+const delivery = jobs["deliver-foundation"];
+assert.deepEqual(delivery.needs, ["control-plane", "validate-product"]);
+assert.equal(
+  delivery.if,
+  "${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.validate-product.outputs.release-ready != 'true' }}",
+);
+assert(delivery.steps.some((step) => step.run === "npm run artifact:foundation"));
+// Inspect executing leaves, not reusable callers. The finite family validator separately closes every call and matrix.
+const executingJobs = [
+  ...Object.entries(jobs).filter(([, job]) => !Object.hasOwn(job, "uses")),
+  ...Object.values(reusableWorkflows).flatMap((called) => Object.entries(called.jobs)),
+];
+const validationJobs = ["validate-foundation", "validate-product", "checks", "tooling", "application", "server"];
+// Enforce bounded hosted jobs and immutable Actions; publisher content writes and stage OIDC are separately confined.
+for (const [name, job] of executingJobs) {
+  assert.equal(job["runs-on"], "ubuntu-24.04");
+  const timeout = ["validate-product", "deploy-stage"].includes(name)
+    ? 30
+    : ["tooling", "application", "server"].includes(name)
+      ? 20
+      : 10;
+  assert(job["timeout-minutes"] > 0 && job["timeout-minutes"] <= timeout);
+  if (!["publish-release", "deploy-stage", ...validationJobs].includes(name)) assert.equal(job.permissions, undefined);
+  assert.equal(job["continue-on-error"], undefined);
+  if (name !== "tooling") assert.equal(job.strategy, undefined);
+  for (const step of job.steps) {
+    assert.equal(step["continue-on-error"], undefined);
+    if (step.uses) assert(/^[\w-]+\/[\w-]+@[a-f0-9]{40}$/.test(step.uses), "Actions need immutable SHA pins");
+    if (step.uses?.startsWith("actions/checkout@")) assert.equal(step.with?.["persist-credentials"], false);
+    if (step.run) {
+      assert(!step.run.includes("${{"), "Pass event data through environment variables");
+      assert(!/\|\|\s*true|gh\s+pr\s+(review|merge)/.test(step.run), "No suppression or approval automation");
+    }
+  }
+}
+// Mask the stage's existing billing identifiers before runner step headers; allow no other secret context.
+const stageConfigurationSlot = "${{ secrets.STAGE_DEPLOYMENT_CONFIG }}";
+const workflowText = read(".github/workflows/ci.yml");
+assert.equal(jobs["deploy-stage"].env.STAGE_DEPLOYMENT_CONFIG, stageConfigurationSlot);
+assert.equal(workflowText.split(stageConfigurationSlot).length, 2, "Require exactly one masked configuration slot");
+assert(
+  !/\bsecrets\b/i.test(
+    [workflowText.replace(stageConfigurationSlot, ""), ...Object.keys(reusableWorkflows).map(read)].join("\n"),
+  ),
+  "No other secret references in foundation workflows",
+);
+const upload = delivery.steps.find((step) => step.uses?.startsWith("actions/upload-artifact@"));
+assert.equal(upload?.with?.["retention-days"], 7);
+assert.equal(upload.with["if-no-files-found"], "error");
+assert.equal(upload.with.name, "foundation-${{ github.sha }}");
+assert.equal(upload.with.path, ".artifacts/*");
+assert.equal(upload.with["include-hidden-files"], true);
+// Ensure local validation and CI use the same exact tooling and integrity-checked npm dependency graph.
+const lock = JSON.parse(read("package-lock.json"));
+assert.equal(pkg.scripts["check:portability"], "node scripts/check-portability.mjs");
+assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:portability"));
+assert.equal(pkg.scripts["check:mermaid"], "node scripts/check-mermaid.mjs");
+assert.equal(pkg.scripts["mermaid:install"], "puppeteer browsers install chrome@155.0.8059.39");
+assert(pkg.scripts.validate.split(/\s*&&\s*/).includes("npm run check:mermaid"));
 assert.equal(pkg.private, true);
 assert.equal(pkg.engines.node, read(".nvmrc").trim());
 assert.equal(process.versions.node, pkg.engines.node, "Select the pinned Node runtime");

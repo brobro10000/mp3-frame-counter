@@ -15,6 +15,7 @@ import { join } from "node:path";
 import { git, verifyBaseline } from "./acceptance-baseline.mjs";
 import { acceptancePolicyIntroduced, verifyAcceptanceAdmission } from "./acceptance-admission.mjs";
 import { requirePreflightWorkflow } from "./acceptance-preflight.mjs";
+import { readCiVisibilityPolicy } from "./ci-visibility-policy.mjs";
 import {
   archiveIdentity,
   canonical,
@@ -191,7 +192,7 @@ export async function verifyReleaseBundle(root, directory, context, { expectedAd
 }
 
 /** Validate live API evidence for the original producing attempt, including successful jobs reused on a later retry. */
-export function requireObservedChecks(bundle, repository, branch, comparison, run, jobs) {
+export function requireObservedChecks(bundle, repository, branch, comparison, run, jobs, { root } = {}) {
   const { origin } = bundle;
   assert.equal(repository.full_name, origin.repository);
   assert.equal(repository.private, true, "Publication requires the intended private repository");
@@ -207,7 +208,11 @@ export function requireObservedChecks(bundle, repository, branch, comparison, ru
   assert.equal(run.event, "push");
   assert.equal(run.path, origin.workflow);
   assert.equal(run.repository?.full_name, origin.repository);
-  for (const name of publicationChecks) {
+  // Read the original producing source, never moving HEAD or a caller-supplied layout selector. The optional root
+  // preserves historical direct API calls; current publisher entry points always forward their explicit Git root.
+  const checks =
+    root === undefined ? publicationChecks : readCiVisibilityPolicy(root, origin.sourceRevision).observedJobs;
+  for (const name of checks) {
     const matches = jobs.filter((job) => job.name === name);
     assert.equal(matches.length, 1, `Missing or ambiguous mandatory job ${name}`);
     assert.equal(matches[0].head_sha, origin.sourceRevision);
@@ -219,7 +224,7 @@ export function requireObservedChecks(bundle, repository, branch, comparison, ru
     );
     assert.equal(matches[0].status, "completed");
     assert.equal(matches[0].conclusion, "success", `Mandatory ${name} did not succeed`);
-    if (Object.hasOwn(bundle, "acceptanceAdmission") && ["validate-foundation", "validate-product"].includes(name)) {
+    if (Object.hasOwn(bundle, "acceptanceAdmission") && name !== "control-plane") {
       assert(Array.isArray(matches[0].steps), `Missing acceptance preflight evidence for ${name}`);
       const preflights = matches[0].steps.filter((step) => step.name === "Validate acceptance admission");
       assert.equal(preflights.length, 1, `Missing or ambiguous acceptance preflight for ${name}`);

@@ -6,6 +6,7 @@
  * points. Sanitized browser children intentionally receive no NODE_OPTIONS and run only fixture-owned inert programs.
  * No real package/browser installation, network, apt, Docker or account environment is used. Fixtures always clean up.
  * These controls establish consumer selection/provenance behavior, never application acceptance or deployment.
+ * Legacy workflow guard mutations use immutable protected Git source 2ae305c, read through bounded read-only Git.
  */
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -549,8 +550,19 @@ test("E2E pre-Docker failures retain only the correct legacy, local or CI select
   }
 });
 
-test("workflow policy requires exact independent admission path and digest handoff to both consumers", () => {
-  const workflow = parse(readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"));
+test("historical workflow policy requires exact independent admission path and digest handoff to both consumers", () => {
+  const workflow = parse(
+    execFileSync(
+      "git",
+      ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+      {
+        cwd: fileURLToPath(new URL("../", import.meta.url)),
+        encoding: "utf8",
+        timeout: 30_000,
+        maxBuffer: 128 * 1024,
+      },
+    ),
+  );
   requireReleaseWorkflow(workflow);
   for (const command of ["node scripts/run-ci-phase.mjs", "node scripts/publish-release-bundle.mjs"]) {
     for (const mutate of [

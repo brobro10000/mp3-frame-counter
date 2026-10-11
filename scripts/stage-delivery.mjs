@@ -326,7 +326,7 @@ async function verify(values) {
     api.request("GET", `${prefix}/git/ref/tags/v${bundle.manifest.version}`),
   ]);
   const comparison = await api.request("GET", `${prefix}/compare/${context.sourceRevision}...${branch?.commit?.sha}`);
-  requireObservedChecks(bundle, repository, branch, comparison, original, jobs);
+  requireObservedChecks(bundle, repository, branch, comparison, original, jobs, { root });
   assert.equal(branch.commit.sha, context.sourceRevision, "A delayed source cannot overwrite newer stage");
   for (const [key, value] of Object.entries({
     id: context.runId,

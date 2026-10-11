@@ -5,9 +5,10 @@
  * credential-free receipt subprocesses write disposable fixtures only, deny network/child execution and clean up.
  * A VM subprocess denies ambient I/O/clock access during import and representative pure calls. Missing APIs fail before
  * rejection assertions: availability red is not behavioral refusal evidence. Historical authentication is a later card.
+ * Legacy workflow guard mutations use immutable protected Git source 2ae305c, read through bounded read-only Git.
  */
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -910,14 +911,25 @@ test("receipt CLI refuses changed, missing, malformed, oversized or symlinked fi
 });
 
 function workflow() {
-  return parse(readFileSync(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8"));
+  return parse(
+    execFileSync(
+      "git",
+      ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+      {
+        cwd: fileURLToPath(new URL("../", import.meta.url)),
+        encoding: "utf8",
+        timeout: 30_000,
+        maxBuffer: 128 * 1024,
+      },
+    ),
+  );
 }
 function publisher(w) {
   return w.jobs["publish-release"];
 }
 function step(w, id) {
   const matches = publisher(w).steps.filter((s) => s.id === id);
-  assert.equal(matches.length, 1, `Missing exact adopted workflow step ${id}`);
+  assert.equal(matches.length, 1, `Missing exact historical workflow step ${id}`);
   return matches[0];
 }
 function workflowCounterpart() {
@@ -926,7 +938,7 @@ function workflowCounterpart() {
   for (const id of ["publish-release", "upload-publisher-handoff", "publisher-handoff-receipt"]) step(w, id);
   return w;
 }
-test("actual workflow exposes receipt-only job outputs and one exact publisher artifact upload", () => {
+test("historical workflow exposes receipt-only job outputs and one exact publisher artifact upload", () => {
   const w = workflowCounterpart();
   const p = publisher(w);
   const publication = step(w, "publish-release");

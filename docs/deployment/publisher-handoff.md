@@ -90,6 +90,13 @@ and adds exactly `repository:{id,ownerId}`, `reservationSha256`, `publicationSha
 hashes from the actual fixed bytes; input claims cannot supply those observations. The CLI derives original context and
 the independently checked admission digest from its verified bundle. No callback or new authority input is introduced.
 
+**CI visibility reader amendment — 2026-10-11:** current real publication uses
+`publishRelease(bundle, api, generatedDirectory, { root })`, with the explicit exact checked-out repository root. The
+CLI supplies `process.cwd()` so required live jobs come from the bundle's original producing source, even when another
+CI layout is present at working HEAD. The three-argument API remains for historical injected replay; it cannot establish
+the expanded reusable-worker gates. This context is not added to the immutable handoff or publication schema. See
+[CI visibility policy](../testing/ci-visibility.md) for the dormant migration and local evidence.
+
 Write exactly `.artifacts/publisher-handoff/handoff.json`, a regular owned file, no symlink traversal; exclusive
 creation or byte-identical reuse only, mode0600 in a private directory. Serialize fixed-order pretty JSON with a
 trailing newline; exclude generatedAt/current clock so an identical attempt creates identical JSON. Capture hashes from

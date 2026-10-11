@@ -76,12 +76,14 @@ function fixture(t) {
     "scripts/policy.mjs",
     "scripts/frontend-tool-policy.mjs",
     "scripts/publish-release-evidence.mjs",
+    "scripts/ci-visibility-policy.mjs",
     "scripts/stage-delivery.mjs",
     "scripts/stage-command-failure.mjs",
     "scripts/stage-private-diagnostic.mjs",
     "scripts/stage-diagnostic-recipient.mjs",
     ".github/workflows/ci.yml",
     "package.json",
+    "package-lock.json",
   ])
     copyFileSync(join(root, path), join(checkout, path));
   symlinkSync(join(root, "node_modules"), join(checkout, "node_modules"), "dir");
