@@ -6,11 +6,24 @@
  * conflicting tags/assets, partial publication and stale latest selection. No Docker, credentials or network are used.
  */
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  renameSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
 import {
   canBeLatest,
@@ -51,7 +64,7 @@ const contextEnv = (source = "1".repeat(40), base = "2".repeat(40)) => ({
 const writeJson = (path, data) => writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`);
 
 async function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), "release-publication-test-"));
+  const root = realpathSync(mkdtempSync(join(tmpdir(), "release-publication-test-")));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   const git = (...args) =>
     execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
@@ -128,7 +141,7 @@ function fakeApi(bundle) {
   const { origin } = bundle;
   const prefix = `/repos/${origin.repository}`;
   const state = {
-    repository: { full_name: repo, private: true, default_branch: "main" },
+    repository: { id: 31001, owner: { id: 42002 }, full_name: repo, private: true, default_branch: "main" },
     branch: { name: "main", protected: true, commit: { sha: origin.sourceRevision } },
     comparison: { status: "identical" },
     run: {
@@ -186,7 +199,13 @@ function fakeApi(bundle) {
         const name = new URL(`https://api.github.com${route}`).searchParams.get("name");
         if (state.failAsset === name) throw new Error("Synthetic upload failure");
         const bytes = readFileSync(data.path);
-        const asset = { name, state: "uploaded", size: bytes.length, digest: `sha256:${digest(bytes)}` };
+        const asset = {
+          id: 91001 + state.assets.length,
+          name,
+          state: "uploaded",
+          size: bytes.length,
+          digest: `sha256:${digest(bytes)}`,
+        };
         state.assets.push(asset);
         return asset;
       }
@@ -520,4 +539,398 @@ test("stable latest selection compares numeric lines and fails closed on malform
     assert.equal(canBeLatest(bundle("0.2.18", 18), branch, [ignored]), true);
   }
   assert.equal(canBeLatest(bundle("0.2.18", 18), { commit: { sha: "2".repeat(40) } }, []), false);
+});
+
+/** PUBLISHER-HANDOFF additions retain every earlier assertion and both historical publication byte goldens. */
+test("publisher handoff metadata retains exact observed repository/asset IDs and raw versus canonical hashes", async (t) => {
+  const f = await fixture(t);
+  const api = fakeApi(f.bundle);
+  const result = await publishRelease(f.bundle, api, f.generated);
+  assert.deepEqual(
+    Object.keys(result).sort(),
+    [
+      "status",
+      "deployed",
+      "version",
+      "tag",
+      "reused",
+      "releaseId",
+      "sourceRevision",
+      "publicationBindingSha256",
+      "repository",
+      "reservationSha256",
+      "publicationSha256",
+      "assets",
+    ].sort(),
+  );
+  assert.deepEqual(result.repository, { id: 31001, ownerId: 42002 });
+  assert.equal(result.reservationSha256, f.bundle.manifest.reservationSha256);
+  assert.equal(result.publicationSha256, digest(readFileSync(join(f.generated, "publication.json"))));
+  assert.notEqual(result.publicationSha256, result.publicationBindingSha256);
+  const expectedNames = [
+    "SHA256SUMS",
+    "api.docker.tar",
+    "ci-origin.json",
+    "e2e-result.json",
+    "frontend.docker.tar",
+    "manifest.json",
+    "publication-notes.md",
+    "publication.json",
+    "release-notes.md",
+    "reservation.json",
+  ];
+  assert.deepEqual(
+    result.assets.map((asset) => asset.name),
+    expectedNames,
+  );
+  for (const asset of result.assets) {
+    const observed = api.state.assets.find(({ name }) => name === asset.name);
+    assert.deepEqual(asset, {
+      id: observed.id,
+      name: observed.name,
+      bytes: observed.size,
+      sha256: observed.digest.slice(7),
+    });
+  }
+  const bytes = Object.fromEntries([
+    ...f.bundle.assets.map(({ name, path }) => [name, readFileSync(path)]),
+    ...["publication.json", "publication-notes.md"].map((name) => [name, readFileSync(join(f.generated, name))]),
+  ]);
+  const before = structuredClone(api.state.assets);
+  const mutationCount = api.state.mutations.length;
+  const again = await publishRelease(f.bundle, api, f.generated);
+  assert.deepEqual(again, { ...result, reused: true });
+  assert.deepEqual(api.state.assets, before);
+  assert.equal(api.state.mutations.length, mutationCount);
+  for (const [name, original] of Object.entries(bytes)) {
+    const path = f.bundle.assets.find((asset) => asset.name === name)?.path ?? join(f.generated, name);
+    assert.deepEqual(readFileSync(path), original, `Retry changed ${name}`);
+  }
+  assert.equal(api.state.assets.length, 10);
+  assert.equal(
+    existsSync(join(f.generated, "publisher-handoff/handoff.json")),
+    false,
+    "The three-argument publication API alone cannot retrofit a handoff onto legacy fixtures",
+  );
+});
+
+test("publisher refuses invalid observed metadata rather than minting handoff identities from input claims", async (t) => {
+  const f = await fixture(t);
+  for (const change of [
+    (api) => {
+      delete api.state.repository.id;
+    },
+    (api) => {
+      api.state.repository.id = "31001";
+    },
+    (api) => {
+      api.state.repository.owner.id = 0;
+    },
+  ]) {
+    const api = fakeApi(f.bundle);
+    change(api);
+    await assert.rejects(publishRelease(f.bundle, api, f.generated));
+    assert.equal(existsSync(join(f.generated, "publisher-handoff/handoff.json")), false);
+  }
+  for (const change of [
+    (assets) => {
+      delete assets[0].id;
+    },
+    (assets) => {
+      assets[0].id = "91001";
+    },
+    (assets) => {
+      assets[0].id = Number.MAX_SAFE_INTEGER + 1;
+    },
+    (assets) => {
+      assets[1].id = assets[0].id;
+    },
+  ]) {
+    const api = fakeApi(f.bundle);
+    api.state.failAsset = "frontend.docker.tar";
+    await assert.rejects(publishRelease(f.bundle, api, f.generated), /Synthetic upload failure/);
+    change(api.state.assets);
+    api.state.failAsset = null;
+    await assert.rejects(publishRelease(f.bundle, api, f.generated));
+    assert.equal(api.state.releases[0].draft, true);
+  }
+});
+
+/** Isolate the actual publisher CLI; only bundle verification is replaced by a named synthetic fixture boundary. */
+async function handoffPublisherCLI(t) {
+  assert(
+    existsSync(new URL("./publisher-handoff.mjs", import.meta.url)),
+    "Missing publisher handoff implementation; availability red only",
+  );
+  const f = await fixture(t);
+  const context = {
+    repository: repo,
+    eventName: "push",
+    ref: "refs/heads/main",
+    sourceRevision: f.context.sourceRevision,
+    sourceTree: f.git("rev-parse", "HEAD^{tree}"),
+    baseRevision: f.context.baseRevision,
+    workflowRevision: f.context.sourceRevision,
+    toolingRevision: f.context.baseRevision,
+    runId: 1234,
+    attempt: 1,
+  };
+  const admission = {
+    record: {
+      schemaVersion: 1,
+      kind: "ci-acceptance-admission",
+      context,
+      observedReviews: [],
+      resolution: { syntheticBoundaryOnly: true },
+    },
+    sha256: "b".repeat(64),
+  };
+  // The real verification API has independent original-digest tests. This fixture substitutes only its successful
+  // return; it cannot certify resolver/admission validity and is never passed off as real verified release evidence.
+  const bundle = { ...f.bundle, acceptanceAdmission: admission };
+  const statePath = join(f.root, ".artifacts/fake-api.json");
+  const output = join(f.root, ".artifacts/github-output");
+  const preload = join(f.root, ".artifacts/publisher-preload.mjs");
+  const evidenceUrl = new URL("./publish-release-evidence.mjs", import.meta.url).href;
+  const scriptUrl = new URL("./publish-release.mjs", import.meta.url);
+  const intercepted = `export * from ${JSON.stringify(evidenceUrl)};
+    export async function verifyReleaseBundle(root,directory,options,extra) {
+      if(root!==${JSON.stringify(f.root)} || directory!=='.artifacts/release-input' ||
+        extra?.expectedAdmissionSha256!==${JSON.stringify(admission.sha256)}) throw new Error('Wrong independent digest handoff');
+      return ${JSON.stringify(bundle)};
+    }`;
+  writeFileSync(
+    preload,
+    `
+    import assert from 'node:assert/strict';
+    import { readFileSync, writeFileSync } from 'node:fs';
+    import { registerHooks, syncBuiltinESMExports } from 'node:module';
+    import http from 'node:http'; import https from 'node:https'; import net from 'node:net';
+    import tls from 'node:tls'; import child from 'node:child_process';
+    const deny=()=>{throw new Error('Forbidden synthetic publisher network or subprocess');};
+    for(const mod of [http,https,net,tls,child]) for(const key of ['request','get','connect','createConnection',
+      'exec','execFile','spawn','fork','execSync','execFileSync','spawnSync']) if(typeof mod[key]==='function') mod[key]=deny;
+    syncBuiltinESMExports();
+    registerHooks({ resolve(specifier,context,next) {
+      if(specifier==='./publish-release-evidence.mjs' && context.parentURL===${JSON.stringify(scriptUrl.href)})
+        return {url:'data:text/javascript,'+encodeURIComponent(${JSON.stringify(intercepted)}),shortCircuit:true};
+      return next(specifier,context);
+    }});
+    const path=${JSON.stringify(statePath)}; const state=JSON.parse(readFileSync(path,'utf8'));
+    const save=()=>writeFileSync(path,JSON.stringify(state));
+    globalThis.fetch=async(url,options)=>{
+      const u=new URL(url); assert(['api.github.com','uploads.github.com'].includes(u.hostname));
+      assert.equal(options.redirect,'error');
+      assert.equal(options.headers.authorization,'Bearer synthetic-not-a-credential');
+      const route=u.pathname.slice(${JSON.stringify(`/repos/${repo}`)}.length);
+      const respond=value=>({ok:true,status:200,json:async()=>structuredClone(value)});
+      if(options.method==='GET') {
+        if(route==='') return respond(state.repository);
+        if(route==='/branches/main') return respond(state.branch);
+        if(route.startsWith('/compare/')) return respond(state.comparison);
+        if(route.endsWith('/jobs')) return respond({jobs:state.jobs});
+        if(route.startsWith('/actions/runs/')) return respond(state.run);
+        if(route==='/releases') return respond(state.releases);
+        if(route.endsWith('/assets')) return respond(state.assets);
+        if(route.startsWith('/git/ref/tags/')) return state.tag?respond({object:{type:'commit',sha:state.tag}}):{ok:false,status:404};
+      }
+      const value=u.hostname==='uploads.github.com'?null:JSON.parse(options.body);
+      if(options.method==='POST' && route==='/git/refs') {state.tag=value.sha; save();return respond({object:{type:'commit',sha:state.tag}});}
+      if(options.method==='POST' && route==='/releases') {state.releases=[{...value,id:42}];save();return respond(state.releases[0]);}
+      if(options.method==='POST' && route==='/releases/42/assets') {
+        const name=u.searchParams.get('name');
+        if(state.failAsset===name) throw new Error('Synthetic upload failure');
+        const chunks=[];for await(const chunk of options.body)chunks.push(chunk);
+        const bytes=Buffer.concat(chunks);const {createHash}=await import('node:crypto');
+        const asset={id:91001+state.assets.length,name,state:'uploaded',size:bytes.length,
+          digest:'sha256:'+createHash('sha256').update(bytes).digest('hex')};state.assets.push(asset);save();return respond(asset);
+      }
+      if(options.method==='PATCH' && route==='/releases/42') {
+        if(state.failFinal) throw new Error('Synthetic final publication failure');
+        state.releases[0].draft=value.draft;save();return respond(state.releases[0]);
+      }
+      throw new Error('Unexpected synthetic API operation');
+    };
+  `,
+  );
+  const state = fakeApi(bundle).state;
+  for (const job of state.jobs)
+    job.steps = [{ name: "Validate acceptance admission", status: "completed", conclusion: "success" }];
+  const env = {
+    PATH: dirname(process.execPath),
+    LANG: "C.UTF-8",
+    ...contextEnv(f.context.sourceRevision, f.context.baseRevision),
+    GITHUB_RUN_ATTEMPT: "3",
+    GITHUB_JOB: "publish-release",
+    GITHUB_TOKEN: "synthetic-not-a-credential",
+    GATE_ADMISSION_SHA256: admission.sha256,
+    GITHUB_OUTPUT: output,
+  };
+  const execute = (overrides = {}) =>
+    spawnSync(process.execPath, ["--import", preload, fileURLToPath(scriptUrl)], {
+      cwd: f.root,
+      env: { ...env, ...overrides },
+      encoding: "utf8",
+      timeout: 15000,
+      maxBuffer: 512 * 1024,
+    });
+  const run = (stateValue = state, overrides = {}) => {
+    writeJson(statePath, stateValue);
+    writeFileSync(output, "");
+    return execute(overrides);
+  };
+  return {
+    ...f,
+    bundle,
+    context,
+    state,
+    statePath,
+    output,
+    run,
+    execute,
+    handoff: join(f.generated, "publisher-handoff/handoff.json"),
+  };
+}
+
+test("publisher CLI emits exact handoff/outputs only after verified publication and preserves same-byte retries", async (t) => {
+  const f = await handoffPublisherCLI(t);
+  const result = f.run();
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 0, result.stderr);
+  const bytes = readFileSync(f.handoff);
+  assert.equal(lstatSync(f.handoff).mode & 0o777, 0o600);
+  assert.equal(lstatSync(dirname(f.handoff)).mode & 0o777, 0o700);
+  const handoff = JSON.parse(bytes);
+  assert.deepEqual(handoff.originalContext, f.context);
+  assert.equal(handoff.admissionSha256, "b".repeat(64));
+  assert.equal(handoff.publisherContext.attempt, 3);
+  assert.equal(handoff.originalContext.attempt, 1);
+  assert.equal(handoff.release.publicationSha256, digest(readFileSync(join(f.generated, "publication.json"))));
+  assert.deepEqual(handoff.repository, { id: 31001, ownerId: 42002 });
+  assert.equal(handoff.release.assets.length, 10);
+  assert.equal(bytes.toString(), JSON.stringify(handoff, null, 2) + "\n");
+  assert.deepEqual(
+    Object.fromEntries(
+      readFileSync(f.output, "utf8")
+        .trim()
+        .split("\n")
+        .map((line) => line.split("=")),
+    ),
+    {
+      "handoff-ready": "true",
+      "handoff-sha256": digest(bytes),
+      "handoff-artifact-name": `publisher-handoff-${f.context.sourceRevision}-1234-3`,
+    },
+  );
+  const state = JSON.parse(readFileSync(f.statePath));
+  assert.equal(state.releases[0].draft, false);
+  const retry = f.run(state);
+  assert.equal(retry.status, 0, retry.stderr);
+  assert.deepEqual(readFileSync(f.handoff), bytes);
+  assert.deepEqual(JSON.parse(readFileSync(f.statePath)).assets, state.assets);
+  writeFileSync(f.handoff, Buffer.concat([bytes, Buffer.from(" ")]));
+  const conflict = f.run(state);
+  assert.notEqual(conflict.status, 0);
+  assert.equal(readFileSync(f.output, "utf8"), "");
+  assert.deepEqual(
+    readFileSync(f.handoff),
+    Buffer.concat([bytes, Buffer.from(" ")]),
+    "Conflicting retry was overwritten",
+  );
+});
+
+test("publisher CLI retains no handoff-ready or handoff file after admission/tag/upload/final-publication failure", async (t) => {
+  for (const kind of ["admission", "job", "tag", "upload", "final"]) {
+    const f = await handoffPublisherCLI(t);
+    const counterpart = f.run();
+    assert.equal(counterpart.status, 0, `Valid publisher counterpart failed: ${counterpart.stderr}`);
+    rmSync(dirname(f.handoff), { recursive: true });
+    const state = structuredClone(f.state);
+    const env = {};
+    if (kind === "admission") env.GATE_ADMISSION_SHA256 = "c".repeat(64);
+    if (kind === "job") state.jobs[0].conclusion = "failure";
+    if (kind === "tag") state.tag = "e".repeat(40);
+    if (kind === "upload") state.failAsset = "frontend.docker.tar";
+    if (kind === "final") state.failFinal = true;
+    const result = f.run(state, env);
+    assert.equal(result.error, undefined);
+    assert.notEqual(result.status, 0, `${kind} unexpectedly succeeded`);
+    assert.equal(existsSync(f.handoff), false, `${kind} wrote premature handoff`);
+    assert.equal(readFileSync(f.output, "utf8"), "", `${kind} emitted premature readiness`);
+    if (["upload", "final"].includes(kind)) assert.equal(JSON.parse(readFileSync(f.statePath)).releases[0].draft, true);
+  }
+});
+
+test("later publisher retry retains original context and all ten assets while using its actual new attempt", async (t) => {
+  const f = await handoffPublisherCLI(t);
+  const first = f.run();
+  assert.equal(first.status, 0, first.stderr);
+  const original = JSON.parse(readFileSync(f.handoff));
+  const state = JSON.parse(readFileSync(f.statePath));
+  const releaseBytes = ["publication.json", "publication-notes.md"].map((name) =>
+    readFileSync(join(f.generated, name)),
+  );
+  rmSync(dirname(f.handoff), { recursive: true }); // Model a fresh publisher job's private workspace, not artifact deletion.
+  const retry = f.run(state, { GITHUB_RUN_ATTEMPT: "4" });
+  assert.equal(retry.status, 0, retry.stderr);
+  const later = JSON.parse(readFileSync(f.handoff));
+  assert.deepEqual(later.originalContext, original.originalContext);
+  assert.equal(later.admissionSha256, original.admissionSha256);
+  assert.deepEqual(later.release, original.release);
+  assert.equal(later.publisherContext.attempt, 4);
+  assert(
+    readFileSync(f.output, "utf8").includes(
+      `handoff-artifact-name=publisher-handoff-${f.context.sourceRevision}-1234-4\n`,
+    ),
+  );
+  assert.deepEqual(JSON.parse(readFileSync(f.statePath)).assets, state.assets);
+  for (const [index, name] of ["publication.json", "publication-notes.md"].entries())
+    assert.deepEqual(readFileSync(join(f.generated, name)), releaseBytes[index]);
+});
+
+test("publisher CLI refuses fixed handoff file or directory symlinks without touching external bytes", async (t) => {
+  const directoryBytes = (directory) =>
+    Object.fromEntries(
+      readdirSync(directory, { withFileTypes: true }).map((entry) => [
+        entry.name,
+        entry.isDirectory() ? directoryBytes(join(directory, entry.name)) : readFileSync(join(directory, entry.name)),
+      ]),
+    );
+  for (const kind of ["file", "directory", "ancestor"]) {
+    const f = await handoffPublisherCLI(t);
+    const first = f.run();
+    assert.equal(first.status, 0, first.stderr);
+    const state = JSON.parse(readFileSync(f.statePath));
+    const bytes = readFileSync(f.handoff);
+    const foreign = join(f.root, "foreign");
+    if (kind === "ancestor") {
+      // Prepare legitimate matching state/output/preload/bundle bytes before relocation. execute() itself does not
+      // rewrite harness files, so byte changes can only come from the actual publisher or its intercepted API.
+      writeJson(f.statePath, state);
+      writeFileSync(f.output, "");
+      const original = directoryBytes(f.generated);
+      renameSync(f.generated, foreign);
+      symlinkSync(foreign, f.generated);
+      const result = f.execute();
+      assert.equal(result.error, undefined);
+      assert.notEqual(result.status, 0);
+      assert(!result.stdout.includes("PUBLISHER_HANDOFF_V1 "));
+      assert.equal(readFileSync(f.output, "utf8"), "");
+      assert.deepEqual(directoryBytes(foreign), original, "Ancestor refusal changed external fixture bytes");
+      continue;
+    }
+    mkdirSync(foreign);
+    const external = join(foreign, "handoff.json");
+    writeFileSync(external, bytes);
+    rmSync(dirname(f.handoff), { recursive: true });
+    if (kind === "directory") symlinkSync(foreign, dirname(f.handoff));
+    else {
+      mkdirSync(dirname(f.handoff));
+      symlinkSync(external, f.handoff);
+    }
+    const result = f.run(state);
+    assert.notEqual(result.status, 0);
+    assert.equal(readFileSync(f.output, "utf8"), "");
+    assert.deepEqual(readFileSync(external), bytes);
+  }
 });

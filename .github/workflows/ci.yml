@@ -452,6 +452,11 @@ jobs:
     env:
       CI_BASE_REF: ${{ github.event.before }}
       GATE_ADMISSION_SHA256: ${{ needs.validate-product.outputs.acceptance-admission-sha256 }}
+    outputs:
+      handoff-ready: ${{ steps.publisher-handoff-receipt.outputs.handoff-ready }}
+      handoff-artifact-id: ${{ steps.publisher-handoff-receipt.outputs.handoff-artifact-id }}
+      handoff-artifact-sha256: ${{ steps.publisher-handoff-receipt.outputs.handoff-artifact-sha256 }}
+      handoff-sha256: ${{ steps.publisher-handoff-receipt.outputs.handoff-sha256 }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -466,6 +471,27 @@ jobs:
           name: ${{ needs.validate-product.outputs.release-artifact }}
           path: .artifacts/release-input
       - name: Publish verified private release without deployment
+        id: publish-release
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/publish-release.mjs
+      - name: Upload verified publisher handoff
+        id: upload-publisher-handoff
+        if: ${{ steps.publish-release.outputs.handoff-ready == 'true' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.publish-release.outputs.handoff-artifact-name }}
+          path: .artifacts/publisher-handoff/handoff.json
+          archive: true
+          compression-level: 0
+          if-no-files-found: error
+          overwrite: false
+          retention-days: 90
+          include-hidden-files: true
+      - name: Record verified publisher handoff receipt
+        id: publisher-handoff-receipt
+        env:
+          HANDOFF_ARTIFACT_ID: ${{ steps.upload-publisher-handoff.outputs.artifact-id }}
+          HANDOFF_ARTIFACT_SHA256: ${{ steps.upload-publisher-handoff.outputs.artifact-digest }}
+          HANDOFF_SHA256: ${{ steps.publish-release.outputs.handoff-sha256 }}
+        run: node scripts/publisher-handoff.mjs
