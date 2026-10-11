@@ -1,6 +1,7 @@
 /**
  * Constrain automated stage inputs and saved Terraform updates to the reviewed, existing authenticated service.
- * Import parseStageConfig(parsedJSON) and requireStagePlan(plan, config, images, sourceRevision). Both are pure:
+ * Import parseStageConfig(parsedJSON), requireStagePlan(plan, config, images, sourceRevision), or
+ * requireStageServingRevision(service, resourceId). All are pure:
  * no environment, network, credentials, Terraform execution or caller mutation. Invalid data throws synchronously.
  * A passing plan permits only a source/image update or a genuine no-op; live identity, cost and approval remain
  * controller duties. Initial creation and every production deployment are outside this automatic boundary.
@@ -27,6 +28,24 @@ function origin(value) {
   assert.equal(value, parsed.origin);
   assert.equal(parsed.protocol, "https:");
   assert(parsed.hostname.startsWith("mp3-stage-") && parsed.hostname.endsWith(".run.app"));
+}
+
+/** Bind a short observed traffic name to the full readiness ID within the trusted stage service namespace. */
+export function requireStageServingRevision(service, resourceId) {
+  text(resourceId, /^projects\/[a-z][a-z0-9-]+\/locations\/[a-z0-9-]+\/services\/mp3-stage$/);
+  assert.equal(service.name, resourceId);
+  const revisionId = service.latestReadyRevision;
+  assert.equal(revisionId, service.latestCreatedRevision);
+  assert(typeof revisionId === "string" && revisionId.startsWith(`${resourceId}/revisions/`));
+  const revisionName = revisionId.slice(`${resourceId}/revisions/`.length);
+  text(revisionName, /^mp3-stage-[a-z0-9-]+$/);
+  const traffic = singleton(service.trafficStatuses);
+  // Cloud Run returns traffic's revision name, while latestReadyRevision contains the complete resource path.
+  assert.equal(traffic.revision, revisionName);
+  assert.equal(traffic.type, "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST");
+  assert.equal(traffic.percent, 100);
+  assert([undefined, ""].includes(traffic.tag));
+  return revisionId;
 }
 
 /** Accept only the fixed dedicated project, stage backend, main-push provider and two distinct retained cost controls. */
@@ -226,7 +245,12 @@ export function requireStagePlan(plan, input, images, sourceRevision) {
       const grant = change.after;
       assert.equal(grant.project, config.projectId);
       assert.equal(grant.location, config.region);
-      assert.equal(grant.name, "mp3-stage");
+      // Terraform's IAM member readback uses the full service name; older fixtures use its short name.
+      assert(
+        ["mp3-stage", `projects/${config.projectId}/locations/${config.region}/services/mp3-stage`].includes(
+          grant.name,
+        ),
+      );
       assert.equal(grant.role, probe ? "roles/run.invoker" : "roles/run.admin");
       assert.equal(
         grant.member,

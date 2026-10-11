@@ -40,7 +40,7 @@ import {
 import { canonical } from "./release-manifest.mjs";
 import { readRequiredAcceptanceProfileProjection } from "./acceptance-profile-source.mjs";
 import { inspectCap, renderDesiredCap } from "../infra/cloud/bootstrap/cap-reconciler.mjs";
-import { parseStageConfig, requireStagePlan } from "./stage-delivery-policy.mjs";
+import { parseStageConfig, requireStagePlan, requireStageServingRevision } from "./stage-delivery-policy.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const evidenceDirectory = join(root, ".artifacts", "stage");
@@ -515,17 +515,7 @@ async function observe(config, token, expectedImages, expectedSource) {
     ]);
   }
   const projected = configuration(service.template, config);
-  const revisionId = service.latestReadyRevision;
-  assert.equal(revisionId, service.latestCreatedRevision);
-  assert(
-    new RegExp(
-      `^projects/${config.projectId}/locations/${config.region}/services/mp3-stage/revisions/mp3-stage-[a-z0-9-]+$`,
-    ).test(revisionId),
-  );
-  assert.equal(service.trafficStatuses?.length, 1);
-  assert.equal(service.trafficStatuses[0].revision, revisionId);
-  assert.equal(service.trafficStatuses[0].percent, 100);
-  assert(!service.trafficStatuses[0].tag);
+  const revisionId = requireStageServingRevision(service, resourceId);
   const revision = await google(config, token, "https://run.googleapis.com", `/v2/${revisionId}`);
   assert.equal(revision.name, revisionId);
   assert.equal(revision.reconciling ?? false, false);
