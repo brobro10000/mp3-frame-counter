@@ -72,8 +72,10 @@ immediately before the plan/apply sequence; no changed cost identity or limit is
 An independently reviewed saved plan may create only the empty Editor binding; the original seven managed resources must
 be no-op. Apply only those reviewed bytes. Independently re-read the entire project policy, prove Editor absence and
 exact preservation of unrelated tuples, verify scoped resource grants, then require a bootstrap no-change plan. Preserve
-every failed plan/readback. The separate registry-default amendment must also converge before access-state migration;
-this correction does not itself migrate state, configure federation or deploy a service.
+every failed plan/readback. The separate registry-default amendment must reconcile source/state/API before the
+state-only access migration and prove convergence immediately afterward under the
+[backend ordering clarification](cloud-access-foundation.md#operational-ordering-clarification--2026-10-11). This
+correction does not itself migrate state, configure federation or deploy a service.
 
 Removing this declaration does not restore Editor. Recovery preserves evidence and local state; any regrant requires a
 new explicit owner decision and review. Do not automatically restore a broad privilege or remove safeguards to make a

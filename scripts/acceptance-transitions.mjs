@@ -241,10 +241,12 @@ function pathKind(path) {
       "infra/cloud/access/main.tf",
       "infra/cloud/access/outputs.tf",
       "infra/cloud/access/.terraform.lock.hcl",
+      "infra/cloud/bootstrap/main.tf",
     ].includes(path)
   )
     return "governance";
   if (
+    path === "infra/cloud/bootstrap/README.md" ||
     /^(?:README|AGENTS|LICENSE|CHANGELOG)\.md$/.test(path) ||
     /^\.github\/pull_request_template\.md$/.test(path) ||
     /^(?:docs|agents)\/(?:[^/]+\/)*[^/]+\.(?:md|mmd|txt)$/.test(path) ||
