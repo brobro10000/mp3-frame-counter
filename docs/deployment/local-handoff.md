@@ -65,15 +65,19 @@ approval. The optional fixture decoder and engineer walkthrough below need extra
 
 ## Start from source
 
-Use Git, Make and Docker with Compose. Clone with authorized access, then run from the repository root:
+Use Git, Make, curl and a running Docker engine with Compose. Follow the root README's
+[Windows, macOS and Linux setup](../../README.md#prerequisites), clone with authorized access, then run from the
+repository root:
 
 ```sh
 make up
-make ps
+make health
+make logs-backend
 ```
 
-`make up` builds both images, waits for readiness and exposes only the frontend at
-[http://127.0.0.1:8080/](http://127.0.0.1:8080/). Redoc is at
+`make up` builds both images, waits for both containers to be healthy and completes only after the frontend HTTP health
+ping succeeds. `make health` repeats those checks; `make logs-backend` follows API logs until Ctrl-C. Only the frontend
+is exposed at [http://127.0.0.1:8080/](http://127.0.0.1:8080/). Redoc is at
 [http://127.0.0.1:8080/docs/](http://127.0.0.1:8080/docs/), with its specification at
 [http://127.0.0.1:8080/docs/openapi.yaml](http://127.0.0.1:8080/docs/openapi.yaml). Use `FRONTEND_PORT=8081 make up` for
 a different host port, and adjust the browser/curl URLs accordingly.
