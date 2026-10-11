@@ -572,6 +572,115 @@ const correction5Failures = correction5Results.filter((entry) => entry.status ==
 if (correction5Failures.length) console.error("CORRECTION5", JSON.stringify(correction5Results));
 assert.deepEqual(correction5Failures, [], "CORRECTION5 missing semantic refusals");
 
+/** Inspect an owned fixture schema before mutation; missing setup paths fail before any rejection is counted. */
+function controlSchemaAt(document: unknown, path: readonly string[]): Record<string, unknown> {
+  let schema = document;
+  for (const key of path) {
+    assert.ok(schema !== null && typeof schema === "object");
+    schema = Reflect.get(schema, key);
+  }
+  assert.ok(schema !== null && typeof schema === "object" && !Array.isArray(schema));
+  return schema as Record<string, unknown>;
+}
+
+/** Frozen r2 requires these response domains to exclude null; literal-constrained scalar coverage already remains above. */
+const nonNullResponseSchemas = [
+  ["default response object", [...schemaPath, "FrameCount"]],
+  ["detailed response object", [...schemaPath, "FrameDetail"]],
+  ["analysis object", [...schemaPath, "FrameDetail", "properties", "analysis"]],
+  ["absent Xing object", [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "xing", "oneOf", "0"]],
+  ["present Xing object", [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "xing", "oneOf", "1"]],
+  ["warnings array", [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "warnings"]],
+  [
+    "mismatch warning object",
+    [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "warnings", "items", "oneOf", "0"],
+  ],
+  [
+    "truncated-field warning object",
+    [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "warnings", "items", "oneOf", "1"],
+  ],
+  ["coded error response object", [...schemaPath, "Error"]],
+  ["required error message", [...schemaPath, "Error", "properties", "error"]],
+  ["health response object", [...schemaPath, "Health"]],
+] as const;
+
+/** Harmless annotations and contained aliases retain the same non-null response domain and must remain admitted. */
+for (const [name, path] of nonNullResponseSchemas) {
+  const annotated = structuredClone(spec);
+  const target = controlSchemaAt(annotated, path);
+  target.title = name;
+  target.description = "Independent non-null response contract annotation.";
+  target.nullable = false;
+  assertBackendSpec(annotated);
+
+  const referenced = structuredClone(spec);
+  referenced.components.schemas.AnnotatedResponseAlias = structuredClone(target);
+  alter(referenced, path, { $ref: "#/components/schemas/AnnotatedResponseAlias" });
+  assertBackendSpec(referenced);
+}
+
+/** Nullable is harmless when finite enum membership or non-null composition branches still refuse null. */
+const literalAnnotations = structuredClone(spec);
+function annotateNonNullLiterals(schema: unknown): void {
+  assert.ok(schema !== null && typeof schema === "object");
+  const values = Reflect.get(schema, "enum");
+  if (Array.isArray(values)) {
+    assert.ok(!values.includes(null));
+    Reflect.set(schema, "nullable", true);
+    assert.ok(!exampleMatches(literalAnnotations, schema, null));
+  }
+  const properties = Reflect.get(schema, "properties");
+  if (properties && typeof properties === "object")
+    for (const child of Object.values(properties)) annotateNonNullLiterals(child);
+  const items = Reflect.get(schema, "items");
+  if (items) annotateNonNullLiterals(items);
+  for (const keyword of ["oneOf", "anyOf", "allOf"]) {
+    const branches = Reflect.get(schema, keyword);
+    if (Array.isArray(branches)) for (const child of branches) annotateNonNullLiterals(child);
+  }
+}
+for (const schema of Object.values(literalAnnotations.components.schemas)) annotateNonNullLiterals(schema);
+assertBackendSpec(literalAnnotations);
+const compositionAnnotations = structuredClone(spec);
+for (const path of [
+  [...samplePath, "schema"],
+  [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "xing"],
+  [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "warnings", "items"],
+]) {
+  const target = controlSchemaAt(compositionAnnotations, path);
+  target.type = "object";
+  target.nullable = true;
+  assert.ok(!exampleMatches(compositionAnnotations, target, null));
+}
+assertBackendSpec(compositionAnnotations);
+
+/** Collect every F-001 missing refusal before failing; only semantic assertion rejection can satisfy each control. */
+const correction6Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction6Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction6Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction6Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+for (const [name, path] of nonNullResponseSchemas) {
+  const direct = structuredClone(spec);
+  controlSchemaAt(direct, path).nullable = true;
+  correction6Rejected(`nullable direct ${name}`, () => assertBackendSpec(direct));
+
+  const referenced = structuredClone(spec);
+  const target = structuredClone(controlSchemaAt(referenced, path));
+  target.nullable = true;
+  referenced.components.schemas.NullableResponseAlias = target;
+  alter(referenced, path, { $ref: "#/components/schemas/NullableResponseAlias" });
+  correction6Rejected(`nullable referenced ${name}`, () => assertBackendSpec(referenced));
+}
+const correction6Failures = correction6Results.filter((entry) => entry.status === "missing-refusal");
+if (correction6Failures.length) console.error("CORRECTION6", JSON.stringify(correction6Results));
+assert.deepEqual(correction6Failures, [], "CORRECTION6 missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

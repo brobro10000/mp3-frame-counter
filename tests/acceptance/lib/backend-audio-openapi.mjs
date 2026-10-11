@@ -151,6 +151,7 @@ export function assertBackendSpec(spec) {
   assert.deepEqual(Object.keys(simple.properties).sort(), ["frameCount"], "SPEC_SCHEMAS");
   assert.deepEqual(simple.required, ["frameCount"], "SPEC_SCHEMAS");
   for (const item of alternatives) {
+    assert.ok(!exampleMatches(spec, item, null), "SPEC_SCHEMAS");
     assert.equal(item.additionalProperties, false, "SPEC_SCHEMAS");
     const count = resolve(spec, item.properties.frameCount);
     assert.equal(count.type, "integer", "SPEC_SCHEMAS");
@@ -161,6 +162,7 @@ export function assertBackendSpec(spec) {
   assert.deepEqual(Object.keys(detail.properties).sort(), ["analysis", "frameCount"], "SPEC_SCHEMAS");
   assert.deepEqual([...detail.required].sort(), ["analysis", "frameCount"], "SPEC_SCHEMAS");
   const analysis = resolve(spec, detail.properties.analysis);
+  assert.ok(!exampleMatches(spec, analysis, null), "SPEC_SCHEMAS");
   assert.equal(analysis.additionalProperties, false, "SPEC_SCHEMAS");
   assert.deepEqual(
     [...analysis.required].sort(),
@@ -193,6 +195,8 @@ export function assertBackendSpec(spec) {
   const present = xingBranches.find((branch) => literals(spec, branch.properties.status).includes("present"));
   const absent = xingBranches.find((branch) => literals(spec, branch.properties.status).includes("absent"));
   assert.ok(present && absent, "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, present, null), "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, absent, null), "SPEC_SCHEMAS");
   assert.equal(present.additionalProperties, false, "SPEC_SCHEMAS");
   assert.equal(absent.additionalProperties, false, "SPEC_SCHEMAS");
   assert.deepEqual(Object.keys(absent.properties), ["status"], "SPEC_SCHEMAS");
@@ -253,11 +257,13 @@ export function assertBackendSpec(spec) {
   }
   const warnings = resolve(spec, analysis.properties.warnings);
   assert.equal(warnings.type, "array", "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, warnings, null), "SPEC_SCHEMAS");
   const warningItems = resolve(spec, warnings.items);
   const warningBranches = (warningItems.oneOf ?? warningItems.anyOf)?.map((branch) => resolve(spec, branch));
   assert.ok(warningBranches?.length >= 2, "SPEC_SCHEMAS");
   const warningCodes = [];
   for (const branch of warningBranches) {
+    assert.ok(!exampleMatches(spec, branch, null), "SPEC_SCHEMAS");
     assert.equal(branch.additionalProperties, false, "SPEC_SCHEMAS");
     const codes = literals(spec, branch.properties.code);
     warningCodes.push(...codes);
@@ -281,6 +287,7 @@ export function assertBackendSpec(spec) {
     if (/^\/healthz?$/.test(path)) {
       const health = resolve(spec, methods.get.responses["200"].content["application/json"].schema);
       assert.equal(health.type, "object", "SPEC_SCHEMAS");
+      assert.ok(!exampleMatches(spec, health, null), "SPEC_SCHEMAS");
       assert.equal(health.additionalProperties, false, "SPEC_SCHEMAS");
       assert.deepEqual(health.required, ["status"], "SPEC_SCHEMAS");
       assert.deepEqual(Object.keys(health.properties), ["status"], "SPEC_SCHEMAS");
@@ -309,6 +316,8 @@ export function assertBackendSpec(spec) {
     const media = response.content?.["application/json"];
     assert.ok(media, "SPEC_SCHEMAS");
     const errorSchema = resolve(spec, media.schema);
+    assert.ok(!exampleMatches(spec, errorSchema, null), "SPEC_SCHEMAS");
+    assert.ok(!exampleMatches(spec, errorSchema.properties.error, null), "SPEC_SCHEMAS");
     assert.equal(errorSchema.additionalProperties, false, "SPEC_SCHEMAS");
     assert.deepEqual([...errorSchema.required].sort(), ["code", "error"], "SPEC_SCHEMAS");
     assert.deepEqual(Object.keys(errorSchema.properties).sort(), ["code", "error"], "SPEC_SCHEMAS");

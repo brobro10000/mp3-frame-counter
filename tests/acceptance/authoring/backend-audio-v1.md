@@ -388,3 +388,36 @@ authoring-record link destination.
 The previously recorded 98-file source digest describes the suite before this move. Adding this record to the suite
 produces a 99-file source inventory. The coordinator will record its current suite identity in an external manifest
 using actual Git objects, without adding a self-referential hash to this record.
+
+The original prefix retains links relative to its former `docs/testing/` location. From this file's current location,
+use the [r2 contract](../../../docs/testing/contracts/backend-audio-v1.md) and
+[transition guide](../../../docs/testing/acceptance-transition.md). These mappings repair navigation only; they do not
+change contract authority, binding status or the preserved authoring history. The prerequisite's referenced repository
+path `docs/testing/backend-contract-policy.md` remains available through the
+[current policy guide](../../../docs/testing/backend-contract-policy.md).
+
+## Harness correction 6 — 2026-10-11 (non-normative)
+
+The exact-head companion review found that required response containers could admit `null` despite the recorded non-null
+contract. An independent control author added 22 direct/reference mutation cases across count results, analysis, both
+Xing variants, warnings and warning items, coded errors/message strings, and health. Valid title, description,
+`nullable: false`, contained aliases, finite enums and non-null composition constraints remain accepted. Every preceding
+control byte remains intact. The frozen control file SHA-256 is
+`adf7b01bdba1e935223fb73eb68d5a3de3f8357157d2af615ea400cc100973f1`.
+
+Before the predicate writer changed the checker, the coordinator ran the controls with Node 24.20.0: exit 1, all 22 new
+mutations reported missing refusals, and the original 194 controls and positive preconditions passed. Raw RED log
+SHA-256: `50d8b26799af4bf385ec2c867c40a4a5176e6d8cebdd395b71363f009168ec95`. A separate predicate writer then inserted
+nine semantic null-refusal assertions, reusing the existing matcher without changing it, the controls or contract.
+Referenced schemas and other constraining keywords retain their existing interpretation.
+
+The coordinator inspected the accepted diff and ran `npm --prefix tests/acceptance run check` once: exit 0, 41 recipes,
+216 semantic rejection controls, 46 original fixtures, 52 transport controls, 46 docs controls, 95 hosted owned controls
+and exact 72/22/3 discovery, with strict candidate typechecking. The existing product-generated OpenAPI also passed the
+revised predicate in a separate local check; this is schema consistency evidence, not runtime acceptance. The raw
+RED/check logs, exit statuses and handoff remain in the ignored correction directory.
+
+The relocated record's historical prefix remains byte-identical; the current navigation mappings above fix the
+companion's second finding without rewriting that history. No normative contract, fixture, lockfile, case identity,
+product or governance byte changed. Candidate integration, fresh CI/companion approval, actual merge and separate
+binding remain pending; harness calibration does not establish application or hosted acceptance.
