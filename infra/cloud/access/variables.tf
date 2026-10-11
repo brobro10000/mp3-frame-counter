@@ -1,6 +1,6 @@
 # Purpose: keep the access root portable without accepting credentials or arbitrary authority.
 # Supply project and observed GitHub identities through private operator inputs; location/repository remain bounded.
-# Validation rejects malformed values, including explicit null instead of silently replacing it with a default.
+# Required inputs reject malformed values, including explicit null; optional owner probe access defaults to absent.
 variable "project_id" {
   description = "Existing dedicated application project ID, verified against the separate cost bootstrap."
   type        = string
@@ -61,5 +61,22 @@ variable "github_owner_id" {
   validation {
     condition     = can(regex("^[1-9][0-9]{0,19}$", var.github_owner_id))
     error_message = "github_owner_id must be a positive decimal ID of at most 20 digits."
+  }
+}
+
+# Syntax bounds do not verify a Google identity; an operator must authenticate the selected owner separately.
+variable "owner_probe_member" {
+  description = "Optional authenticated owner user principal permitted to mint only stage and production probe ID tokens."
+  type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition = var.owner_probe_member == null ? true : (
+      length(var.owner_probe_member) <= 259 &&
+      length(split("@", trimprefix(var.owner_probe_member, "user:"))[0]) <= 64 &&
+      can(regex("^user:[A-Za-z0-9_%+-]+(\\.[A-Za-z0-9_%+-]+)*@([A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$", var.owner_probe_member))
+    )
+    error_message = "owner_probe_member must be null or a user: ASCII email with a local part of at most 64 bytes and a mailbox of at most 254 bytes."
   }
 }

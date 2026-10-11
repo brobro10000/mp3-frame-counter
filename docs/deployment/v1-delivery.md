@@ -130,6 +130,23 @@ usage via `serviceusage.services.use`; it cannot change budgets, billing or the 
 budgets in the dedicated project, not per-budget IAM isolation. The delivery code reads only the two retained cost
 identities. No billing-account viewer/admin role or production federation belongs in V1.
 
+### Owner-supervised probe minting — 2026-10-11
+
+Owner-supervised hosted checks need narrowly scoped permission to mint an ID token as the matching probe identity. The
+access-root input, `owner_probe_member`, is nullable and defaults to `null`; it accepts only bounded ASCII
+`user:<Google-email>` syntax. Syntax does not authenticate the Google owner. Supply explicit private owner input; never
+track the actual address or tokens.
+
+Omission preserves the existing 29 resources. A supplied member adds exactly two service-account IAM memberships, one on
+each existing stage/production probe, using only
+[`roles/iam.serviceAccountOpenIdTokenCreator`](https://docs.cloud.google.com/iam/docs/roles-permissions/iam#iam.serviceAccountOpenIdTokenCreator).
+These memberships add no keys, general access-token minting, Run role, project IAM grant or federation change.
+
+Authenticate the owner input and independently review the exact source, saved plan and full IAM readbacks before apply.
+Preserve all other resources, outputs and cost controls. Mint short-lived probe tokens only for the validated target.
+This source amendment records no applied grant or passing hosted checks; production deployment and its smoke still
+require human approval for the exact candidate described above.
+
 ### Observed operation-poll correction — 2026-10-11
 
 The [main PR #49 run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38127133310) published its software
@@ -164,3 +181,8 @@ required admission/declaration/report equality and unchanged 72/22/3 inventories
 binding or activation. Independently author and review the narrow successor, bind its actual protected-main merge, then
 add the frontend-local `/health` alias as the activating product change. Preserve the original contract, suite Git
 objects and failed hosted evidence. A candidate or pending binding cannot satisfy stage acceptance or finalization.
+
+The subsequent [PR #44](https://github.com/brobro10000/mp3-frame-counter/pull/44) bound the reviewed successor, and
+[PR #45](https://github.com/brobro10000/mp3-frame-counter/pull/45) activated it with the frontend-local `/health` alias.
+The current required revision is `hosted-health-v1`; the 72/22/3 inventories and original evidence remain preserved.
+This completed contract migration does not establish a passing hosted run.
