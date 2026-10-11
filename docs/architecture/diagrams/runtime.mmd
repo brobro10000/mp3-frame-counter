@@ -22,7 +22,7 @@ references:
   - 'File: /server/src/mp3.ts'
   - 'File: /scripts/run-e2e.mjs'
   - 'File: /scripts/e2e-controller.mjs'
-generationTime: '2026-10-10T18:23:32.735Z'
+generationTime: '2026-10-11T05:57:53.958Z'
 ---
 flowchart LR
     B["User browser<br/>app.js executes here"]
@@ -30,6 +30,7 @@ flowchart LR
         subgraph FRONT["frontend container: NGINX image / UID 101"]
             F["NGINX :8080<br/>serves HTML, CSS and app.js files"]
             FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
+            H["Health Check<br/>location = /health<br/>returns 200 {'status':'ok'}"]
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
