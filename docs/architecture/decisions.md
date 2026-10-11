@@ -1,5 +1,31 @@
 # Decisions, proposals and blockers
 
+**Current execution amendment — 2026-10-10 local time:** the owner resumed the smallest verified V1 and submission path
+after roadmap construction. Retain shipped Fastify, OpenAPI and offline Redoc. Complete existing stage work under normal
+companion review, protected merges and cost controls; every production application deployment remains gated by human
+approval. Submission handoff is independently useful before hosting. Historical future-tense proposals below retain
+their original dates.
+
+## Submission tradeoffs — 2026-10-11 UTC
+
+This amendment explains the implemented application at published source `07c020c40f4a0238da937b82f24e4ef50cb37824`
+([v0.3.37](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.37)). Existing
+[main CI 38103007563, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38103007563/attempts/1)
+passed 120 unit tests and 72 required local cases; this documentation update does not claim a new walkthrough. The
+[requirements registry](../requirements/assessment.md) preserves the original assessment and historical evidence.
+
+| Implemented choice                                    | Assessment mapping and reason                                                                                                                                                                            | Tradeoff / evidence boundary                                                                                                                                                                                                                                                |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pure TypeScript physical-frame parser                 | APP-REQ-001/003/004/005/006, APP-EVAL-001/003: walk frame boundaries without an MP3 parsing package; count complete Xing/Info/VBRI-bearing frames and exclude supported ID3 tags.                        | MPEG-1 Layer III and the reviewed metadata subset only; no decoding, CRC validation or corruption recovery. [Parser](../../server/src/mp3.ts), [r3 contract](../testing/acceptance-contract.md) and independent [oracle](../validation/sample-baseline.md).                 |
+| Bounded whole-body buffering and synchronous counting | APP-EVAL-006: admit at most two uploads before allocating; enforce the inclusive 20 MiB actual-byte cap and upload deadlines. One request-owned buffer avoids an unbounded chunk list.                   | Simpler ownership and cleanup, but memory scales with the admitted cap and counting occupies the event loop. [Transport](../../server/src/http.ts) and [local resource observations](../validation/p4-integration.md) do not prove universal throughput or hosted capacity. |
+| Fastify transport with explicit raw-body/error rules  | APP-EVAL-002/003/005: retain framework routing with typed parser errors and predictable JSON; preserve existing HTTP precedence and cleanup.                                                             | Some low-level request handling remains to preserve the independently reviewed contract. [Migration evidence](../validation/fastify-transport.md#protected-main-completion) records the bounded change; the parser remains independent.                                     |
+| Static UI, offline Redoc and two non-root containers  | APP-SUB-002, APP-EVAL-002/005: one browser origin, private API upstream and locally packaged documentation; no database or retained uploads.                                                             | Minimal UI and no upload history/accounts. [Compose](../../compose.yaml) and [docs completion](../phases/next-iteration.md#docs-implementation-protected-main-completion) establish the local topology; they do not prove managed hosting.                                  |
+| Pinned tools and independently frozen acceptance      | APP-EVAL-004/007/008, APP-SUB-003: repeatable commands, separate oracle authorship and source-bound suite selection. The committed nine-frame fixture replaces a private-file dependency in the handoff. | Full governance tooling needs more setup than running Docker. [README](../../README.md) separates those paths; final clean-source verification and evaluator access remain pending.                                                                                         |
+
+Assessment submission does not require Cloud Run, production rollout or a `1.0.0` tag. Optional streaming, workers or a
+richer UI need an observed requirement or bottleneck before replacing this bounded design. Preserve all dated decisions
+below; their earlier native-HTTP or proposed-hosting descriptions record the state at those milestones.
+
 ## DEC-15 — Fastify transport implementation amendment, 2026-10-10
 
 The [roadmap execution authorization](../phases/roadmap-execution-authorization.md) permits the bounded Fastify
