@@ -1,17 +1,20 @@
 # mp3-frame-counter operating contract
 
-## Verified intent
+## Current execution boundary — 2026-10-11
 
-Maintain the verified V1 MP3 browser application and automated GitHub releases; scope subsequent iterations separately.
-Read docs/requirements/release-process.md and the later docs/phases/roadmap-execution-authorization.md amendment.
+The owner's latest instruction defers Cloud Run deployment to finish the local assessment MVP quickly. Implement a
+minimal React/strict TypeScript frontend against the unchanged upload contract and prepare reproducible source and
+image-release handoff instructions. Continue independent companion review and normal owner merges of safe scoped PRs;
+do not resume cloud apply, delivery or production deployment. Stage delivery is paused in repository settings.
 
-The owner authorized continued roadmap execution on 2026-10-10, including scoped PRs, companion reviews, clean merges
-and automatic stage delivery. Follow docs/phases/roadmap-execution-authorization.md and bounded cards in
-docs/phases/next-iteration.md. Production deployment/promotion requires human intervention for the exact candidate.
+Retain the working Fastify parser API, offline Redoc, two non-root runtime images, all required acceptance and automatic
+software releases. The React tool policy below admits browser build dependencies only; the API runtime stays
+Fastify-only. Historical cloud evidence, failures, state and cost controls remain preserved. Deferral does not mean
+resources were deleted or that costs are zero.
 
-The owner's latest priority is the bounded production V1 in docs/deployment/v1-delivery.md. Reuse existing release
-verification and hosted acceptance; defer generalized delivery frameworks and optional hardening. The three current
-completion cards supersede earlier next-step ordering without weakening required checks or the human production gate.
+The production `v1.0.0` finalization gate is unchanged and remains pending while hosting is deferred. Local MVP closure
+and submission readiness must not be labeled a verified production release. Read the current handoff amendment in
+`docs/deployment/v1-delivery.md`; older cloud-priority instructions are historical for this task.
 
 ## Primary users
 
@@ -39,7 +42,8 @@ completion cards supersede earlier next-step ordering without weakening required
 - Fastify shipped in PR #19/v0.2.19; offline Redoc/OpenAPI shipped in PR #24/v0.2.24 with required docs-v1 acceptance.
 - Use separate non-root NGINX frontend and Node API images, one browser origin and configurable private upstream.
 - No retained uploads, runtime parser library, database, object storage, accounts or speculative infrastructure.
-- Use only the approved exact Fastify runtime dependency; its adoption does not authorize unrelated frameworks.
+- Use only Fastify in the API runtime; React/ReactDOM and Vite are explicitly authorized browser build tools.
+- Keep the React upload UI compatible with the current independently required contract; no new API fields or semantics.
 - Use one root application npm lockfile and one standalone acceptance lockfile; no workspaces.
 - Apply the active release-only criteria in APP-REL-001 through APP-REL-006; hosted criteria are deferred.
 - Local release preparation archives exact tested images only; never treat its provisional version or manifest as deployed.

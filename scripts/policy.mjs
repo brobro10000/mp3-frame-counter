@@ -17,6 +17,7 @@ import { requireReleaseWorkflow } from "./publish-release-evidence.mjs";
 import { requireReleasePolicyCheckout } from "./release-manifest.mjs";
 import { requireRuntimeDependencyPolicy } from "./runtime-dependency-policy.mjs";
 import { requireDocsToolPolicy } from "./docs-tool-policy.mjs";
+import { requireFrontendToolPolicy } from "./frontend-tool-policy.mjs";
 
 // Validate the actual source and working policy before inspecting unrelated repository files.
 const githubSource = process.env.GITHUB_ACTIONS === "true" ? process.env.GITHUB_SHA : undefined;
@@ -170,6 +171,10 @@ assert(
   pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/docs-tool-policy.test.mjs"),
   "Missing mandatory docs-tool-policy tests",
 );
+assert(
+  pkg.scripts["test:tooling"].split(/\s+/).includes("scripts/frontend-tool-policy.test.mjs"),
+  "Missing mandatory frontend-tool-policy tests",
+);
 for (const path of files.filter((file) => /^scripts\/acceptance-.*\.test\.mjs$/.test(file)))
   assert(pkg.scripts["test:tooling"].split(/\s+/).includes(path), `Missing mandatory gate tests: ${path}`);
 assert.equal(pkg.private, true);
@@ -180,6 +185,7 @@ assert.equal(execFileSync("npm", ["--version"], { encoding: "utf8" }).trim(), pk
 assert.deepEqual(lock.packages[""].devDependencies, pkg.devDependencies);
 requireRuntimeDependencyPolicy(pkg, lock);
 requireDocsToolPolicy(pkg, lock);
+requireFrontendToolPolicy(pkg, lock);
 assert.equal(pkg.workspaces, undefined, "Use one root package plus the isolated acceptance exception");
 const allowedDevelopmentTools = new Set([
   "prettier",
@@ -190,6 +196,11 @@ const allowedDevelopmentTools = new Set([
   "puppeteer",
   "markdown-it",
   "redoc",
+  "react",
+  "react-dom",
+  "@types/react",
+  "@types/react-dom",
+  "vite",
 ]);
 assert(
   Object.keys(pkg.devDependencies).every((name) => allowedDevelopmentTools.has(name)),

@@ -553,6 +553,28 @@ for (const script of ["check:phase", "test:e2e", "preinstall"]) {
   });
 }
 
+// These two named build commands are product inputs, specified before the narrow classifier amendment. Arbitrary
+// build-prefixed commands remain governance; a naming convention cannot silently enlarge trusted executable scope.
+for (const script of ["build:server", "build:frontend"]) {
+  test(`separately reviewed ${script} command is a product input without admitting arbitrary build commands`, (t) => {
+    const f = boundFixture(t);
+    f.put("frontend/src/main.tsx", "// Synthetic browser build input; never executed.\n");
+    f.json("package.json", { private: true, scripts: { [script]: "node synthetic-build.mjs" } });
+    const source = f.commit(`bounded product and ${script} command`);
+    const result = f.resolve(source, f.binding);
+    assert.equal(result.admission, "implementation");
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, source);
+    f.put("frontend/src/main.tsx", "// Another synthetic browser input.\n");
+    f.json("package.json", {
+      private: true,
+      scripts: { [script]: "node synthetic-build.mjs", "build:unreviewed": "node replacement-gate.mjs" },
+    });
+    const mixed = f.commit("unreviewed command cannot join the bounded product change");
+    reject(f, mixed, source);
+  });
+}
+
 /** Seed ordinary npm v3 identities before policy introduction; these packages are never installed or executed. */
 function lockedFixture(t, { bind = true } = {}) {
   const f = fixture(t);
