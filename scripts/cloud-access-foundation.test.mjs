@@ -40,6 +40,7 @@ const outputs = [
   "registry_uri",
   "service_account_emails",
   "service_account_names",
+  "workload_identity_provider",
 ];
 const resourceBlocks = [
   "google_project_service.required",
@@ -51,9 +52,32 @@ const resourceBlocks = [
   "google_storage_bucket_iam_member.stage_state",
   "google_service_account_iam_member.runtime_user",
   "google_service_account_iam_member.stage_probe_minter",
+  "google_iam_workload_identity_pool.github",
+  "google_iam_workload_identity_pool_provider.github",
+  "google_service_account_iam_member.github_federated",
+  "google_project_iam_custom_role.stage_cost_read",
+  "google_project_iam_member.stage_cost_reader",
 ];
-const defaults = { project_id: "synthetic-access-123", region: "us-central1", registry_id: "mp3-images" };
-const alternate = { project_id: "alternate-access-456", region: "europe-west1", registry_id: "release-images-2" };
+const githubDefaults = {
+  github_repository: "synthetic-owner/synthetic-repository",
+  github_repository_id: "123456789",
+  github_owner_id: "987654321",
+};
+const defaults = {
+  ...githubDefaults,
+  project_id: "synthetic-access-123",
+  region: "us-central1",
+  registry_id: "mp3-images",
+};
+const alternate = {
+  ...githubDefaults,
+  github_repository: "alternate-owner/alternate-repository",
+  github_repository_id: "444444444",
+  github_owner_id: "555555555",
+  project_id: "alternate-access-456",
+  region: "europe-west1",
+  registry_id: "release-images-2",
+};
 const sorted = (values) => [...values].sort();
 const email = (project, id) => `${id}@${project}.iam.gserviceaccount.com`;
 const accountName = (project, id) => `projects/${project}/serviceAccounts/${email(project, id)}`;
@@ -61,6 +85,14 @@ const registryName = ({ project_id, region, registry_id }) =>
   `projects/${project_id}/locations/${region}/repositories/${registry_id}`;
 const registryUri = ({ project_id, region, registry_id }) => `${region}-docker.pkg.dev/${project_id}/${registry_id}`;
 const index = (base, key) => `${base}[${JSON.stringify(key)}]`;
+const poolName = (input) =>
+  `projects/${input.project_id === defaults.project_id ? "123456789012" : "210987654321"}/locations/global/workloadIdentityPools/mp3-github`;
+const providerName = (input) => `${poolName(input)}/providers/github`;
+const costRole = (project) => `projects/${project}/roles/mp3StageCostRead`;
+const githubCondition = (input) => {
+  const value = { ...githubDefaults, ...input };
+  return `assertion.repository_id == '${value.github_repository_id}' && assertion.repository_owner_id == '${value.github_owner_id}' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == '${value.github_repository}/.github/workflows/ci.yml@refs/heads/main' && assertion.event_name == 'push'`;
+};
 
 /** Small fail-closed scanner for this root's ordinary HCL blocks; Terraform remains the language/plan validator. */
 function scan(text) {
@@ -216,12 +248,16 @@ function sourceContract(source) {
   if (google.children.some((node) => node.name === "user_project_override"))
     assert.equal(expression(google, "user_project_override"), "true");
   const variables = nodes.filter((node) => node.name === "variable");
-  assert.deepEqual(sorted(variables.map((node) => node.labels[0])), ["project_id", "region", "registry_id"]);
-  for (const name of ["project_id", "region", "registry_id"]) {
+  assert.deepEqual(
+    sorted(variables.map((node) => node.labels[0])),
+    sorted(["project_id", "region", "registry_id", ...Object.keys(githubDefaults)]),
+  );
+  for (const name of ["project_id", "region", "registry_id", ...Object.keys(githubDefaults)]) {
     const variable = one(variables, "variable", [name]);
     assert.equal(expression(variable, "type"), "string");
     assert(children(variable, "validation").length > 0, `${name} needs validation`);
-    if (name === "project_id") assert(!variable.children.some((node) => node.name === "default"));
+    if (name === "project_id" || Object.hasOwn(githubDefaults, name))
+      assert(!variable.children.some((node) => node.name === "default"));
     else assert.equal(expression(variable, "default"), JSON.stringify(defaults[name]));
   }
   assert.deepEqual(
@@ -237,7 +273,16 @@ function sourceContract(source) {
       "google_artifact_registry_repository",
       "google_service_account",
     ].includes(resource.labels[0]);
-    if (protectedType) {
+    if (
+      protectedType ||
+      [
+        "google_iam_workload_identity_pool.github",
+        "google_iam_workload_identity_pool_provider.github",
+        "google_service_account_iam_member.github_federated",
+        "google_project_iam_custom_role.stage_cost_read",
+        "google_project_iam_member.stage_cost_reader",
+      ].includes(resource.labels.join("."))
+    ) {
       const lifecycle = one(resource.children, "lifecycle");
       assert.deepEqual(
         lifecycle.children.map((node) => node.name),
@@ -330,6 +375,9 @@ function mockIdentities(input) {
       },
     ]),
     ["google_artifact_registry_repository.images", { name: registryName(input), registry_uri: registryUri(input) }],
+    ["google_iam_workload_identity_pool.github", { name: poolName(input) }],
+    ["google_iam_workload_identity_pool_provider.github", { name: providerName(input) }],
+    ["google_project_iam_custom_role.stage_cost_read", { name: costRole(input.project_id) }],
   ]
     .map(
       ([target, values]) => `override_resource {
@@ -346,7 +394,7 @@ function runBlock(name, variables, rejectedVariable) {
   return `run "${name}" {
     command = plan
     variables {
-      ${Object.entries(variables)
+      ${Object.entries({ ...githubDefaults, ...variables })
         .map(([key, value]) => `${key} = ${JSON.stringify(value)}`)
         .join("\n")}
     }
@@ -410,8 +458,15 @@ function resources(plan) {
     "google_storage_bucket_iam_member.stage_state",
     ...["stage", "production"].map((stage) => index("google_service_account_iam_member.runtime_user", stage)),
     "google_service_account_iam_member.stage_probe_minter",
+    "google_iam_workload_identity_pool.github",
+    "google_iam_workload_identity_pool_provider.github",
+    ...["mp3-registry-writer", "mp3-stage-deployer"].map((id) =>
+      index("google_service_account_iam_member.github_federated", id),
+    ),
+    "google_project_iam_custom_role.stage_cost_read",
+    "google_project_iam_member.stage_cost_reader",
   ];
-  assert.equal(expected.length, 23);
+  assert.equal(expected.length, 29);
   assert.deepEqual(sorted(result.keys()), sorted(expected), "Unexpected/missing managed instance");
   return result;
 }
@@ -532,9 +587,66 @@ function outputContract(plan, input) {
     registry_uri: registryUri(input),
     service_account_emails: Object.fromEntries(accounts.map((id) => [id, email(input.project_id, id)])),
     service_account_names: Object.fromEntries(accounts.map((id) => [id, accountName(input.project_id, id)])),
+    workload_identity_provider: providerName(input),
   });
 }
-const checks = [apiContract, bucketContract, registryContract, identityContract, iamContract, outputContract];
+/** Check the six adopted additive instances without weakening any pre-existing IAM or protection predicate. */
+function federationValues(rows, input) {
+  const value = { ...githubDefaults, ...input };
+  const pool = rows.get("google_iam_workload_identity_pool.github");
+  assert.equal(pool.project, value.project_id);
+  assert.equal(pool.workload_identity_pool_id, "mp3-github");
+  assert.equal(pool.disabled, false);
+  const provider = rows.get("google_iam_workload_identity_pool_provider.github");
+  assert.equal(provider.project, value.project_id);
+  assert.equal(provider.workload_identity_pool_id, "mp3-github");
+  assert.equal(provider.workload_identity_pool_provider_id, "github");
+  assert.equal(provider.disabled, false);
+  assert.deepEqual(provider.attribute_mapping, {
+    "google.subject": "assertion.sub",
+    "attribute.repository_id": "assertion.repository_id",
+  });
+  assert.equal(provider.attribute_condition, githubCondition(value));
+  assert.equal(provider.oidc.length, 1);
+  assert.equal(provider.oidc[0].issuer_uri, "https://token.actions.githubusercontent.com");
+  assert.deepEqual(provider.oidc[0].allowed_audiences ?? [], []);
+  for (const name of ["aws", "saml", "x509"]) assert.deepEqual(provider[name] ?? [], []);
+  for (const id of ["mp3-registry-writer", "mp3-stage-deployer"]) {
+    const grant = rows.get(index("google_service_account_iam_member.github_federated", id));
+    assert.equal(grant.service_account_id, accountName(value.project_id, id));
+    assert.equal(grant.role, "roles/iam.workloadIdentityUser");
+    assert.equal(
+      grant.member,
+      `principalSet://iam.googleapis.com/${poolName(value)}/attribute.repository_id/${value.github_repository_id}`,
+    );
+    assert.deepEqual(grant.condition ?? [], []);
+  }
+  const role = rows.get("google_project_iam_custom_role.stage_cost_read");
+  assert.equal(role.project, value.project_id);
+  assert.equal(role.role_id, "mp3StageCostRead");
+  assert.equal(role.stage, "GA");
+  assert.deepEqual(
+    sorted(role.permissions),
+    sorted(["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use"]),
+  );
+  const grant = rows.get("google_project_iam_member.stage_cost_reader");
+  assert.equal(grant.project, value.project_id);
+  assert.equal(grant.role, costRole(value.project_id));
+  assert.equal(grant.member, `serviceAccount:${email(value.project_id, "mp3-stage-deployer")}`);
+  assert.deepEqual(grant.condition ?? [], []);
+}
+function federationContract(plan, input) {
+  federationValues(resources(plan), input);
+}
+const checks = [
+  apiContract,
+  bucketContract,
+  registryContract,
+  identityContract,
+  iamContract,
+  federationContract,
+  outputContract,
+];
 function complete(plan, input) {
   for (const check of checks) check(plan, input);
 }
@@ -666,6 +778,7 @@ for (const [label, check] of [
   ["seven protected dedicated identities", identityContract],
   ["exact narrow non-authoritative IAM tuples", iamContract],
   ["closed nonsecret identity outputs", outputContract],
+  ["main-push-only federation and stage-only read/usage authority", federationContract],
 ]) {
   test(`mocked default and alternate inputs preserve ${label}`, () => {
     const plans = positivePlans();
@@ -750,6 +863,9 @@ test("invalid required project, region and repository values fail their own vari
     ],
     region: ["", " ", "US-CENTRAL1", "us/central1", "us central1", "us-central1-a", "us-central1\n", null],
     registry_id: ["", " ", "Upper", "1repo", "repo-", "bad/repo", "bad repo", "repo\t", "a".repeat(64), null],
+    github_repository_id: ["", "0", "-1", "1.5", "123 ", "123\n", "owner/repo", null],
+    github_owner_id: ["", "0", "-1", "1.5", " 123", "123\n", "owner", null],
+    github_repository: ["", "owner", "owner/repo/extra", "owner/repo ", "owner/repo\n", "owner'quote/repo", null],
   };
   const runs = Object.entries(invalid).flatMap(([key, values]) =>
     values.map((value, i) => runBlock(`invalid_${key}_${i}`, { project_id: defaults.project_id, [key]: value }, key)),
@@ -780,6 +896,27 @@ for (const [label, address, path, replacement, check] of [
     iamContract,
   ],
   ["public state access", "google_storage_bucket_iam_member.stage_state", ["member"], '"allUsers"', iamContract],
+  [
+    "unrestricted federation",
+    "google_iam_workload_identity_pool_provider.github",
+    ["attribute_condition"],
+    '"true"',
+    federationContract,
+  ],
+  [
+    "cost write escalation",
+    "google_project_iam_custom_role.stage_cost_read",
+    ["permissions"],
+    '["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use", "billing.budgets.update"]',
+    federationContract,
+  ],
+  [
+    "production cost authority",
+    "google_project_iam_member.stage_cost_reader",
+    ["member"],
+    '"serviceAccount:mp3-prod-deployer@${var.project_id}.iam.gserviceaccount.com"',
+    federationContract,
+  ],
 ]) {
   test(`configuration mutation control rejects ${label} after a successful mock plan`, () => {
     complete(positivePlans()[0].plan, defaults);
@@ -860,5 +997,104 @@ test("plan oracle rejects hidden instances, missing identities, crossed IAM targ
     const copy = structuredClone(original);
     mutate(copy);
     assert.throws(() => complete(copy, defaults), { code: "ERR_ASSERTION" });
+  }
+});
+
+test("federation oracle has a literal valid counterpart and rejects each trust restriction or privilege change", () => {
+  const rows = new Map([
+    [
+      "google_iam_workload_identity_pool.github",
+      { project: defaults.project_id, workload_identity_pool_id: "mp3-github", disabled: false },
+    ],
+    [
+      "google_iam_workload_identity_pool_provider.github",
+      {
+        project: defaults.project_id,
+        workload_identity_pool_id: "mp3-github",
+        workload_identity_pool_provider_id: "github",
+        disabled: false,
+        attribute_mapping: { "google.subject": "assertion.sub", "attribute.repository_id": "assertion.repository_id" },
+        attribute_condition:
+          "assertion.repository_id == '123456789' && assertion.repository_owner_id == '987654321' && assertion.ref == 'refs/heads/main' && assertion.workflow_ref == 'synthetic-owner/synthetic-repository/.github/workflows/ci.yml@refs/heads/main' && assertion.event_name == 'push'",
+        oidc: [{ issuer_uri: "https://token.actions.githubusercontent.com", allowed_audiences: [] }],
+      },
+    ],
+    [
+      index("google_service_account_iam_member.github_federated", "mp3-registry-writer"),
+      {
+        service_account_id:
+          "projects/synthetic-access-123/serviceAccounts/mp3-registry-writer@synthetic-access-123.iam.gserviceaccount.com",
+        role: "roles/iam.workloadIdentityUser",
+        member:
+          "principalSet://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/mp3-github/attribute.repository_id/123456789",
+      },
+    ],
+    [
+      index("google_service_account_iam_member.github_federated", "mp3-stage-deployer"),
+      {
+        service_account_id:
+          "projects/synthetic-access-123/serviceAccounts/mp3-stage-deployer@synthetic-access-123.iam.gserviceaccount.com",
+        role: "roles/iam.workloadIdentityUser",
+        member:
+          "principalSet://iam.googleapis.com/projects/123456789012/locations/global/workloadIdentityPools/mp3-github/attribute.repository_id/123456789",
+      },
+    ],
+    [
+      "google_project_iam_custom_role.stage_cost_read",
+      {
+        project: defaults.project_id,
+        role_id: "mp3StageCostRead",
+        stage: "GA",
+        permissions: ["resourcemanager.projects.get", "billing.resourcebudgets.read", "serviceusage.services.use"],
+      },
+    ],
+    [
+      "google_project_iam_member.stage_cost_reader",
+      {
+        project: defaults.project_id,
+        role: "projects/synthetic-access-123/roles/mp3StageCostRead",
+        member: "serviceAccount:mp3-stage-deployer@synthetic-access-123.iam.gserviceaccount.com",
+      },
+    ],
+  ]);
+  federationValues(rows, defaults);
+  const provider = "google_iam_workload_identity_pool_provider.github";
+  const mutations = [
+    ...["repository_id", "repository_owner_id", "ref", "workflow_ref", "event_name"].map((claim) => (copy) => {
+      copy.get(provider).attribute_condition = copy
+        .get(provider)
+        .attribute_condition.split(" && ")
+        .filter((part) => !part.startsWith(`assertion.${claim} ==`))
+        .join(" && ");
+    }),
+    (copy) => {
+      copy.get(provider).attribute_condition = copy.get(provider).attribute_condition.replaceAll(" && ", " || ");
+    },
+    (copy) => {
+      copy.get(provider).oidc[0].issuer_uri = "https://foreign.invalid";
+    },
+    (copy) => {
+      copy.get(provider).oidc[0].allowed_audiences = ["arbitrary"];
+    },
+    (copy) => {
+      copy.get(index("google_service_account_iam_member.github_federated", "mp3-stage-deployer")).service_account_id =
+        accountName(defaults.project_id, "mp3-prod-deployer");
+    },
+    (copy) => {
+      copy.get(index("google_service_account_iam_member.github_federated", "mp3-registry-writer")).role =
+        "roles/iam.serviceAccountTokenCreator";
+    },
+    (copy) => {
+      copy.get("google_project_iam_custom_role.stage_cost_read").permissions.push("billing.budgets.update");
+    },
+    (copy) => {
+      copy.get("google_project_iam_member.stage_cost_reader").member =
+        `serviceAccount:${email(defaults.project_id, "mp3-prod-deployer")}`;
+    },
+  ];
+  for (const mutate of mutations) {
+    const copy = structuredClone(rows);
+    mutate(copy);
+    assert.throws(() => federationValues(copy, defaults), { code: "ERR_ASSERTION" });
   }
 });
