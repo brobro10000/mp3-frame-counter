@@ -224,13 +224,13 @@ historical physical counts, lockfile and all 72/22/3 identities remain unchanged
 documentation edit; no active suite, registry, policy implementation or Git mutation occurs.
 
 Node 24.20.0 strict acceptance typechecking and all 41 recipes/140 semantic rejection controls passed. The full
-`PATH=/Users/hamzah/.nvm/versions/node/v24.20.0/bin:$PATH npm --prefix tests/acceptance run check` passed into this
-correction's check.log, preserving the original 104 semantic controls plus 36 new calibration rejections, all 52
-transport rejections, 46 docs controls, 95 hosted owned controls and exact 72/22/3 discovery. Prettier 3.9.9 formatted
-only the changed files; whitespace validation passed. These are independently owned candidate controls with no product
-or hosted acceptance execution. Earlier actual product evidence remains the coordinator's evidence for its exact prior
-source identity and is not rewritten as passing evidence for this successor digest. All candidate input bytes are frozen
-after this correction for the coordinator's next actual run.
+`npm --prefix tests/acceptance run check` with Node 24.20.0 selected on PATH passed into this correction's check.log,
+preserving the original 104 semantic controls plus 36 new calibration rejections, all 52 transport rejections, 46 docs
+controls, 95 hosted owned controls and exact 72/22/3 discovery. Prettier 3.9.9 formatted only the changed files;
+whitespace validation passed. These are independently owned candidate controls with no product or hosted acceptance
+execution. Earlier actual product evidence remains the coordinator's evidence for its exact prior source identity and is
+not rewritten as passing evidence for this successor digest. All candidate input bytes are frozen after this correction
+for the coordinator's next actual run.
 
 ## Authorized harness correction 3 — 2026-10-11
 
