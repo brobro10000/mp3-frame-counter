@@ -4,7 +4,10 @@ query: >-
   Show the four reusable callers defined by this CI activation: Linter, Server
   tests, Application tests and Base acceptance E2E. The Linter caller requires
   checks and all four tooling shards: foundation, acceptance, publication and
-  delivery, containing the unchanged 46-file union. Each executing worker runs
+  delivery, containing the complete 49-file union (46 in historical sources).
+  The source-check runner is dormant before backend adoption and requires
+  strict type checks, source lint, generated OpenAPI and semantic validation
+  afterward. Each executing worker runs
   trusted-base acceptance admission before head-owned commands. All four caller
   results feed the always-running control-plane gate. This diagram describes the
   prepared workflow source, not evidence of a successful activation run. Derive
@@ -67,19 +70,19 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T16:28:54.536Z'
+generationTime: '2026-10-11T20:02:52.531Z'
 ---
 flowchart TD
     EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
 
     subgraph LINTER["Linter caller: validate-foundation"]
         LPREF["Each linter worker: trusted-base admission, then locked npm ci<br/>read-only review token confined to preflight"]
-        LPREF --> LCHECK["checks: format, workflow lint, policy, portability,<br/>Mermaid render and complete gate tests<br/>credential-free Terraform fmt, init and validate"]
-        LPREF --> LF["tooling-foundation<br/>8 required files; own pinned Chrome/profile"]
+        LPREF --> LCHECK["checks: format, workflow lint, policy, portability,<br/>Mermaid render and complete gate tests<br/>source checks dormant before backend adoption, strict afterward<br/>credential-free Terraform fmt, init and validate"]
+        LPREF --> LF["tooling-foundation<br/>11 required files; own pinned Chrome/profile"]
         LPREF --> LA["tooling-acceptance<br/>13 required files"]
         LPREF --> LP["tooling-publication<br/>9 required files"]
         LPREF --> LD["tooling-delivery<br/>16 required files; own pinned Terraform/provider setup"]
-        LCHECK --> LOK["Linter caller succeeds only when all five workers succeed<br/>four shards preserve all 46 tooling files; fail-fast disabled"]
+        LCHECK --> LOK["Linter caller succeeds only when all five workers succeed<br/>four shards cover all 49 tooling files; fail-fast disabled"]
         LF --> LOK
         LA --> LOK
         LP --> LOK

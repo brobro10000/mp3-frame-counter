@@ -39,6 +39,12 @@ const recordFields = [
 ];
 const observationFields = [...reviewFields, "author", "baseRef", "merged", "mergeCommit", "state"];
 const digest = (value) => createHash("sha256").update(value).digest("hex");
+const backendProductCommands = Object.freeze({
+  "test:server": "npm run build:server && cd server && node --test tests/*.test.ts",
+  "test:frontend": "npm run build:frontend && cd frontend && node --test tests/*.test.ts",
+  "lint:source": "oxlint --deny-warnings server/src server/tests frontend/src frontend/tests",
+  "check:openapi": "redocly lint --config redocly.yaml dist/openapi.json",
+});
 
 /** Require an ordinary, closed data record; selectors and hidden extension fields never alter admission. */
 function record(value, fields, label, optional = []) {
@@ -181,9 +187,15 @@ function packageKinds(before, after) {
   const newScripts = newPackage.scripts ?? {};
   for (const name of new Set([...Object.keys(oldScripts), ...Object.keys(newScripts)])) {
     if (oldScripts[name] !== newScripts[name]) {
-      // Only the two reviewed component builds join product commands; arbitrary build-prefixed commands stay governance.
+      // New check commands reserve literal values on both sides; altered execution remains a governance change.
+      const exactBackendCommand =
+        Object.hasOwn(backendProductCommands, name) &&
+        [oldScripts[name], newScripts[name]].every(
+          (value) => value === undefined || value === backendProductCommands[name],
+        );
       kinds.add(
-        ["build", "build:server", "build:frontend", "typecheck", "test:unit", "start", "dev"].includes(name)
+        exactBackendCommand ||
+          ["build", "build:server", "build:frontend", "typecheck", "test:unit", "start", "dev"].includes(name)
           ? "product"
           : "governance",
       );
@@ -214,6 +226,9 @@ function pathKind(path) {
   // Reserve only these runtime/product and access/governance filenames; neighboring IaC paths remain unclassified.
   if (
     [
+      ".oxlintrc.json",
+      "redocly.yaml",
+      "scripts/smoke-local.mjs",
       "infra/cloud/runtime/versions.tf",
       "infra/cloud/runtime/variables.tf",
       "infra/cloud/runtime/main.tf",

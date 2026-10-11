@@ -74,6 +74,9 @@ function fixture(t) {
   execFileSync("git", ["checkout", "--detach", "--quiet", history], { cwd: checkout, env });
   for (const path of [
     "scripts/policy.mjs",
+    ...(readdirSync(join(root, "scripts")).includes("backend-contract-policy.mjs")
+      ? ["scripts/backend-contract-policy.mjs"]
+      : []),
     "scripts/frontend-tool-policy.mjs",
     "scripts/publish-release-evidence.mjs",
     "scripts/ci-visibility-policy.mjs",

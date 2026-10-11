@@ -105,6 +105,23 @@ export const ciToolingShards = Object.freeze({
   ]),
 });
 
+const backendPrerequisiteTests = [
+  "scripts/backend-contract-policy.test.mjs",
+  "scripts/ci-unit-inventory.test.mjs",
+  "scripts/backend-source-ci.test.mjs",
+];
+
+/** Select only the complete historical or complete successor union, preserving four shard/job identities. */
+export function selectCiToolingShards(files) {
+  assert(Array.isArray(files) && files.every((value) => typeof value === "string"), "Missing tooling inventory");
+  const selected = files.some((file) => backendPrerequisiteTests.includes(file));
+  const result = selected
+    ? { ...ciToolingShards, foundation: [...ciToolingShards.foundation, ...backendPrerequisiteTests] }
+    : ciToolingShards;
+  assert.deepEqual([...files].sort(), Object.values(result).flat().sort(), "Tooling coverage differs");
+  return result;
+}
+
 /** Reject malformed or accessor-bearing records before inspecting their closed data fields. */
 function record(value, label) {
   assert(value && typeof value === "object" && !Array.isArray(value), `${label} must be a record`);
@@ -202,8 +219,7 @@ function laneSteps(job, command, extraEnv = {}) {
 
 /** Require full test inventory exactly once; sorting copies preserves the caller's manifest ordering and bytes. */
 function toolingInventory(files) {
-  assert(Array.isArray(files) && files.every((value) => typeof value === "string"), "Missing tooling inventory");
-  assert.deepEqual([...files].sort(), Object.values(ciToolingShards).flat().sort(), "Tooling coverage differs");
+  return selectCiToolingShards(files);
 }
 
 /** Validate a parsed complete workflow family. This admits structure, never live execution or publication authority. */
@@ -221,7 +237,9 @@ export function requireCiVisibilityPolicy(input) {
     assert.deepEqual(workflow.jobs["control-plane"].needs, legacyMandatory);
     return layout("legacy");
   }
-  toolingInventory(toolingFiles);
+  const toolingSelection = toolingInventory(toolingFiles);
+  const selectedChecksCommand =
+    checksCommand + (toolingSelection === ciToolingShards ? "" : "node scripts/run-backend-source-checks.mjs\n");
   assert.equal(input.gateCommand, gateCommand, "Both gate test files remain mandatory");
   closed(workflow, ["name", "on", "permissions", "concurrency", "jobs"], "Coordinator workflow");
   assert.equal(workflow.name, "MVP CI");
@@ -285,7 +303,7 @@ export function requireCiVisibilityPolicy(input) {
     run: cloudValidation,
   });
   assert.deepEqual(checks.steps[6], { run: "npm run mermaid:install" });
-  assert.deepEqual(checks.steps[7], { run: checksCommand });
+  assert.deepEqual(checks.steps[7], { run: selectedChecksCommand });
   assert.deepEqual(
     checks.steps.filter((step) => step.run !== undefined).map((step) => step.run),
     [
@@ -293,7 +311,7 @@ export function requireCiVisibilityPolicy(input) {
       "npm ci",
       cloudValidation,
       "npm run mermaid:install",
-      checksCommand,
+      selectedChecksCommand,
     ],
   );
   const tooling = linter.jobs.tooling;

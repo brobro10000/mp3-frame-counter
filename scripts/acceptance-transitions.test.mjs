@@ -1248,3 +1248,157 @@ test("bootstrap IAM paths: later reserved files cannot substitute for an earlier
   f.json(manifestPath, { contractRevision: "uncommitted-wrong-suite" });
   assert.deepEqual(f.resolve(base, f.product), before);
 });
+
+// Independent r5 backend-product admission amendment, frozen before the classifier implementation. These literals
+// reserve only the reviewed product inputs; no product command or synthetic smoke script is executed by this fixture.
+const backendProductAdmissionScripts = {
+  "test:server": "npm run build:server && cd server && node --test tests/*.test.ts",
+  "test:frontend": "npm run build:frontend && cd frontend && node --test tests/*.test.ts",
+  "lint:source": "oxlint --deny-warnings server/src server/tests frontend/src frontend/tests",
+  "check:openapi": "redocly lint --config redocly.yaml dist/openapi.json",
+};
+const backendProductAdmissionPaths = [".oxlintrc.json", "redocly.yaml", "scripts/smoke-local.mjs"];
+
+function putBackendProductAdmissionInputs(f, scripts = backendProductAdmissionScripts) {
+  f.put(".oxlintrc.json", '{"options":{"denyWarnings":true}}\n');
+  f.put("redocly.yaml", "extends: [recommended]\n");
+  f.put("scripts/smoke-local.mjs", "// Synthetic local smoke input; never executed.\n");
+  f.json("package.json", { private: true, scripts });
+}
+
+test("backend product admission r5: exact lint and OpenAPI configs activate required successor acceptance", (t) => {
+  for (const path of backendProductAdmissionPaths.slice(0, 2)) {
+    const f = boundFixture(t);
+    f.put(path, path.endsWith(".json") ? '{"synthetic":true}\n' : "synthetic: true\n");
+    const source = f.commit(`reviewed product config ${path}`);
+    const result = f.resolve(source, f.binding);
+    assert.equal(result.admission, "implementation");
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, source);
+  }
+});
+
+test("backend product admission r5: config neighbors remain unclassified and reserved inputs require regular blobs", (t) => {
+  for (const path of [
+    "oxlintrc.json",
+    ".oxlintrc.yaml",
+    ".oxlintrc.json.mjs",
+    "redocly.yml",
+    "Redocly.yaml",
+    "redocly.json",
+  ]) {
+    const f = boundFixture(t);
+    f.put(path, "Synthetic neighboring input must not inherit the exact reservation.\n");
+    const source = f.commit(`unreviewed config neighbor ${path}`);
+    assert.throws(() => f.resolve(source, f.binding), /Unclassified acceptance admission path:/);
+  }
+  for (const path of backendProductAdmissionPaths) {
+    const f = boundFixture(t);
+    mkdirSync(dirname(join(f.root, path)), { recursive: true });
+    symlinkSync(path.startsWith("scripts/") ? "../README.md" : "README.md", join(f.root, path));
+    const source = f.commit(`nonregular reserved input ${path}`);
+    assert.throws(() => f.resolve(source, f.binding), /Requires regular file:/);
+  }
+});
+
+test("backend product admission r5: four exact application check commands are product inputs", (t) => {
+  for (const [name, command] of Object.entries(backendProductAdmissionScripts)) {
+    const f = boundFixture(t);
+    f.json("package.json", { private: true, scripts: { [name]: command } });
+    const source = f.commit(`exact product command ${name}`);
+    const result = f.resolve(source, f.binding);
+    assert.equal(result.admission, "implementation");
+    requireIdentity(result.required, f.candidateState.record);
+    assert.equal(result.activationCommit, source);
+  }
+});
+
+test("backend product admission r5: reserved command names cannot admit altered executable values", (t) => {
+  for (const [name, command] of Object.entries(backendProductAdmissionScripts)) {
+    const f = boundFixture(t);
+    f.put("server/src/parser.ts", "// Synthetic product counterpart; never executed.\n");
+    f.json("package.json", { private: true, scripts: { [name]: `${command} && node scripts/replacement-gate.mjs` } });
+    const source = f.commit(`unreviewed executable value for ${name}`);
+    assert.throws(() => f.resolve(source, f.binding), /Product and governance changes require separate admission/);
+  }
+});
+
+test("backend product admission r5: local smoke is an exact product path while neighboring scripts stay governance", (t) => {
+  const f = boundFixture(t);
+  f.put("scripts/smoke-local.mjs", "// Synthetic changed audio-count local smoke input; never executed.\n");
+  const activation = f.commit("reviewed local smoke product input");
+  const result = f.resolve(activation, f.binding);
+  assert.equal(result.admission, "implementation");
+  requireIdentity(result.required, f.candidateState.record);
+  assert.equal(result.activationCommit, activation);
+  for (const path of ["scripts/smoke-local-extra.mjs", "scripts/smoke-local.test.mjs", "scripts/check-openapi.mjs"]) {
+    f.put("server/src/parser.ts", `// Synthetic product counterpart for ${path}.\n`);
+    f.put(path, "// A neighboring executable remains a governance input.\n");
+    const source = f.commit(`neighbor script cannot join product ${path}`);
+    assert.throws(() => f.resolve(source, activation), /Product and governance changes require separate admission/);
+    f.git("reset", "--hard", activation);
+  }
+});
+
+test("backend product admission r5: reviewed product inputs cannot join governance command or workflow changes", (t) => {
+  for (const name of ["validate", "test:tooling", "preinstall", "check:unreviewed"]) {
+    const f = boundFixture(t);
+    putBackendProductAdmissionInputs(f, {
+      ...backendProductAdmissionScripts,
+      [name]: "node scripts/replacement-gate.mjs",
+    });
+    const source = f.commit(`product inputs mixed with governance command ${name}`);
+    assert.throws(() => f.resolve(source, f.binding), /Product and governance changes require separate admission/);
+  }
+  for (const path of [".github/workflows/ci.yml", "scripts/run-ci-lane.mjs", "Makefile"]) {
+    const f = boundFixture(t);
+    putBackendProductAdmissionInputs(f);
+    f.put(path, "# Synthetic governance counterpart.\n");
+    const source = f.commit(`product inputs mixed with governance path ${path}`);
+    assert.throws(() => f.resolve(source, f.binding), /Product and governance changes require separate admission/);
+  }
+});
+
+test("backend product admission r5: exact product reservations do not enter candidate or binding lanes", (t) => {
+  for (const path of backendProductAdmissionPaths) {
+    const f = fixture(t);
+    const base = f.bootstrap();
+    const candidate = f.candidate({ mixedPath: path });
+    assert.throws(
+      () => f.resolve(candidate.record.suiteCommit, base),
+      /Candidate must contain only suite and contract/,
+    );
+  }
+  const f = fixture(t);
+  f.bootstrap();
+  const candidate = f.candidate();
+  putBackendProductAdmissionInputs(f);
+  const source = f.bind(candidate);
+  assert.throws(
+    () => f.resolve(source, candidate.record.suiteCommit, [candidate.observation]),
+    /Product and governance changes require separate admission/,
+  );
+});
+
+test("backend product admission r5: product removal retains activation and later files cannot rewrite historical selection", (t) => {
+  const f = boundFixture(t);
+  const before = f.resolve(f.product, f.genesis.suiteCommit);
+  putBackendProductAdmissionInputs(f);
+  const activation = f.commit("activate exact backend product reservations");
+  requireIdentity(f.resolve(activation, f.binding).required, f.candidateState.record);
+  for (const path of backendProductAdmissionPaths) rmSync(join(f.root, path));
+  f.json("package.json", { private: true, scripts: {} });
+  const removal = f.commit("remove reviewed product inputs without downgrading acceptance");
+  const result = f.resolve(removal, activation);
+  assert.equal(result.admission, "implementation");
+  assert.equal(result.activationCommit, activation);
+  requireIdentity(result.required, f.candidateState.record);
+  assert.deepEqual(f.resolve(f.product, f.genesis.suiteCommit), before);
+  const legacy = fixture(t);
+  putBackendProductAdmissionInputs(legacy);
+  const historical = legacy.commit("historical pre-policy product metadata");
+  const policy = legacy.bootstrap();
+  const replay = legacy.resolve(policy, historical);
+  assert.equal(replay.admission, "bootstrap");
+  requireIdentity(replay.required, legacy.genesis);
+});

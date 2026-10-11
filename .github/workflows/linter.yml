@@ -190,6 +190,7 @@ jobs:
           npm run check:portability
           aa-exec --profile=chrome npm run check:mermaid
           npm run test:gate
+          node scripts/run-backend-source-checks.mjs
   tooling:
     name: tooling-${{ matrix.shard }}
     runs-on: ubuntu-24.04
