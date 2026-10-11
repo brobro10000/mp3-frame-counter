@@ -4,9 +4,10 @@
  * Inputs are the same-run bundle, independent admission output, closed repository configuration and step-scoped tokens.
  * Verify performs GitHub reads; push transfers existing images; deploy applies only a reviewed existing-service update
  * and runs the frozen stage suite. There is no bootstrap, arbitrary destination, production or rebuild operation.
- * Only sanitized identity evidence and closed command diagnostics enter .artifacts/stage. Credentials, Docker
+ * Only sanitized identity evidence, closed command diagnostics and owner-encrypted failure streams enter artifacts.
+ * The public recipient is checkout-owned; its private key is never supplied to CI. Credentials, Docker
  * configuration, plans and Terraform state stay in memory/private temporary storage, cleaned on every path.
- * Failures stop progression with fixed errors; raw provider output is never retained or printed.
+ * Failures stop progression with fixed errors; plaintext provider output is never retained or printed.
  */
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
@@ -43,6 +44,7 @@ import { readRequiredAcceptanceProfileProjection } from "./acceptance-profile-so
 import { inspectCap, renderDesiredCap } from "../infra/cloud/bootstrap/cap-reconciler.mjs";
 import { parseStageConfig, requireStagePlan, requireStageServingRevision } from "./stage-delivery-policy.mjs";
 import { stageCommandFailure } from "./stage-command-failure.mjs";
+import { sealStageDiagnostic } from "./stage-private-diagnostic.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const evidenceDirectory = join(root, ".artifacts", "stage");
@@ -52,6 +54,8 @@ const roles = ["api", "frontend"];
 const interrupted = new AbortController();
 let credentials;
 let commandFailure;
+let encryptedCommandFailure;
+let diagnosticContext;
 for (const signal of ["SIGINT", "SIGTERM"]) process.once(signal, () => interrupted.abort());
 
 /** Reject symlink traversal and nonregular or oversized records before reading fixed checkout-owned inputs. */
@@ -77,6 +81,26 @@ function record(name, value) {
   const path = join(evidenceDirectory, name);
   if (existsSync(path)) assert.equal(file(path).toString(), bytes);
   else writeFileSync(path, bytes, { flag: "wx", mode: 0o600 });
+}
+
+/** Seal failed streams for the fixed bounded public recipient; caller catches all errors without printing values. */
+function sealCommandFailure(operation, exitCode, stdout, stderr, stdoutTruncated, stderrTruncated) {
+  const recipient = JSON.parse(file(join(root, "infra/cloud/diagnostics/recipient.json"), 12288));
+  assert(recipient && !Array.isArray(recipient));
+  assert.equal(Object.keys(recipient).sort().join(","), "publicKey,schemaVersion");
+  assert.equal(recipient.schemaVersion, 1);
+  assert(typeof recipient.publicKey === "string" && recipient.publicKey.length > 0);
+  assert(Buffer.byteLength(recipient.publicKey, "utf8") <= 8192);
+  return sealStageDiagnostic({
+    publicKey: recipient.publicKey,
+    operation,
+    exitCode,
+    context: diagnosticContext,
+    stdout,
+    stderr,
+    stdoutTruncated,
+    stderrTruncated,
+  });
 }
 
 /** Construct a finite subprocess environment without inherited credentials, proxies, tracing or executable hooks. */
@@ -115,6 +139,7 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
     const stderrChunks = [];
     let stderrBytes = 0;
     let stderrTruncated = false;
+    let stdoutTruncated = false;
     let bytes = 0;
     let failed = false;
     let escalation;
@@ -138,6 +163,7 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
         bytes += chunk.length;
         if (bytes > 16 * 1024 * 1024) {
           stderrTruncated = true;
+          if (stream === child.stdout) stdoutTruncated = true;
           stop();
         } else if (stream === child.stdout) chunks.push(chunk);
         else if (operation) {
@@ -174,6 +200,22 @@ async function run(executable, args, { cwd = root, env, input, timeout = 120000,
           } catch {
             commandFailure = undefined;
           }
+        if (operation && Number.isInteger(code) && code >= 1 && code <= 255)
+          try {
+            const stdout = Buffer.concat(chunks);
+            encryptedCommandFailure = sealCommandFailure(
+              operation,
+              code,
+              stdout.subarray(Math.max(0, stdout.length - 60 * 1024)).toString("utf8"),
+              Buffer.concat(stderrChunks).toString("utf8"),
+              stdoutTruncated || stdout.length > 60 * 1024,
+              stderrTruncated,
+            );
+          } catch {
+            // Key/cipher failures preserve the independent closed record and never reveal raw provider streams.
+            encryptedCommandFailure = undefined;
+          }
+        chunks.length = 0;
         stderrChunks.length = 0;
         reject(new Error("STAGE_COMMAND_FAILED"));
       } else resolveRun({ code, stdout: Buffer.concat(chunks).toString("utf8") });
@@ -737,6 +779,11 @@ async function main() {
   let cleanup = "passed";
   try {
     const values = await inputs();
+    diagnosticContext = {
+      sourceRevision: values.context.sourceRevision,
+      runId: values.context.runId,
+      runAttempt: values.context.attempt,
+    };
     if (command === "verify") await verify(values);
     else {
       privateDirectory = mkdtempSync(join(realpathSync(tmpdir()), "mp3-stage-"));
@@ -762,6 +809,8 @@ async function main() {
     }
   // Emit only the closed diagnostic after private Terraform/credential storage has been removed successfully.
   if (failure && commandFailure && cleanup === "passed") record("command-failure.json", commandFailure);
+  if (failure && encryptedCommandFailure && cleanup === "passed")
+    record("private-command-failure.json", encryptedCommandFailure);
   record(`${command}-outcome.json`, { command, status: failure ? "failed" : "passed", cleanup });
   assert(!failure, "STAGE_DELIVERY_FAILED");
 }

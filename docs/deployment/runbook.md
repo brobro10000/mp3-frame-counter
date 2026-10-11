@@ -42,8 +42,16 @@ Stage apply uses Terraform's [JSON UI](https://developer.hashicorp.com/terraform
 already reviewed saved plan. Within the existing memory bounds, classify only complete typed Terraform error records;
 inspect their intact summary and detail separately. Ignore progress, `@message`, malformed packets and joined fragments.
 Human output can wrap diagnostic detail, as demonstrated with a provider-free pinned Terraform 1.13.3 probe; that probe
-does not identify the historical cloud error. Raw streams remain private and discarded, and the retained closed record
-does not add any permission or deployment authority.
+does not identify the historical cloud error. Raw streams are never printed, and the retained closed record does not add
+any permission or deployment authority.
+
+When the closed diagnostic cannot identify a failure, retain a failure-only encrypted `private-command-failure.json` in
+the existing stage artifact, after successful private-storage cleanup. The fixed tracked public recipient encrypts
+bounded stdout/stderr and authenticates the exact source/run/attempt; its private key stays under owner control outside
+CI and the repository. Inspect the artifact privately, retaining truncation flags and the original failed outcome.
+Missing keys or encryption failure never expose raw output or turn failure into success. See the
+[recipient custody and inspection guide](../../infra/cloud/diagnostics/README.md). This adds no cloud access or
+production authority and does not establish the cause of a prior failed run.
 
 The current checkout policy permits only this one exact secret reference. Historical release verification still admits
 the original variable-backed workflow without rewriting its bytes or reservations. This change protects future output;
