@@ -24,6 +24,18 @@ That placeholder was restored manually. A successful app check proves neither a 
 accuracy; compare its actual diff with the source. See the
 [probe record](../../validation/mermaid.md#controlled-sync-probe).
 
+In PR #59, bot commit `572d4ba` retained the new four-workflow query and references but restored the prior main release
+graph. The diagram was corrected manually; this is observed stale output, not evidence of an internal app cause. The
+release query now distinguishes the current head's four callers and nine leaf jobs from historical replay and logical
+publication records, and references the current CI guide. These inputs improve review context; semantic accuracy still
+requires comparing each bot diff with the exact source. The repository renderer never rewrites diagrams.
+
+The October 11 current-source audit checked all three views. The runtime view now includes API-packaged offline Redoc
+assets and the same-origin docs proxy. The upload view distinguishes mapped JSON proxy errors from other ingress
+responses and fetch rejection, and renders only current request outcomes. The release view describes the prepared
+four-workflow activation, with frozen acceptance and exact-image publication intact. Compare these implemented views
+with their referenced source; historical and planned diagrams are not current runtime authority.
+
 The root [`.mermaidignore`](../../../.mermaidignore) opts in only these three standalone diagrams. Other standalone
 diagrams, original requirements, evidence, historical/generated agent artifacts and the frozen acceptance package are
 excluded from regeneration. The manual phase-policy and deferred-hosting views remain in `v1.md`. Do not copy the

@@ -1,5 +1,12 @@
 # CI visibility migration
 
+**Activation amendment — 2026-10-11:** the source now calls the four named reusable workflows described in the
+[CI workflow guide](ci-workflows.md). The terminal gate and publisher require their source-bound worker results.
+Admitted split CI assigns host builds/units to application and server workers, while acceptance retains suite controls,
+real Docker builds and frozen Playwright E2E. Local and legacy controller execution retains the complete original work.
+Protected-main execution and publication must still be observed after the activation merge. The dormant statements and
+dated validation below describe the earlier policy prerequisite; they do not select an older workflow for this source.
+
 This policy support is dormant. The active `MVP CI` workflow still runs `validate-foundation`, `validate-product` and
 the terminal `control-plane` gate. A separate, reviewed activation PR will introduce the workflow family below after
 this policy is present on protected main. No cloud delivery or production permission is granted by the split.

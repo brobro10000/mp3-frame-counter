@@ -151,8 +151,27 @@ function fixture(t, { policy = true, genesisInventory = false, historicalGenesis
   put("README.md", "Independent synthetic source fixture.\n");
   json("package.json", {
     private: true,
-    scripts: { "test:unit": "node inert.mjs", build: "node inert.mjs", "test:e2e": "node inert.mjs" },
+    scripts: {
+      "test:unit": "node inert.mjs",
+      build: "node inert.mjs",
+      "test:e2e": "node inert.mjs",
+      "test:gate": "node --test scripts/ci-gate.test.mjs",
+    },
   });
+  // Preserve the actual historical CI source in synthetic histories; missing policy cannot select legacy work.
+  put(
+    ".github/workflows/ci.yml",
+    execFileSync(
+      "/usr/bin/git",
+      ["--no-replace-objects", "show", "2ae305c57c3ccb1ecbc6e7e6f9e8ae6d3894fcbf:.github/workflows/ci.yml"],
+      {
+        cwd: dirname(dirname(fileURLToPath(import.meta.url))),
+        timeout: 10000,
+        maxBuffer: 256 * 1024,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    ),
+  );
   const foundation = commit("foundation");
   json("tests/acceptance/package.json", { private: true, scripts: { check: "node check.mjs" } });
   put("tests/acceptance/check.mjs", "// Inert fixture marker: no executable test body.\n");

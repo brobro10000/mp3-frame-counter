@@ -42,7 +42,8 @@ make e2e
 `make e2e` runs the independently frozen local HTTP/browser suite in an isolated Compose project and cleans it up. It
 requires Docker, full Git history and the pinned browser prerequisites. It is separate from hosted acceptance. See
 [browser setup](docs/testing/acceptance-browser-setup.md), [toolchain](docs/toolchain.md) and
-[portability](docs/portability.md) for initial setup and full repository checks.
+[portability](docs/portability.md) for initial setup and full repository checks. The
+[CI workflow guide](docs/testing/ci-workflows.md) explains the visible lint, application, server and acceptance lanes.
 
 - [Frontend](frontend/README.md): browser behavior, React assets and NGINX configuration.
 - [API](server/README.md): raw upload contract, parser limits and API image.
@@ -63,5 +64,5 @@ production application has been deployed. See the
 [dated delivery amendment](docs/deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11).
 
 Local MVP closure is distinct from production **v1.0.0**, which remains deferred until hosted acceptance, recovery,
-exact-candidate human approval and production smoke pass. This branch's React changes require their own checks, review,
-merge and publication; the historical release records do not establish those outcomes.
+exact-candidate human approval and production smoke pass. Each change requires its own checks, review, merge and
+publication; historical release records do not establish those outcomes for a later revision.

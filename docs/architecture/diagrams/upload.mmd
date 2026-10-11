@@ -1,12 +1,17 @@
 ---
 title: MP3 upload and result sequence
+generationTime: "2026-10-11T16:24:59Z"
 query: >-
   Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, Fastify API on Node and
   pure parser. Separate page components, the upload-state hook and raw request/response service inside the browser.
-  Include local file validation, pending controls, the actual-byte 20 MiB bound, typed parser failures,
-  proxy failures, JSON validation and restored controls after every outcome. Count complete physical MPEG-1 Layer III
-  frames including metadata-bearing frames. Keep errors readable and show that aborted uploads cannot succeed.
-  Use only behavior supported by the referenced files; this is not a cloud deployment diagram.
+  Include local file validation, pending controls, the actual-byte 20 MiB bound and typed parser failures.
+  Limit the JSON ingress-error branch to configured 413, 502 and 504 mappings. Separate response JSON validation from
+  other ingress responses without a JSON guarantee; unreadable JSON becomes a readable error. Separate this from
+  rejected fetches handled by the hook's timeout/network catch. Render current outcomes, ignore stale completions and
+  clear every admitted request's deadline in finally. Count complete physical MPEG-1 Layer III frames including
+  metadata-bearing frames. Aborted or incomplete uploads must never produce partial success.
+  Use the referenced implementation at the current revision as runtime authority. Historical architecture snapshots
+  remain historical evidence. This diagram describes the local application, not a cloud deployment.
   Group NGINX inside the frontend Docker container and API plus parser inside the API Docker container. The API and
   parser share one Node process; browser JavaScript runs outside Docker. Never draw the parser as a third container.
 references:
@@ -49,32 +54,47 @@ sequenceDiagram
         Hook-->>Browser: Disable pending controls
         Hook->>Service: Await analysis of selected File with abort signal
         Service->>Frontend: Await raw POST /file-upload via published loopback port
-        alt Ingress rejection or unavailable/timed-out upstream
-            Frontend-->>Service: Error status and JSON
-        else Request forwarded over HTTP/1.1 without buffering or retry
-            Frontend->>API: Forward raw bytes to api:3000 on Compose network
-            API->>API: Raw path/method bridge, then ordered Fastify admission
-            API->>API: Custom stream parser bounds actual bytes and deadlines
-            alt Invalid request, over limit, busy or timed out
-                API-->>Frontend: Contracted error status and JSON
-            else Complete nonempty body within 20 MiB
-                API->>Parser: POST route counts complete physical MPEG-1 Layer III frames
-                alt Valid supported file
-                    Parser-->>API: Positive count including metadata-bearing frames
-                    API-->>Frontend: 200 JSON with frameCount
-                else Invalid or unsupported structure
-                    Parser-->>API: Typed failure
-                    API-->>Frontend: 400 or 415 JSON
+        alt Response is available
+            alt Mapped NGINX upload/proxy failure
+                Frontend-->>Service: 413, 502 or 504 status and JSON
+            else Unmapped ingress response
+                Frontend-->>Service: Status and body without a JSON guarantee
+            else Request forwarded over HTTP/1.1 without buffering or retry
+                Frontend->>API: Forward raw bytes to api:3000 on Compose network
+                API->>API: Raw path/method bridge, then ordered Fastify admission
+                API->>API: Custom stream parser bounds actual bytes and deadlines
+                alt Invalid request, over limit, busy or timed out
+                    API-->>Frontend: Contracted error status and JSON
+                else Complete nonempty body within 20 MiB
+                    API->>Parser: POST route counts complete physical MPEG-1 Layer III frames
+                    alt Valid supported file
+                        Parser-->>API: Positive count including metadata-bearing frames
+                        API-->>Frontend: 200 JSON with frameCount
+                    else Invalid or unsupported structure
+                        Parser-->>API: Typed failure
+                        API-->>Frontend: 400 or 415 JSON
+                    end
                 end
+                Frontend-->>Service: Preserve API status and JSON
             end
-            Frontend-->>Service: Preserve API status and JSON
+            Service->>Service: Attempt to read response JSON
+            alt JSON is readable
+                Service->>Service: Validate exact success or readable API error
+                Service-->>Hook: Typed count or readable error
+            else JSON is unreadable
+                Service-->>Hook: Readable response parse error
+            end
+        else Fetch rejects, including abort
+            Service--xHook: Propagate rejected fetch
+            Hook->>Hook: Catch timeout or connection failure
         end
-        Service->>Service: Await JSON and validate exact success shape
-        Service-->>Hook: Typed count or readable error
-        Hook->>Hook: Apply only the current request generation
-        Hook-->>Browser: Render result and restore controls
-        Browser-->>User: Count or readable error#59; allow retry
-        Hook->>Hook: Always clear this request's deadline
+        alt Request generation is still current
+            Hook-->>Browser: Render result and restore controls
+            Browser-->>User: Count or readable error#59; allow retry
+        else Superseded selection or unmounted page
+            Hook->>Hook: Ignore stale outcome
+        end
+        Hook->>Hook: Finally clear deadline#59; clear active slot only if current
     end
     Note over Hook,Service: Selection and unmount abort requests#59; stale outcomes never update the page
     Note over Hook,API: Abort or network failure is not partial success
