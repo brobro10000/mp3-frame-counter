@@ -154,6 +154,7 @@ export function assertBackendSpec(spec) {
     assert.equal(item.additionalProperties, false, "SPEC_SCHEMAS");
     const count = resolve(spec, item.properties.frameCount);
     assert.equal(count.type, "integer", "SPEC_SCHEMAS");
+    assert.ok(!exampleMatches(spec, count, null), "SPEC_SCHEMAS");
     assert.equal(count.minimum, 1, "SPEC_SCHEMAS");
     assert.equal(count.maximum, Number.MAX_SAFE_INTEGER, "SPEC_SCHEMAS");
   }
@@ -174,11 +175,17 @@ export function assertBackendSpec(spec) {
   assert.equal(resolve(spec, analysis.properties.warnings).maxItems, 3, "SPEC_SCHEMAS");
   const physical = resolve(spec, analysis.properties.physicalFrameCount);
   assert.equal(physical.type, "integer", "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, physical, null), "SPEC_SCHEMAS");
   assert.equal(physical.minimum, 1, "SPEC_SCHEMAS");
   assert.equal(physical.maximum, Number.MAX_SAFE_INTEGER, "SPEC_SCHEMAS");
   const exclusion = resolve(spec, analysis.properties.excludedMetadataFrameCount);
   if (exclusion.type === "integer" && exclusion.minimum === 0 && exclusion.maximum === 1) {
-    assert.ok(exampleMatches(spec, exclusion, 0) && exampleMatches(spec, exclusion, 1), "SPEC_SCHEMAS");
+    assert.ok(
+      exampleMatches(spec, exclusion, 0) &&
+        exampleMatches(spec, exclusion, 1) &&
+        !exampleMatches(spec, exclusion, null),
+      "SPEC_SCHEMAS",
+    );
   } else assert.deepEqual(literals(spec, exclusion).sort(), [0, 1], "SPEC_SCHEMAS");
   const xing = resolve(spec, analysis.properties.xing);
   const xingBranches = (xing.oneOf ?? xing.anyOf)?.map((branch) => resolve(spec, branch));
@@ -223,21 +230,27 @@ export function assertBackendSpec(spec) {
   ]) {
     const scalar = resolve(spec, present.properties[field]);
     assert.equal(scalar.type, "integer", "SPEC_SCHEMAS");
+    assert.ok(!exampleMatches(spec, scalar, null), "SPEC_SCHEMAS");
     assert.equal(scalar.minimum, 0, "SPEC_SCHEMAS");
     byteMaximum(scalar, maximum);
   }
   const length = resolve(spec, present.properties.frameLengthBytes);
   assert.equal(length.type, "integer", "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, length, null), "SPEC_SCHEMAS");
   assert.ok(Number.isSafeInteger(length.minimum) && length.minimum >= 1 && length.minimum <= 96, "SPEC_SCHEMAS");
   // MPEG-1 Layer III's largest complete span is floor(144 * 320000 / 32000) + one padding byte.
   byteMaximum(length, 1_441);
   const flags = resolve(spec, present.properties.flags);
   assert.equal(flags.type, "integer", "SPEC_SCHEMAS");
+  assert.ok(!exampleMatches(spec, flags, null), "SPEC_SCHEMAS");
   assert.equal(flags.minimum, 0, "SPEC_SCHEMAS");
   assert.ok(Number.isSafeInteger(flags.maximum) && flags.maximum >= 15 && flags.maximum <= 4294967295, "SPEC_SCHEMAS");
-  for (const field of ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue"])
+  for (const field of ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue"]) {
+    const scalar = resolve(spec, present.properties[field]);
     for (const [key, expected] of Object.entries({ type: "integer", minimum: 0, maximum: 4294967295 }))
-      assert.equal(resolve(spec, present.properties[field])[key], expected, "SPEC_SCHEMAS");
+      assert.equal(scalar[key], expected, "SPEC_SCHEMAS");
+    assert.ok(!exampleMatches(spec, scalar, null), "SPEC_SCHEMAS");
+  }
   const warnings = resolve(spec, analysis.properties.warnings);
   assert.equal(warnings.type, "array", "SPEC_SCHEMAS");
   const warningItems = resolve(spec, warnings.items);

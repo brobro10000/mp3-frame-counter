@@ -514,6 +514,64 @@ for (const [role, count] of [
   assert.equal(declaration.cases.length, count);
   assert.equal(declaration.contractRevision, "backend-audio-v1");
 }
+
+/** Preserve every independently observed missing refusal in one red calibration, without promoting setup failures. */
+const correction5Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction5Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction5Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction5Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+
+/** JSON catalogue membership must not coerce non-string codes when no exact expectedCode argument is supplied. */
+assertErrorResponse(response(errorDto("UPLOAD_EMPTY"), 400), 400);
+for (const [name, code] of [
+  ["null", null],
+  ["boolean", true],
+  ["number", 400],
+  ["object", {}],
+  ["empty array", []],
+  ["singleton catalogue array", ["UPLOAD_EMPTY"]],
+] as const)
+  correction5Rejected(`non-string error code ${name}`, () =>
+    assertErrorResponse(response({ code, error: "Choose a nonempty MP3 file." }, 400), 400),
+  );
+
+/** Required counts and present carrier numbers must remain non-null, including the admitted integer exclusion range. */
+for (const [name, path, schema] of [
+  ["default count", [...schemaPath, "FrameCount", "properties", "frameCount"]],
+  ["detailed count", [...schemaPath, "FrameDetail", "properties", "frameCount"]],
+  ["physical count", [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "physicalFrameCount"]],
+  [
+    "excluded count range",
+    [...schemaPath, "FrameDetail", "properties", "analysis", "properties", "excludedMetadataFrameCount"],
+    { type: "integer", minimum: 0, maximum: 1 },
+  ],
+  ...[
+    "frameOffsetBytes",
+    "frameLengthBytes",
+    "markerOffsetBytes",
+    "flags",
+    "declaredAudioFrameCount",
+    "declaredMpegStreamByteCount",
+    "qualityValue",
+  ].map((field) => [field, [...presentPath, field]]),
+  ["seekTableEntryCount", [...presentPath, "seekTableEntryCount"], { type: "integer", enum: [100, null] }],
+] as const) {
+  const nullable = structuredClone(spec);
+  const nullablePath = path as readonly string[];
+  if (schema) alter(nullable, nullablePath, schema);
+  alter(nullable, [...nullablePath, "nullable"], true);
+  correction5Rejected(`nullable ${name}`, () => assertBackendSpec(nullable));
+}
+const correction5Failures = correction5Results.filter((entry) => entry.status === "missing-refusal");
+if (correction5Failures.length) console.error("CORRECTION5", JSON.stringify(correction5Results));
+assert.deepEqual(correction5Failures, [], "CORRECTION5 missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

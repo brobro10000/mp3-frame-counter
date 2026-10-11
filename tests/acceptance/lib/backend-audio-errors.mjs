@@ -29,6 +29,7 @@ export const errorCatalogue = {
 export function assertCodedError(value, status, expectedCode, contextual = false) {
   assert.ok(value && typeof value === "object" && !Array.isArray(value), "ERROR_SHAPE");
   assert.deepEqual(Object.keys(value).sort(), ["code", "error"], "ERROR_SHAPE");
+  assert.equal(typeof value.code, "string", "ERROR_CODE");
   assert.ok(Object.hasOwn(errorCatalogue, value.code), "ERROR_CODE");
   if (expectedCode !== undefined) assert.equal(value.code, expectedCode, "ERROR_CODE");
   assert.equal(errorCatalogue[value.code][0], status, "ERROR_STATUS_CODE");

@@ -308,3 +308,72 @@ the corrected frozen digest is `522822eebad85da226b805d24277e4f8becdbf45d6907eb3
 immutable baseline, historical bytes and every inventory tuple remain unchanged. No product source or product unit test
 was read, and no Git mutation, registry edit or remote operation occurred. Earlier product results retain their original
 source identity; the coordinator owns subsequent evidence against this corrected frozen candidate.
+
+## Authorized harness correction 5: independent red controls — 2026-10-11
+
+A separate read-only reviewer inspected candidate HEAD `f32d61231c5d3def75da1690a6d7923fac900796` against feature base
+`cee84185598f712a0da2e1b6592f675bdbd9a7ef`; their merge-base is `5ec42f2facf55dc1f5b77af7de1fda805d3072db`. Coverage
+comprised all 36 candidate acceptance/testing-document changes, emphasizing the new literal recipes, audio manifest,
+response oracles, OpenAPI predicates, Redoc observations and correction-4 controls. The reverse release-diagram delta
+against the newer feature base is a pending integration gap, excluded from this candidate review; this is not a clean
+whole-tree recommendation against main.
+
+The reviewer had previously performed a separate product-source review. No product source, product unit test or product
+output was consulted during this candidate review or this correction's control authoring. The original candidate
+author's independent input boundary remains recorded above. These controls follow existing r2 literal-code and non-null
+safe-integer requirements; they introduce no new wire behavior or acceptance authorization.
+
+Two concrete gaps were found. Catalogue property lookup coerces a singleton JSON array such as `["UPLOAD_EMPTY"]` to a
+string key when the caller omits expectedCode, allowing a non-string code in a controlled error. Separately, adding
+nullable:true to either success frameCount, physicalFrameCount, the admitted integer 0..1 exclusion representation or
+the present carrier's nonliteral integer fields leaves the current business predicate satisfied, while widening the
+documented scalar domain to null. Existing positive response examples do not expose that widening.
+
+Eighteen owned rejection controls were added before any oracle change: six non-string JSON codes without expectedCode,
+and twelve nullable numeric-schema mutations. The seek-table literal uses enum `[100, null]` plus nullable:true because
+enum `[100]` still excludes null by itself. That mutation is already correctly rejected. Original controls and positive
+examples remain intact. The new controls collect missing semantic refusals before one final assertion, and run before
+the candidate report writer so a red run cannot publish a new passed report. Setup exceptions cannot become passes.
+
+The exact isolated command, from tests/acceptance with Node 24.20.0, was:
+
+```text
+node scripts/backend-audio-controls.ts
+```
+
+It exited 1 after reaching the new block. The raw result records twelve missing refusals: the singleton code array and
+eleven nullable numeric schemas. Five other non-string code inputs and the nullable seek-table literal were rejected.
+The expected successful total after a separately authored predicate fix is 194 semantic refusals, preserving all 176
+prior controls. No green predicate or full-package result is claimed in this handoff.
+
+Exact before bytes, the previous passed candidate report, raw red.log and red.exit-status are retained in the ignored
+`tests/acceptance/.artifacts/backend-audio-authoring/harness-correction-5/` directory. A first formatter invocation used
+a wrong relative path and touched no files; the explicit absolute-path Prettier 3.9.9 check found the owned control file
+already formatted. Its before SHA-256 is `d183b01093b898594fc8e13cb631cfb121a304e98e196e57078b66d0cb7897c0`; the frozen
+red-control SHA-256 is `16c8bb647058cb7ff4e26b3ad2f8174262ba3f829a8adb1db7b4c484846a984b`. The raw red.log SHA-256 is
+`5525bd23e852dbbb6f057d27d60356deea29658b822364e8447b319907c829cc`.
+
+Only scripts/backend-audio-controls.ts and this append-only authoring record change in this lane, plus ignored evidence.
+Oracle helpers remain untouched for another lane's correction. R2, both manifests, the independent OpenAPI fixture,
+historical fixture bytes/counts/recipes, private acquisition evidence, lockfile and 72/22/3 inventory identities remain
+unchanged. No product, governance, registry, Git or hosted action occurred. The coordinator owns the later predicate fix
+review, exact-source checks and actual candidate publication/binding; these red controls claim no product pass.
+
+### Correction 5 completion
+
+A separate candidate predicate author added a string-type assertion before error catalogue membership and numeric
+null-refusal probes at the existing type/bounds boundaries. Finite enum/literal semantics remain unchanged, as required
+by [OpenAPI 3.0.3 nullable semantics](https://spec.openapis.org/oas/v3.0.3.html#schema-object). No control expectation,
+contract, original fixture, lockfile, inventory, product or gate implementation changed. The frozen 18-control addition
+remains SHA-256 `16c8bb647058cb7ff4e26b3ad2f8174262ba3f829a8adb1db7b4c484846a984b`.
+
+The coordinator inspected both predicate diffs and ran `npm --prefix tests/acceptance run check` once with Node 24.20.0.
+It exited 0: 41 recipes and all 194 semantic rejection controls passed, together with strict candidate typechecking, 46
+original fixtures, 52 transport controls, 46 docs controls, 95 hosted owned controls and exact 72/22/3 discovery. Raw
+check.log, exit status and final hashes remain in this correction's ignored evidence directory. These are harness
+calibration/discovery results, not application or hosted acceptance.
+
+The final 98-file candidate source-content digest is `ead081e7a8dca1d14fa97e30541e8622a391c0ec4e9aa701fb6c4b4d787ed3be`.
+Errors predicate SHA-256: `8352597153e0ac8682c534a036f66e29685dc544a01e4625d60a8b34a1849c4c`. OpenAPI predicate:
+`fca4f983cbac0e8582aeda1845eaa91e39652e3f3685ba8c55f4171ac7107320`. R2 retains its original contract identity. Actual
+main integration, current CI, independent companion review, candidate merge and separate binding remain pending.
