@@ -54,6 +54,24 @@
         "reviewedHead": "711e96c0900e8d88d1c0bb20a6164d37668b3e0e",
         "reviewedTree": "1a86e1f81226228d3661f33bc70bb38a33653b52"
       }
+    },
+    {
+      "id": "hosted-health-v1",
+      "predecessor": "hosted-v1",
+      "contractRevision": "hosted-health-v1",
+      "contractPath": "docs/testing/contracts/hosted-health-v1.md",
+      "contractSha256": "909687c57d8bf6b5bcfe75cd6885a5c897b35a66fa4075ae3342732ea3ead556",
+      "suiteCommit": "09cbb2fc1ce2957b5cfc00439f81ff42e142ecbd",
+      "suiteTree": "22098f0b05ac5e45c3951a77255c539ecff568a3",
+      "manifestSha256": "e4ef2738db1fadc122e5d4998f4a255a918ee70f1ffc1d2db3d0572c985aaec0",
+      "review": {
+        "repository": "brobro10000/mp3-frame-counter",
+        "pullRequest": 43,
+        "reviewId": 5482006400,
+        "reviewer": "brobro1000",
+        "reviewedHead": "42945dc06d10ba52cf6fec4639c5e9e4297f266e",
+        "reviewedTree": "576a59828b8c3fb54bd12a0f6b1f4011384373ea"
+      }
     }
   ]
 }
