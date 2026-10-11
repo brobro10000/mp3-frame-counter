@@ -48,7 +48,7 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T07:48:37.040Z'
+generationTime: '2026-10-11T07:50:25.151Z'
 ---
 flowchart TD
     EVENT["Current integrated application: PR or protected-main push"] --> PREF["Foundation trusted-base admission<br/>read-only review token confined to preflight"]
@@ -78,7 +78,7 @@ flowchart TD
     RELEASE --> HANDOFF["Upload verified publisher handoff"]
     HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
     RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement and provisioned runtime"]
-    DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity"]
+    DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity<br/>validated run workflow revision matches source revision"]
     STAGECHECK --> APPROVE["Human approves exact production candidate"]
     APPROVE --> PROD["Owner deploys the same image pair"]
     PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases and demonstrated recovery"]
