@@ -188,6 +188,22 @@ The subsequent [PR #44](https://github.com/brobro10000/mp3-frame-counter/pull/44
 The current required revision is `hosted-health-v1`; the 72/22/3 inventories and original evidence remain preserved.
 This completed contract migration does not establish a passing hosted run.
 
+## Public upload routing follow-up — 2026-10-11
+
+The [PR #51 main run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38133135750) published v0.3.51 and
+applied the new Cloud Run revision. Its original hosted custody records 20 passing cases and failures in HS-09
+(URL/method behavior) and HS-02 (browser error recovery), with successful cleanup. These failures block promotion.
+
+The upload proxy now sends normalized upload aliases to the API while forwarding the original `$request_uri`. The API
+can therefore reject `/file-upload/`, `/FILE-UPLOAD` and `/%66ile-upload` with its existing JSON 404 response. Canonical
+uploads, query parameters, method handling, docs isolation, streaming and limits retain their contracts. This addresses
+APP-V1-002/007/014; protected-main and hosted verification of the correction remain required.
+
+A separate diagnostic through the authenticated local proxy observed a readable garbage-upload error followed by a
+successful nine-frame upload and restored controls. That result does not resolve HS-02 on managed HTTPS or satisfy
+hosted acceptance. Preserve the failed evidence and frozen suite; investigate the actual HTTPS boundary before changing
+the application or admitting an independently reviewed successor contract.
+
 ## Reasonless browser-error reader prerequisite — 2026-10-11
 
 The [main52 run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38134841865) published v0.3.52 and
