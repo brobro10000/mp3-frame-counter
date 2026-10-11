@@ -20,8 +20,8 @@ Required sequence:
 
 Production application deployment remains a human gate, including authenticated or no-traffic candidates. A manual
 owner-invoked operation is acceptable for V1 if an enforced private-repository environment gate is unavailable; describe
-that limitation accurately. Stage credentials must have no production authority. Do not represent readiness as
-deployment.
+that limitation accurately. Stage credentials must have no production mutation or invocation authority. The bounded
+project operation-read exception below is not service-level isolation. Do not represent readiness as deployment.
 
 ## Reuse existing delivery evidence
 
@@ -120,6 +120,28 @@ project custom role may grant stage `resourcemanager.projects.get`, `billing.res
 usage via `serviceusage.services.use`; it cannot change budgets, billing or the cap. This permits reading single-project
 budgets in the dedicated project, not per-budget IAM isolation. The delivery code reads only the two retained cost
 identities. No billing-account viewer/admin role or production federation belongs in V1.
+
+### Observed operation-poll correction — 2026-10-11
+
+The [main PR #49 run](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38127133310) published its software
+release but failed stage application. Private authenticated decryption of its exact-source diagnostic established a
+complete native provider 403 denying `run.operations.get` on the expected project/region operation. The service had
+advanced to generation 7; hosted acceptance had not run. Preserve that failure and reconcile observed state before
+retry.
+
+Append only `run.operations.get` to the existing project custom role and retain its three cost/read/usage permissions,
+resource identity and stage-deployer binding. Google supports this permission in custom roles and identifies it as
+deployment-status read authority; the pinned provider polls the separate project/region operation resource. See
+[supported permissions](https://docs.cloud.google.com/iam/docs/custom-roles-permissions-support),
+[deployment permissions](https://docs.cloud.google.com/run/docs/reference/iam/roles#deployment_permissions) and the
+[pinned waiter](https://raw.githubusercontent.com/hashicorp/terraform-provider-google/v8.6.0/google/services/cloudrunv2/cloud_run_v2_operation.go).
+
+This project grant permits reading known operations anywhere in the shared project, including production operations.
+Their [response](https://docs.cloud.google.com/run/docs/reference/rest/v2/projects.locations.operations) can contain
+metadata, errors or the updated resource configuration. It adds no operation listing/deletion, production service
+mutation, IAM write or invocation. Do not describe it as stage-service-only read isolation or invent an unverified IAM
+condition. Review and apply the exact IaC change, read back the role and unchanged cost controls, and require a fresh
+automatic stage run with all 22 frozen cases before claiming delivery is repaired.
 
 ## Cloud Run public health compatibility — 2026-10-11
 

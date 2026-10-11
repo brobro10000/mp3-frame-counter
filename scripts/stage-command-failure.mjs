@@ -9,7 +9,7 @@
  */
 const operations = new Set(["terraform-init", "terraform-plan", "terraform-show", "terraform-apply"]);
 const denial =
-  /^[\t ]*(?:│[\t ]*)?(?:googleapi: Error 403: |Error: Error waiting for Updating Service: error while retrieving operation: googleapi: Error 403: |Error: Error waiting for Updating Service: Error code 7, message: )Permission (['"])run\.operations\.get\1 denied on resource (['"])[^'"\r\n]+\2 \(or it may not exist\)\.[\t ]*\r?$/m;
+  /^[\t ]*(?:│[\t ]*)?(?:googleapi: Error 403: |Error: Error waiting for Updating Service: error while retrieving operation: googleapi: Error 403: |Error: Error waiting for Updating Service: Error code 7, message: )Permission (['"])run\.operations\.get\1 denied on resource (['"])[^'"\r\n]+\2 \(or (?:it|resource) may not exist\)\.[\t ]*\r?$/m;
 
 /** Parse the complete bounded UI packet before inspecting individual error fields; malformed packets prove nothing. */
 function jsonDenial(stdout) {

@@ -78,6 +78,74 @@ test("typed native summary receives only its human Error prefix and detail never
   );
 });
 
+test("typed native resource-may-not-exist denials retain exact framing and the closed record", () => {
+  const classify = subject();
+  const currentDenial = denial.replace("(or it may not exist).", "(or resource may not exist).");
+  const wrapped = `Error: Error waiting for Updating Service: error while retrieving operation: ${currentDenial}`;
+  const native = wrapped.slice("Error: ".length);
+  const code7 = `Error waiting for Updating Service: Error code 7, message: ${currentDenial.slice("googleapi: Error 403: ".length)}`;
+  const events = [
+    diagnostic(native, ""),
+    diagnostic(code7, ""),
+    diagnostic("Unrelated summary", wrapped),
+    diagnostic("Unrelated summary", currentDenial),
+    diagnostic(native.replaceAll("'", '"'), ""),
+  ];
+  for (const operation of commands)
+    for (const event of events) {
+      const stdout = packet(event);
+      for (const exitCode of [1, 255])
+        assert.deepEqual(
+          classify(operation, exitCode, "", stdout),
+          expected(operation, exitCode, "run.operations.get"),
+        );
+      for (const exitCode of [0, null])
+        assert.deepEqual(classify(operation, exitCode, "", stdout), expected(operation, exitCode));
+      const rendered = JSON.stringify(classify(operation, 1, "", stdout));
+      assert.ok(!rendered.includes(resource));
+      assert.ok(!rendered.includes(stdout));
+    }
+});
+
+test("the JSON resource qualifier cannot become proof through other framing qualifiers permissions or echo", () => {
+  const classify = subject();
+  assert.equal(
+    classify("terraform-apply", 1, "", packet(diagnostic(nativeSummary, ""))).permission,
+    "run.operations.get",
+  );
+  const wrapped = polling.replace("(or it may not exist).", "(or resource may not exist).");
+  const native = wrapped.slice("Error: ".length);
+  const split = native.indexOf(" denied ");
+  const packets = [
+    ...[
+      "or the resource may not exist",
+      "or resource might not exist",
+      "or resource may exist",
+      "or resource does not exist",
+    ].map((qualifier) => packet(diagnostic(native.replace("or resource may not exist", qualifier), ""))),
+    ...["run.operations.list", "run.services.update", "run.operations.getIamPolicy", "RUN.OPERATIONS.GET"].map(
+      (permission) => packet(diagnostic(native.replace("run.operations.get", permission), "")),
+    ),
+    packet({ ...diagnostic(native, wrapped), "@module": "terraform.provider" }),
+    packet({ ...diagnostic(native, wrapped), "@level": "warn" }),
+    packet({ ...diagnostic(native, wrapped), type: "change_summary" }),
+    packet({ ...diagnostic(native, wrapped), diagnostic: { severity: "warning", summary: native, detail: wrapped } }),
+    packet({ ...diagnostic("Unrelated", "Unrelated"), "@message": wrapped }),
+    packet(diagnostic(native.slice(0, split), native.slice(split))),
+    packet(diagnostic(native.slice(0, split), ""), diagnostic("Unrelated", native.slice(split))),
+    packet(diagnostic("Unrelated", native)),
+    packet(diagnostic("Unrelated", `echo "${wrapped}"`)),
+    packet(diagnostic(`"${native}"`, "")),
+    packet(diagnostic(`${native} Additional diagnostic text.`, "")),
+    packet(diagnostic(native.replace("Error 403", "Error 401"), "")),
+    packet(diagnostic(native.replace(" denied ", " granted "), "")),
+    packet(diagnostic(native.slice(0, -1), "")),
+    `${packet(diagnostic(native, wrapped))}{`,
+  ];
+  for (const stdout of packets)
+    assert.deepEqual(classify("terraform-apply", 1, "", stdout), expected("terraform-apply", 1));
+});
+
 test("JSON denial cannot establish permission for success or signal-only exits", () => {
   const classify = subject();
   const stdout = packet(diagnostic(nativeSummary, polling));
