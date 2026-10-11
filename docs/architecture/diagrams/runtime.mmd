@@ -40,7 +40,7 @@ flowchart LR
             end
             AS["Read-only filesystem<br/>temporary /tmp: 8 MiB"]
         end
-        F -->|"Compose DNS api:3000<br/>raw POST /file-upload(?:/|$) over HTTP/1.1"| A
+        F -->|"Compose DNS api:3000<br/>untouched upload request URI over HTTP/1.1"| A
     end
     B -->|"Published 127.0.0.1:FRONTEND_PORT<br/>host default 8080 maps to container 8080"| F
     T["Host process: Playwright and Chromium<br/>frozen suite in a temporary directory"] -->|"BASE_URL: browser and HTTP<br/>isolated test host port"| F
