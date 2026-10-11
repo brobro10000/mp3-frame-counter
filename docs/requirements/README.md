@@ -1,5 +1,11 @@
 # Requirements reference
 
+**Latest owner amendment — 2026-10-11:** prioritize a minimal React/strict TypeScript frontend and clear local
+source/image-release handoff. Cloud Run delivery is paused, including automatic stage deployment; software releases,
+independent acceptance and normal companion-reviewed merges remain active. The
+[dated delivery amendment](../deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11) supersedes older
+cloud-priority instructions below. Hosting deferral does not satisfy production v1.0.0 or delete existing resources.
+
 This directory is the central reference for the MP3 File Analysis App assessment and its supplied sample. Start with the
 [formalized assessment requirements](assessment.md) and the [first application MVP release process](release-process.md)
 before planning or reviewing future work, then read the [V1 contract and choices](../mvp.md).

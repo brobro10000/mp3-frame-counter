@@ -3,6 +3,9 @@
 Adopted by the coordinator on 2026-10-11 under the owner's instruction to prioritize an acceptable MVP and reach V1.
 This amendment narrows the extended roadmap's implementation scope. Historical plans and deferred work remain retained.
 
+**Current priority:** the later [local MVP handoff and cloud pause](#local-mvp-handoff-and-cloud-pause--2026-10-11)
+supersedes the immediate execution order below. Preserve the hosted completion gates and historical failure evidence.
+
 ## Completion boundary
 
 V1 consists of the existing MP3 application and same-origin API documentation, reproducible two-container deployment,
@@ -225,3 +228,27 @@ console classes and the finite URL/method/status/time/single-use correlation. Fo
 [candidate and binding process](../testing/acceptance-transition.md), then activate it with the genuine pending
 upload-ingress fix in [PR #53](https://github.com/brobro10000/mp3-frame-counter/pull/53). Require fresh complete stage
 execution before recovery proof, exact-candidate human production approval, production smoke and v1.0.0 finalization.
+
+## Local MVP handoff and cloud pause — 2026-10-11
+
+The owner paused Cloud Run deployment to focus on the submission deadline, a minimal React/TypeScript interface and a
+reproducible local release handoff. The [local guide](local-handoff.md) and [root README](../../README.md) are the
+active entrypoints. Preserve the exact raw upload response, physical-frame semantics, independent local acceptance and
+the two-container boundary. React assets execute in the browser and do not introduce a third runtime service.
+
+The pause follows remaining post-apply IAM verification/convergence and real hosted ingress acceptance failures. Cloud
+Run already hosts an authenticated stage; the pause does not establish that the platform cannot host the app. The owner
+probe operation added its two scoped OpenID-token memberships, but complete post-apply verification remains unresolved.
+No production application service has been deployed. Preserve original failed operations and hosted results; an
+independently authored reasonless-console candidate remains unbound and cannot satisfy production gates.
+
+The stage readiness configuration variable was removed and `STAGE_DELIVERY_ENABLED` set to `false`; the secret remains
+retained. Automatic stage jobs are intentionally skipped going forward. Mandatory application checks and software
+release publication remain active, and the failed stage job in
+[main run 38137626170](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38137626170) does not erase its
+successful v0.3.53 artifact release. This note records no new hosted pass.
+
+Existing cloud resources and cost controls remain in place. No teardown or zero-spend claim is made; resuming hosting or
+performing teardown requires a separately scoped operation. Local MVP closure does not finalize production `1.0.0`. When
+deployment resumes, require current IAM/state verification, passing hosted acceptance, demonstrated recovery,
+exact-candidate human approval for every production deployment, production smoke and the original finalization checks.

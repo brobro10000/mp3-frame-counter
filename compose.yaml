@@ -35,7 +35,8 @@ services:
   frontend:
     user: "101:101"
     build:
-      context: frontend
+      context: .
+      dockerfile: frontend/Dockerfile
     environment:
       # NGINX listens on 8080 inside the container; FRONTEND_PORT changes only the published host port.
       PORT: "8080"

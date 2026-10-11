@@ -1,5 +1,12 @@
 # V1 MP3 frame counter requirements
 
+**Latest frontend amendment — 2026-10-11:** the owner explicitly replaces the handwritten browser HTML/JavaScript
+implementation with minimal React components in strict TypeScript, compiled to static same-origin assets. APP-V1-001's
+accessible action, pending/result/error, duplicate prevention and retry behavior remain required. Cloud deployment is
+paused for local assessment handoff; the production v1.0.0 gate remains pending. See
+[local handoff](deployment/local-handoff.md) and
+[delivery amendment](deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11).
+
 Status: **V1 release-only milestone verified, 2026-10-10**. Planning PR #2 merged at `0c9f538`; the later authorized
 P1–P5 execution culminated in product merge `ce50762b` and release `v0.1.6`. Read the
 [V1 closure](validation/v1-closure.md) for exact main-run, asset and retry evidence, and the
@@ -26,8 +33,8 @@ the separate status table records actual observations. Original assessment and r
 
 | ID         | V1 requirement                                                                                                                                                                                                     | Assessment/release trace                  | Planned evidence / phase                                                 |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------- | ------------------------------------------------------------------------ |
-| APP-V1-001 | Static HTML/minimal JavaScript: labeled file input, exact Analyze MP3 action, accessible pending/result/error, safe text, no duplicate pending submission and retry after any outcome.                             | APP-REQ-002; APP-EVAL-002,005             | AC-01,03,11,12; P4/P5                                                    |
-| APP-V1-002 | TypeScript API with native node:http; raw POST /file-upload accepts audio/mpeg and application/octet-stream, returns exactly a positive integer frameCount in JSON.                                                | APP-REQ-001,002,006; APP-OPEN-001,004     | AC-02,03,05,06,10; P4/P5                                                 |
+| APP-V1-001 | React/strict TypeScript compiled to static assets: labeled file input, exact Analyze MP3 action, accessible pending/result/error, safe text, no duplicate pending submission and retry after any outcome.          | APP-REQ-002; APP-EVAL-002,005             | AC-01,03,11,12; P4/P5                                                    |
+| APP-V1-002 | TypeScript API with Fastify on Node; raw POST /file-upload accepts audio/mpeg and application/octet-stream, returns exactly a positive integer frameCount in JSON.                                                 | APP-REQ-001,002,006; APP-OPEN-001,004     | AC-02,03,05,06,10; P4/P5                                                 |
 | APP-V1-003 | Inclusive 20,971,520-byte limit enforced on actual received bytes; bounded whole-buffer collection, abort/oversize cleanup and usable errors.                                                                      | APP-EVAL-005,006; APP-OPEN-002,003        | AC-07,08,09,12 plus source/resource review; P4/P5                        |
 | APP-V1-004 | Pure synchronous TypeScript parser walks complete MPEG-1 Layer III frames, using each header's bitrate/sample rate/padding; no npm/external parser, duration estimate or sync scanning through payload/corruption. | APP-SCOPE-001; APP-REQ-003,004,005        | AC-02,04,05,06; independent unit evidence; P3                            |
 | APP-V1-005 | Count complete metadata-bearing MPEG frames; exclude supported separate ID3 records; explicitly document supported tag forms and first-pass limitations.                                                           | APP-REQ-003; APP-OPEN-005,007             | Reviewed format policy and oracle; AC-04–06; P2/P3                       |
@@ -43,7 +50,10 @@ the separate status table records actual observations. Original assessment and r
 | APP-V1-015 | Retain an exact tested image pair and source/configuration identity for release; defer production approval, rollout, hosted smoke and recovery.                                                                    | APP-REL-002–006; unified brief §7         | Release manifest now; hosted verification/rehearsal deferred             |
 | APP-V1-016 | Retain simple replaceable transport/parser/frontend/deployment boundaries; add infrastructure only for approved measured needs.                                                                                    | APP-EVAL-005; unified brief §5            | Architecture/source review and evolution trigger record; P3–P5           |
 
-## Current evidence and completion status
+## Historical local closure evidence
+
+This table describes the original v0.1.6 closure, before Fastify and the React amendment. It does not verify the amended
+React implementation; that change requires fresh acceptance, review, merge and publication evidence.
 
 The original local 75-unit/60-case result at `2adf71b` remains in the [P4 record](validation/p4-integration.md). The
 unchanged P2 baseline subsequently merged at `a0a56d9`. Product PR #5 merged at `ce50762b` on 2026-10-10 after the
@@ -68,10 +78,11 @@ distinguishes deferred deployment, unknown assessment deadline and unobserved ex
 ## Fixed boundaries and limits
 
 No retained uploads, database, object storage, user accounts, history, background jobs, player, drag-and-drop or
-percentage progress. No audio decoding, CRC validation, corruption recovery, streaming parser, frontend
-framework/bundler, HTTP framework, Kubernetes, Terraform or generalized provider adapter framework. No production npm
-dependencies initially. The acceptance harness has its own development dependencies/lockfile; this does not introduce
-workspaces.
+percentage progress. No audio decoding, CRC validation, corruption recovery, streaming parser, Kubernetes or generalized
+provider adapter framework. The original no-framework/no-Terraform restrictions are historical: later reviewed work
+adopted Fastify and bounded Terraform, and the October 11 owner amendment adopts React/TypeScript/Vite. Fastify is the
+sole API runtime dependency; React and its bundler are browser build tools. The acceptance harness retains its own
+development dependencies/lockfile; this does not introduce workspaces.
 
 The complete bounded Buffer and synchronous parser simplify reasoning but constrain concurrent throughput and event-loop
 latency. A per-file cap does not cap aggregate memory. P4 selected and measured memory, admission and timeout budgets;

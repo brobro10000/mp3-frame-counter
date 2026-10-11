@@ -5,7 +5,7 @@ COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci --ignore-scripts
 COPY server/src ./server/src
 # Generate only from locked local inputs; this BuildKit step has no external network.
-RUN --network=none npm run build
+RUN --network=none npm run build:server
 
 # Install the exact production graph separately; development tooling never enters the runtime image.
 FROM node:24.20.0-alpine@sha256:e67514e5d0f6c46656005e1b693b2ec9d52e80b641307de684d4a015ba7a4eaf AS production-dependencies
