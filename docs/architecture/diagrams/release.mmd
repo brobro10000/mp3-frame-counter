@@ -77,12 +77,10 @@ flowchart TD
     FAIL -.->|"Retry only with identical source and bytes"| VERIFY
     RELEASE --> HANDOFF["Upload verified publisher handoff"]
     HANDOFF --> RECEIPT["Record verified publisher handoff receipt"]
-    RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement and provisioned runtime"]
+    RECEIPT --> DEPLOY["Optional main-only stage delivery<br/>requires enablement, existing stage runtime and operation-read permission"]
     DEPLOY --> STAGECHECK["Stage acceptance: 22 frozen cases and stable identity<br/>validated run workflow revision matches source revision"]
     STAGECHECK --> APPROVE["Human approves exact production candidate"]
     APPROVE --> PROD["Owner deploys the same image pair"]
     PROD --> BRIDGE["Owner-supervised production smoke bridge<br/>3 production smoke cases and demonstrated recovery"]
     BRIDGE --> FINALIZE["Owner calls fixed same-source V1 finalizer<br/>original admission and authenticated evidence"]
     FINALIZE --> V1["Additive v1.0.0 release<br/>metadata retries never redeploy"]
-    %% Added new section for observed operation-poll correction
-    V1 --> OBSERVED["Observed operation-poll correction — 2026-10-11<br/>The main PR #49 run published its software release but failed stage application.<br/>Private authenticated decryption of its exact-source diagnostic established a complete native provider 403 denying `run.operations.get` on the expected project/region operation.<br/>The service had advanced to generation 7; hosted acceptance had not run.<br/>Preserve that failure and reconcile observed state before retry.<br/>Append only `run.operations.get` to the existing project custom role and retain its three cost/read/usage permissions, resource identity and stage-deployer binding.<br/>Google supports this permission in custom roles and identifies it as deployment-status read authority; the pinned provider polls the separate project/region operation resource.<br/>This project grant permits reading known operations anywhere in the shared project, including production operations.<br/>Their response can contain metadata, errors or the updated resource configuration.<br/>It adds no operation listing/deletion, production service mutation, IAM write or invocation.<br/>Do not describe it as stage-service-only read isolation or invent an unverified IAM condition.<br/>Review and apply the exact IaC change, read back the role and unchanged cost controls, and require a fresh automatic stage run with all 22 frozen cases before claiming delivery is repaired."]
