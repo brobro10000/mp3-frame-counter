@@ -15,8 +15,9 @@ Required sequence:
 1. Finish the reviewed IAM correction and protected access-state migration; verify unchanged cost controls.
 2. Add the smallest scoped federation, Cloud Run IaC and direct dependent stage job that use the existing identities,
    registry and state buckets. Validate the actual stage service and all 22 frozen stage cases.
-3. Present the exact verified candidate to the owner. After human approval, deploy the same two image digests to
-   production, run the three frozen production smoke cases, prove recovery and finalize the same source as v1.0.0.
+3. Demonstrate same-candidate recovery in stage, restore access and retain fresh passing stage custody. Present the
+   exact verified candidate and recovery evidence to the owner. After human approval, deploy the same two image digests
+   to production, run the three frozen production smoke cases and finalize the same source as v1.0.0.
 
 Production application deployment remains a human gate, including authenticated or no-traffic candidates. A manual
 owner-invoked operation is acceptable for V1 if an enforced private-repository environment gate is unavailable; describe
