@@ -1,5 +1,13 @@
 # GitHub releases without deployment
 
+**Visibility amendment — 2026-10-12:**
+[APP-REL-003](../requirements/release-process.md#repository-visibility-amendment--2026-10-12) now permits the intended
+public or private repository. Repository/source identity, checks, immutable bytes and production approval remain
+required. The existing CI step name retains its historical "private release" wording for evidence compatibility; it no
+longer defines visibility eligibility. Local handoff files still require private permissions. Hosting remains paused
+under the later
+[local MVP amendment](../requirements/release-process.md#local-mvp-priority-and-hosting-deferral--2026-10-11).
+
 **Current authority:** [continued roadmap execution](../phases/roadmap-execution-authorization.md) resumes hosted work
 with automatic stage and a human production gate. Artifact publication remains independent of deployment. The original
 release-only amendment below is historical scope, not a current prohibition on separately gated hosting work.
@@ -19,8 +27,8 @@ On the acceptance runner, `scripts/publish-release-bundle.mjs` validates the cle
 report, then exports the exact tested `linux/amd64` images through local preparation. It uploads that versioned bundle
 as an immutable artifact of the same workflow run. The separate `publish-release` job downloads that specific bundle,
 checks source/configuration, acceptance and archive identities, and runs `node scripts/publish-release.mjs` to
-create/finish a private GitHub release. The equivalent npm wrapper is `npm run publish:release`; the CI job needs no npm
-install. Publication never rebuilds images. The bundle carries both Docker archives, `SHA256SUMS`,
+create/finish a GitHub repository release. The equivalent npm wrapper is `npm run publish:release`; the CI job needs no
+npm install. Publication never rebuilds images. The bundle carries both Docker archives, `SHA256SUMS`,
 reservation/manifest/local notes, `ci-origin.json` and `e2e-result.json`. The publisher adds `publication.json` and
 `publication-notes.md`. The local `manifest.json` remains `prepared-local` and `deployable: false`; separate publication
 evidence records repository release status and explicitly no deployment.

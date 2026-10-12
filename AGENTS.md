@@ -1,5 +1,13 @@
 # mp3-frame-counter operating contract
 
+## Release visibility amendment — 2026-10-12
+
+The owner explicitly requested: "open a quick pr to ignore the private repo req." Allow repository release publication
+for the intended public or private repository. This narrowly supersedes the private-visibility prerequisite; preserve
+repository identity, protected-main ancestry, exact-source mandatory checks, immutable artifacts and production gates.
+See [the release requirements amendment](docs/requirements/release-process.md#repository-visibility-amendment--2026-10-12).
+Product code remains frozen; this authorization changes only release eligibility and its focused tests/documentation.
+
 ## Current shipment and freeze authority — 2026-10-11
 
 The owner subsequently instructed: finish the refactor and documentation, commit/push, obtain companion review, then

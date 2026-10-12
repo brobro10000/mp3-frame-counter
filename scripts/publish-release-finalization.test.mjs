@@ -583,6 +583,30 @@ test("successful immutable retry is read-only and keeps the original owner opera
   assert.deepEqual(state.bytes[state.assets[52001].find((asset) => asset.name === "finalization.json").id], bytes);
 });
 
+test("public repository visibility permits owner-supervised finalization and immutable retries", async (t) => {
+  const { f, input, api, state, result } = await pass(t, (_f, _input, observed) => {
+    observed.repository.private = false;
+  });
+  assert.equal(result.status, "finalized");
+  assert.equal(result.tag, "v1.0.0");
+  assert.equal(result.sourceRevision, source);
+  const release = state.releases.find((item) => item.id === 52001);
+  assert.equal(release.draft, false);
+  assert.equal(release.target_commitish, source);
+  for (const name of names) {
+    const original = state.assets[51001].find((asset) => asset.name === name);
+    const finalized = state.assets[52001].find((asset) => asset.name === name);
+    assert.deepEqual(state.bytes[finalized.id], state.bytes[original.id]);
+  }
+  const final = state.assets[52001].find((asset) => asset.name === "finalization.json");
+  const bytes = Buffer.from(state.bytes[final.id]);
+  assert.deepEqual(JSON.parse(bytes), expectedRecord(f, input, state));
+  state.mutations.length = 0;
+  assert.deepEqual(await subject()(f.bundle, input, api, f.generated), { ...result, reused: true });
+  assert.deepEqual(state.mutations, []);
+  assert.deepEqual(state.bytes[final.id], bytes);
+});
+
 test("both bounded recovery kinds accept evidence bound to stage or production, never an arbitrary resource", async (t) => {
   await pass(t, (_f, input) => {
     input.recovery.kind = "prior-revision";
@@ -596,7 +620,7 @@ test("both bounded recovery kinds accept evidence bound to stage or production, 
   });
 });
 
-test("owner identity, private repository, protected ancestry and original producing checks precede writes", async (t) => {
+test("owner identity, intended repository, protected ancestry and original producing checks precede writes", async (t) => {
   await refusals(t, [
     [
       "another actor",
@@ -620,12 +644,6 @@ test("owner identity, private repository, protected ancestry and original produc
       "wrong repository",
       (_f, _e, s) => {
         s.repository.full_name = "other/repository";
-      },
-    ],
-    [
-      "public repository",
-      (_f, _e, s) => {
-        s.repository.private = false;
       },
     ],
     [

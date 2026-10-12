@@ -1,9 +1,9 @@
 /**
- * Publish an immutable private GitHub release of the exact main-push acceptance artifacts, without deployment.
+ * Publish an immutable GitHub repository release of the exact main-push acceptance artifacts, without deployment.
  * CI runs `node scripts/publish-release.mjs` in the dedicated contents:write/actions:read publication job, after
  * downloading its producing attempt's artifact to .artifacts/release-input. Requires GitHub's job-scoped GITHUB_TOKEN,
  * exact ordinary main-push context, full clean Git history and successful live mandatory job evidence. No CLI overrides.
- * Verifies local bytes/source/baseline and live private/protected-main ancestry before mutations. Creates an exact tag
+ * Verifies local bytes/source/baseline and live repository/protected-main ancestry before mutations. Creates an exact tag
  * and a draft release, uploads only missing assets, verifies GitHub's observed SHA-256/size, then publishes last.
  * Retries reuse identical bytes; mismatches or partial assets fail without overwrite/delete. Failures retain draft/tag
  * state for inspection. Historical releases never replace newer latest releases. Writes two ignored provenance files;
