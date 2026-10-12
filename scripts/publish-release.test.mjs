@@ -291,7 +291,7 @@ test("mandatory live job failures, skipped jobs and source substitutions cannot 
   await assert.rejects(publishRelease(f.bundle, api, f.generated));
   assert.equal(api.state.mutations.length, 0);
   api.state.run.head_sha = f.context.sourceRevision;
-  api.state.repository.private = false;
+  api.state.repository.full_name = "other/repository";
   assert.throws(
     () =>
       requireObservedChecks(
@@ -302,7 +302,7 @@ test("mandatory live job failures, skipped jobs and source substitutions cannot 
         api.state.run,
         api.state.jobs,
       ),
-    /private repository/,
+    /repository/,
   );
   const reused = fakeApi(f.bundle);
   const nextAttempt = { ...f.bundle, origin: { ...f.bundle.origin, attempt: 2 } };
@@ -342,6 +342,25 @@ test("complete release publishes last, records undeployed provenance and reuses 
   const count = api.state.mutations.length;
   assert.equal((await publishRelease(f.bundle, api, f.generated)).reused, true);
   assert.equal(api.state.mutations.length, count, "An identical published release must not be mutated");
+});
+
+test("public repository visibility permits release-only publication and immutable retries", async (t) => {
+  const f = await fixture(t);
+  const api = fakeApi(f.bundle);
+  api.state.repository.private = false;
+  const result = await publishRelease(f.bundle, api, f.generated);
+  assert.equal(result.status, "released-not-deployed");
+  assert.equal(result.deployed, false);
+  assert.equal(api.state.releases[0].target_commitish, f.context.sourceRevision);
+  assert.equal(api.state.releases[0].draft, false);
+  assert.equal(api.state.assets.length, 10);
+  assert.equal(api.state.mutations.at(-1).method, "PATCH", "Publication must be the last mutation");
+  const publication = readFileSync(join(f.generated, "publication.json"));
+  assert.equal(JSON.parse(publication).deployed, false);
+  const count = api.state.mutations.length;
+  assert.equal((await publishRelease(f.bundle, api, f.generated)).reused, true);
+  assert.equal(api.state.mutations.length, count, "A public repository retry must preserve published assets");
+  assert.deepEqual(readFileSync(join(f.generated, "publication.json")), publication);
 });
 
 test("partial upload stays draft and same-byte retry uploads missing assets before publishing", async (t) => {

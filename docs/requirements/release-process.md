@@ -1,5 +1,20 @@
 # Application releases without deployment
 
+## Repository visibility amendment — 2026-10-12
+
+The owner explicitly requested: "open a quick pr to ignore the private repo req." The intended repository is now public;
+release publication may operate for either public or private visibility. This supersedes only the earlier private
+repository prerequisite in APP-REL-003. Repository identity, protected-main ancestry, successful exact-source checks,
+independent acceptance, immutable assets/retries and every production approval gate remain mandatory. Private local
+handoff permissions, secrets and excluded MP3 inputs remain protected. Release assets inherit repository visibility.
+
+PR #63 merged as `5c2197f67b1a2c74a7ab5680fe13abb0bfe973ba`. Its
+[main run 38193758092](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38193758092) passed all nine
+mandatory validation checks but failed publication at the private-repository guard. This is a publication failure, not a
+product test failure or a completed release. Preserve that run; the next eligible protected-main source can publish
+normally when this amendment lands. Source ordinals may have gaps. Do not rebuild or replace an existing reserved
+release.
+
 ## Local MVP priority and hosting deferral — 2026-10-11
 
 The owner's latest instruction pauses Cloud Run work for the deadline and prioritizes a minimal React/TypeScript UI,
@@ -51,7 +66,7 @@ deferral is not completion. The original assessment itself does not require a ho
 | ----------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | APP-REL-001 | Reproducible local build/run configuration for the two independently built application images.                    | Documented setup, clean builds and complete local acceptance against the identified images.                                   | Provider selection, account/region/budget, managed configuration and successful hosting.        |
 | APP-REL-002 | Automatically publish eligible application releases from protected main after every mandatory check succeeds.     | Main-only workflow, failure controls and an observed successful publication run. PRs receive no release write token.          | Automatic deployment to a candidate or production service.                                      |
-| APP-REL-003 | Determine versions automatically and publish matching tags, notes and private repository releases.                | Version policy, exact source/tag binding, real release URL and explicit undeployed status.                                    | Deployment verification as a prerequisite for publication; it is no longer a release-only gate. |
+| APP-REL-003 | Determine versions automatically and publish matching tags, notes and repository releases.                        | Version policy, exact source/tag binding, real release URL and explicit undeployed status.                                    | Deployment verification as a prerequisite for publication; it is no longer a release-only gate. |
 | APP-REL-004 | Retain the exact tested image pair, archive checksums and source/suite/configuration provenance.                  | Published image archives, validated manifests and conflict-safe retries. Never rebuild after acceptance for the same release. | Registry promotion, provider deployment identities and managed rollback artifact retention.     |
 | APP-REL-005 | Verify the local application before publication and expose release failures through GitHub Actions.               | Full unchanged acceptance suite with zero failures/skips, clean source, successful cleanup and verified release assets.       | Hosted health, public-ingress acceptance and production smoke checks.                           |
 | APP-REL-006 | Preserve prior published artifacts and handle failed publication or corrections without replacing released bytes. | Draft-until-complete publication, identical retry behavior, mismatch rejection and a documented new-version correction path.  | Managed rollback, first-deployment abort and candidate recovery rehearsal.                      |
