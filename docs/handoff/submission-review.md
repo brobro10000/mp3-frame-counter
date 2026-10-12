@@ -1,8 +1,8 @@
 # Final independent submission review
 
-**Engineering verdict: Not ready to submit against the employer's full MPEG-1 requirement without resolving the
-supported-format gap.** The supplied sample and advertised subset work. Valid MPEG-1 free-format and ID3v2.4
-extended-header/footer inputs are rejected; documentation is not employer approval of that restriction.
+**Submission recommendation: submit the tested application with its disclosed compatibility limits.** The supplied
+sample and advertised subset work. Full MPEG-1 coverage remains partial: valid free-format and an ID3v2.4 footer-bearing
+input are rejected. This qualified recommendation does not claim employer approval of that restriction.
 
 Reviewed on **2026-10-12 UTC**: committed candidate `2971620040a0c5a89292de5e12e9132760508e9c`, tree
 `f587c361e1ddb11fc430f531122f4178547b5540`. Its tree exactly matches merged main
@@ -33,8 +33,8 @@ probe.
 ## Findings and decisions
 
 1. **P2 requirement gap — supported MPEG-1 subset.** A LAME-encoded free-format tone decoded successfully but returned
-   `MP3_UNSUPPORTED_FORMAT`; valid ID3v2.4 extended-header/footer wrappers decoded and exposed 11 audio packets but
-   returned `MP3_UNSUPPORTED_METADATA`. Rejection occurs in `decodeMpegHeader` and `firstFrameOffset` in
+   `MP3_UNSUPPORTED_FORMAT`; a valid ID3v2.4 footer-bearing wrapper decoded and exposed 11 audio packets but returned
+   `MP3_UNSUPPORTED_METADATA`. Rejection occurs in `decodeMpegHeader` and `firstFrameOffset` in
    [mpeg.ts](../../server/src/modules/mp3/mpeg.ts). The employer excludes other MPEG versions/layers, not these valid
    MPEG-1 layouts. Resolve the scope with the employer or separately authorize a bounded implementation and independent
    regression cases. Product behavior is frozen in this handoff.
@@ -49,6 +49,16 @@ probe.
    It was not repaired or waived anew.
    [The original exception](known-gaps.md#accepted-documentation-checker-limitation--2026-10-12) remains visible;
    passing checks are not proof of a complete schema validator.
+
+**Audit correction after the owner's scope recheck:** the separate extended-header fixture omitted an ID3 frame required
+by [ID3v2.4 section 4](https://id3.org/id3v2.4.0-structure). Its successful decoding did not establish a conformant tag,
+so that probe cannot demonstrate rejection of a valid input. The original external reports/logs remain preserved with an
+explicit correction addendum. The valid footer fixture and free-format case independently support the narrower finding
+above. Other MPEG versions/layers remain out of scope; no additional format was implemented.
+
+This reassessment qualifies the original external report's strict readiness verdict: a gap in full-format coverage does
+not establish that the evaluator will reject the working assessment. Submitting the tested application with these
+disclosed limits is an owner's deadline decision; support for unrelated MPEG formats is not a prerequisite.
 
 All 14 evaluation questions are addressed in the [root README](../../README.md#evaluation-at-a-glance) and
 [detailed evaluation](evaluation.md). The broad-format requirement remains partial; optional architecture or tooling

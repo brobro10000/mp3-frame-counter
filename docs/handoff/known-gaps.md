@@ -16,10 +16,12 @@ The parser supports MPEG-1 Layer III table bitrates/sample rates/padding, flags-
 trailing ID3v1. MPEG-2/2.5, other layers, free-format, unsupported tag/encoder layouts and corruption recovery remain
 unsupported. It does not decode audio or validate CRC/payload/LAME extensions. Only a correctly positioned leading
 Xing/Info carrier is excluded; VBRI and later markers are not substitutes. General MediaInfo equivalence is unclaimed.
-Independent final probes also confirmed rejection of a decodable MPEG-1 free-format tone and valid ID3v2.4
-extended-header/footer wrappers. These are valid MPEG-1 inputs, not the explicitly out-of-scope MPEG-2/2.5 formats. The
-employer did not approve this narrower subset, so full compliance with its broad MPEG-1 requirement is not established.
-Broader support requires an explicitly scoped change and independent expectations.
+Independent final probes also confirmed rejection of a decodable MPEG-1 free-format tone and a valid ID3v2.4
+footer-bearing wrapper. These are valid MPEG-1 inputs, not the explicitly out-of-scope MPEG-2/2.5 formats. The employer
+did not approve this narrower subset, so full compliance with its broad MPEG-1 requirement is not established. Broader
+support requires an explicitly scoped change and independent expectations. The
+[final review correction](submission-review.md#findings-and-decisions) withdraws the separate extended-header fixture as
+evidence of a valid input; its tag was incomplete.
 
 The private assessment sample is ignored and unavailable in a fresh clone or release archive. Its identity is in the
 [sample record](../requirements/samples/README.md); the
