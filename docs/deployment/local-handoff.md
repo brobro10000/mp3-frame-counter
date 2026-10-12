@@ -1,9 +1,21 @@
 # Local application and release handoff
 
-This is the deadline-focused local MVP handoff. It preserves the raw upload API, pure physical-frame parser, two
-non-root runtime containers and independent acceptance. Cloud deployment is paused; a local pass or repository release
-does not establish production v1.0.0. See the
-[delivery amendment](v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11).
+This is the deadline-focused local MVP handoff. It preserves the raw upload API and handwritten computed audio count,
+excluding a complete supported leading Xing/Info carrier from the physical count. The application retains two non-root
+runtime containers and independent acceptance. Cloud deployment is paused; a local pass or repository release does not
+establish production v1.0.0. See the [delivery amendment](v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11).
+
+**Verified delivery checkpoint — 2026-10-12:** `v0.4.66` published the exact tested images from source
+`8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`. See the
+[delivery evidence](../validation/backend-audio-refactor.md#verified-descendant-delivery-checkpoint--2026-10-12) for the
+required acceptance, cleanup and release identities. For any selected release, keep its source tag and assets matched as
+described below.
+
+The separate
+[received-image startup check](../validation/backend-audio-refactor.md#received-image-startup-check--2026-10-12)
+verified both downloaded archives, exercised the documented containerd fallback, waited for healthy containers and
+received `{"frameCount":9}` from the known-count upload. This local smoke evidence does not replace full acceptance or
+establish hosting.
 
 ## Run a received release with Docker
 
@@ -110,8 +122,8 @@ asserts the same result while the application is running.
 
 Choose one verified published tag from [GitHub releases](https://github.com/brobro10000/mp3-frame-counter/releases). Use
 a clean, full-history checkout of that tag and download all its release assets into an ignored directory. The commands
-below require the pinned Node runtime, Docker, `shasum` and authenticated GitHub CLI access to the private repository.
-Browser download is an alternative to the `gh release download` step. Replace `v0.x.y` with the selected tag:
+below require the pinned Node runtime, Docker, `shasum` and GitHub CLI access to the selected repository. Browser
+download is an alternative to the `gh release download` step. Replace `v0.x.y` with the selected tag:
 
 ```sh
 set -e

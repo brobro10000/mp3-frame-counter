@@ -8,7 +8,12 @@ document does not assign an employer score.
 The [dated verification record](../validation/backend-audio-refactor.md) reports 269 server plus 70 frontend unit tests,
 strict application/test type checks, source lint, generated OpenAPI validation and all 72 independent local acceptance
 cases passing. Final run `mp3-e2e-45286-140fd7c71318` retained exact image/content identities and verified cleanup. Its
-revision fields are unrecorded: review, merged-source CI and publication remain separate pending records.
+revision fields remain unrecorded. The later
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze) separately
+records exact-head review, the product merge, nine passing main validation checks and the publisher failure. The
+separate 2026-10-12 delivery checkpoint records main run `38196084304` passing all nine mandatory checks and publication
+of `v0.4.66` from reviewed visibility-fix source `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`, with 72 required
+backend-audio cases and scoped cleanup passing.
 
 ## Correctness
 
@@ -48,7 +53,9 @@ revision fields are unrecorded: review, merged-source CI and publication remain 
   TypeScript, Node's test runner and independent Playwright have documented commands in the
   [root README](../../README.md#verify-and-understand). Source lint covers TypeScript/TSX and tests; OpenAPI has
   semantic validation, and diagrams have a render check. The 339 localized unit and 72 external case results are local
-  evidence; actual required CI for the shipped revision must still be recorded.
+  evidence; the product merge's validation passed while its publisher failed. The later `v0.4.66` checkpoint records
+  successful descendant main checks, 72 required cases, cleanup and publication separately in the
+  [merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze).
 
 ## Error Handling
 
@@ -86,9 +93,11 @@ revision fields are unrecorded: review, merged-source CI and publication remain 
 
 - **Has the candidate used Git effectively?** `APP-EVAL-007`, `APP-SUB-001`: the repository retains requirement source,
   independent baseline, ordered reviewed historical changes and immutable release evidence. This amendment uses separate
-  product, independent expectation and prerequisite lanes. Its own exact-head companion approval, merge and
-  protected-main publication remain pending in the [validation record](../validation/backend-audio-refactor.md);
-  existing Git history does not prove the current shipment or employer submission.
+  product, independent expectation and prerequisite lanes. Exact-head review, merge and the failed publisher are
+  recorded in the
+  [merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze). The
+  separate `v0.4.66` delivery checkpoint records the reviewed visibility fix, successful main checks and descendant
+  publication. Repository delivery does not establish employer submission or acceptance.
 - **Is there evidence of a structured approach?** `APP-EVAL-008`, `APP-SUB-002–003`: stable requirement IDs, frozen
   contract semantics, explicit module ownership, meaningful unit/socket/browser tests and dated evidence connect the
   assignment to the implementation. Failed and interrupted runs remain recorded, with harness corrections explained

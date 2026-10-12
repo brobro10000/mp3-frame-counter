@@ -1,5 +1,11 @@
 # Backend audio-count refactor — local evidence, 2026-10-11
 
+**Current product merge and publication status:** see
+[Product merge, publication and freeze](#product-merge-publication-and-freeze). PR #63 is merged; its main validation
+checks passed, but its publication failed. The separate verified 2026-10-12 delivery checkpoint records `v0.4.66` from
+reviewed PR #67 descendant source. Earlier sections preserve their dated local and preparation observations, including
+then-pending states and UNRECORDED revisions.
+
 This is a local, unpublished implementation of the [owner amendment](../requirements/backend-audio-refactor.md), based
 on `93a7098c027b214b9b392b0f1408660097dd32f3`. It is not a merged release, an activated acceptance contract, a hosted
 deployment or production V1. The original assessment, physical-frame fixtures and historical evidence remain intact. The
@@ -357,3 +363,96 @@ merge, actual suite binding and product review/adoption remain pending. The prer
 acceptance or publication of the audio-count implementation. Run `mp3-e2e-45286-140fd7c71318` retains its original
 unrecorded source/suite revisions and is not relabeled as required CI evidence. Cloud delivery remains paused;
 production v1.0.0 remains deferred.
+
+## Product merge, publication and freeze
+
+Candidate [PR #64](https://github.com/brobro10000/mp3-frame-counter/pull/64) merged at
+`9e2bcc99cb539564c615654b7458212dfc1022b1`. [PR #66](https://github.com/brobro10000/mp3-frame-counter/pull/66) bound
+that actual candidate at `e6e2967ce0d32df2cbebeabe9749dc12dbcc350f`, with suite tree
+`f3543e1b53342d6cb0f89d0bc289fec7e488020d`. The owner-accepted F-004 limitation remains recorded in the binding/review
+evidence and [known gaps](../handoff/known-gaps.md#accepted-documentation-checker-limitation--2026-10-12).
+
+[PR CI 38192504094](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38192504094) passed all nine mandatory
+jobs and 72 required cases with scoped cleanup for head `7e97906eef7281211aeb8a800328e51472cf1e48`, tested through
+synthetic merge `8442e52ff1b5bd757869bd9a3261218520afc4ca`. Earlier run `38192463306` was cancelled after the diagram
+bot changed the head; it is not relabeled as successful CI.
+
+Product [PR #63](https://github.com/brobro10000/mp3-frame-counter/pull/63) received companion
+[review 5485958132](https://github.com/brobro10000/mp3-frame-counter/pull/63#pullrequestreview-5485958132), which
+approved exact head `7e97906eef7281211aeb8a800328e51472cf1e48`, and merged at
+`5c2197f67b1a2c74a7ab5680fe13abb0bfe973ba`.
+[Protected-main run 38193758092](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38193758092), attempt 1,
+passed all nine validation checks. The publisher alone failed because its `repository.private` assertion rejected the
+now-public repository. The overall run failed, and no successful PR #63 release is recorded.
+
+Earlier binding release [v0.4.64](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.64) remains
+historical evidence for source `e6e2967ce0d32df2cbebeabe9749dc12dbcc350f`. It does not establish publication of the
+later product merge. The successful descendant delivery checkpoint below identifies its own source, required main run
+and tested images separately from PR #63.
+
+Visibility-fix [PR #67](https://github.com/brobro10000/mp3-frame-counter/pull/67) merged at
+`8cc64d44fc12e0f8feea7fa4ddabfa38945c7544` on `2026-10-12T02:30:51Z`.
+[Review 5486076728](https://github.com/brobro10000/mp3-frame-counter/pull/67#pullrequestreview-5486076728) by
+`brobro1000` approved exact head `8596a045ec09413ca4ebb20fc49476396f673115`. Standard companion run
+`20261012T022229-27d69fda` approved the eight reviewed paths with no findings, a documentation pass and an executed
+receipt. The
+[release visibility amendment](../requirements/release-process.md#repository-visibility-amendment--2026-10-12) permits
+the intended public or private repository while preserving the remaining release controls.
+
+[Final PR CI 38195133720](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38195133720), attempt 1,
+succeeded: all nine mandatory checks passed, including 70 frontend, 269 server and 982 tooling tests, 72 required
+backend-audio cases and 20 Mermaid diagrams. Earlier PR run `38195112484` was cancelled after a bot timestamp update; it
+remains cancelled and is not relabeled as a pass.
+
+### Verified descendant delivery checkpoint — 2026-10-12
+
+[Protected-main run 38196084304](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38196084304), attempt 1,
+succeeded for visibility-fix source `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`: all nine mandatory checks and the
+publisher passed, while stage delivery remained skipped.
+[v0.4.66](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.66), release ID `410085183`, was published
+at `2026-10-12T02:37:28Z`. Its release policy line is `0.4`, global first-parent ordinal `66`. This records publication
+of the reviewed descendant, not a successful retry of PR #63's failed main run.
+
+Required `backend-audio-v1` acceptance used candidate suite commit `9e2bcc99cb539564c615654b7458212dfc1022b1`, suite
+tree `f3543e1b53342d6cb0f89d0bc289fec7e488020d` and fixture manifest SHA-256
+`ef45e3d9183ed11798747d8fc17be0c81e3e6bc50db9cae887dd0c88d8943c51`. Run `mp3-e2e-9353-560b22b990f1` passed all 72
+planned cases with zero failures or skips in `119572` ms, and scoped cleanup passed. Local acceptance configuration
+SHA-256 was `41ea1939c9257b3054d32b5763198055f31627669a59a15421ed68784382e73b`; source configuration SHA-256 was
+`d9e6e6578653e74035b98c69d6f42937e470972c96be86ad2ee5a8d96d8f821b`.
+
+The published manifest SHA-256 is `09c0507ca150d465f27864c3c3bfb057c248f49c81e167eca169150f67b1c961`. Exact tested local
+image IDs are API `sha256:313ea09f336e11f24d1ff3e8296d1ebe20f5e68911580338dd9219a4d263d546` and frontend
+`sha256:06bf824496ff54211395494f1ed0c29c13298565df00d658343bddba9bbe61aa`. The post-publication audit passed 24 checks:
+eight metadata assets were downloaded and rehashed against API-reported sizes and SHA-256 digests; the two Docker
+archives were checked against API-reported sizes/digests without downloading their contents in that audit.
+
+Publication records `deployed: false`, with provider and registry digests null. The preparation manifest retains its
+original `prepared-local`, `deployable: false` and provisional-version fields; publication does not rewrite preparation
+history or establish hosted execution.
+
+The earlier local run retains its original UNRECORDED source/suite revisions. Product code is frozen except for
+owner-authorized high-risk feedback addressed through review. Follow the [local startup](../../README.md#run-locally)
+and [tested-image handoff](../deployment/local-handoff.md#run-a-received-release-with-docker). Cloud delivery remains
+paused; production v1.0.0, hosted gates and external assessment submission remain unverified.
+
+### Received-image startup check — 2026-10-12
+
+A separate recipient simulation used the same-tag source without a Git checkout and downloaded all ten `v0.4.66` assets.
+Between `02:46:56Z` and `02:47:25Z`, 40 checks passed: metadata matched the publication audit, both downloaded archives
+passed size/SHA-256 verification, and the isolated image pair started without rebuilding or pulling images.
+
+The published Docker configuration IDs were unavailable in the local containerd image store. Those failed inspections
+were preserved before following the complete
+[verified fallback](../deployment/image-store-compatibility.md#verify-a-containerd-loaded-image). The
+archive/configuration/OCI-manifest chain verified API runtime ID
+`sha256:a8a51d15f32d7f2d75f9912dc1d23d56d42af17009ca14837b0a7bb710667df6` and frontend runtime ID
+`sha256:e5e3bcc70bb05fe9b0614282a9e205c0bd973229e84ef04f53ec0e12f3977492`, both `linux/amd64`. These loaded manifest IDs
+do not replace the published configuration IDs or archive checksums.
+
+Both containers became healthy. HTTP health, UI, Redoc HTML and specification returned 200; the committed 3,456-byte
+nine-frame fixture returned exactly `{"frameCount":9}`. Scoped cleanup removed only this simulation's Compose project
+and released its port, retaining downloaded assets, images, command outputs and failed inspection attempts.
+
+The retained operator result SHA-256 is `1bbee0dee1b15f8750f9227c4c24009aa94b2a5424f7a73105fedcb203a0a308`. This is a
+local received-image smoke check, not another full acceptance run, a browser-rendering check, a portable CI artifact or
+hosted deployment evidence. It supplements the source-bound published acceptance above.

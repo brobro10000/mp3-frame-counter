@@ -1,8 +1,12 @@
 # Visible CI lanes
 
 Ordinary CI uses four reusable workflows in the same run. The source-bound visibility and backend source/dependency
-policies are adopted on protected main. The refactor's localized units and changed application behavior still require
-successor binding, the normal protected merge and successful CI on the actual merged product source.
+policies are adopted on protected main. The successor is bound and all nine validation checks passed on the product
+merge. Main run `38193758092` failed only in the publisher because its `repository.private` assertion rejected the
+now-public repository; it is not recorded as an overall successful run. At the verified 2026-10-12 delivery checkpoint,
+reviewed PR #67 descendant source `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544` passed all nine mandatory checks and
+publication in main run `38196084304`, releasing `v0.4.66`. Stage delivery remained skipped. See the
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze).
 
 | Caller                | Reusable workflow                                                      | Mandatory work                                                                                                                                    |
 | --------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -51,8 +55,10 @@ The independently specified source/dependency prerequisite merged through PR #62
 `e1616c52a3a0a777216678dc76403d293471a783`, preserving the other three shards and their job identities. It requires
 strict application/test typechecking, actual source lint, same-app OpenAPI generation and semantic validation.
 Historical source inventories remain readable; adopting the new layout cannot be undone by deleting tests or changing
-directories. This product wiring does not bind the new audio-count/error acceptance contract or establish product CI
-success.
+directories. This prerequisite wiring alone did not bind the new audio-count/error acceptance contract or establish
+product CI success. The independently authored successor was later bound through PR #66; actual product and descendant
+checks are recorded separately in the
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze).
 
 Release bundle preparation and upload remain on the single acceptance runner, where the exact tested Docker image IDs
 exist. The existing publisher consumes that same-run artifact only after the terminal gate succeeds; it does not rebuild
@@ -72,9 +78,12 @@ These commands require the actual committed acceptance history and validate its 
 admission locally. `node scripts/run-ci-lane.mjs acceptance` runs the complete controller locally and needs the normal
 Docker/browser prerequisites. Unknown lane/shard names or extra arguments fail instead of selecting less work.
 
-For this unpublished refactor, `npm run test:server` and `npm run test:frontend` execute the localized units without
-claiming acceptance admission. The actual independently authored successor still needs review, test-only merge and
-protected-main binding before the normal acceptance lane can admit its changed count/error behavior.
+`npm run test:server` and `npm run test:frontend` execute localized units without claiming acceptance admission. The
+normal acceptance lane resolves the bound independent successor. Actual binding, the product merge's passing validation
+checks and its failed publisher are recorded separately in the
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze). The
+`v0.4.66` checkpoint records the descendant's successful required main checks and verified publication. Future sources
+still require their own checks and publication evidence.
 
 See [independent acceptance](independence-and-baseline.md), [acceptance transitions](acceptance-transition.md) and the
 [release process](../requirements/release-process.md) for the underlying evidence and publication boundaries.

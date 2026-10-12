@@ -1,5 +1,18 @@
 # mp3-frame-counter operating contract
 
+## Product code freeze after reviewed merge — 2026-10-12
+
+The owner's latest instruction is: "unless upcoming feedback is high risk do not make anymore code changes and just
+approve the PR". This amendment takes effect after the
+[verified PR #63 merge](docs/validation/backend-audio-refactor.md#product-merge-publication-and-freeze) and
+supersedes the earlier "major product changes" freeze wording. Product code is frozen except for owner-authorized
+high-risk feedback addressed through review. Minimal documentation may clarify the frozen behavior and
+[handoff](docs/handoff/README.md).
+
+Normal required checks and complete companion review remain mandatory. The accepted F-004 P2 checker limitation
+remains unfixed and visible in the binding/review evidence and [known gaps](docs/handoff/known-gaps.md). This amendment
+does not broaden shipment authorization, resume cloud delivery or claim verified production v1.0.0.
+
 ## Release visibility amendment — 2026-10-12
 
 The owner explicitly requested: "open a quick pr to ignore the private repo req." Allow repository release publication
