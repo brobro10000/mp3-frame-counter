@@ -191,7 +191,7 @@ test("TC-05 idle body deadline is readable and releases capacity", async () => {
   const upload = openUpload(destination.api);
   try {
     await assertAdmitted(upload);
-    await assertTimeout(upload, IDLE_WINDOW);
+    await assertTimeout(upload, IDLE_WINDOW, "UPLOAD_IDLE_TIMEOUT");
   } finally {
     upload.close();
   }
@@ -208,7 +208,7 @@ test("TC-06 active body reaches total deadline and releases capacity", async () 
     timer = setInterval(() => {
       if (!upload.settled) upload.write(bytes.subarray(offset, ++offset));
     }, 2_000);
-    await assertTimeout(upload, TOTAL_WINDOW);
+    await assertTimeout(upload, TOTAL_WINDOW, "UPLOAD_TIMEOUT");
   } finally {
     clearInterval(timer);
     upload.close();

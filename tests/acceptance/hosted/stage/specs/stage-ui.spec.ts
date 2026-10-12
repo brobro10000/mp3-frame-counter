@@ -7,10 +7,11 @@
  */
 import assert from "node:assert/strict";
 import { expect, type Page, type Response } from "@playwright/test";
-import { assertErrorResponse, assertFrameResponse } from "../../../lib/assertions.ts";
+import { assertErrorResponse } from "../../../lib/assertions.ts";
 import { fixtureBytes } from "../../../lib/fixtures.ts";
 import { createHostedTest } from "../../../lib/hosted-fixtures.ts";
 import { checkHostedExplicitUpload } from "../../../lib/hosted-ui.ts";
+import { absentDetail, assertDetailedFrameResponse } from "../../../lib/backend-audio-contract.ts";
 
 const test = createHostedTest("stage");
 
@@ -41,6 +42,7 @@ async function submit(page: Page, origin: string, id: string) {
   assert.equal(new URL(response.url()).origin, origin);
   assert.equal(new URL(request.url()).origin, origin);
   assert.equal(request.method(), "POST");
+  assert.deepEqual(new URL(request.url()).searchParams.getAll("details"), ["true"]);
   assert.equal(await request.headerValue("content-type"), "audio/mpeg");
   assert.deepEqual(request.postDataBuffer(), fixtureBytes(id));
   return {
@@ -68,7 +70,7 @@ test("HS-02 upload error permits a subsequent valid browser upload", async ({ ho
   await expect(button).toBeEnabled();
   await expect(page.locator('input[type="file"]')).toBeEnabled();
   await select(page, "tone-cbr");
-  assertFrameResponse(await submit(page, origin, "tone-cbr"), 9);
+  assertDetailedFrameResponse(await submit(page, origin, "tone-cbr"), absentDetail(9));
   await expect(accessibleMessage(page).filter({ hasText: /\b9\b/ })).toBeVisible();
   await expect(button).toBeEnabled();
   await expect(page.locator('input[type="file"]')).toBeEnabled();

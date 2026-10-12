@@ -54,10 +54,10 @@ export function hostedInventory(role: Profile): CaseRef[] {
     const metadata = decode("profiles.json");
     if (
       !closed(inventory, ["contractRevision", "cases"]) ||
-      inventory.contractRevision !== "hosted-health-v1" ||
+      inventory.contractRevision !== "backend-audio-v1" ||
       !closed(metadata, ["schemaVersion", "contractRevision", "profiles"]) ||
       metadata.schemaVersion !== 1 ||
-      metadata.contractRevision !== "hosted-health-v1" ||
+      metadata.contractRevision !== "backend-audio-v1" ||
       !closed(metadata.profiles, ["local", "stage", "production"])
     )
       bad();

@@ -101,6 +101,10 @@ const sourceFiles = [
   "lib/docs-calibration.mjs",
   "lib/docs-control-report.mjs",
   "fixtures/openapi.json",
+  "fixtures/backend-audio-openapi.json",
+  "lib/backend-audio-openapi.mjs",
+  "lib/backend-audio-errors.mjs",
+  "lib/backend-audio-redoc.mjs",
   "fixtures/inventory.json",
   "fixtures/manifest.json",
   "package.json",
@@ -330,11 +334,21 @@ if (!child) {
       const narrative = structuredClone(expectedSpec);
       narrative.info.description = "Harmless metadata";
       narrative.paths["/file-upload"].post.responses["200"].description = "Independent positive frame count";
+      narrative.servers = [{ url: "/", description: "The same-origin analysis API." }];
       assertSpec(narrative);
       const defaults = structuredClone(expectedSpec);
       defaults.servers = [{ url: "/" }];
       defaults.security = [];
       assertSpec(defaults);
+      for (const servers of [
+        [{ url: "https://invalid.example", description: "Same origin" }],
+        [{ url: "/", description: 42 }],
+        [{ url: "/", variables: { host: { default: "invalid.example" } } }],
+      ]) {
+        const invalid = structuredClone(expectedSpec);
+        invalid.servers = servers;
+        assert.throws(() => assertSpec(invalid), /SPEC_SERVERS/);
+      }
       for (const [key, marker] of [
         ["servers", "SPEC_SERVERS"],
         ["security", "SPEC_SECURITY"],

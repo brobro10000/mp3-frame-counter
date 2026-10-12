@@ -181,7 +181,12 @@ export async function assertUploadCount(upload: Upload, expected: number): Promi
   assert.equal(result.kind, "response", "Completed upload closed without response");
   if (result.kind === "response") assertFrameResponse(result.response, expected);
 }
-export async function assertTimeout(upload: Upload, window: { min: number; max: number }): Promise<void> {
+/** Verify the real readable deadline response, optional exact public code and independent timing window. */
+export async function assertTimeout(
+  upload: Upload,
+  window: { min: number; max: number },
+  code?: string,
+): Promise<void> {
   const result = await within(
     upload.outcome,
     window.max - (performance.now() - upload.started),
@@ -189,7 +194,7 @@ export async function assertTimeout(upload: Upload, window: { min: number; max: 
   );
   assert.equal(result.kind, "response", "Body deadline closed without readable 408");
   if (result.kind !== "response") throw new Error("No complete timeout response");
-  assertErrorResponse(result.response, 408);
+  assertErrorResponse(result.response, 408, code);
   const elapsed = result.at - upload.started;
   assert.ok(elapsed >= window.min && elapsed <= window.max, `Body deadline outside observation window: ${elapsed} ms`);
 }
