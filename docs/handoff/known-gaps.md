@@ -55,9 +55,12 @@ the local handoff.
 
 `APP-EVAL-007–008`, `APP-SUB-001–003`: final local run `mp3-e2e-45286-140fd7c71318` passed 72 cases and supplemental
 sample/docs/UI observations, with cleanup verified. Its source/suite revisions remain explicitly unrecorded; retained
-content hashes and image IDs are not trusted release admission. Successor binding, exact-head companion approval, merge
-and protected-main CI/publication remain pending until the [validation record](../validation/backend-audio-refactor.md)
-identifies actual outcomes.
+content hashes and image IDs are not trusted release admission. The later
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze) separately
+identifies actual binding, exact-head review, the product merge and its failed publisher. The verified 2026-10-12
+delivery checkpoint records `v0.4.66` publication from the reviewed PR #67 descendant after main run `38196084304`
+passed all nine mandatory checks and publication. Earlier binding release `v0.4.64` remains historical evidence. The
+original local evidence remains unchanged.
 
 Evaluator repository access, assessment receipt date, the five-day target date and actual external submission remain
 unverified (`APP-TIME-001`, `APP-SUB-001`). The roadmap's
@@ -66,9 +69,9 @@ optional portfolio growth. Neither a local pass nor publication proves employer 
 
 ## Freeze and roadmap
 
-The owner authorized reviewed shipment followed by a product code freeze. After merge, implementation changes are
-reserved for blocking defects with focused regression evidence and review. Documentation can clarify frozen behavior;
-unrequested features, refactoring, broader MPEG support and speculative infrastructure are not freeze work.
+Product code is frozen except for owner-authorized high-risk feedback addressed through review. Documentation can
+clarify frozen behavior. The accepted F-004 limitation remains unfixed; further roadmap work requires renewed scope and
+authorization.
 
 The [roadmap](../roadmap/README.md) and [next-iteration record](../phases/next-iteration.md) retain dated history and
 provisional tracks. React and Fastify already exist in this target; older rows proposing them are historical, not new

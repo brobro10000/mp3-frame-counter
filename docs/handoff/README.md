@@ -69,12 +69,16 @@ The dated local record reports **339 passing unit tests** and **72 passing indep
 sample HTTP, desktop/narrow Redoc and browser upload observations also passed. Ignored operator logs and screenshots
 support those observations; they are not portable CI artifacts or a trusted release binding.
 
-The owner has authorized review, commit/push and merge. This handoff still marks successor binding, exact-head companion
-approval, merge and protected-main publication **pending** until live identities and outcomes are recorded in the
-[validation record](../validation/backend-audio-refactor.md). Historical releases and local content hashes do not
-establish shipment of this revision.
+PR #63 merged at `5c2197f67b1a2c74a7ab5680fe13abb0bfe973ba` after exact-head approval. All nine validation checks passed
+in main run `38193758092`; the publisher failed its `repository.private` assertion after the repository became public.
+PR #67 merged the reviewed visibility fix at `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`. At the verified 2026-10-12
+delivery checkpoint, main run `38196084304` passed all nine mandatory checks and publication, and
+[v0.4.66](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.66) published the exact tested images from
+that descendant source. Earlier binding release `v0.4.64` remains historical evidence. The
+[merge and publication record](../validation/backend-audio-refactor.md#product-merge-publication-and-freeze) identifies
+these outcomes separately. The earlier local run retains its UNRECORDED revisions and is not relabeled as release
+admission.
 
-After merge, product behavior is frozen; only a blocking defect can reopen implementation through reviewed regression
-work. Documentation may explain the frozen behavior. [Known gaps](known-gaps.md) and future roadmap options remain
-provisional. Cloud delivery stays paused, and this handoff does not claim a verified production v1.0.0 or completed
-external assessment submission.
+Product code is frozen except for owner-authorized high-risk feedback addressed through review. Documentation may
+clarify frozen behavior. [Known gaps](known-gaps.md), including accepted F-004, remain visible. Cloud delivery stays
+paused; production v1.0.0 and external assessment submission remain unverified.

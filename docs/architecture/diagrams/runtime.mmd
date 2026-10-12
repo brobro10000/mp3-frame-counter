@@ -66,7 +66,7 @@ references:
   - 'File: /server/src/build-docs.mjs'
   - 'File: /scripts/run-e2e.mjs'
   - 'File: /scripts/e2e-controller.mjs'
-updatedAt: '2026-10-11T19:43:31Z'
+updatedAt: '2026-10-12T01:56:33Z'
 generationTime: '2026-10-12T01:35:28.324Z'
 ---
 flowchart LR
@@ -76,25 +76,39 @@ flowchart LR
         subgraph FRONT["frontend container: NGINX image / UID 101"]
             F["NGINX :8080<br/>serves compiled React assets, HTML and CSS"]
             FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
-            H["Compose probe /healthz<br/>hosted alias /health<br/>returns 200 {'status':'ok'}"]
+            FH["NGINX /healthz and public alias /health<br/>container-local 200 {'status':'ok'}"]
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
-                A["Fastify on Node :3000<br/>admission and bounded stream collection"]
-                P["Pure TypeScript parser<br/>compiled JavaScript function"]
-                A -->|"Complete bytes, at most 20 MiB"| P
+                L["http.ts + instance lifecycle<br/>ready, verified docs, then listen<br/>stop admission and bounded close<br/>index.ts owns process signals"]
+                R["Native serverFactory :3000<br/>raw path/method/Expect refusals<br/>finite docs adapter"]
+                A["createApp: real unbound Fastify<br/>root headers/errors and close hooks<br/>Swagger before feature plugins"]
+                S["Browser-safe TypeBox DTOs<br/>success invariants + error catalogue"]
+                U["Scoped MP3 upload plugin<br/>onRequest admission before allocation<br/>bounded stream parser and route projection<br/>terminal hooks + finally release once"]
+                H["Sibling health plugin<br/>GET /healthz<br/>no upload admission or collection"]
+                P["Pure analyze / mpeg / xing modules<br/>complete boundary walk once<br/>audio + physical counts<br/>declarations are diagnostics"]
+                L -->|"Construct; ready / listen / close"| A
+                L -->|"Own listening and socket deadline"| R
+                R -->|"Accepted upload and health"| A
+                S -->|"Register schemas / canonical errors"| A
+                A --> U
+                A --> H
+                U -->|"Complete bytes, at most 20 MiB"| P
+                U -->|"Project / check / serialize DTO"| S
             end
-            D["API-packaged offline docs<br/>HTML, OpenAPI and local Redoc assets<br/>finite resource set loaded before listening"]
-            A -->|"Serve finite docs routes; renderer executes in browser"| D
+            D["API-packaged offline docs<br/>same-app generated OpenAPI + local Redoc assets<br/>finite resource set loaded before listening"]
+            L -->|"Verify / load before listen"| D
+            R -->|"Lookup finite docs map; renderer executes in browser"| D
             AS["Read-only filesystem<br/>temporary /tmp: 8 MiB"]
         end
-        F -->|"Compose DNS api:3000<br/>untouched upload request URI over HTTP/1.1"| A
-        F -->|"/docs/ and specification/assets<br/>untouched URI; NGINX owns docs-scoped public CSP"| A
+        F -->|"Compose DNS api:3000<br/>untouched upload request URI over HTTP/1.1"| R
+        F -->|"/docs/ and specification/assets<br/>untouched URI; NGINX owns docs-scoped public CSP"| R
     end
     B -->|"Published 127.0.0.1:FRONTEND_PORT<br/>host default 8080 maps to container 8080"| F
     DB -->|"Same published browser origin<br/>GET /docs/, /docs/openapi.yaml and /docs/assets/*"| F
     T["Host process: Playwright and Chromium<br/>frozen suite in a temporary directory"] -->|"BASE_URL: browser and HTTP<br/>isolated test host port"| F
-    T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| A
+    G["Image build only: same createApp factory<br/>ready → swagger → close; no listener<br/>package generated OpenAPI and offline Redoc"] --> D
+    T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| R
     O["Reviewed fixture manifest and expectations"] --> T
     C["Host or CI controller<br/>owns Docker operations<br/>fixed API state and SIGTERM<br/>acknowledgment is not drain proof"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
     C -.->|"Runs suite against exact image pair"| T

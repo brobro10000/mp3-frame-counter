@@ -109,17 +109,17 @@ npm run test:unit  # Builds and tests the server, then the frontend, once each.
 make e2e
 ```
 
-This local refactor needs the [successor/policy binding](docs/requirements/backend-audio-refactor.md) before the normal
-required acceptance gate can admit its changed count/error semantics. Until then, `make e2e` uses the active frozen
-contract and is not evidence for the new target. The separate candidate's observed local results are recorded in the
-[refactor handoff](docs/validation/backend-audio-refactor.md).
+The audio-count/error successor is bound through PR #66. `make e2e` resolves the independently required suite for the
+checked-out source. The
+[merge and publication record](docs/validation/backend-audio-refactor.md#product-merge-publication-and-freeze)
+identifies its binding, reviewed product source, validation checks and verified descendant publication.
 
 Use `npm run test:server` or `npm run test:frontend` for one application's build and localized tests. Server unit tests
 live in `server/tests/`; frontend response and HTTP service tests live in `frontend/tests/`.
 
-After admission, `make e2e` runs the independently frozen local HTTP/browser suite in an isolated Compose project and
-cleans it up. It requires Docker, full Git history and the pinned browser prerequisites. It is separate from hosted
-acceptance. See [browser setup](docs/testing/acceptance-browser-setup.md), [toolchain](docs/toolchain.md) and
+`make e2e` runs the independently frozen local HTTP/browser suite in an isolated Compose project and cleans it up. It
+requires Docker, full Git history and the pinned browser prerequisites. It is separate from hosted acceptance. See
+[browser setup](docs/testing/acceptance-browser-setup.md), [toolchain](docs/toolchain.md) and
 [portability](docs/portability.md) for initial setup and full repository checks. The
 [CI workflow guide](docs/testing/ci-workflows.md) explains the visible lint, application, server and acceptance lanes.
 
@@ -145,8 +145,13 @@ Local MVP closure is distinct from production **v1.0.0**, which remains deferred
 exact-candidate human approval and production smoke pass. Each change requires its own checks, review, merge and
 publication; historical release records do not establish those outcomes for a later revision.
 
-The owner has authorized the refactor's reviewed shipment, followed by a product code freeze. Current handoff evidence
-is local; successor binding, exact-head approval, merge and protected-main publication remain pending until their live
-identities are recorded in the [validation record](docs/validation/backend-audio-refactor.md). After merge, product
-behavior is frozen except for reviewed blocking defects. The [known gaps](docs/handoff/known-gaps.md) are provisional,
-and this handoff does not resume cloud work.
+PR #63 merged at `5c2197f67b1a2c74a7ab5680fe13abb0bfe973ba` after review `5485958132`. Main run `38193758092` passed all
+nine validation checks, then failed publication because its `repository.private` assertion rejected the now-public
+repository. PR #67 merged the visibility fix at `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`. At the verified 2026-10-12
+delivery checkpoint, main run `38196084304` passed all nine mandatory checks and publication, releasing
+[v0.4.66](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.66) from that descendant source. Earlier
+binding release `v0.4.64` remains historical evidence for source `e6e2967ce0d32df2cbebeabe9749dc12dbcc350f`. See the
+[merge and publication record](docs/validation/backend-audio-refactor.md#product-merge-publication-and-freeze). Product
+code is frozen except for owner-authorized high-risk feedback addressed through review. Documentation may clarify the
+frozen behavior. The [known gaps](docs/handoff/known-gaps.md), including accepted F-004, remain visible. Cloud delivery
+stays paused and production v1.0.0 remains deferred.
