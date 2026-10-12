@@ -4,6 +4,7 @@
  */
 export type Mp3ParseErrorKind = "malformed" | "unsupported";
 
+/** Legacy parser error boundary: classification is stable; messages remain internal until mapped to a public code. */
 export class Mp3ParseError extends Error {
   readonly kind: Mp3ParseErrorKind;
 

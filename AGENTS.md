@@ -1,5 +1,15 @@
 # mp3-frame-counter operating contract
 
+## Final submission review and teardown — 2026-10-12
+
+The owner authorized an independent whole-submission review, concise current READMEs/architecture, component JSDoc,
+normal companion-reviewed shipment of those changes, closing obsolete PRs and teardown of this application's resources.
+Keep the assessed candidate immutable; author documentation/comment changes separately and preserve reproducible external
+review evidence. Do not change product behavior, frozen tests, gates or dependencies to obtain a favorable verdict.
+Keep accepted F-004 and genuine assessment risks visible. Preserve historical records and unrelated work. Cloud teardown
+is limited to the dedicated MP3 project and local application processes; do not close a shared billing account or delete
+companion credentials. Future feature or cloud work requires renewed scope.
+
 ## Product code freeze after reviewed merge — 2026-10-12
 
 The owner's latest instruction is: "unless upcoming feedback is high risk do not make anymore code changes and just

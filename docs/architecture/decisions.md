@@ -1,10 +1,15 @@
 # Decisions, proposals and blockers
 
-**Current execution amendment — 2026-10-10 local time:** the owner resumed the smallest verified V1 and submission path
-after roadmap construction. Retain shipped Fastify, OpenAPI and offline Redoc. Complete existing stage work under normal
-companion review, protected merges and cost controls; every production application deployment remains gated by human
-approval. Submission handoff is independently useful before hosting. Historical future-tense proposals below retain
-their original dates.
+**Current submission scope — 2026-10-12:** the implemented architecture is [v1.md](v1.md): React/TypeScript,
+Fastify/TypeBox, handwritten audio counting and two local containers. PR #66 bound the successor and PR #63 activated
+it. Cloud delivery was stopped for the local assessment; see [its final disposition](../deployment/decommission.md).
+Earlier execution and future-tense decisions below retain their dated historical scope. They authorize no new work.
+
+**Historical execution amendment — 2026-10-10 local time:** the owner resumed the smallest verified V1 and submission
+path after roadmap construction. Retain shipped Fastify, OpenAPI and offline Redoc. Complete existing stage work under
+normal companion review, protected merges and cost controls; every production application deployment remains gated by
+human approval. Submission handoff is independently useful before hosting. Historical future-tense proposals below
+retain their original dates.
 
 ## Submission tradeoffs — 2026-10-11 UTC
 
@@ -83,7 +88,7 @@ means deployed or human-approved code. See [source precedence](../requirements/R
 | DEC-11 | Implemented and reviewed            | Trusted-baseline and fail-closed CI controls are implemented and independently reviewed. P4 ran the full unchanged local suite; shipping CI still requires the separately merged test-only baseline on its trusted base.                      | independence-and-baseline.md; P1/P2/P4 evidence           |
 | DEC-12 | Deferred deployment approval gate   | Serialize release operations, API-first compatible rollout and frontend-first restoration; preserve identities and first-release safe abort. Explicit owner approval still needed for the exact production release.                           | runbook.md; future deployment                             |
 
-## DEC-13 — Release-only milestone (latest owner amendment)
+## DEC-13 — Release-only milestone (2026-10-09 owner amendment)
 
 On 2026-10-09 the owner instructed: releases without deployment.
 [SRC-RELEASE-ONLY](../requirements/sources/release-only-request.txt) supersedes the hosted-release scope of DEC-03/06
@@ -180,8 +185,8 @@ an identical publisher retry preserved all assets. See [V1 closure](../validatio
 The [owner target](../requirements/backend-audio-refactor.md) keeps the two-container topology and handwritten parser.
 Fastify construction, scoped transport and lifecycle are separated; shared TypeBox DTOs/catalogue drive serializers,
 browser validation and dynamic Swagger generation. Ky is browser-only; Redocly/Oxlint are build tools. The old
-physical-count/Fastify-only rows remain historical decisions, superseded narrowly for this unbound local successor.
-[Responsibility map and verification](../validation/backend-audio-refactor.md).
+physical-count/Fastify-only rows remain historical decisions, superseded narrowly for the subsequently bound
+backend-audio successor. [Responsibility map and verification](../validation/backend-audio-refactor.md).
 
 ## DEC-16 — Local Fastify factory and module boundaries, 2026-10-11
 

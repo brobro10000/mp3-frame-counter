@@ -64,6 +64,9 @@ tested-image archives rather than source rebuilds, follow the [release-image han
 
 ## Evidence and freeze
 
+The final independent assessment and bounded follow-ups are recorded in [submission review](submission-review.md). The
+[cloud attempt and teardown](../deployment/decommission.md) records the abandoned Terraform/Cloud Run track.
+
 The dated local record reports **339 passing unit tests** and **72 passing independent acceptance cases** in run
 `mp3-e2e-45286-140fd7c71318`, with no acceptance retries or skips and verified scoped cleanup. Actual default/detail
 sample HTTP, desktop/narrow Redoc and browser upload observations also passed. Ignored operator logs and screenshots

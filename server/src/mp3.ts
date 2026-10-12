@@ -2,7 +2,10 @@
 import { analyzeMp3 } from "./modules/mp3/analyze.ts";
 export { analyzeMp3 } from "./modules/mp3/analyze.ts";
 
-/** Return complete physical framing for existing internal callers, including the leading metadata carrier. No I/O. */
+/**
+ * Return the complete physical-frame count, including a recognized leading metadata carrier, for internal callers.
+ * Pure and non-mutating; malformed or unsupported input propagates the analyzer's typed domain error.
+ */
 export function countMp3Frames(bytes: Buffer): number {
   return analyzeMp3(bytes).physicalFrameCount;
 }

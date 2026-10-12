@@ -1,5 +1,9 @@
 # Release and recovery runbook
 
+**Final submission disposition — 2026-10-12:** cloud work was abandoned for the local assessment. Use
+[the cloud disposition and teardown record](decommission.md) for current status. The dated operations below preserve
+historical implementation, failures and former authorization; they are not instructions to resume deployment.
+
 **Current execution update, 2026-10-10:** [PR #8 completed PLAN-01](../validation/roadmap-execution.md); PR #9
 subsequently merged and published v0.1.9. The dedicated project and monthly cost controls have passed live readback. The
 owner authorized [continued roadmap execution](../phases/roadmap-execution-authorization.md), IaC, billing setup and

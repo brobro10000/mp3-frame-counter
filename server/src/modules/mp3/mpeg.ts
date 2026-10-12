@@ -86,7 +86,10 @@ export function hasMarker(bytes: Buffer, offset: number, marker: string): boolea
   return true;
 }
 
-/** Skip one supported leading ID3v2.3/2.4 tag; reject malformed size/flags without interpreting its opaque body. */
+/**
+ * Return the first frame's absolute byte offset after one supported, flag-zero leading ID3v2.3/2.4 tag, or zero.
+ * Reject malformed size/flags with Mp3DomainError without interpreting or allocating the opaque tag body.
+ */
 export function firstFrameOffset(bytes: Buffer): number {
   if (!hasMarker(bytes, 0, "ID3")) return 0;
   if (bytes.length < 10) throw new Mp3DomainError("invalid-metadata", 0);
@@ -108,7 +111,10 @@ export function firstFrameOffset(bytes: Buffer): number {
   return 10 + bodySize;
 }
 
-/** Decode a header at the walked boundary and require its entire frame; reserved fields and unsupported formats fail. */
+/**
+ * Decode at an in-range, absolute byte offset reached by the boundary walk and require the complete frame.
+ * Return header facts with explicit byte/bitrate/sample-rate units; invalid or unsupported input throws Mp3DomainError.
+ */
 export function decodeMpegHeader(bytes: Buffer, offset: number): MpegHeader {
   const remaining = bytes.length - offset;
   if (remaining < 4) {

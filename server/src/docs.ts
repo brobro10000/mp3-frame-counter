@@ -12,6 +12,7 @@ interface DocsResource {
   readonly contentDisposition?: string;
 }
 
+/** Finite exact-path resources held in memory after readiness; requests never trigger disk reads. */
 export type DocsResources = ReadonlyMap<string, DocsResource>;
 
 const resources = [

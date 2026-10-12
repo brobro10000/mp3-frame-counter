@@ -7,6 +7,7 @@ query: >-
   The factory registers root schemas/canonical errors and Swagger before sibling upload/health plugins. Accepted
   uploads enter Fastify onRequest admission before allocation, then the scoped bounded content parser and MP3 route.
   The route analyzes once, projects only allowed fields and checks aggregate invariants before schema serialization.
+  NGINX consumes Expect; unsupported-expectation 417 is a direct native API guard, not a public ingress guarantee.
   Raw refusals and incomplete-native-body draining use the same catalogue projection. Release buffers, deadlines and
   admission once through handler finally, rejection and terminal hooks; disconnected clients have no JSON guarantee.
   Include local file validation, pending controls, the actual-byte 20 MiB bound and typed parser failures.
@@ -79,7 +80,8 @@ sequenceDiagram
                 Frontend-->>Service: Status and body without a JSON guarantee
             else Request forwarded over HTTP/1.1 without buffering or retry
                 Frontend->>Bridge: Forward raw bytes to api:3000 on Compose network
-                alt Raw path, method or Expect refusal
+                Note over Frontend,Bridge: NGINX consumes Expect#59; direct native requests alone can reach the 417 guard
+                alt Raw path or method refusal
                     Bridge-->>Frontend: Catalogue error#59; bounded rejection drain#59; HEAD body omitted
                 else Exact accepted upload route
                     Bridge->>App: Dispatch into real Fastify handler

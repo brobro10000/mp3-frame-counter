@@ -1,10 +1,18 @@
 # Managed deployment evaluation
 
+**Historical provider research.** The current application runs locally using
+[Docker Compose](../deployment/local-handoff.md). Terraform and Cloud Run were subsequently implemented far enough to
+create an authenticated stage, but hosted acceptance remained incomplete and the owner abandoned that track for
+submission. See [final disposition and teardown](../deployment/decommission.md). The dated comparison below is preserved
+as research; its prices, account observations and proposed actions are not current operating instructions or claims of
+production readiness.
+
 **Planning supersession, 2026-10-10:** the
 [versioned roadmap](../roadmap/README.md#conditional-cloud-run-topology-and-cost) now selects Cloud Run as the
 conditional lead: separate stage/production services, each containing the tested NGINX/API image pair. Cost, account
 access and actual hosted fit remain gated. The Render comparison below is preserved as dated research and an
-alternative, not the current preferred topology. Deployment remains unverified and unexecuted.
+alternative, not the current preferred topology. At that planning checkpoint, deployment remained unverified and
+unexecuted.
 
 **Deferred by the later [release-only amendment](../requirements/release-process.md).** This research applies when
 deployment resumes. GitHub releases currently require neither a provider nor stage/production rollout. Observations
