@@ -578,3 +578,38 @@ locally; fresh current-source CI remains required. Before identities, review/rec
 in the ignored correction directory. Every preceding authoring byte and the other immutable inputs remain unchanged. No
 product, governance or normative contract was edited. Calibration is not product or hosted acceptance, and actual
 candidate merge, separate binding and subsequent product adoption remain pending.
+
+## Candidate harness correction 11 — 2026-10-11 UTC
+
+Full candidate CI [38185084282, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38185084282)
+passed all 270 semantic controls for `f7955448f6438e2d467a0bd98469809851b85153`, with separate required predecessor
+acceptance. It did not establish successor binding, product adoption, hosted execution or publication. Fresh companion
+run `20261011T234655-f3e8c82c` requested changes in F-002: the OpenAPI predicate checked uint32 type and numeric bounds,
+but could accept an exclusive endpoint that disagrees with the required declaration domain. Its complete receipt and
+report are preserved; the review was not published as an approval.
+
+A fresh independent acceptance author read only governing instructions, the normative contract, frozen fixture
+expectations, the existing control runner and the finding. It did not read product code or the OpenAPI checker. It added
+24 fixed mutation controls covering three optional uint32 fields, both endpoints, direct/allOf placement and
+inline/local-reference schemas, with 12 inclusive counterparts. Existing 270-control bytes remain unchanged. The root
+formatted and froze these controls before releasing the separate checker writer.
+
+The frozen RED ran from `tests/acceptance` with Node 24.20.0 on 2026-10-11 at 23:57:29 UTC and exited 1. It recorded 20
+missing endpoint refusals and four existing quality-zero refusals; all mutation setup, matcher preconditions and
+inclusive counterparts passed. The original checker SHA-256 was
+`0955bac6fc3a06491266107a8fe7a4fae5e35cb049f1f51d43a8996c75aa4304`; the frozen control SHA-256 was
+`1c3b51adec0504731701be7175b310c8937502277fc9b47f020963026d9416c8`. Raw RED log SHA-256:
+`5ee05107e4156586ad226ffd233d8f9c8999bbbd1c0d7a50ebcb776c3bf42ea2`.
+
+After RED, the separate writer added one semantic endpoint assertion through the existing resolved-schema matcher inside
+the three-field uint32 loop. It read no controls or product code and ran no tests or formatter. The resolver, C10
+matcher and all other predicates remain unchanged. The checker SHA-256 is
+`a68e6ffca09836887437cbaf907350e6e3f673df02fc4488985a90afa0d47338`.
+
+Root execution of `node scripts/backend-audio-controls.ts` passed all 294 semantic controls at 23:58:20 UTC; raw log
+SHA-256 is `1cbc5ca152e2d03ab5a9085735cbef28d9a272b7a864dcd4b6a457c9618762ce`.
+`node node_modules/typescript/bin/tsc --noEmit` passed. An earlier attempted `npm run check:types` failed because that
+script does not exist; its command-error output is retained separately and is not a failed type check. Explicit-file
+Prettier and diff checks passed. The full 294-control package was not rerun locally; new complete CI and a fresh
+companion review remain required. The ignored correction-11 journal retains original input hashes, frozen RED, focused
+GREEN and command-error output. Other frozen inputs and requirement identities remain unchanged.

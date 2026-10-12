@@ -273,6 +273,7 @@ export function assertBackendSpec(spec) {
     const scalar = resolve(spec, present.properties[field]);
     for (const [key, expected] of Object.entries({ type: "integer", minimum: 0, maximum: 4294967295 }))
       assert.equal(scalar[key], expected, "SPEC_SCHEMAS");
+    assert.ok(exampleMatches(spec, scalar, 0) && exampleMatches(spec, scalar, 4294967295), "SPEC_SCHEMAS");
     assert.ok(!exampleMatches(spec, scalar, null), "SPEC_SCHEMAS");
   }
   const warnings = resolve(spec, analysis.properties.warnings);

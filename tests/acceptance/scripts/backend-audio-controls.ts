@@ -1170,6 +1170,104 @@ const correction10Failures = correction10Results.filter((entry) => entry.status 
 if (correction10Failures.length) console.error("EXCLUSIVE_ENDPOINTS", JSON.stringify(correction10Results));
 assert.deepEqual(correction10Failures, [], "EXCLUSIVE_ENDPOINTS missing semantic refusals");
 
+/** Optional uint32 declarations and stored quality must admit 0 and 4294967295 through their effective schemas. */
+const correction11Uint32Maximum = 4_294_967_295;
+const correction11Fields = ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue"] as const;
+const correction11TamperedRecipe = recipes.find((entry) => entry.id === "tampered-count");
+const correction11ZeroRecipe = recipes.find((entry) => entry.id === "zero-declaration");
+assert.ok(correction11TamperedRecipe?.expected);
+assert.ok(correction11ZeroRecipe?.expected);
+const correction11TamperedXing = correction11TamperedRecipe.expected.analysis.xing;
+const correction11ZeroXing = correction11ZeroRecipe.expected.analysis.xing;
+assert.ok(correction11TamperedXing.status === "present");
+assert.ok(correction11ZeroXing.status === "present");
+assert.equal(correction11TamperedXing.declaredAudioFrameCount, correction11Uint32Maximum);
+assert.equal(correction11ZeroXing.declaredAudioFrameCount, 0);
+for (const field of correction11Fields) {
+  const baseline = controlSchemaAt(spec, [...presentPath, field]);
+  assert.equal(baseline.type, "integer");
+  assert.equal(baseline.minimum, 0);
+  assert.equal(baseline.maximum, correction11Uint32Maximum);
+  for (const value of [0, 1, correction11Uint32Maximum]) assert.ok(exampleMatches(spec, baseline, value));
+}
+
+/** Explicit inclusive limits preserve both endpoints, present/absent DTOs, local aliases and allOf intersections. */
+for (const field of correction11Fields)
+  for (const placement of ["direct", "allOf"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      const positive = structuredClone(taggedExamples);
+      const path = [...presentPath, field];
+      const target = controlSchemaAt(positive, path);
+      const limits = {
+        type: "integer",
+        minimum: 0,
+        maximum: correction11Uint32Maximum,
+        exclusiveMinimum: false,
+        exclusiveMaximum: false,
+      };
+      if (placement === "direct") Object.assign(target, limits);
+      else target.allOf = [limits];
+      if (representation === "referenced") {
+        positive.components.schemas.InclusiveUint32EndpointAlias = structuredClone(target);
+        alter(positive, path, { $ref: "#/components/schemas/InclusiveUint32EndpointAlias" });
+      }
+      const scalar = controlSchemaAt(positive, path);
+      for (const value of [0, correction11Uint32Maximum])
+        assert.ok(
+          exampleMatches(positive, scalar, value),
+          `${field} ${placement}/${representation} inclusive ${value}`,
+        );
+      for (const dto of [absentDetail(9), encodedVbrDetail])
+        assert.ok(exampleMatches(positive, controlSchemaAt(positive, correction9DetailPath), dto));
+      assertBackendSpec(positive);
+    }
+
+/** Collect every missing uint32 refusal; setup and endpoint-damage checks cannot satisfy the tested predicate. */
+const correction11Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction11Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction11Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction11Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+
+/** Keep a valid absent example and interior scalar witness while excluding exactly one required uint32 endpoint. */
+for (const field of correction11Fields)
+  for (const refusedValue of [0, correction11Uint32Maximum])
+    for (const placement of ["direct", "allOf"] as const)
+      for (const representation of ["direct", "referenced"] as const) {
+        const invalid = structuredClone(presentUnexercised);
+        const path = [...presentPath, field];
+        const target = controlSchemaAt(invalid, path);
+        const boundName = refusedValue === 0 ? "minimum" : "maximum";
+        const exclusiveName = refusedValue === 0 ? "exclusiveMinimum" : "exclusiveMaximum";
+        const otherEndpoint = refusedValue === 0 ? correction11Uint32Maximum : 0;
+        assert.equal(target.type, "integer");
+        assert.equal(target.minimum, 0);
+        assert.equal(target.maximum, correction11Uint32Maximum);
+        if (placement === "direct") target[exclusiveName] = true;
+        else target.allOf = [{ type: "integer", [boundName]: refusedValue, [exclusiveName]: true }];
+        if (representation === "referenced") {
+          invalid.components.schemas.RestrictiveUint32EndpointAlias = structuredClone(target);
+          alter(invalid, path, { $ref: "#/components/schemas/RestrictiveUint32EndpointAlias" });
+        }
+        const scalar = controlSchemaAt(invalid, path);
+        assert.ok(!exampleMatches(invalid, scalar, refusedValue));
+        for (const value of [1, otherEndpoint]) assert.ok(exampleMatches(invalid, scalar, value));
+        const exampleValue = controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value"]);
+        assert.deepEqual(exampleValue, absentDetail(9));
+        assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, correction9DetailPath), exampleValue));
+        correction11Rejected(`${field} ${placement}/${representation} exclusive endpoint ${refusedValue}`, () =>
+          assertBackendSpec(invalid),
+        );
+      }
+const correction11Failures = correction11Results.filter((entry) => entry.status === "missing-refusal");
+if (correction11Failures.length) console.error("UINT32_ENDPOINTS", JSON.stringify(correction11Results));
+assert.deepEqual(correction11Failures, [], "UINT32_ENDPOINTS missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,
