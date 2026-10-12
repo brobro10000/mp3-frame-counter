@@ -1268,6 +1268,201 @@ const correction11Failures = correction11Results.filter((entry) => entry.status 
 if (correction11Failures.length) console.error("UINT32_ENDPOINTS", JSON.stringify(correction11Results));
 assert.deepEqual(correction11Failures, [], "UINT32_ENDPOINTS missing semantic refusals");
 
+/** Supported flags and reachable frame spans must fit effective schemas, even when named examples omit those values. */
+const correction12FlagValues = Array.from({ length: 16 }, (_, value) => value);
+const correction12UploadMaximum = 20_971_520;
+const correction12FrameMinimum = 96;
+const correction12FrameMaximum = Math.floor((144 * 320_000) / 32_000) + 1;
+const correction12FrameOffsetMaximum = correction12UploadMaximum - 2 * correction12FrameMinimum;
+const correction12MarkerOffsetMaximum = correction12FrameOffsetMaximum + 36;
+assert.equal(correction12FrameMaximum, 1_441);
+assert.equal(correction12FrameOffsetMaximum, 20_971_328);
+assert.equal(correction12MarkerOffsetMaximum, 20_971_364);
+const correction12Domains = [
+  ["flags", 0, 15, correction12FlagValues],
+  ["frameLengthBytes", correction12FrameMinimum, correction12FrameMaximum, [96, 1_441]],
+  ["frameOffsetBytes", 0, correction12FrameOffsetMaximum, [0, 20_971_328]],
+  ["markerOffsetBytes", 0, correction12MarkerOffsetMaximum, [20_971_364]],
+] as const;
+for (const flags of correction12FlagValues) {
+  const recipe = recipes.find((entry) => entry.id === `flags-${flags}`);
+  assert.ok(recipe?.expected);
+  const xing = recipe.expected.analysis.xing;
+  assert.ok(xing.status === "present");
+  assert.equal(xing.flags, flags);
+}
+const correction12BoundedSeek = recipes.find((entry) => entry.id === "bounded-seek");
+assert.ok(correction12BoundedSeek?.expected);
+const correction12BoundedXing = correction12BoundedSeek.expected.analysis.xing;
+assert.ok(correction12BoundedXing.status === "present");
+assert.equal(correction12BoundedXing.frameLengthBytes, correction12FrameMinimum);
+
+/** Reuse frozen successful responses in both published forms; this adds witnesses rather than new expected outputs. */
+for (const recipe of recipes)
+  if (recipe.expected)
+    for (const dto of [{ frameCount: recipe.expected.frameCount }, recipe.expected])
+      assert.ok(exampleMatches(spec, controlSchemaAt(spec, [...samplePath, "schema"]), dto), recipe.id);
+for (const [field, minimum, , values] of correction12Domains) {
+  const baseline = controlSchemaAt(spec, [...presentPath, field]);
+  assert.equal(baseline.type, "integer");
+  assert.equal(baseline.minimum, minimum);
+  for (const value of values) assert.ok(exampleMatches(spec, baseline, value));
+}
+
+/** Exact inclusive maxima and permitted looser byte maxima retain required values through aliases and allOf. */
+for (const [field, minimum, maximum, values] of correction12Domains)
+  for (const maximumKind of field === "flags" ? ["inclusive"] : ["inclusive", "upload-cap", "safe-integer"])
+    for (const placement of ["direct", "allOf"] as const)
+      for (const representation of ["direct", "referenced"] as const) {
+        const positive = structuredClone(taggedExamples);
+        const path = [...presentPath, field];
+        const target = controlSchemaAt(positive, path);
+        const limits: Record<string, unknown> = {
+          type: "integer",
+          minimum,
+          maximum:
+            maximumKind === "inclusive"
+              ? maximum
+              : maximumKind === "upload-cap"
+                ? correction12UploadMaximum
+                : Number.MAX_SAFE_INTEGER,
+          exclusiveMinimum: false,
+          exclusiveMaximum: maximumKind !== "inclusive",
+        };
+        if (field === "flags") limits.enum = correction12FlagValues;
+        if (placement === "direct") Object.assign(target, limits);
+        else target.allOf = [limits];
+        if (representation === "referenced") {
+          positive.components.schemas.CompatibleSupportedScalarAlias = structuredClone(target);
+          alter(positive, path, { $ref: "#/components/schemas/CompatibleSupportedScalarAlias" });
+        }
+        for (const value of values)
+          assert.ok(
+            exampleMatches(positive, controlSchemaAt(positive, path), value),
+            `${field} ${maximumKind} ${placement}/${representation} ${value}`,
+          );
+        for (const dto of [absentDetail(9), encodedVbrDetail])
+          assert.ok(exampleMatches(positive, controlSchemaAt(positive, correction9DetailPath), dto));
+        assertBackendSpec(positive);
+      }
+
+/** Collect all omitted-domain refusals; matcher damage and valid retained examples remain independent preconditions. */
+const correction12Results: { name: string; status: "rejected" | "missing-refusal"; message?: string }[] = [];
+function correction12Rejected(name: string, action: () => void): void {
+  try {
+    rejected(name, action);
+    correction12Results.push({ name, status: "rejected" });
+  } catch (error) {
+    if (!(error instanceof assert.AssertionError)) throw error;
+    correction12Results.push({ name, status: "missing-refusal", message: error.message });
+  }
+}
+
+/** Omit each flags value or one reachable byte endpoint while the valid absent-detail example remains unaffected. */
+for (const [field, minimum, maximum, values] of correction12Domains)
+  for (const refusedValue of values)
+    for (const placement of ["direct", "allOf"] as const)
+      for (const representation of ["direct", "referenced"] as const) {
+        const invalid = structuredClone(presentUnexercised);
+        const path = [...presentPath, field];
+        const target = controlSchemaAt(invalid, path);
+        const limits: Record<string, unknown> = { type: "integer" };
+        if (field === "flags" && refusedValue > 0 && refusedValue < 15)
+          limits.enum = correction12FlagValues.filter((value) => value !== refusedValue);
+        else {
+          const boundName = refusedValue === minimum ? "minimum" : "maximum";
+          const exclusiveName = refusedValue === minimum ? "exclusiveMinimum" : "exclusiveMaximum";
+          limits[boundName] = refusedValue;
+          limits[exclusiveName] = true;
+        }
+        if (placement === "direct") Object.assign(target, limits);
+        else target.allOf = [limits];
+        if (representation === "referenced") {
+          invalid.components.schemas.RestrictiveSupportedScalarAlias = structuredClone(target);
+          alter(invalid, path, { $ref: "#/components/schemas/RestrictiveSupportedScalarAlias" });
+        }
+        const scalar = controlSchemaAt(invalid, path);
+        assert.ok(!exampleMatches(invalid, scalar, refusedValue));
+        const retainedValues =
+          field === "flags"
+            ? correction12FlagValues.filter((value) => value !== refusedValue)
+            : [refusedValue === minimum ? maximum : minimum];
+        for (const value of retainedValues) assert.ok(exampleMatches(invalid, scalar, value));
+        const exampleValue = controlSchemaAt(invalid, [...samplePath, "examples", "detailedCount", "value"]);
+        assert.deepEqual(exampleValue, absentDetail(9));
+        assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, correction9DetailPath), exampleValue));
+        correction12Rejected(`${field} ${placement}/${representation} omits supported value ${refusedValue}`, () =>
+          assertBackendSpec(invalid),
+        );
+      }
+
+/** Frozen audio and physical count-one responses expose restrictive minima masked by the named 6089/6090 examples. */
+const correction12AudioOne = recipes.find((entry) => entry.id === "removed-final-frame");
+const correction12PhysicalOne = recipes.find((entry) => entry.id === "wrong-position");
+assert.ok(correction12AudioOne?.expected);
+assert.ok(correction12PhysicalOne?.expected);
+assert.equal(correction12AudioOne.expected.frameCount, 1);
+assert.equal(correction12PhysicalOne.expected.analysis.physicalFrameCount, 1);
+const correction12CountDomains = [
+  [
+    "default frameCount",
+    [...schemaPath, "FrameCount", "properties", "frameCount"],
+    { frameCount: correction12AudioOne.expected.frameCount },
+    "defaultCount",
+  ],
+  [
+    "detailed frameCount",
+    [...schemaPath, "FrameDetail", "properties", "frameCount"],
+    correction12AudioOne.expected,
+    "detailedCount",
+  ],
+  [
+    "physicalFrameCount",
+    [...taggedAnalysisPath, "physicalFrameCount"],
+    correction12PhysicalOne.expected,
+    "detailedCount",
+  ],
+] as const;
+for (const [name, path, witness, exampleName] of correction12CountDomains)
+  for (const placement of ["direct", "allOf"] as const)
+    for (const representation of ["direct", "referenced"] as const) {
+      const positive = structuredClone(spec);
+      const target = controlSchemaAt(positive, path);
+      assert.equal(target.type, "integer");
+      assert.equal(target.minimum, 1);
+      assert.equal(target.maximum, Number.MAX_SAFE_INTEGER);
+      const inclusive = { type: "integer", minimum: 1, exclusiveMinimum: false };
+      if (placement === "direct") Object.assign(target, inclusive);
+      else target.allOf = [inclusive];
+      if (representation === "referenced") {
+        positive.components.schemas.InclusiveCountOneAlias = structuredClone(target);
+        alter(positive, path, { $ref: "#/components/schemas/InclusiveCountOneAlias" });
+      }
+      assert.ok(exampleMatches(positive, controlSchemaAt(positive, path), 1));
+      assert.ok(exampleMatches(positive, controlSchemaAt(positive, [...samplePath, "schema"]), witness));
+      assertBackendSpec(positive);
+
+      const invalid = structuredClone(spec);
+      const restrictive = controlSchemaAt(invalid, path);
+      const exclusive = { type: "integer", minimum: 1, exclusiveMinimum: true };
+      if (placement === "direct") Object.assign(restrictive, exclusive);
+      else restrictive.allOf = [exclusive];
+      if (representation === "referenced") {
+        invalid.components.schemas.RestrictiveCountOneAlias = structuredClone(restrictive);
+        alter(invalid, path, { $ref: "#/components/schemas/RestrictiveCountOneAlias" });
+      }
+      assert.ok(!exampleMatches(invalid, controlSchemaAt(invalid, path), 1));
+      assert.ok(!exampleMatches(invalid, controlSchemaAt(invalid, [...samplePath, "schema"]), witness));
+      const retainedExample = controlSchemaAt(invalid, [...samplePath, "examples", exampleName, "value"]);
+      assert.ok(exampleMatches(invalid, controlSchemaAt(invalid, [...samplePath, "schema"]), retainedExample));
+      correction12Rejected(`${name} ${placement}/${representation} exclusive minimum 1`, () =>
+        assertBackendSpec(invalid),
+      );
+    }
+const correction12Failures = correction12Results.filter((entry) => entry.status === "missing-refusal");
+if (correction12Failures.length) console.error("SUPPORTED_NUMERIC_DOMAINS", JSON.stringify(correction12Results));
+assert.deepEqual(correction12Failures, [], "SUPPORTED_NUMERIC_DOMAINS missing semantic refusals");
+
 mkdirSync(new URL("../.artifacts/", import.meta.url), { recursive: true });
 const report = {
   schemaVersion: 1,

@@ -613,3 +613,38 @@ script does not exist; its command-error output is retained separately and is no
 Prettier and diff checks passed. The full 294-control package was not rerun locally; new complete CI and a fresh
 companion review remain required. The ignored correction-11 journal retains original input hashes, frozen RED, focused
 GREEN and command-error output. Other frozen inputs and requirement identities remain unchanged.
+
+## Candidate harness correction 12 — 2026-10-12 UTC
+
+Full candidate CI [38186465676, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38186465676)
+passed all 294 semantic controls for `11538cd343c039f1e131c5c34c971275a104aa79`, with separate required predecessor
+acceptance. Fresh companion run `20261012T001011-d21c75a8` requested changes in F-003: effective scalar constraints
+could exclude supported flags, minimum/maximum frame lengths or attainable offsets while admitting the named examples.
+The complete report and receipt remain preserved; this request-changes review was not published as an approval.
+
+The independent acceptance author added 96 mutation controls before the separate checker writer began. They cover all 16
+supported flags, minimum 96 and maximum 1441 frame spans, attainable frame/marker offsets, and count-one responses in
+both published forms. Direct/allOf placement and inline/local-reference variants include valid counterparts and matcher
+preconditions. Existing frozen successful DTOs supply count-one and flag witnesses; no expected output changed. All
+64,649 prior control bytes remain identical. The root formatted and froze the insertion at SHA-256
+`55199a3d2a6c8708edecc75491892f731f9afe71c23854565bc1bfcd6a3ec9cf` before releasing the checker writer.
+
+The frozen RED ran `node scripts/backend-audio-controls.ts` with Node 24.20.0 from `tests/acceptance` at 00:29:45 UTC.
+It exited 1 after reaching all 96 new controls: 88 missing semantic refusals and eight existing rejections. Valid
+counterparts and matcher preconditions passed. The unchanged checker SHA-256 was
+`a68e6ffca09836887437cbaf907350e6e3f673df02fc4488985a90afa0d47338`; raw RED log SHA-256 is
+`873ebefa4d58fe2b73103d6573fede4ee18ab0501ef828fa410cf0a6d6178581`.
+
+After RED, the separate writer added nine lines: effective scalar witnesses and all 36 frozen successful responses
+checked against the published success schema in both minimal and detailed forms. It read only the checker, normative
+contract and existing fixture JSON, without controls or product access, tests, formatting or Git writes. The matcher,
+resolver, prior predicates and fixture bytes remain unchanged. Final checker SHA-256:
+`cb802b442895c22167bc97effc1876157ee0a521b716e3539e0b40943af75fe7`.
+
+Root focused execution at 00:31:25 UTC passed all 390 controls; raw GREEN log SHA-256 is
+`4d38e3c5612d9c7fb812db2906111988c17cf24174a982c927908887e12fe554`. `node node_modules/typescript/bin/tsc --noEmit` and
+explicit-file Prettier checks passed. The full 390-control package has not run locally; new complete CI and fresh
+companion review remain required. Original inputs, report/receipt and timestamped RED/GREEN records remain in the
+ignored correction-12 journal. No normative contract, fixture expectation, requirement inventory, product or governance
+file changed. Candidate calibration is not product or hosted acceptance; actual merge, separate binding and product
+adoption remain pending.

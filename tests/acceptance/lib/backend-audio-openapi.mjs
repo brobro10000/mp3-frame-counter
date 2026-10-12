@@ -1,6 +1,7 @@
 /** Independent generated-document business predicates. This is bounded contract validation, not a general OAS tool. */
 import assert from "node:assert/strict";
 import { isDeepStrictEqual } from "node:util";
+import backendAudioFixtures from "../fixtures/backend-audio.json" with { type: "json" };
 import { errorCatalogue, assertCodedError } from "./backend-audio-errors.mjs";
 
 /** Resolve a contained schema reference against the supplied document; no network or product schema is consulted. */
@@ -257,6 +258,8 @@ export function assertBackendSpec(spec) {
     assert.ok(!exampleMatches(spec, scalar, null), "SPEC_SCHEMAS");
     assert.equal(scalar.minimum, 0, "SPEC_SCHEMAS");
     byteMaximum(scalar, maximum);
+    assert.ok(exampleMatches(spec, scalar, maximum), "SPEC_SCHEMAS");
+    if (field === "frameOffsetBytes") assert.ok(exampleMatches(spec, scalar, 0), "SPEC_SCHEMAS");
   }
   const length = resolve(spec, present.properties.frameLengthBytes);
   assert.equal(length.type, "integer", "SPEC_SCHEMAS");
@@ -264,11 +267,13 @@ export function assertBackendSpec(spec) {
   assert.ok(Number.isSafeInteger(length.minimum) && length.minimum >= 1 && length.minimum <= 96, "SPEC_SCHEMAS");
   // MPEG-1 Layer III's largest complete span is floor(144 * 320000 / 32000) + one padding byte.
   byteMaximum(length, 1_441);
+  assert.ok(exampleMatches(spec, length, 96) && exampleMatches(spec, length, 1_441), "SPEC_SCHEMAS");
   const flags = resolve(spec, present.properties.flags);
   assert.equal(flags.type, "integer", "SPEC_SCHEMAS");
   assert.ok(!exampleMatches(spec, flags, null), "SPEC_SCHEMAS");
   assert.equal(flags.minimum, 0, "SPEC_SCHEMAS");
   assert.ok(Number.isSafeInteger(flags.maximum) && flags.maximum >= 15 && flags.maximum <= 4294967295, "SPEC_SCHEMAS");
+  for (let value = 0; value <= 15; value++) assert.ok(exampleMatches(spec, flags, value), "SPEC_SCHEMAS");
   for (const field of ["declaredAudioFrameCount", "declaredMpegStreamByteCount", "qualityValue"]) {
     const scalar = resolve(spec, present.properties[field]);
     for (const [key, expected] of Object.entries({ type: "integer", minimum: 0, maximum: 4294967295 }))
@@ -324,6 +329,10 @@ export function assertBackendSpec(spec) {
       assert.ok(exampleMatches(spec, health, { status: "ok" }), "SPEC_SCHEMAS");
     }
 
+  for (const recipe of backendAudioFixtures.fixtures.filter((recipe) => recipe.status === 200)) {
+    assert.ok(exampleMatches(spec, success.schema, { frameCount: recipe.expected.frameCount }), "SPEC_SCHEMAS");
+    assert.ok(exampleMatches(spec, success.schema, recipe.expected), "SPEC_SCHEMAS");
+  }
   const examples = Object.values(success.examples ?? {});
   assert.ok(
     examples.some((example) => Object.keys(example.value ?? {}).length === 1 && example.value.frameCount === 6089),
