@@ -1,15 +1,22 @@
 ---
 title: MP3 upload and result sequence
-generationTime: "2026-10-11T16:24:59Z"
+updatedAt: "2026-10-11T20:21:19Z"
 query: >-
-  Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, Fastify API on Node and
-  pure parser. Separate page components, the upload-state hook and raw request/response service inside the browser.
+  Show the implemented Analyze MP3 request and response sequence through the browser, NGINX, native raw bridge, real
+  Fastify root, scoped upload plugin and pure parser. Separate page components, the upload-state hook and raw service.
+  The factory registers root schemas/canonical errors and Swagger before sibling upload/health plugins. Accepted
+  uploads enter Fastify onRequest admission before allocation, then the scoped bounded content parser and MP3 route.
+  The route analyzes once, projects only allowed fields and checks aggregate invariants before schema serialization.
+  Raw refusals and incomplete-native-body draining use the same catalogue projection. Release buffers, deadlines and
+  admission once through handler finally, rejection and terminal hooks; disconnected clients have no JSON guarantee.
   Include local file validation, pending controls, the actual-byte 20 MiB bound and typed parser failures.
   Limit the JSON ingress-error branch to configured 413, 502 and 504 mappings. Separate response JSON validation from
-  other ingress responses without a JSON guarantee; unreadable JSON becomes a readable error. Separate this from
-  rejected fetches handled by the hook's timeout/network catch. Render current outcomes, ignore stale completions and
-  clear every admitted request's deadline in finally. Count complete physical MPEG-1 Layer III frames including
-  metadata-bearing frames. Aborted or incomplete uploads must never produce partial success.
+  other ingress responses without a JSON guarantee. The service catches fetch/body failures and returns typed
+  timeout, cancellation, network or invalid-response outcomes, preserving the hook-owned abort reason. The hook
+  renders only current outcomes and clears every admitted request's deadline in finally. Walk complete MPEG-1 Layer III
+  frames; exclude only a recognized leading Xing/Info carrier from audio count, retaining physical/excluded diagnostics.
+  Declared totals never determine the result. Shared schemas/code catalogue govern default/details and errors. Aborts
+  never produce partial success.
   Use the referenced implementation at the current revision as runtime authority. Historical architecture snapshots
   remain historical evidence. This diagram describes the local application, not a cloud deployment.
   Group NGINX inside the frontend Docker container and API plus parser inside the API Docker container. The API and
@@ -25,7 +32,16 @@ references:
   - "File: /frontend/src/components/AnalysisResult.tsx"
   - "File: /frontend/nginx.conf.template"
   - "File: /server/src/http.ts"
-  - "File: /server/src/mp3.ts"
+  - "File: /server/src/app.ts"
+  - "File: /server/src/http/upload-transport.ts"
+  - "File: /server/src/http/errors.ts"
+  - "File: /server/src/http/lifecycle.ts"
+  - "File: /server/src/modules/mp3/routes.ts"
+  - "File: /server/src/modules/mp3/analyze.ts"
+  - "File: /server/src/modules/mp3/mpeg.ts"
+  - "File: /server/src/modules/mp3/xing.ts"
+  - "File: /server/src/contracts/mp3.ts"
+  - "File: /server/src/contracts/errors.ts"
   - "File: /frontend/Dockerfile"
   - "File: /server/Dockerfile"
   - "File: /compose.yaml"
@@ -39,8 +55,10 @@ sequenceDiagram
         participant Frontend as NGINX :8080
     end
     box rgb(220,252,231) API Docker container - one Node process
-        participant API as Fastify on Node :3000
-        participant Parser as In-process parser
+        participant Bridge as Native server adapter :3000
+        participant App as Fastify root application
+        participant Upload as Scoped upload plugin
+        participant Parser as Pure MPEG/Xing analyzer
     end
     User->>Browser: Select file
     Browser->>Hook: selectFile resets prior result
@@ -53,40 +71,59 @@ sequenceDiagram
         Hook->>Hook: Admit one request, set pending and start deadline
         Hook-->>Browser: Disable pending controls
         Hook->>Service: Await analysis of selected File with abort signal
-        Service->>Frontend: Await raw POST /file-upload via published loopback port
+        Service->>Frontend: Ky raw POST /file-upload?details=true#59; retries disabled
         alt Response is available
             alt Mapped NGINX upload/proxy failure
                 Frontend-->>Service: 413, 502 or 504 status and JSON
             else Unmapped ingress response
                 Frontend-->>Service: Status and body without a JSON guarantee
             else Request forwarded over HTTP/1.1 without buffering or retry
-                Frontend->>API: Forward raw bytes to api:3000 on Compose network
-                API->>API: Raw path/method bridge, then ordered Fastify admission
-                API->>API: Custom stream parser bounds actual bytes and deadlines
-                alt Invalid request, over limit, busy or timed out
-                    API-->>Frontend: Contracted error status and JSON
-                else Complete nonempty body within 20 MiB
-                    API->>Parser: POST route counts complete physical MPEG-1 Layer III frames
-                    alt Valid supported file
-                        Parser-->>API: Positive count including metadata-bearing frames
-                        API-->>Frontend: 200 JSON with frameCount
-                    else Invalid or unsupported structure
-                        Parser-->>API: Typed failure
-                        API-->>Frontend: 400 or 415 JSON
+                Frontend->>Bridge: Forward raw bytes to api:3000 on Compose network
+                alt Raw path, method or Expect refusal
+                    Bridge-->>Frontend: Catalogue error#59; bounded rejection drain#59; HEAD body omitted
+                else Exact accepted upload route
+                    Bridge->>App: Dispatch into real Fastify handler
+                    App->>Upload: Scoped onRequest admission
+                    Upload->>Upload: Check headers, declared cap and capacity before allocation
+                    alt Invalid headers, declared oversize or busy
+                        Upload->>App: Reject with canonical catalogue projection
+                        App-->>Frontend: Safe error#59; native unfinished body uses bounded drain
+                    else Upload admitted
+                        Upload->>Upload: Reserve slot#59; allocate one Buffer#59; start deadlines
+                        Upload->>Upload: Custom content parser enforces actual bytes and completion
+                        alt Limit, timeout, empty/incomplete body or client disconnect
+                            Upload->>App: Settle parser failure and release once
+                            App-->>Frontend: Canonical error when connected#59; disconnect may have no reply
+                        else Complete nonempty body within 20 MiB
+                            Upload->>Parser: Route invokes one complete boundary analysis
+                            alt Valid supported file
+                                Parser-->>Upload: Audio and physical counts#59; bounded carrier diagnostics
+                                Upload->>Upload: Project allowed fields and validate aggregate invariants
+                                Upload->>App: Serialize registered default or detailed success DTO
+                                App-->>Frontend: 200 details JSON#59; default callers get frameCount only
+                            else Invalid or unsupported structure
+                                Parser-->>Upload: Typed domain failure
+                                Upload->>App: Root error handler classifies to closed catalogue code
+                                App-->>Frontend: 400 or 415 canonical JSON
+                            end
+                            Upload->>Upload: Handler finally releases buffer, timers and slot once
+                        end
                     end
                 end
-                Frontend-->>Service: Preserve API status and JSON
+                Note over App,Upload: Terminal response, abort and timeout hooks share idempotent release#59; unknown failures map to safe 500
+                Frontend-->>Service: Forward received API status/body#59; disconnect may instead reject fetch
             end
             Service->>Service: Attempt to read response JSON
             alt JSON is readable
-                Service->>Service: Validate exact success or readable API error
+                Service->>Service: Interpret canonical success invariants or exact coded API error
                 Service-->>Hook: Typed count or readable error
-            else JSON is unreadable
-                Service-->>Hook: Readable response parse error
+            else Body read fails, aborts or JSON is unreadable
+                Service->>Service: Classify caller abort reason or body failure
+                Service-->>Hook: Typed timeout, cancelled, network or invalid-response outcome
             end
         else Fetch rejects, including abort
-            Service--xHook: Propagate rejected fetch
-            Hook->>Hook: Catch timeout or connection failure
+            Service->>Service: Preserve caller timeout/cancellation or classify network failure
+            Service-->>Hook: Typed timeout, cancelled or network outcome
         end
         alt Request generation is still current
             Hook-->>Browser: Render result and restore controls
@@ -97,5 +134,6 @@ sequenceDiagram
         Hook->>Hook: Finally clear deadline#59; clear active slot only if current
     end
     Note over Hook,Service: Selection and unmount abort requests#59; stale outcomes never update the page
-    Note over Hook,API: Abort or network failure is not partial success
-    Note over API,Parser: Release bounded upload memory#59; no MediaInfo, retained upload or background job
+    Note over Hook,App: Abort or network failure is not partial success
+    Note over Upload,Parser: Recognized leading carrier adds one physical and zero audio frames#59; declarations never supply count
+    Note over Upload,Parser: No MediaInfo, retained upload or background job

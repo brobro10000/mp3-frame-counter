@@ -1,5 +1,5 @@
 /**
- * Exercise the API transport through real loopback HTTP/TCP connections. Run `node --test tests/unit/http.test.ts`.
+ * Exercise the API transport through real loopback HTTP/TCP connections. Run `node --test server/tests/http.test.ts`.
  * Tests use frozen fixture bytes read-only, bind ephemeral ports and restore/close every connection. Short explicit
  * budgets make timeout/abort/shutdown checks bounded; no product output defines a fixture expectation or success mock.
  */
@@ -13,9 +13,11 @@ import { spawn } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, test } from "node:test";
 import type { TestContext } from "node:test";
-import { createApiServer, DEFAULT_API_BUDGETS, MAX_UPLOAD_BYTES, parsePort } from "../../server/src/http.ts";
-import type { ApiBudgets } from "../../server/src/http.ts";
-import { fixtureBytes } from "../acceptance/lib/fixtures.ts";
+import { fileURLToPath } from "node:url";
+import { createApiServer, DEFAULT_API_BUDGETS, MAX_UPLOAD_BYTES, parsePort } from "../src/http.ts";
+import type { ApiBudgets } from "../src/http.ts";
+import { isApiError, projectPublicError } from "../src/contracts/errors.ts";
+import { fixtureBytes } from "../../tests/acceptance/lib/fixtures.ts";
 
 interface Reply {
   status: number;
@@ -76,9 +78,10 @@ function expectJson(reply: Reply, status: number, expected?: object): void {
   const body = JSON.parse(reply.body.toString("utf8"));
   if (expected) assert.deepEqual(body, expected);
   else {
-    assert.deepEqual(Object.keys(body), ["error"]);
+    assert.deepEqual(Object.keys(body), ["code", "error"]);
     assert.equal(typeof body.error, "string");
     assert.ok(body.error.trim().length > 0);
+    assert.ok(isApiError(body, status), "Controlled errors must use the catalogue's code, status and safe text");
   }
 }
 
@@ -119,7 +122,7 @@ describe("HTTP upload transport", () => {
       ["/file-upload", "HEAD", "POST"],
       ["/healthz", "POST", "GET"],
       ["/healthz", "HEAD", "GET"],
-    ]) {
+    ] as const) {
       const reply = await send(port, { path, method, headers: {} });
       assert.equal(reply.headers.allow, allow);
       if (method === "HEAD") {
@@ -143,6 +146,30 @@ describe("HTTP upload transport", () => {
         { frameCount: 3 },
       );
     }
+  });
+
+  test("the raw upload route returns the corrected audio count and the same one-pass detailed representation", async (context) => {
+    const { port } = await start(context);
+    const body = fixtureBytes("xing-physical");
+    expectJson(await send(port, { body }), 200, { frameCount: 1 });
+    const detailed = await send(port, { path: "/file-upload?details=true", body });
+    expectJson(detailed, 200, {
+      frameCount: 1,
+      analysis: {
+        physicalFrameCount: 2,
+        excludedMetadataFrameCount: 1,
+        xing: {
+          status: "present",
+          marker: "Xing",
+          frameOffsetBytes: 0,
+          frameLengthBytes: 384,
+          markerOffsetBytes: 36,
+          flags: 1,
+          declaredAudioFrameCount: 999,
+        },
+        warnings: [{ code: "XING_DECLARED_FRAME_COUNT_MISMATCH" }],
+      },
+    });
   });
 
   test("unsupported media and encoding fail before parser errors with usable JSON", async (context) => {
@@ -251,7 +278,7 @@ describe("HTTP upload transport", () => {
     const { port } = await start(context, { maxActiveUploads: 1, inactivityTimeoutMs: 80, bodyTimeoutMs: 1_000 });
     const { outgoing, reply } = await holdUpload(port);
     outgoing.write(fixtureBytes("one-frame"));
-    expectJson(await reply, 408);
+    expectJson(await reply, 408, projectPublicError("UPLOAD_IDLE_TIMEOUT"));
     expectJson(await send(port, { body: fixtureBytes("one-frame") }), 200, { frameCount: 1 });
   });
 
@@ -260,7 +287,7 @@ describe("HTTP upload transport", () => {
     const { outgoing, reply } = await holdUpload(port);
     const drip = setInterval(() => outgoing.write(Buffer.from([0])), 20);
     try {
-      expectJson(await reply, 408);
+      expectJson(await reply, 408, projectPublicError("UPLOAD_TIMEOUT"));
     } finally {
       clearInterval(drip);
       outgoing.destroy();
@@ -362,7 +389,7 @@ describe("HTTP upload transport", () => {
   });
 
   test("the real process entrypoint rejects an invalid PORT without reflecting its value", async () => {
-    const child = spawn(process.execPath, ["server/src/index.ts"], {
+    const child = spawn(process.execPath, [fileURLToPath(new URL("../src/index.ts", import.meta.url))], {
       env: { ...process.env, PORT: "PRIVATE INVALID VALUE" },
     });
     let stderr = "";

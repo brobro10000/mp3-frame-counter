@@ -250,6 +250,42 @@ h3 {
 #analysis-status[data-state="pending"] {
   color: var(--green);
 }
+.analysis-details {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.analysis-details h4 {
+  color: var(--green);
+  font-size: 12px;
+  margin: 20px 0 10px;
+}
+.count-equation {
+  color: var(--green);
+  font-weight: 600;
+}
+.metadata-list {
+  margin: 0;
+}
+.metadata-list div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.metadata-list dt {
+  font-weight: 600;
+}
+.metadata-list dd {
+  margin: 0;
+  text-align: right;
+}
+.analysis-warnings {
+  padding-left: 18px;
+  color: #845d20;
+}
 .no-script {
   font-size: 13px;
   line-height: 1.6;

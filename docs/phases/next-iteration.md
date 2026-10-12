@@ -496,3 +496,10 @@ The original follow-up failure (local Python CA lookup) and subsequent normaliza
 operator evidence. Apply was not retried. Verification used the system CA bundle and a narrow empty-set normalization.
 The completed private review digest is `44c6262de0a00cbdef42b90a63ec3567c17b3f2bff8b01a674bbf183933761ab`. Access-state
 migration and all hosted application execution remain pending.
+
+## Bounded local backend refactor — 2026-10-11
+
+The [owner amendment](../requirements/backend-audio-refactor.md) temporarily defines local work: independently establish
+contract/policy expectations, extract factory/transport/parser, then integrate generated docs and existing React/proxy
+consumers. Stop before remote writes and resume the actual successor review/binding sequence later. This overrides the
+earlier physical-only/Fastify-only wording only for the named local target. Cloud phases stay deferred.

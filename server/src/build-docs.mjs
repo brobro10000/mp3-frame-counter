@@ -211,7 +211,7 @@ function collectArtifacts() {
   assert(/^<!doctype html>/i.test(utf8(html, "HTML")), "Docs HTML must start with a doctype");
   const artifacts = new Map([
     ["index.html", html],
-    ["openapi.yaml", specificationBytes(readInput(`${inputPath}openapi.json`, textLimit))],
+    ["openapi.yaml", specificationBytes(readInput("dist/openapi.json", textLimit))],
     ["assets/redoc.js", derivative],
     ["assets/init.js", init],
     ["assets/docs.css", css],

@@ -65,3 +65,14 @@ The 2026-10-09 install/audit reported four low-severity entries from the develop
 reported. The renderer retains Chrome sandboxing, strict Mermaid configuration and local-package-only resource access.
 No forced transitive major-version override was applied; review upstream fixes with the complete renderer regression
 suite.
+
+## Local refactor source checks — 2026-10-11
+
+`npm run typecheck` now includes strict unit-test source checking. `npm run lint:source` runs pinned Oxlint 1.87.0 on
+backend, shared contracts, frontend and localized unit tests in `server/tests/` and `frontend/tests/` with errors/zero
+warnings. `npm run test:server` and `npm run test:frontend` each build their application before running its tests from
+that application's directory; `npm run test:unit` delegates both commands without repeating either build. TypeScript
+ESLint 8.71.1 declares TypeScript <6.1 peers, so it was not forced onto the pinned 7.0.2 compiler. Oxlint has no such
+peer and its real negative control rejects explicit any. `npm run build:server` generates same-app OpenAPI;
+`npm run check:openapi` uses pinned Redocly CLI semantic validation. Tool-policy adoption is a separate pending
+prerequisite.

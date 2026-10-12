@@ -8,6 +8,10 @@ their original dates.
 
 ## Submission tradeoffs — 2026-10-11 UTC
 
+This dated table records the shipped physical-count implementation. Apply the
+[current local framework/audio amendment](#dec-16--local-fastify-factory-and-module-boundaries-2026-10-11) to the local
+successor; preserve the table and its observations under their original count convention.
+
 This amendment explains the implemented application at published source `07c020c40f4a0238da937b82f24e4ef50cb37824`
 ([v0.3.37](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.3.37)). Existing
 [main CI 38103007563, attempt 1](https://github.com/brobro10000/mp3-frame-counter/actions/runs/38103007563/attempts/1)
@@ -170,3 +174,37 @@ replayed unchanged onto main, followed by the independent baseline binding and s
 reconciled product passed PR CI. PR #5 subsequently merged at `ce50762b`; its protected-main run published `v0.1.6` and
 an identical publisher retry preserved all assets. See [V1 closure](../validation/v1-closure.md) and
 [current progression](../validation/execution-status.md). Deployment remains deferred under DEC-13.
+
+## Backend audio-count amendment — 2026-10-11
+
+The [owner target](../requirements/backend-audio-refactor.md) keeps the two-container topology and handwritten parser.
+Fastify construction, scoped transport and lifecycle are separated; shared TypeBox DTOs/catalogue drive serializers,
+browser validation and dynamic Swagger generation. Ky is browser-only; Redocly/Oxlint are build tools. The old
+physical-count/Fastify-only rows remain historical decisions, superseded narrowly for this unbound local successor.
+[Responsibility map and verification](../validation/backend-audio-refactor.md).
+
+## DEC-16 — Local Fastify factory and module boundaries, 2026-10-11
+
+Retain the already adopted Fastify 5.12.5 framework. The local `createApp()` constructs a genuine Fastify instance with
+shared TypeBox schemas, dynamic Swagger registered before feature plugins, a scoped MP3 upload plugin and a sibling
+health plugin. Fastify owns successful API routing, ordered hooks, response serialization and close hooks. Factory
+construction remains independent of listening, documentation assets, signal handlers and live deadlines, making the same
+application usable by injection tests and the build-only OpenAPI generator.
+
+Separate the small responsibilities already present in the implementation: the composition root and production facade;
+instance-local upload admission, raw collection and terminal release; route projection and canonical failure mapping;
+pure MPEG/Xing boundary analysis; and browser-safe schemas/error catalogue. The native server adapter preserves early
+raw-path/method/Expect refusals and serves only verified finite docs resources. Incomplete native errors may use a
+bounded drain writer after release; complete replies use Fastify serializers. This retained low-level behavior does not
+justify another framework or move parser logic into transport hooks.
+
+The tradeoff remains one bounded whole-body Buffer and synchronous analysis in one Node process: simple ownership and no
+retained uploads, with aggregate memory and event-loop throughput limited by admission and the 20 MiB cap. The parser
+now distinguishes computed audio frames from physical frames and excludes only the supported leading Xing/Info carrier;
+declared totals remain diagnostics. This narrowly supersedes historical physical-count decisions without rewriting their
+evidence or the frozen original suite.
+
+See the [current responsibility map](v1.md#current-local-fastify-architecture--2026-10-11) and source-linked
+[runtime/upload diagrams](diagrams/README.md). Same-factory schema generation is a source property; current Redoc
+rendering, examples, CSP, local tests and independently bound successor acceptance need their own recorded observations.
+This decision records the authorized local architecture, not a new protected-main release or hosted completion.

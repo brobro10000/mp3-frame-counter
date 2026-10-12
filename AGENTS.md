@@ -1,6 +1,30 @@
 # mp3-frame-counter operating contract
 
-## Current execution boundary — 2026-10-11
+## Current shipment and freeze authority — 2026-10-11
+
+The owner subsequently instructed: finish the refactor and documentation, commit/push, obtain companion review, then
+merge the PR through normal controls. This supersedes the local-only Git boundary below. Preserve separate governance,
+independent candidate, actual binding and product admissions; refresh checks/review after head or base changes. No
+bypass, cloud deployment, repository-setting change or production release is authorized by this amendment.
+
+After the final product merge, freeze major product changes and complete a README-discoverable handoff covering local
+startup, implemented architecture/network/upload sequence, evaluation evidence, known limits and provisional roadmap
+responses. Document observed merged/published status separately from local validation and pending hosted production.
+
+## Current local refactor authority — 2026-10-11
+
+Execute the narrow [backend audio-count amendment](docs/requirements/backend-audio-refactor.md): handwritten computed
+Xing/Info-aware audio count, opt-in diagnostics, canonical coded errors/TypeBox DTOs, Fastify factory/hooks, generated
+OpenAPI and the existing React service using Ky. This local target supersedes physical-only counts, one-field errors,
+Fastify-only runtime and no-new-fields rules below only for this successor work. Schema/runtime packages are exact pins;
+Ky, Redocly CLI and source lint remain build tools. Frozen acceptance and generated/history artifacts stay immutable.
+
+Prepare policy and independent successor work separately. Actual reviewed merge/binding is still required before the
+normal acceptance/release gate can recognize the product change. Run local verification without pretending that local
+passes constitute CI admission. Do not push, merge, publish, deploy or change remote settings under this attachment.
+Historical broad merge authority does not widen this bounded local task. Preserve the recent Docker/Make handoff.
+
+## Prior local MVP boundary — 2026-10-11
 
 The owner's latest instruction defers Cloud Run deployment to finish the local assessment MVP quickly. Implement a
 minimal React/strict TypeScript frontend against the unchanged upload contract and prepare reproducible source and

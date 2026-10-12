@@ -1,12 +1,16 @@
 # MP3 frame counter
 
-A small TypeScript application that counts complete physical **MPEG-1 Layer III** frames. Choose an MP3 in the browser,
-then click **Analyze MP3**. The API accepts raw bytes at `POST /file-upload` and returns exactly
-`{ "frameCount": <positive integer> }`. Uploads are limited to **20 MiB**, processed in memory and never retained.
+A small TypeScript application that counts **MPEG-1 Layer III audio frames** by walking complete frame boundaries.
+Choose an MP3 in the browser, then click **Analyze MP3**. The API accepts raw bytes at `POST /file-upload` and returns
+exactly `{ "frameCount": <positive integer> }`. One recognized leading Xing/Info carrier is excluded from the audio
+count. Uploads are limited to **20 MiB**, processed in memory and never retained.
 
 The React/TypeScript interface is compiled into static assets served by non-root NGINX. NGINX forwards same-origin
 requests to a separate non-root Fastify/Node API container, which calls the pure TypeScript parser. Offline Redoc and
 OpenAPI assets ship in the API image. There are exactly two runtime containers, no database and no MP3 parsing package.
+
+Start with [Run locally](#run-locally). The [assessment handoff](docs/handoff/README.md) links the architecture,
+[evaluation evidence](docs/handoff/evaluation.md) and [known gaps](docs/handoff/known-gaps.md).
 
 ## Run locally
 
@@ -69,9 +73,9 @@ make logs          # Show the latest 100 log lines from both containers.
 make down          # Stop and remove this application's containers and network.
 ```
 
-If port 8080 is occupied, run `FRONTEND_PORT=8081 make up` and open `http://127.0.0.1:8081/`. Use the same setting for
-follow-up checks, for example `FRONTEND_PORT=8081 make health`. On failure, inspect `make ps` and `make logs`, correct
-the reported problem, then retry `make up`.
+If port 8080 is occupied, run `FRONTEND_PORT=18084 make up` and open `http://127.0.0.1:18084/`, as in the recorded
+operator setup. Use the same setting for follow-up checks, for example `FRONTEND_PORT=18084 make health`. On failure,
+inspect `make ps` and `make logs`, correct the reported problem, then retry `make up`.
 
 Follow the [local handoff](docs/deployment/local-handoff.md) for the nine-frame synthetic upload, exact tested-image
 startup, checksums, development checks, troubleshooting and cleanup. Source startup rebuilds images; the release-image
@@ -80,8 +84,13 @@ path loads the tested archives and runs with `--no-build`.
 ### Provided sample MP3
 
 The supplied assessment file belongs at **`docs/requirements/samples/assessment-sample.mp3`**, relative to the
-repository root. Select it in the frontend and click **Analyze MP3**; expect **6,090 physical frames**. Its
-[sample record](docs/requirements/samples/README.md) contains the original identity, SHA-256 and count explanation.
+repository root. Select it in the frontend and click **Analyze MP3**; expect **6,089 audio frames**, with **6,090
+physical frames − 1 Xing carrier** in the diagnostic panel. Its [sample record](docs/requirements/samples/README.md)
+contains the original identity, SHA-256 and count explanation.
+
+The original assignment did not define whether a metadata carrier counts as a frame. The owner adopted the audio
+convention above; the employer's expected answer is unconfirmed. Physical counting and the original sample evidence
+remain documented in the [handoff evaluation](docs/handoff/evaluation.md#correctness).
 
 The private MP3 is ignored by Git and is **not included in a fresh clone, source ZIP or release assets**. If it was
 provided separately, copy it to that path and verify its recorded hash. Any supported MPEG-1 Layer III MP3 can be used;
@@ -94,20 +103,29 @@ Use Node.js **24.20.0** and npm **11.19.0** for development and acceptance:
 
 ```sh
 npm ci
-npm run typecheck
-npm run test:unit
+npm run typecheck  # Includes application and unit-test source types.
+npm run lint:source
+npm run test:unit  # Builds and tests the server, then the frontend, once each.
 make e2e
 ```
 
-`make e2e` runs the independently frozen local HTTP/browser suite in an isolated Compose project and cleans it up. It
-requires Docker, full Git history and the pinned browser prerequisites. It is separate from hosted acceptance. See
-[browser setup](docs/testing/acceptance-browser-setup.md), [toolchain](docs/toolchain.md) and
+This local refactor needs the [successor/policy binding](docs/requirements/backend-audio-refactor.md) before the normal
+required acceptance gate can admit its changed count/error semantics. Until then, `make e2e` uses the active frozen
+contract and is not evidence for the new target. The separate candidate's observed local results are recorded in the
+[refactor handoff](docs/validation/backend-audio-refactor.md).
+
+Use `npm run test:server` or `npm run test:frontend` for one application's build and localized tests. Server unit tests
+live in `server/tests/`; frontend response and HTTP service tests live in `frontend/tests/`.
+
+After admission, `make e2e` runs the independently frozen local HTTP/browser suite in an isolated Compose project and
+cleans it up. It requires Docker, full Git history and the pinned browser prerequisites. It is separate from hosted
+acceptance. See [browser setup](docs/testing/acceptance-browser-setup.md), [toolchain](docs/toolchain.md) and
 [portability](docs/portability.md) for initial setup and full repository checks. The
 [CI workflow guide](docs/testing/ci-workflows.md) explains the visible lint, application, server and acceptance lanes.
 
-- [Frontend](frontend/README.md): browser behavior, React assets and NGINX configuration.
-- [API](server/README.md): raw upload contract, parser limits and API image.
-- [Architecture](docs/architecture/v1.md) and [runtime diagram](docs/architecture/diagrams/runtime.mmd).
+- [Frontend](frontend/README.md) and [API](server/README.md): source boundaries, upload behavior and parser limits.
+- [Architecture](docs/architecture/v1.md), [network diagram](docs/architecture/diagrams/network.mmd),
+  [runtime](docs/architecture/diagrams/runtime.mmd) and [upload sequence](docs/architecture/diagrams/upload.mmd).
 - [Requirements](docs/requirements/assessment.md), [acceptance contract](docs/testing/acceptance-contract.md) and
   [fixture provenance](tests/acceptance/fixtures/README.md).
 - [Frame-count explanation](docs/validation/sample-baseline.md): the supplied sample has 6,090 physical frames;
@@ -126,3 +144,9 @@ production application has been deployed. See the
 Local MVP closure is distinct from production **v1.0.0**, which remains deferred until hosted acceptance, recovery,
 exact-candidate human approval and production smoke pass. Each change requires its own checks, review, merge and
 publication; historical release records do not establish those outcomes for a later revision.
+
+The owner has authorized the refactor's reviewed shipment, followed by a product code freeze. Current handoff evidence
+is local; successor binding, exact-head approval, merge and protected-main publication remain pending until their live
+identities are recorded in the [validation record](docs/validation/backend-audio-refactor.md). After merge, product
+behavior is frozen except for reviewed blocking defects. The [known gaps](docs/handoff/known-gaps.md) are provisional,
+and this handoff does not resume cloud work.

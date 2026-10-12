@@ -1,0 +1,48 @@
+---
+title: Local browser origin and private API network
+query: >-
+  Describe the implemented default local network only. Browser React assets,
+  raw uploads and offline Redoc all use one loopback frontend origin. Compose
+  publishes 127.0.0.1:FRONTEND_PORT to NGINX container port 8080; the default
+  host port is 8080 and the recorded operator choice is 18084. NGINX forwards
+  uploads and docs to api:3000 over the private Compose network. The normal API
+  has expose only, with no host-published port. Exactly two runtime containers
+  start without a cloud dependency. Show the independent host Playwright and
+  controller separately against isolated test containers, with temporary
+  test-only loopback API diagnostics. Never imply this diagnostic port exists
+  in normal Compose or that tests are a third application container.
+references:
+  - 'File: /compose.yaml'
+  - 'File: /Makefile'
+  - 'File: /frontend/nginx.conf.template'
+  - 'File: /frontend/Dockerfile'
+  - 'File: /server/Dockerfile'
+  - 'File: /server/src/http/config.ts'
+  - 'File: /server/src/docs.ts'
+  - 'File: /scripts/run-e2e.mjs'
+  - 'File: /scripts/e2e-controller.mjs'
+---
+flowchart LR
+    B["User browser<br/>React UI or offline Redoc"]
+    H["Host loopback origin<br/>127.0.0.1:FRONTEND_PORT<br/>default 8080; operator choice 18084"]
+    subgraph DOCKER["Docker: two runtime containers on private Compose network"]
+        subgraph FRONT["frontend container"]
+            F["NGINX :8080<br/>serves compiled browser assets<br/>proxies uploads and /docs/"]
+        end
+        subgraph BACK["api container"]
+            A["Fastify / Node :3000<br/>raw upload API and packaged docs<br/>no normal host-published port"]
+        end
+        F <-->|"Private HTTP/1.1 upstream<br/>Compose DNS api:3000"| A
+    end
+    B <-->|"Same-origin assets, upload JSON<br/>and /docs/ assets / specification"| H
+    H <-->|"Published host port maps<br/>to frontend container 8080"| F
+    subgraph TEST["Independent verification: host processes, isolated test project"]
+        T["Playwright / Chromium<br/>frozen HTTP and browser suite"]
+        C["Controller<br/>owns isolated containers, faults and cleanup"]
+        C -->|"Run against identified image pair"| T
+    end
+    T -.->|"Test BASE_URL<br/>temporary loopback frontend port"| F
+    T -.->|"Test-only API_BASE_URL<br/>temporary loopback API diagnostics"| A
+    C -.->|"Start / inspect / stop isolated pair<br/>not the operator project"| DOCKER
+    N["Default local startup needs Docker<br/>no cloud account or deployed service"]
+    N --- H

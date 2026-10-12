@@ -1,10 +1,10 @@
 /** Own file selection, upload admission and request lifetime without coupling API data to presentation. */
 import { useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
+import { MAX_UPLOAD_BYTES } from "../../../server/src/contracts/mp3.ts";
 import { analyzeMp3 } from "../services/mp3Analysis.ts";
 import type { AnalysisState } from "../types/analysis.ts";
 
-const MAX_UPLOAD_BYTES = 20_971_520;
 const REQUEST_TIMEOUT_MS = 45_000;
 
 /** One admitted request owns its deadline; its generation rejects stale asynchronous completions. */
@@ -55,12 +55,13 @@ export function useMp3Analysis() {
   async function analyze(): Promise<void> {
     if (activeRequest.current) return;
     if (!selectedFile) {
-      setState({ kind: "error", message: "Choose an MP3 file before starting an analysis." });
+      setState({ kind: "error", reason: "input", message: "Choose an MP3 file before starting an analysis." });
       return;
     }
     if (selectedFile.size > MAX_UPLOAD_BYTES) {
       setState({
         kind: "error",
+        reason: "input",
         message: "This file is too large. Choose an MP3 of 20 MiB (20,971,520 bytes) or less.",
       });
       return;
@@ -69,7 +70,10 @@ export function useMp3Analysis() {
     const file = selectedFile;
     const controller = new AbortController();
     const id = ++generation.current;
-    const deadline = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const deadline = setTimeout(
+      () => controller.abort(new DOMException("The analysis deadline elapsed.", "TimeoutError")),
+      REQUEST_TIMEOUT_MS,
+    );
     activeRequest.current = { id, controller, deadline };
     setState({ kind: "pending" });
     const current = () => activeRequest.current?.id === id && generation.current === id;
@@ -80,6 +84,7 @@ export function useMp3Analysis() {
       if (current())
         setState({
           kind: "error",
+          reason: controller.signal.aborted ? "timeout" : "network",
           message: controller.signal.aborted
             ? "The analysis timed out. Please try again."
             : "Unable to reach the service. Check your connection and try again.",

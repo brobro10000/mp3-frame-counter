@@ -122,3 +122,11 @@ An amendment records the requirement/primary evidence, old and new expectation, 
 review outcome and new baseline identity. Review it separately; rerun harness controls and affected local/candidate
 acceptance. Never silently update expected counts from product output. If disagreement cannot be reconciled, stop the
 affected phase with evidence instead of relaxing its gate.
+
+## Pending local backend-audio successor — 2026-10-11
+
+The [new owner convention](../requirements/backend-audio-refactor.md) changes observable count/error semantics.
+Independent tests and narrow dependency/inventory expectations are authored in separate reviewable work. Their local
+calibration and application execution are not an authenticated merge/binding or normal CI release pass. Preserve
+genesis, prior suite objects/physical fixture manifests and actual transition registry; do not replace authority with
+prose or invent SHA/review evidence.
