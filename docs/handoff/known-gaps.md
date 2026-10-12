@@ -41,6 +41,16 @@ Native protocol refusals, disconnected clients and unrelated NGINX static 404s a
 guarantee. Recovery tests do not prove the absence of every leak or operational failure. Future work should respond to
 an observed blocking defect rather than broaden error promises beyond the actual transport.
 
+## Accepted documentation-checker limitation — 2026-10-12
+
+The owner explicitly deferred companion finding F-004 in acceptance PR #64 because of the submission timing constraint.
+The partial OpenAPI matcher ignores `multipleOf`, so a contradictory schema could exclude supported odd Xing flags
+without the documentation checker rejecting it. This known P2 limitation remains unfixed; a passing check does not prove
+complete OpenAPI schema validation. Earlier request-changes evidence is preserved, and the exception must remain visible
+in the binding and approval records. No executable checker, required CI job or branch protection is disabled. Actual
+product acceptance and exact-source review remain required; independent checker hardening is provisional follow-up after
+the local handoff.
+
 ## Shipment and external evidence
 
 `APP-EVAL-007–008`, `APP-SUB-001–003`: final local run `mp3-e2e-45286-140fd7c71318` passed 72 cases and supplemental
