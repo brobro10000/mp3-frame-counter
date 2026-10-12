@@ -10,6 +10,8 @@ import { readFileSync } from "node:fs";
 import http from "node:http";
 import https from "node:https";
 import { parseDocument } from "yaml";
+import { assertCodedError } from "./backend-audio-errors.mjs";
+import { assertBackendSpec } from "./backend-audio-openapi.mjs";
 
 export const DOCS_POLICY =
   "default-src 'none'; script-src 'self'; style-src 'self' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-QMIg+bpjm3JdElJ388KYke01izlUW0UoNOeKjpMxdgc='; style-src-attr 'none'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'; worker-src 'none'";
@@ -18,7 +20,9 @@ export const ROOT_POLICY =
 export const ORIGINAL_HASH = "dcaf76612bc4a3fbcc923a8966dee2f6146a5f32e5ce1b6f02dd60cbbf89500b";
 export const DERIVED_HASH = "21ce5beb19818927f12e2db16e1a332e4f0eac5b8538012b6ecd048585b8cdbf";
 export const LOGO_HASH = "1dab4315f8de2177b2b2726b29e84a26314c69cd27d692228947c0058793d5a7";
-export const expectedSpec = JSON.parse(readFileSync(new URL("../fixtures/openapi.json", import.meta.url), "utf8"));
+export const expectedSpec = JSON.parse(
+  readFileSync(new URL("../fixtures/backend-audio-openapi.json", import.meta.url), "utf8"),
+);
 export const resources = [
   ["/docs/", "text/html"],
   ["/docs/openapi.yaml", "application/yaml"],
@@ -105,7 +109,7 @@ export function assertError(response, status, head = false) {
   if (head) same(response.body.length, 0, "HEAD_BODY");
   else {
     const value = JSON.parse(response.body.toString("utf8"));
-    same(Object.keys(value), ["error"], "ERROR_SHAPE");
+    assertCodedError(value, status, undefined, true);
     requireThat(
       typeof value.error === "string" && value.error.length > 0 && value.error.length < 1024,
       "ERROR_MESSAGE",
@@ -197,59 +201,29 @@ export function fragmentReferences(spec) {
   return refs;
 }
 /**
- * Return copied path/operation containers with only supported narrative fields removed for semantic comparison.
- * Mapping keys remain structural, including properties named description. Nested schemas are retained intact and
- * input is not mutated; malformed path/operation structures can throw. This is not general OpenAPI normalization.
- */
-function pathsWithoutNarrative(paths) {
-  return Object.fromEntries(
-    Object.entries(paths).map(([path, methods]) => [
-      path,
-      Object.fromEntries(
-        Object.entries(methods).map(([method, operation]) => {
-          const copy = { ...operation };
-          delete copy.description;
-          delete copy.summary;
-          delete copy.externalDocs;
-          if (copy.responses)
-            copy.responses = Object.fromEntries(
-              Object.entries(copy.responses).map(([status, response]) => {
-                const value = { ...response };
-                delete value.description;
-                return [status, value];
-              }),
-            );
-          if (copy.requestBody) {
-            copy.requestBody = { ...copy.requestBody };
-            delete copy.requestBody.description;
-          }
-          return [method, copy];
-        }),
-      ),
-    ]),
-  );
-}
-/**
  * Compare a bounded, acyclic parsed specification with the independent transport fixture's selected semantics.
  * Requires local references, OpenAPI 3.0.3, default same-origin servers/no global auth, intact closed components,
- * normalized operation structure, the inclusive limit note and transport/proxy metadata. Returns nothing or throws;
+ * closed DTO and named example semantics, the inclusive limit note and transport/proxy metadata. Returns nothing or throws;
  * no mutation/I/O occurs, and unrelated OpenAPI metadata is not comprehensively validated.
  * @see ../../../docs/testing/contracts/docs-v1.md
  */
 export function assertSpec(spec) {
   fragmentReferences(spec);
-  same(Object.hasOwn(spec, "servers") ? spec.servers : [{ url: "/" }], [{ url: "/" }], "SPEC_SERVERS");
+  const servers = Object.hasOwn(spec, "servers") ? spec.servers : [{ url: "/" }];
+  requireThat(Array.isArray(servers) && servers.length === 1, "SPEC_SERVERS");
+  const server = servers[0];
+  requireThat(server && typeof server === "object" && !Array.isArray(server), "SPEC_SERVERS");
+  same(server.url, "/", "SPEC_SERVERS");
+  if (Object.hasOwn(server, "description")) requireThat(typeof server.description === "string", "SPEC_SERVERS");
+  if (Object.hasOwn(server, "variables")) same(server.variables, {}, "SPEC_SERVERS");
   same(Object.hasOwn(spec, "security") ? spec.security : [], [], "SPEC_SECURITY");
   same(spec.openapi, "3.0.3", "SPEC_VERSION");
-  same(spec.components, expectedSpec.components, "SPEC_SCHEMAS");
-  same(pathsWithoutNarrative(spec.paths), pathsWithoutNarrative(expectedSpec.paths), "SPEC_PATHS");
+  assertBackendSpec(spec);
   requireThat(
     typeof spec.paths["/file-upload"].post.description === "string" &&
       /inclusive 20971520-byte/.test(spec.paths["/file-upload"].post.description),
     "SPEC_LIMIT_NOTE",
   );
-  for (const key of ["x-transport-requirements", "x-controlled-proxy-responses"])
-    same(spec[key], expectedSpec[key], "SPEC_TRANSPORT");
 }
 /**
  * Send one bodyless HTTP(S) request without following redirects or pooling its connection.

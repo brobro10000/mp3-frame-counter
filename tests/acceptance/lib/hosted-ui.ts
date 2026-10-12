@@ -7,7 +7,7 @@
  */
 import assert from "node:assert/strict";
 import { expect, type Request } from "@playwright/test";
-import { assertFrameResponse } from "./assertions.ts";
+import { absentDetail, assertDetailedFrameResponse } from "./backend-audio-contract.ts";
 import { fixtureBytes } from "./fixtures.ts";
 import type { HostedBrowserLease } from "./hosted-browser.ts";
 
@@ -42,13 +42,14 @@ export async function checkHostedExplicitUpload(lease: HostedBrowserLease): Prom
     assert.equal(request.method(), "POST");
     assert.equal(await request.headerValue("content-type"), "audio/mpeg");
     assert.deepEqual(request.postDataBuffer(), fixtureBytes("tone-cbr"));
-    assertFrameResponse(
+    assert.deepEqual(new URL(request.url()).searchParams.getAll("details"), ["true"]);
+    assertDetailedFrameResponse(
       {
         status: response.status(),
         headers: { "content-type": (await response.headerValue("content-type")) ?? undefined },
         body: await response.text(),
       },
-      9,
+      absentDetail(9),
     );
     await expect(message.filter({ hasText: /\b9\b/ })).toBeVisible();
     await expect(button).toBeEnabled();

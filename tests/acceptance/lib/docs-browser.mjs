@@ -1,3 +1,4 @@
+import { checkBackendRedocExamples } from "./backend-audio-redoc.mjs";
 /**
  * Public docs and upload-policy browser checks shared by application cases and owned fixture controls. Each helper
  * states whether failures are returned as evidence or thrown. Callers own the browser and must enforce cleanup results.
@@ -76,7 +77,8 @@ export async function checkDocsBrowser(browser, origin, viewport, screenshot, ow
     const specification = await requestDocs(origin, "/docs/openapi.yaml");
     same(specification.status, 200, "SPEC_STATUS");
     collect(() => assertHeaders(specification.headers));
-    assertSpec(parseYaml(specification.body));
+    const servedSpec = parseYaml(specification.body);
+    assertSpec(servedSpec);
     result.references = "admitted-before-navigation";
     const response = await page.goto(origin + "/docs/", { timeout: 10000, waitUntil: "load" });
     same(response?.status(), 200, "DOCUMENT_STATUS");
@@ -112,6 +114,7 @@ export async function checkDocsBrowser(browser, origin, viewport, screenshot, ow
       result.after !== result.before && result.after.includes("required") && result.after.includes("string"),
       "REAL_INTERACTION",
     );
+    await checkBackendRedocExamples(page, servedSpec);
     const image = await page
       .locator("img")
       .evaluateAll((images) => images.map((i) => ({ src: i.src, complete: i.complete, width: i.naturalWidth })));

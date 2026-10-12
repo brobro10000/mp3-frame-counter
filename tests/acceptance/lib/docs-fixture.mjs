@@ -178,12 +178,12 @@ export async function docsFixture(fault = "positive") {
     }
     const known = path === "/docs" || assets.has(path) || path === "/docs/assets/redoc-logo-mini.svg";
     if (!known || (fault === "missing-logo" && path.endsWith(".svg"))) {
-      send(404, '{"error":"Documentation resource not found"}', "application/json");
+      send(404, '{"code":"ROUTE_NOT_FOUND","error":"Documentation resource not found"}', "application/json");
       return;
     }
     if (!["GET", "HEAD"].includes(req.method)) {
       headers.Allow = "GET, HEAD";
-      send(405, '{"error":"Documentation method not allowed"}', "application/json");
+      send(405, '{"code":"METHOD_NOT_ALLOWED","error":"Documentation method not allowed"}', "application/json");
       return;
     }
     if (path === "/docs") {

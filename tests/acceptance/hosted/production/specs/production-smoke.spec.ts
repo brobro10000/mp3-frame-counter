@@ -7,7 +7,7 @@
  */
 import assert from "node:assert/strict";
 import { expect } from "@playwright/test";
-import { assertFrameResponse } from "../../../lib/assertions.ts";
+import { absentDetail, assertDetailedFrameResponse } from "../../../lib/backend-audio-contract.ts";
 import { fixtureBytes } from "../../../lib/fixtures.ts";
 import { createHostedTest } from "../../../lib/hosted-fixtures.ts";
 import { checkHostedDocsBrowser, checkHostedServedSpec } from "../../../lib/hosted-docs.ts";
@@ -31,15 +31,16 @@ test("HP-01 usable UI completes one small known-count upload", async ({ hostedBr
   assert.equal(new URL(response.url()).origin, origin);
   assert.equal(new URL(request.url()).origin, origin);
   assert.equal(request.method(), "POST");
+  assert.deepEqual(new URL(request.url()).searchParams.getAll("details"), ["true"]);
   assert.equal(await request.headerValue("content-type"), "audio/mpeg");
   assert.deepEqual(request.postDataBuffer(), fixtureBytes("tone-cbr"));
-  assertFrameResponse(
+  assertDetailedFrameResponse(
     {
       status: response.status(),
       headers: { "content-type": (await response.headerValue("content-type")) ?? undefined },
       body: await response.text(),
     },
-    9,
+    absentDetail(9),
   );
   await expect(page.getByRole("status").or(page.getByRole("alert")).filter({ hasText: /\b9\b/ })).toBeVisible();
   await expect(button).toBeEnabled();

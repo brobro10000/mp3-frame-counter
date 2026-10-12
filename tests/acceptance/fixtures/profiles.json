@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contractRevision": "hosted-health-v1",
+  "contractRevision": "backend-audio-v1",
   "profiles": {
     "local": [
       {
