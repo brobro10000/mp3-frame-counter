@@ -1,5 +1,10 @@
 # Assessment evaluation evidence
 
+**Final independent assessment:** [submission-review.md](submission-review.md) records fresh candidate testing and
+criterion statuses. Supported behavior passed; unrestricted MPEG-1 coverage is **partially met**, because independently
+valid free-format and some ID3v2.4 layouts are rejected. Historical evidence below does not close that employer-scope
+gap.
+
 The questions below cover each supplied criterion in the preserved
 [assessment source](../requirements/sources/assessment.html). Stable `APP-REQ`, `APP-EVAL` and `APP-SUB` IDs refer to
 the [assessment registry](../requirements/assessment.md). Evidence is scoped to the supported local contract; this

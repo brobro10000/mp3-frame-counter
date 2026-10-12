@@ -30,6 +30,7 @@ import type { UploadTransport } from "./http/upload-transport.ts";
 import type { analyzeMp3 } from "./modules/mp3/analyze.ts";
 import { registerMp3Routes } from "./modules/mp3/routes.ts";
 
+/** Optional per-instance dependencies; construction performs no listening, docs reads or process registration. */
 export interface AppOptions {
   /** Positive safe-integer resource overrides, independently validated for this instance. */
   readonly budgets?: Partial<ApiBudgets>;
@@ -63,7 +64,10 @@ const healthPlugin: FastifyPluginCallback = (app, _options, done) => {
   done();
 };
 
-/** Return an independent unbound application; callers own ready/inject/close or use the production facade. */
+/**
+ * Return an independent unbound application; callers own ready/inject/close or use the production facade.
+ * Invalid budgets or simultaneous transport/budget overrides throw before an application can accept requests.
+ */
 export function createApp(options: AppOptions = {}): FastifyInstance {
   if (options.transport && options.budgets) throw new Error("Pass transport or budget overrides, not both.");
   const transport = options.transport ?? createUploadTransport(validateApiBudgets(options.budgets));

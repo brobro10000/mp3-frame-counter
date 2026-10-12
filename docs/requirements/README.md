@@ -1,5 +1,11 @@
 # Requirements reference
 
+**Current submission — 2026-10-12:** use the [handoff](../handoff/README.md) and
+[implemented architecture](../architecture/v1.md). React, the Fastify factory, coded errors and the bound backend-audio
+contract have shipped. Cloud work was abandoned for the local assessment;
+[final disposition](../deployment/decommission.md) supersedes earlier cloud execution instructions. Dated entries below
+preserve requirements and project progression.
+
 **Latest owner amendment — 2026-10-11:** prioritize a minimal React/strict TypeScript frontend and clear local
 source/image-release handoff. Cloud Run delivery is paused, including automatic stage deployment; software releases,
 independent acceptance and normal companion-reviewed merges remain active. The
@@ -10,14 +16,14 @@ This directory is the central reference for the MP3 File Analysis App assessment
 [formalized assessment requirements](assessment.md) and the [first application MVP release process](release-process.md)
 before planning or reviewing future work, then read the [V1 contract and choices](../mvp.md).
 
-**Current execution authority:** the owner subsequently authorized
+**Historical execution authority (before the cloud pause):** the owner subsequently authorized
 [roadmap execution and reviewed merges](../phases/roadmap-execution-authorization.md), with automatic stage delivery and
 a human gate for production deployment. That amendment supersedes the documentation-only and deployment-deferral
 instructions below without changing historical evidence.
 
-**Current implementation:** [PR #19/v0.2.19](../validation/fastify-transport.md#protected-main-completion) released
-Fastify with all 67 required transport cases. The active [three-card window](../phases/next-iteration.md) advances
-browser preparation, independent docs/CSP expectations and binding. No application service is deployed.
+**Historical implementation checkpoint:** [PR #19/v0.2.19](../validation/fastify-transport.md#protected-main-completion)
+released Fastify with all 67 required transport cases. The active [three-card window](../phases/next-iteration.md)
+advances browser preparation, independent docs/CSP expectations and binding. No application service is deployed.
 
 **Later planning amendment, 2026-10-10:** PR #7 closure is merged at `92807357` and v0.1.7 is published. The owner
 adopted the [versioned roadmap](../roadmap/README.md) and [next three cards](../phases/next-iteration.md) for
@@ -124,7 +130,7 @@ features.
    affected requirements. Keep historical orchestrator outputs separate from current implementation evidence.
 
 Current owner target: [backend audio-count amendment](backend-audio-refactor.md). Original assessment and historical
-physical-count evidence remain unchanged; activation needs the independent successor and policy transition.
+physical-count evidence remain unchanged; PR #66 bound the independent successor before PR #63 activation.
 
 The later [shipment and freeze amendment](backend-audio-refactor.md#later-shipment-and-handoff-authority--2026-10-11)
 authorizes reviewed normal merges of the completed refactor and handoff. It preserves actual successor binding,

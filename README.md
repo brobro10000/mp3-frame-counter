@@ -17,8 +17,8 @@ Start with [Run locally](#run-locally). The [assessment handoff](docs/handoff/RE
 ### Prerequisites
 
 Install **Docker with the Compose plugin** and start its engine before testing the application. The source commands also
-require Git, Make and curl in a POSIX shell. A private clone needs repository access. Everything below runs locally;
-Terraform, Google Cloud credentials and host Node/npm are not needed to start the application.
+require Git, Make and curl in a POSIX shell. Everything below runs locally; Terraform, Google Cloud credentials and host
+Node/npm are not needed to start the application.
 
 | System                    | Docker setup and terminal                                                                                                                                                                                                                                                                                                                                |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -73,9 +73,9 @@ make logs          # Show the latest 100 log lines from both containers.
 make down          # Stop and remove this application's containers and network.
 ```
 
-If port 8080 is occupied, run `FRONTEND_PORT=18084 make up` and open `http://127.0.0.1:18084/`, as in the recorded
-operator setup. Use the same setting for follow-up checks, for example `FRONTEND_PORT=18084 make health`. On failure,
-inspect `make ps` and `make logs`, correct the reported problem, then retry `make up`.
+If port 8080 is occupied, run `FRONTEND_PORT=18084 make up` and open `http://127.0.0.1:18084/`. Use the same setting for
+follow-up checks, for example `FRONTEND_PORT=18084 make health`. On failure, inspect `make ps` and `make logs`, correct
+the reported problem, then retry `make up`.
 
 Follow the [local handoff](docs/deployment/local-handoff.md) for the nine-frame synthetic upload, exact tested-image
 startup, checksums, development checks, troubleshooting and cleanup. Source startup rebuilds images; the release-image
@@ -133,25 +133,41 @@ requires Docker, full Git history and the pinned browser prerequisites. It is se
 - [Release process](docs/deployment/release-only.md), [roadmap](docs/roadmap/README.md) and
   [historical closure evidence](docs/validation/v1-closure.md).
 
+## Evaluation at a glance
+
+The [independent submission review](docs/handoff/submission-review.md),
+[criterion-by-criterion evidence](docs/handoff/evaluation.md) and [limits](docs/handoff/known-gaps.md) explain the
+claims below. These are engineering observations, not an employer score or proof of personal authorship.
+
+| Assessment question               | Implementation and evidence                                                                                                                                                        |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Meets the requirements?           | TypeScript, raw POST endpoint, handwritten parser and exact default JSON; restricted valid metadata/free-format support is disclosed.                                              |
+| Counts frames correctly?          | Complete header-derived boundary walk; declarations are diagnostics. The owner's audio-count convention excludes one leading Xing/Info carrier; employer alignment is unconfirmed. |
+| Handles errors correctly?         | Malformed input never returns a partial count; typed failures map to tested HTTP statuses.                                                                                         |
+| Organized and maintainable?       | Pure parser, Fastify routes/transport, shared contracts, React components/hooks/services.                                                                                          |
+| TypeScript good practices?        | Strict application/test checks, narrowed unknown input and explicit error/result unions.                                                                                           |
+| Effective TypeScript features?    | Inferred TypeBox DTOs and runtime invariant checks connect server and browser boundaries.                                                                                          |
+| Standard tooling?                 | Pinned formatting, source/workflow lint, type checks, localized unit tests and separate Playwright acceptance.                                                                     |
+| Appropriate error implementation? | Closed code/status/message catalogue, safe unknown-error mapping and idempotent cleanup.                                                                                           |
+| Graceful failures?                | Bounded uploads/deadlines, restored admission and browser retry after failures.                                                                                                    |
+| Useful messages?                  | Actionable coded API errors, client network/timeout fallbacks and offline Redoc examples.                                                                                          |
+| Large-file scalability?           | Inclusive 20 MiB cap and two active uploads per process; bounded in-memory design, not unlimited scaling.                                                                          |
+| Performance?                      | One forward frame walk, no decoder or retained frame list; synchronous parsing limits concurrent throughput.                                                                       |
+| Effective Git use?                | Scoped commits/PRs, automated companion reviews and releases of tested images; automated review is labeled.                                                                        |
+| Structured approach?              | Captured requirements, independent acceptance, dated decisions, reproducible startup and retained failure evidence.                                                                |
+
 ## Delivery status
 
-**2026-10-11:** the owner prioritized a local React/TypeScript MVP and reproducible submission handoff to meet the
-deadline. Cloud deployment work is paused. Protected-main CI still publishes tested image archives after mandatory
-checks; automatic stage delivery is intentionally disabled. Existing authenticated stage and cloud resources remain; no
-production application has been deployed. See the
-[dated delivery amendment](docs/deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11).
+The local application and software-release pipeline are implemented. Protected-main CI builds and tests the two images,
+then publishes their exact archives. The [release-image handoff](docs/deployment/local-handoff.md) explains how to run a
+received release without building it. Source startup above needs no cloud account or Terraform.
 
-Local MVP closure is distinct from production **v1.0.0**, which remains deferred until hosted acceptance, recovery,
-exact-candidate human approval and production smoke pass. Each change requires its own checks, review, merge and
-publication; historical release records do not establish those outcomes for a later revision.
+Terraform work under [infra/cloud](infra/cloud/bootstrap/README.md) established a dedicated Google Cloud project, cost
+controls, scoped identities, state/registry resources and a Cloud Run stage using NGINX plus an API sidecar. The hosted
+attempt encountered IAM/convergence and ingress/acceptance failures. The owner stopped that work to prioritize a usable
+local assessment submission. It is evidence of attempted deployment automation, not verified production delivery. See
+[cloud disposition and teardown](docs/deployment/decommission.md) and the preserved
+[deployment history](docs/deployment/v1-delivery.md).
 
-PR #63 merged at `5c2197f67b1a2c74a7ab5680fe13abb0bfe973ba` after review `5485958132`. Main run `38193758092` passed all
-nine validation checks, then failed publication because its `repository.private` assertion rejected the now-public
-repository. PR #67 merged the visibility fix at `8cc64d44fc12e0f8feea7fa4ddabfa38945c7544`. At the verified 2026-10-12
-delivery checkpoint, main run `38196084304` passed all nine mandatory checks and publication, releasing
-[v0.4.66](https://github.com/brobro10000/mp3-frame-counter/releases/tag/v0.4.66) from that descendant source. Earlier
-binding release `v0.4.64` remains historical evidence for source `e6e2967ce0d32df2cbebeabe9749dc12dbcc350f`. See the
-[merge and publication record](docs/validation/backend-audio-refactor.md#product-merge-publication-and-freeze). Product
-code is frozen except for owner-authorized high-risk feedback addressed through review. Documentation may clarify the
-frozen behavior. The [known gaps](docs/handoff/known-gaps.md), including accepted F-004, remain visible. Cloud delivery
-stays paused and production v1.0.0 remains deferred.
+Product behavior is frozen. The [known gaps](docs/handoff/known-gaps.md), including accepted F-004, remain explicit;
+production **v1.0.0** and external assessment submission are not claimed. Future roadmap work needs a new scope.

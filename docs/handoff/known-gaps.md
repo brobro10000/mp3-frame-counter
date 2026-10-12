@@ -16,7 +16,12 @@ The parser supports MPEG-1 Layer III table bitrates/sample rates/padding, flags-
 trailing ID3v1. MPEG-2/2.5, other layers, free-format, unsupported tag/encoder layouts and corruption recovery remain
 unsupported. It does not decode audio or validate CRC/payload/LAME extensions. Only a correctly positioned leading
 Xing/Info carrier is excluded; VBRI and later markers are not substitutes. General MediaInfo equivalence is unclaimed.
-Any broader format support requires new independently agreed expectations.
+Independent final probes also confirmed rejection of a decodable MPEG-1 free-format tone and a valid ID3v2.4
+footer-bearing wrapper. These are valid MPEG-1 inputs, not the explicitly out-of-scope MPEG-2/2.5 formats. The employer
+did not approve this narrower subset, so full compliance with its broad MPEG-1 requirement is not established. Broader
+support requires an explicitly scoped change and independent expectations. The
+[final review correction](submission-review.md#findings-and-decisions) withdraws the separate extended-header fixture as
+evidence of a valid input; its tag was incomplete.
 
 The private assessment sample is ignored and unavailable in a fresh clone or release archive. Its identity is in the
 [sample record](../requirements/samples/README.md); the
@@ -26,8 +31,9 @@ example without distributing private audio (`APP-SUB-003`).
 ## Capacity and platform evidence
 
 `APP-EVAL-006`: whole-body buffering and synchronous analysis limit concurrency despite byte, connection, admission and
-deadline bounds. The measured parser medians and exact-limit cases are finite local observations. Peak memory, sustained
-throughput, event-loop latency under production traffic and horizontal scaling are unverified. Files above 20 MiB are
+deadline bounds. The measured parser medians and exact-limit cases are finite local observations. The
+[final independent check](submission-review.md) measured a short local workload and process memory high-water. Sustained
+throughput, event-loop latency under production traffic and horizontal scaling remain unverified. Files above 20 MiB are
 intentionally rejected. The roadmap's
 [measured memory/event-loop pressure track](../roadmap/README.md#provisional-v1x-and-v2-evolution) requires agreed
 targets and independent tests before streaming or workers; it remains provisional.
@@ -36,6 +42,11 @@ targets and independent tests before streaming or workers; it remains provisiona
 does not certify every host version, CPU platform, screen reader or browser. Received `linux/amd64` archives require
 working emulation on ARM. Desktop/narrow Chromium, useful status/error rendering and strict CSP were observed locally;
 broader platform/accessibility coverage needs a concrete reviewer environment and regression scope.
+
+The served OpenAPI lists 417 `EXPECTATION_FAILED` alongside public ingress responses, but this rejection belongs to
+native API requests: NGINX consumes `Expect`, and the same otherwise-valid upload succeeds through the documented public
+path. The [API README](../../server/README.md) clarifies that boundary; generated specification wording remains
+unchanged under the product freeze. This is a documentation-scope ambiguity, not a failed upload or count.
 
 Native protocol refusals, disconnected clients and unrelated NGINX static 404s are outside the fixed JSON error
 guarantee. Recovery tests do not prove the absence of every leak or operational failure. Future work should respond to
@@ -79,7 +90,8 @@ gaps. Additional state/routing complexity, streaming/workers, separate release c
 provider change require the roadmap's specific trigger and evidence before adoption. No database, retained uploads or
 cloud dependency is needed for the current application.
 
-Cloud delivery remains paused under the
+Cloud delivery was abandoned for this submission; see [teardown and rationale](../deployment/decommission.md). The
+preceding pause is preserved under the
 [local-MVP amendment](../deployment/v1-delivery.md#local-mvp-handoff-and-cloud-pause--2026-10-11). This handoff neither
 resumes it nor claims verified production v1.0.0. Hosted acceptance, recovery, exact-candidate human approval and
 production smoke remain the separate [production gates](../roadmap/README.md#stage-to-production-delivery). Future

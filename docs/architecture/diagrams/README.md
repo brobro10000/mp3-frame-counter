@@ -36,9 +36,9 @@ requires comparing each bot diff with the exact source. The repository renderer 
 
 The October 11 current-source audit checked all three views. The runtime view now includes API-packaged offline Redoc
 assets and the same-origin docs proxy. The upload view distinguishes mapped JSON proxy errors from other ingress
-responses and fetch rejection, and renders only current request outcomes. The release view describes the prepared
-four-workflow activation, with frozen acceptance and exact-image publication intact. Compare these implemented views
-with their referenced source; historical and planned diagrams are not current runtime authority.
+responses and fetch rejection, and renders only current request outcomes. The release view describes the active
+four-workflow structure, with frozen acceptance and exact-image publication intact. Compare these implemented views with
+their referenced source; historical and planned diagrams are not current runtime authority.
 
 The local backend amendment makes the existing Fastify boundaries explicit. `runtime.mmd` shows the unbound factory,
 root schemas/Swagger, sibling upload and health plugins, instance lifecycle and pure analyzer inside one API process.
@@ -47,7 +47,8 @@ build-only generator obtains OpenAPI from the same registered factory, then clos
 nor proof that Redoc examples have been rendered successfully. `upload.mmd` separates raw guards, admission before
 allocation, bounded collection, one analysis, invariant-checked DTO projection and idempotent terminal release. The
 historical physical-count and native-HTTP views retain their original evidence; these canonical diagrams describe the
-current local audio target without claiming its independent successor is bound or published.
+current local audio implementation. Binding, activation and publication are recorded separately in the
+[verification history](../../validation/backend-audio-refactor.md#product-merge-publication-and-freeze).
 
 The root [`.mermaidignore`](../../../.mermaidignore) opts in only these three standalone diagrams. Other standalone
 diagrams, original requirements, evidence, historical/generated agent artifacts and the frozen acceptance package are

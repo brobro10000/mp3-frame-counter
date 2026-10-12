@@ -1,81 +1,99 @@
 # MP3 API and parser
 
-The Fastify API runs on Node and calls a pure synchronous TypeScript parser. The parser walks complete MPEG-1 Layer III
-frame boundaries using the header's bitrate, sample rate and padding. It does not decode audio, estimate from duration,
-trust a Xing total or use an MP3 parsing package.
+A Fastify/Node API calls a handwritten, synchronous TypeScript parser. The parser follows each complete MPEG-1 Layer III
+frame's header-derived length. It does not decode audio, estimate from duration, trust a declared frame total or use an
+MP3 parsing package. The separate NGINX container exposes the browser, upload API and offline Redoc on one local origin.
 
-## Upload contract
+## Run and verify
+
+From the **repository root**, install [Docker and local prerequisites](../README.md#prerequisites), then:
+
+```sh
+make up            # Build/start both containers, wait for health and require an HTTP 200 ping.
+make health        # Repeat the two container health checks and public ping.
+make logs-backend  # Follow the API's logs; Ctrl-C ends viewing only.
+make down          # Stop this application's containers and network.
+```
+
+Open [the application](http://127.0.0.1:8080/) or [Redoc](http://127.0.0.1:8080/docs/). The API is private to Compose;
+requests from the host use NGINX at port `8080`. See the [local handoff](../docs/deployment/local-handoff.md) for
+another port, a known nine-frame fixture and startup from received release images. No Terraform or cloud account is
+required.
+
+For source checks, use Node **24.20.0** and npm **11.19.0** at the repository root; both applications share its
+lockfile:
+
+```sh
+npm ci
+npm run typecheck   # Check application and unit-test TypeScript.
+npm run lint:source
+npm run test:server # Build the API/docs; run localized server/tests/ from the server directory.
+make e2e            # Run separate independent HTTP/browser acceptance through Docker ingress.
+```
+
+`npm run build:server` generates `dist/`, the registered OpenAPI specification and packaged Redoc. `npm run test:unit`
+runs both server and frontend unit suites. The [CI guide](../docs/testing/ci-workflows.md) distinguishes those suites
+from independent acceptance. Build the API image alone with:
+
+```sh
+docker build --platform linux/amd64 -f server/Dockerfile -t mp3-api .
+```
+
+## HTTP and counting contract
+
+Send raw file bytes with `audio/mpeg` or `application/octet-stream`, without a multipart wrapper. For your selected MP3:
 
 ```sh
 curl --fail -i -H 'Content-Type: audio/mpeg' \
   --data-binary @example.mp3 http://127.0.0.1:8080/file-upload
 ```
 
-Successful requests return HTTP 200 and JSON with exactly one property:
+Success is HTTP 200 with `application/json` and exactly `{ "frameCount": <positive integer> }`. The
+[committed synthetic fixture](../docs/deployment/local-handoff.md#optional-known-count-fixture) returns
+`{"frameCount":9}`. The inclusive body limit is **20,971,520 bytes**. Uploads stay in memory and are not retained.
 
-```json
-{ "frameCount": 9 }
-```
+A supported leading Xing/Info carrier counts as one physical frame and zero audio frames; declarations never determine
+the result. The [identified sample](../docs/requirements/samples/README.md) therefore has **6,089 audio frames = 6,090
+physical frames − 1 carrier**. This owner-adopted audio convention is explicit; the employer's intended convention is
+unconfirmed. VBRI, later markers and wrong-offset markers do not trigger exclusion.
 
-Send the file bytes directly, without a multipart wrapper. Accepted media types are `audio/mpeg` and
-`application/octet-stream`. The inclusive limit is **20,971,520 bytes**. Unsupported formats, malformed input, oversized
-bodies and unavailable upstreams produce useful JSON errors; a failure never becomes a partial successful count. See the
-[owner successor target](../docs/requirements/backend-audio-refactor.md) for statuses and error precedence.
+Add exactly one decoded `details=true` query value for computed physical/carrier counts and bounded metadata warnings.
+Missing, repeated, empty or other values select the default; unrelated options are ignored. Both representations use one
+upload and one analysis pass. See [schemas](src/contracts/mp3.ts) and the
+[served specification](http://127.0.0.1:8080/docs/openapi.yaml) for the exact detailed shape.
 
-A recognized leading Xing/Info carrier contributes one physical frame and zero audio frames. VBRI and later/wrong-offset
-markers do not trigger exclusion. Supported separate ID3 records do not count. MPEG-2/2.5, other layers, free-format
-encoding and unsupported tag layouts are rejected. There is no decoding, CRC validation or corruption recovery. The
-[sample oracle](../docs/validation/sample-baseline.md) explains why 6,090 physical frames coexist with MediaInfo's 6,089
-audio-frame report.
+Failures use the closed `{ "code": "…", "error": "…" }` catalogue shape, for example `MP3_INVALID_HEADER` with HTTP 400.
+[Canonical errors](src/contracts/errors.ts) define statuses and safe messages; Redoc documents controlled proxy errors
+as well. HEAD emits no body. Invalid native HTTP framing or a disconnected client may receive no application JSON.
 
-For diagnostics, add `?details=true` to the same POST. Exactly one decoded `true` value enables details; repeated, empty
-or other values select default, and unrelated query options are ignored. Response analysis contains computed
-physical/excluded counts, bounded Xing declarations and ordered warnings. No second upload or analysis pass occurs. The
-identified sample returns 6,089 audio, 6,090 physical and one excluded carrier. Declared totals never supply count.
+Supported tags are flag-zero ID3v2.3/2.4 at the beginning and terminal ID3v1. Other MPEG versions/layers, free-format
+encoding and unsupported metadata layouts are rejected. CRC checking, decoding and corruption recovery are outside the
+implemented parser. Invalid/truncated framing fails rather than returning a partial count.
 
-Errors return exactly `{ "code": "MP3_INVALID_HEADER", "error": "The MP3 contains an invalid frame header." }` with the
-catalogue's status. HEAD has headers and no body. Native protocol failures/disconnected clients may receive no JSON.
-[Canonical errors](src/contracts/errors.ts), [schemas](src/contracts/mp3.ts) and
-[generated Redoc](http://127.0.0.1:8080/docs/) are the current source of status/example definitions; no hand-maintained
-competing OpenAPI file exists.
+The 417 `EXPECTATION_FAILED` entry in the generated specification describes the direct native API guard. NGINX consumes
+`Expect`: an otherwise-valid upload with an unsupported expectation succeeds through the documented same-origin ingress.
+Do not rely on ingress returning 417. This clarification preserves the frozen runtime/specification.
 
-## Responsibility map
+## Source and runtime boundaries
 
-- `app.ts`: unbound factory; schemas/errors → Swagger → scoped upload parser/hooks/routes → health.
-- `http.ts` / `http/lifecycle.ts`: compatibility startup, verified docs before listen, sockets and one-time shutdown.
-- `http/upload-transport.ts` / `http/errors.ts`: admission before allocation, bounded body/drain/deadlines and safe
-  writers.
-- `modules/mp3/analyze.ts`, `mpeg.ts`, `xing.ts`: pure walk, headers/tags and bounded leading-carrier inspection.
-- `contracts/`: browser-safe TypeBox wire DTOs, interpreted invariants and fixed public error catalogue.
-- `documentation/`: same factory registration → deterministic OpenAPI; never listen or depend on packaged docs.
-- `build-docs.mjs` / `docs.ts`: retain pinned offline renderer/provenance and finite runtime resource loading.
+- [app.ts](src/app.ts): unbound Fastify factory, canonical schemas, Swagger, scoped upload and health plugins.
+- [http.ts](src/http.ts) / [lifecycle](src/http/lifecycle.ts): explicit readiness, verified docs before listen and
+  bounded shutdown. [index.ts](src/index.ts) alone owns process signals and listening.
+- [Upload transport](src/http/upload-transport.ts) / [error writers](src/http/errors.ts): native URI/Expect handling,
+  admission before allocation, actual-byte/deadline enforcement and once-only cleanup. Packaged docs bypass upload
+  hooks.
+- [analyze](src/modules/mp3/analyze.ts), [MPEG headers/tags](src/modules/mp3/mpeg.ts) and
+  [Xing inspection](src/modules/mp3/xing.ts): pure domain logic, with inline byte maps beside the algorithm.
+- [Routes](src/modules/mp3/routes.ts) project closed DTOs; [contracts](src/contracts/mp3.ts) validate count invariants.
+- [OpenAPI registration](src/documentation/openapi.ts), [build](src/build-docs.mjs) and [docs loader](src/docs.ts):
+  generate and package the offline reference from the same application registrations, with bounded resources and
+  retained notices.
 
-All four inline byte maps sit beside the parser helpers; the request/release lifecycle map is in `app.ts`. Neither maps
-nor schemas parse the uploaded audio. See the
-[refactor evidence and boundaries](../docs/validation/backend-audio-refactor.md).
+The non-root API image runs as UID/GID `1000:1000`, with `PORT=3000` by default. Each process admits two uploads and at
+most 64 connections, with a 30-second collection deadline, 10-second body idle deadline and five-second shutdown bound.
+Whole-body buffering and synchronous counting limit throughput; these controls are a bounded operating envelope, not a
+scaling guarantee. NGINX health checks its own liveness; an upload verifies the complete path.
 
-## Run and inspect
-
-Prefer `make up` at the repository root: NGINX exposes one loopback origin and the API stays private. Open
-[/docs/](http://127.0.0.1:8080/docs/) for offline Redoc and
-[/docs/openapi.yaml](http://127.0.0.1:8080/docs/openapi.yaml) for OpenAPI.
-
-For source verification, run `npm run test:server` at the repository root. It builds the API and generated docs, then
-runs every unit test in `server/tests/` from the server directory. `npm run typecheck` includes those test sources and
-`npm run lint:source` checks them alongside application code. `npm run test:unit` also builds and tests the frontend.
-
-The API image builds independently from the repository root:
-
-```sh
-docker build --platform linux/amd64 -f server/Dockerfile -t mp3-api .
-```
-
-The runtime contains compiled API modules, packaged docs and locked production dependencies, runs as UID/GID `1000:1000`
-and listens on `PORT` (default `3000`). Builds use the pinned Node/npm toolchain; no host `dist/` is required. Two
-admitted uploads, byte limits, deadlines and cleanup bound resource use. Uploads remain in memory and are never
-retained. Whole-body buffering and synchronous counting constrain concurrency; no universal performance claim is made.
-
-[Local handoff](../docs/deployment/local-handoff.md) covers the nine-frame test and exact release-image startup.
-[Architecture](../docs/architecture/v1.md), [parser](src/modules/mp3/analyze.ts),
-[transport](src/http/upload-transport.ts) and
-[independent baseline policy](../docs/testing/independence-and-baseline.md) explain the boundaries and evidence.
+See [architecture and diagrams](../docs/architecture/v1.md),
+[refactor evidence](../docs/validation/backend-audio-refactor.md), [evaluation](../docs/handoff/evaluation.md) and
+[known gaps](../docs/handoff/known-gaps.md).

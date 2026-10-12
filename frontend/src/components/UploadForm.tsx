@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import type { FormEvent } from "react";
 
+/** Controlled form inputs; the parent hook owns selection, admission, validation and asynchronous outcomes. */
 interface UploadFormProps {
   readonly pending: boolean;
   readonly hasSelectedFile: boolean;

@@ -14,7 +14,10 @@ export { DEFAULT_API_BUDGETS, parsePort } from "./http/config.ts";
 export type { ApiBudgets } from "./http/config.ts";
 export type { ApiService } from "./http/lifecycle.ts";
 
-/** Preserve the synchronous factory and explicit readiness/listen/shutdown contract for verified callers. */
+/**
+ * Return a dormant service with validated per-instance budgets; invalid overrides throw before listener creation.
+ * Call listen to verify packaged docs and bind a socket, then shutdown to stop admission and drain owned sockets.
+ */
 export function createApiServer(overrides: Partial<ApiBudgets> = {}): ApiService {
   const transport = createUploadTransport(validateApiBudgets(overrides));
   return createApiService(createApp({ transport }), transport);

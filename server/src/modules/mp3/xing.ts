@@ -43,7 +43,11 @@ import { Mp3DomainError } from "./errors.ts";
 import { hasMarker } from "./mpeg.ts";
 import type { MpegHeader } from "./types.ts";
 
-/** Recognize only the complete leading MPEG-1 carrier; all optional reads are bounded by this frame, never EOF. */
+/**
+ * Inspect the first complete MPEG-1 frame using its decoded header and absolute zero-based file offset.
+ * Optional reads stop at this frame's end; missing selected fields produce warnings, never a guessed audio count.
+ * Malformed required fields or unsupported flags/CRC-shifted placement throw Mp3DomainError. Input is never mutated.
+ */
 export function inspectXing(
   bytes: Buffer,
   frameOffsetBytes: number,

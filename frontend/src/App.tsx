@@ -5,6 +5,7 @@ import { PageHeader } from "./components/PageHeader.tsx";
 import { UploadForm } from "./components/UploadForm.tsx";
 import { useMp3Analysis } from "./hooks/useMp3Analysis.ts";
 
+/** Compose stateless sections around one upload hook; request lifetime ends when this page unmounts. */
 export function App() {
   const analysis = useMp3Analysis();
 

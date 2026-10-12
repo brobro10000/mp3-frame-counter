@@ -1,6 +1,7 @@
 /** Domain aggregates contain no input bytes, decoder, HTTP state or runtime schema dependency. */
 import type { AnalysisWarning, XingInspection } from "../../contracts/mp3.ts";
 
+/** One completed boundary walk and its bounded diagnostics; the HTTP layer projects or rejects the result. */
 export interface Mp3Analysis {
   /** Independently walked frames, less one recognized leading carrier; zero is a domain-only metadata result. */
   readonly audioFrameCount: number;
@@ -14,6 +15,7 @@ export interface Mp3Analysis {
   readonly warnings: readonly AnalysisWarning[];
 }
 
+/** Decoded MPEG-1 Layer III header facts at one verified boundary; bitrate and sample-rate units are explicit. */
 export interface MpegHeader {
   /** Complete header-derived frame length, including header, optional CRC, side information and payload. */
   readonly frameLengthBytes: number;

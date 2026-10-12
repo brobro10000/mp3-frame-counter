@@ -1,7 +1,7 @@
 ---
 title: Same-run CI lanes and tested software releases; hosted delivery paused
 query: >-
-  Show the four reusable callers defined by this CI activation: Linter, Server
+  Show the four reusable callers defined by the current CI: Linter, Server
   tests, Application tests and Base acceptance E2E. The Linter caller requires
   checks and all four tooling shards: foundation, acceptance, publication and
   delivery, containing the complete 49-file union (46 in historical sources).
@@ -9,10 +9,13 @@ query: >-
   type checks, source lint, generated OpenAPI and semantic validation afterward.
   Each executing worker runs trusted-base acceptance admission before head-owned
   commands. All four caller results feed the always-running control-plane gate.
-  This diagram describes the prepared workflow source, not evidence of a
-  successful activation run. Derive the current graph from the PR head
+  This diagram describes the current workflow source; recorded CI results
+  establish execution separately. Derive the current graph from the PR head
   coordinator and reusable workflow files, with the CI workflow guide as current
-  scope. Historical two-job branches in compatibility readers and the three
+  scope. CI is already active, not merely prepared; draft releases can be published
+  in the intended public or private repository. Do not restore the obsolete
+  "Prepared CI activation" or private-repository prerequisite labels. Historical
+  two-job branches in compatibility readers and the three
   logical publication checks are replay/provenance data, not the current four
   callers or nine leaf jobs. Do not restore the base branch's Foundation/Product
   diagram body. Preserve historical two-job workflow replay through source-bound
@@ -36,11 +39,11 @@ query: >-
   delivery is outside this view. Software releases continue while stage delivery
   is disabled. Show the pause as informational, with hosted stage acceptance,
   recovery and production finalization explicitly deferred. Resuming stage
-  requires enablement and an existing authenticated runtime. Every production
-  deployment requires an actual human approval of the exact candidate and
-  demonstrated recovery; finalization requires passing production smoke and
-  original custody. Fixed same-source v1.0.0 finalization and metadata retries
-  never rebuild or redeploy.
+  requires new authorization, provisioned resources and an authenticated
+  runtime. Every production deployment requires an actual human approval of the
+  exact candidate and demonstrated recovery; finalization requires passing
+  production smoke and original custody. Fixed same-source v1.0.0 finalization
+  and metadata retries never rebuild or redeploy.
 references:
   - 'File: /.github/workflows/ci.yml'
   - 'File: /.github/workflows/linter.yml'
@@ -70,10 +73,10 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-12T02:55:41.925Z'
+generationTime: '2026-10-12T04:01:12.144Z'
 ---
 flowchart TD
-    EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
+    EVENT["CI: PR or protected-main push<br/>four reusable callers in one original workflow run"]
 
     subgraph LINTER["Linter caller: validate-foundation"]
         LPREF["Each linter worker: trusted-base admission, then locked npm ci<br/>read-only review token confined to preflight"]
@@ -123,7 +126,7 @@ flowchart TD
     MAIN -->|"No: PR"| REVIEW["Current checks for independent companion review<br/>and separately authorized protected merge"]
     MAIN -->|"Yes"| VERIFY["Serialized publisher downloads the same-run acceptance bundle<br/>source-bound layout verifies all nine original-attempt leaf jobs<br/>preflights, admitted suite, source and artifact hashes"]
     BUNDLE -->|"Exact image archives; no publisher rebuild"| VERIFY
-    VERIFY --> DRAFT["Resolve tested source policy and global ordinal<br/>create or verify exact version tag and private draft release"]
+    VERIFY --> DRAFT["Resolve tested source policy and global ordinal<br/>create or verify exact version tag and draft release"]
     DRAFT --> ASSETS["Upload missing assets; verify every size and SHA-256<br/>preserve three logical publication checks"]
     ASSETS --> RELEASE["Publish verified GitHub software release<br/>released-not-deployed"]
     VERIFY -.->|"Mismatch"| FAIL["Stop; retain failure evidence and existing content"]
@@ -145,3 +148,14 @@ flowchart TD
         FINALIZE --> V1["Additive v1.0.0 finalization<br/>metadata-only retries never redeploy"]
     end
     HANDOFF -.->|"Future only, after explicit resume"| DEPLOY
+
+    PAUSE -.-> CLOUD
+    CLOUD --> RECORD
+    RECORD --> HISTORICAL
+
+    %% Final submission disposition is separate from historical delivery.
+    subgraph FINAL_SUBMISSION["Final submission disposition — 2026-10-12"]
+        CLOUD["Cloud work was abandoned for the local assessment"]
+        RECORD["Use the cloud disposition and teardown record for current status"]
+        HISTORICAL["The dated operations below preserve historical implementation, failures and former authorization"]
+    end

@@ -5,6 +5,7 @@ import type { Socket } from "node:net";
 import { loadDocs } from "../docs.ts";
 import type { UploadTransport } from "./upload-transport.ts";
 
+/** Process-facing service handle; the caller owns address selection, signal registration and shutdown invocation. */
 export interface ApiService {
   readonly server: Server;
   /** Verify readiness and packaged docs before binding the caller-selected address; startup is one-shot. */
@@ -13,6 +14,7 @@ export interface ApiService {
   shutdown(): Promise<void>;
 }
 
+/** Shared close boundary for Fastify hooks and the process facade; repeated calls preserve one drain lifecycle. */
 export interface ShutdownController {
   /** Stop admission synchronously and start at most one socket drain deadline. */
   beginClose(): void;
@@ -20,7 +22,10 @@ export interface ShutdownController {
   completeClose(): void;
 }
 
-/** Create a dormant per-instance shutdown owner; timers start only when closing is requested. */
+/**
+ * Create a dormant per-instance shutdown owner. Closing stops admission, then destroys remaining sockets after
+ * timeoutMs milliseconds; completion clears the timer and releases upload storage. The caller owns socket tracking.
+ */
 export function createShutdownController(
   sockets: ReadonlySet<Socket>,
   timeoutMs: number,

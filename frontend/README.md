@@ -1,76 +1,73 @@
-# Browser and NGINX frontend
+# Frontend
 
-The React/TypeScript interface lets a user choose one MP3, click **Analyze MP3**, read its audio frame count and inspect
-physical/carrier diagnostics from the same response. It sends the selected file once as a raw same-origin `audio/mpeg`
-POST to `/file-upload?details=true`. Both controls are disabled while pending; the browser waits for and reads the API
-response before showing a result. Its 45-second deadline covers upload, headers and response-body consumption. Client
-size feedback is advisory; NGINX and the API enforce the inclusive 20 MiB limit.
+React and strict TypeScript provide the MP3 upload screen. Vite builds static assets; a non-root NGINX container serves
+those assets and proxies same-origin API/docs requests to the separate API container. React runs in the browser. The
+runtime has no Vite server, Node frontend process, browser storage or cloud dependency.
 
-The server walks complete MPEG frames and excludes one recognized leading Xing/Info carrier from the audio count. The
-browser displays the server's three counts as an equation without subtracting, parsing MP3 bytes or retrieving a count
-from a declaration. The carrier details label absolute byte offsets, frame size, flags, declared totals, seek-table
-presence and stored quality. Missing fields say "Not present"; declaration mismatches and truncated optional fields
-produce bounded warnings. No MediaInfo execution is implied.
+## Run and test
 
-The build compiles React into static same-origin assets. NGINX serves those assets; React executes in the browser. No
-development server, npm process or extra container runs in production. The root application lockfile owns the frontend
-dependencies; the independent acceptance package keeps its separate lockfile.
+From the **repository root**, with [Docker and local prerequisites](../README.md#prerequisites) installed:
 
-## Source boundaries
+```sh
+make up            # Build/start both containers; return after both are healthy and the HTTP ping succeeds.
+make logs-backend  # Follow API logs; Ctrl-C stops viewing, not the application.
+make down          # Stop this application's containers and network.
+```
 
-- [App](src/App.tsx) composes the page. [Components](src/components/UploadForm.tsx) render the form, introduction,
-  navigation and accessible result without issuing requests.
-- [useMp3Analysis](src/hooks/useMp3Analysis.ts) owns selection, byte feedback, duplicate admission, the 45-second
-  deadline, cancellation, retry state and stale-result prevention. Selection alone never uploads.
-- [The API service](src/services/mp3Analysis.ts) uses Ky with retries, separate timeouts and keepalive disabled. It
-  sends the original raw File, preserves cache/credential/redirect policy and consumes each response once. Its optional
-  controlled `baseUrl` lets native Node regression tests use real loopback HTTP.
-- [Pure response helpers](src/services/response.ts) validate unknown JSON with the browser-safe canonical
-  [MP3 schemas](../server/src/contracts/mp3.ts) and [error catalogue](../server/src/contracts/errors.ts). Their
-  interpreted guards enforce closed objects, numeric/count/byte invariants and code/status/message consistency without
-  unsafe-eval. [response.ts](src/response.ts) retains the existing helper entrypoint.
-- [Shared types](src/types/analysis.ts) define the mutually exclusive idle, pending, success and error states. Typed
-  client timeout, cancellation, network and invalid-response reasons remain distinct from validated server codes. Legacy
-  errors remain safe text; non-JSON and unknown/invalid coded errors use a safe fallback.
+Open [the upload screen](http://127.0.0.1:8080/) or [Redoc](http://127.0.0.1:8080/docs/). Select a supported MP3 and
+click **Analyze MP3**. Selection alone never uploads. Use the
+[committed nine-frame fixture](../docs/deployment/local-handoff.md#optional-known-count-fixture) for a reproducible
+example; the [provided assessment sample](../docs/requirements/samples/README.md) is supplied separately.
 
-The short count/state remains in the polite atomic live region. The diagnostic equation, carrier metadata and warnings
-are outside it, available for normal screen-reader navigation. React renders all response text literally.
+For development, use Node **24.20.0** and npm **11.19.0**. Both applications share the root lockfile; run these commands
+from the repository root:
 
-From the repository root, use `npm run build:frontend` for the strict TypeScript/static bundle build and
-`npm run test:frontend` to build it and run the localized response and real-HTTP service regressions in
-`frontend/tests/`. `npm run typecheck` includes both application boundaries and their test sources;
-`npm run lint:source` checks the same source/test directories. `npm run test:unit` builds and tests the server and
-frontend once each. Full browser/API acceptance remains a separate required check.
+```sh
+npm ci
+npm run typecheck     # Check both applications and their unit-test sources.
+npm run lint:source   # Lint application and unit-test sources.
+npm run test:frontend # Build the UI; run frontend/tests/ response and real-HTTP service tests.
+make e2e              # Run the separate independent browser/API acceptance lifecycle through Docker ingress.
+```
 
-Run the complete application from the repository root with `make up`, then open
-[http://127.0.0.1:8080/](http://127.0.0.1:8080/). Build the frontend image independently from the same root:
+`npm run build:frontend` creates `frontend/dist/` without running tests. Frontend unit tests validate response handling
+and the request service; independent Playwright acceptance exercises the rendered application through NGINX. See
+[CI responsibilities](../docs/testing/ci-workflows.md) and
+[received-release startup](../docs/deployment/local-handoff.md).
+
+## Source map
+
+- [App](src/App.tsx) and [components](src/components/UploadForm.tsx) compose the page and accessible form/result.
+- [useMp3Analysis](src/hooks/useMp3Analysis.ts) owns selection, admission, cancellation, the 45-second deadline and
+  stale result prevention. Controls stay disabled during a request; another explicit submission can recover after
+  failure.
+- [mp3Analysis service](src/services/mp3Analysis.ts) sends the original file once to `/file-upload?details=true` using
+  Ky, with retries, separate timeouts and keepalive disabled. The hook's deadline includes reading the response body.
+- [Response guards](src/services/response.ts) narrow unknown JSON using browser-safe
+  [canonical schemas](../server/src/contracts/mp3.ts) and [error codes](../server/src/contracts/errors.ts). No server
+  parser or transport code enters the browser. [Types](src/types/analysis.ts) distinguish request states and failure
+  kinds.
+
+The browser displays measured audio/physical/carrier counts from one response; it does not parse audio or calculate a
+count from metadata declarations. Server text is rendered literally. The brief result is announced in a polite live
+region; detailed metadata remains outside it for normal navigation. The 20 MiB client check is advisory; the server and
+ingress enforce actual bytes. See the [API contract and limits](../server/README.md).
+
+## NGINX boundary
+
+[The container entrypoint](entrypoint.sh) validates `PORT` (default `8080`, allowed `1024`–`65535`) and `API_UPSTREAM`
+(default `api:3000`, hostname/IPv4 or bracketed IPv6 plus port; no URL path or credentials). It writes its runtime
+configuration under `/tmp`; the container runs as UID/GID `101:101` with a read-only root filesystem.
+
+The [proxy template](nginx.conf.template) forwards raw uploads without buffering, retries, caching or storage.
+Controlled 413/502/504 errors are JSON. Docs use a separate CSP, and access logging is disabled. Public `/healthz` and
+`/health` check NGINX liveness; a successful upload checks the full path. For an independent frontend image build:
 
 ```sh
 docker build --platform linux/amd64 -f frontend/Dockerfile -t mp3-frontend .
 ```
 
-Use `make down` to stop the source Compose project. See the [local handoff](../docs/deployment/local-handoff.md) for
-exact tested-image startup.
-
-## Proxy configuration
-
-The runtime uses UID/GID `101:101`, a read-only root filesystem and an ephemeral writable `/tmp`. Its entrypoint
-validates configuration and writes `/tmp/nginx.conf` before starting NGINX in the foreground.
-
-| Input          | Default    | Meaning                                                                            |
-| -------------- | ---------- | ---------------------------------------------------------------------------------- |
-| `PORT`         | `8080`     | Container listening port; integer `1024`–`65535`.                                  |
-| `API_UPSTREAM` | `api:3000` | Private hostname/IPv4 plus port, or `[IPv6]:port`; no scheme, path or credentials. |
-
-Compose supplies `api:3000`; another host must explicitly supply its matching private upstream. Runtime DNS comes from
-`/etc/resolv.conf`. Upload forwarding preserves raw bytes, methods, query strings and API JSON. It disables buffering,
-retry, caching and storage and uses HTTP/1.1 upstream forwarding. Local 413/502/504 ingress failures receive JSON. The
-docs namespace proxies the API's packaged Redoc assets under its separate CSP.
-
-No filename, upload or result is stored in browser persistence. Access logging is disabled. Resource limits, deadlines
-and shutdown settings are bounded safeguards, not a throughput guarantee.
-
-Read the [architecture](../docs/architecture/v1.md), [API guide](../server/README.md),
-[raw acceptance contract](../docs/testing/acceptance-contract.md) and
-[historical frontend evidence](../docs/validation/p4-frontend.md). The latter describes the earlier static
-implementation; this React migration needs fresh acceptance and release evidence.
+See the [current architecture](../docs/architecture/v1.md), [evaluation](../docs/handoff/evaluation.md) and
+[known gaps](../docs/handoff/known-gaps.md). Earlier [frontend evidence](../docs/validation/p4-frontend.md) records the
+historical static implementation; [current refactor evidence](../docs/validation/backend-audio-refactor.md) records the
+shipped React/Fastify application and its acceptance/release boundaries.

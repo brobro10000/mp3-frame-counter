@@ -13,13 +13,17 @@ import { UploadError } from "../../http/errors.ts";
 import type { UploadTransport } from "../../http/upload-transport.ts";
 import { analyzeMp3 } from "./analyze.ts";
 
+/** Dependencies owned by the scoped upload plugin; analyzer replacement is a controlled verification seam. */
 export interface Mp3RouteOptions {
   readonly transport: UploadTransport;
   /** Pure synchronous analyzer dependency; production uses the handwritten boundary walker. */
   readonly analyze?: typeof analyzeMp3;
 }
 
-/** Standard decoding applies only to query options; raw route spelling remains guarded by transport. */
+/**
+ * Select details only for one decoded value equal to "true"; missing, repeated and other values select default.
+ * Standard decoding applies only to query options; raw route spelling remains guarded by transport.
+ */
 export function wantsDetails(rawUrl: string): boolean {
   const question = rawUrl.indexOf("?");
   const query = question === -1 ? "" : rawUrl.slice(question + 1);

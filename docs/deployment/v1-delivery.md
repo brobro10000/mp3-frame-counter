@@ -1,5 +1,9 @@
 # Bounded V1 delivery
 
+**Final submission disposition — 2026-10-12:** cloud work was abandoned for the local assessment. Use
+[the cloud disposition and teardown record](decommission.md) for current status. The dated operations below preserve
+historical implementation, failures and former authorization; they are not instructions to resume deployment.
+
 Adopted by the coordinator on 2026-10-11 under the owner's instruction to prioritize an acceptable MVP and reach V1.
 This amendment narrows the extended roadmap's implementation scope. Historical plans and deferred work remain retained.
 

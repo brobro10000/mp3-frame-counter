@@ -16,6 +16,7 @@ export interface ApiBudgets {
   readonly rejectionDrainMs: number;
 }
 
+/** Defaults for one API process; timeout values are milliseconds and admission is independent of platform scaling. */
 export const DEFAULT_API_BUDGETS: Readonly<ApiBudgets> = Object.freeze({
   maxActiveUploads: 2,
   maxConnections: 64,

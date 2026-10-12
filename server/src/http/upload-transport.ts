@@ -18,6 +18,7 @@ interface UploadState {
   read(payload: Readable, done: (error: Error | null, body?: Buffer) => void): void;
 }
 
+/** One API instance owns its collectors, sockets, verified docs and shutdown controller through this boundary. */
 export interface UploadTransport {
   readonly budgets: Readonly<ApiBudgets>;
   readonly serverFactory: NonNullable<FastifyServerOptions["serverFactory"]>;
