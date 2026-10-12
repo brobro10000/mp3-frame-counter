@@ -13,25 +13,25 @@ query: >-
   requests enter Fastify. The native adapter retains raw path/method/Expect
   refusals and finite documentation serving before Fastify dispatch. Production
   readiness loads verified docs before listening; close hooks own bounded
-  shutdown. Put both containers inside Docker's Compose network. Keep
-  browser React page components, useMp3Analysis business state and the raw Ky API
+  shutdown. Put both containers inside Docker's Compose network. Keep browser
+  React page components, useMp3Analysis business state and the raw Ky API
   service outside Docker, with the host controller and extracted Playwright
   runner also outside Docker. App.tsx composes the page; Vite builds static
-  assets. The API image also packages the locally generated Redoc HTML,
-  OpenAPI specification and renderer assets. Show build-only generation from
-  createApp, ready, swagger and close outside the runtime services. Its finite
-  docs adapter serves these assets after readiness; Redoc executes in the
-  browser, not Node. Generation alone does not establish browser/CSP evidence.
-  NGINX proxies /docs/ and its specification/assets to the same private API
-  with the untouched request URI and docs-scoped public CSP. All documentation
-  assets are same-origin, with no CDN or additional runtime service.
-  Distinguish published loopback host port from internal frontend port
-  8080 and private API port 3000, with a separate test-only loopback binding for
-  direct API diagnostics. Show source-defined runtime users, read-only
-  filesystems, temporary mounts and bounded in-process parsing. Do not imply a
-  third parser/test container, Node frontend runtime or cloud deployment. Keep
-  fixed API lifecycle readback and SIGTERM inside the host controller; command
-  acknowledgment does not prove graceful drain.
+  assets. The API image also packages the locally generated Redoc HTML, OpenAPI
+  specification and renderer assets. Show build-only generation from createApp,
+  ready, swagger and close outside the runtime services. Its finite docs adapter
+  serves these assets after readiness; Redoc executes in the browser, not Node.
+  Generation alone does not establish browser/CSP evidence. NGINX proxies /docs/
+  and its specification/assets to the same private API with the untouched
+  request URI and docs-scoped public CSP. All documentation assets are
+  same-origin, with no CDN or additional runtime service. Distinguish published
+  loopback host port from internal frontend port 8080 and private API port 3000,
+  with a separate test-only loopback binding for direct API diagnostics. Show
+  source-defined runtime users, read-only filesystems, temporary mounts and
+  bounded in-process parsing. Do not imply a third parser/test container, Node
+  frontend runtime or cloud deployment. Keep fixed API lifecycle readback and
+  SIGTERM inside the host controller; command acknowledgment does not prove
+  graceful drain.
 references:
   - 'File: /compose.yaml'
   - 'File: /frontend/Dockerfile'
@@ -67,6 +67,7 @@ references:
   - 'File: /scripts/run-e2e.mjs'
   - 'File: /scripts/e2e-controller.mjs'
 updatedAt: '2026-10-11T19:43:31Z'
+generationTime: '2026-10-12T01:35:28.324Z'
 ---
 flowchart LR
     B["User browser: compiled React<br/>page components, upload hook and API service"]
@@ -75,39 +76,25 @@ flowchart LR
         subgraph FRONT["frontend container: NGINX image / UID 101"]
             F["NGINX :8080<br/>serves compiled React assets, HTML and CSS"]
             FS["Read-only filesystem<br/>temporary /tmp: 16 MiB"]
-            FH["NGINX /healthz and public alias /health<br/>container-local 200 {'status':'ok'}"]
+            H["Compose probe /healthz<br/>hosted alias /health<br/>returns 200 {'status':'ok'}"]
         end
         subgraph BACK["api container: Node runtime image / UID 1000"]
             subgraph NODE["One Node process"]
-                L["http.ts + instance lifecycle<br/>ready, verified docs, then listen<br/>stop admission and bounded close<br/>index.ts owns process signals"]
-                R["Native serverFactory :3000<br/>raw path/method/Expect refusals<br/>finite docs adapter"]
-                A["createApp: real unbound Fastify<br/>root headers/errors and close hooks<br/>Swagger before feature plugins"]
-                S["Browser-safe TypeBox DTOs<br/>success invariants + error catalogue"]
-                U["Scoped MP3 upload plugin<br/>onRequest admission before allocation<br/>bounded stream parser and route projection<br/>terminal hooks + finally release once"]
-                H["Sibling health plugin<br/>GET /healthz<br/>no upload admission or collection"]
-                P["Pure analyze / mpeg / xing modules<br/>complete boundary walk once<br/>audio + physical counts<br/>declarations are diagnostics"]
-                L -->|"Construct; ready / listen / close"| A
-                L -->|"Own listening and socket deadline"| R
-                R -->|"Accepted upload and health"| A
-                S -->|"Register schemas / canonical errors"| A
-                A --> U
-                A --> H
-                U -->|"Complete bytes, at most 20 MiB"| P
-                U -->|"Project / check / serialize DTO"| S
+                A["Fastify on Node :3000<br/>admission and bounded stream collection"]
+                P["Pure TypeScript parser<br/>compiled JavaScript function"]
+                A -->|"Complete bytes, at most 20 MiB"| P
             end
-            D["API-packaged offline docs<br/>same-app generated OpenAPI + local Redoc assets<br/>finite resource set loaded before listening"]
-            L -->|"Verify / load before listen"| D
-            R -->|"Lookup finite docs map; renderer executes in browser"| D
+            D["API-packaged offline docs<br/>HTML, OpenAPI and local Redoc assets<br/>finite resource set loaded before listening"]
+            A -->|"Serve finite docs routes; renderer executes in browser"| D
             AS["Read-only filesystem<br/>temporary /tmp: 8 MiB"]
         end
-        F -->|"Compose DNS api:3000<br/>untouched upload request URI over HTTP/1.1"| R
-        F -->|"/docs/ and specification/assets<br/>untouched URI; NGINX owns docs-scoped public CSP"| R
+        F -->|"Compose DNS api:3000<br/>untouched upload request URI over HTTP/1.1"| A
+        F -->|"/docs/ and specification/assets<br/>untouched URI; NGINX owns docs-scoped public CSP"| A
     end
     B -->|"Published 127.0.0.1:FRONTEND_PORT<br/>host default 8080 maps to container 8080"| F
     DB -->|"Same published browser origin<br/>GET /docs/, /docs/openapi.yaml and /docs/assets/*"| F
     T["Host process: Playwright and Chromium<br/>frozen suite in a temporary directory"] -->|"BASE_URL: browser and HTTP<br/>isolated test host port"| F
-    G["Image build only: same createApp factory<br/>ready → swagger → close; no listener<br/>package generated OpenAPI and offline Redoc"] --> D
-    T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| R
+    T -.->|"API_BASE_URL: direct diagnostics<br/>temporary test-only loopback port"| A
     O["Reviewed fixture manifest and expectations"] --> T
     C["Host or CI controller<br/>owns Docker operations<br/>fixed API state and SIGTERM<br/>acknowledgment is not drain proof"] -.->|"Starts, inspects and cleans up both containers"| DOCKER
     C -.->|"Runs suite against exact image pair"| T

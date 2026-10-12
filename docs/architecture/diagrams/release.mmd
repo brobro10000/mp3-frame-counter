@@ -70,7 +70,7 @@ references:
   - 'File: /scripts/stage-acceptance.mjs'
   - 'File: /scripts/production-acceptance.mjs'
   - 'File: /docs/deployment/v1-delivery.md'
-generationTime: '2026-10-11T20:31:32.564Z'
+generationTime: '2026-10-12T01:35:31.930Z'
 ---
 flowchart TD
     EVENT["Prepared CI activation: PR or protected-main push<br/>four reusable callers in one original workflow run"]
@@ -90,7 +90,7 @@ flowchart TD
     end
 
     subgraph SERVER["Server tests caller: server-tests"]
-        SPREF["Trusted-base admission, then locked npm ci"] --> STEST["Strict TypeScript API/docs build<br/>parser, HTTP, docs and docs-build unit tests"]
+        SPREF["Trusted-base admission, then locked npm ci"] --> STEST["Strict TypeScript API/docs build<br/>parser, HTTP, docs and docs-build unit tests<br/>localized factory"]
         STEST --> SOK["Server tests caller result"]
     end
 
